@@ -1,0 +1,63 @@
+
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+
+</head>
+<body style="font-size:50px;left:50%;white-space:nowrap;">
+
+<link href='http://fonts.googleapis.com/css?family=Cardo&effect=scuffed-steel' rel='stylesheet' type='text/css'>
+<Script type ="text/JavaScript" src="./css_js/nonRsvdUtf.js"></Script>
+
+<script type="text/javascript">
+
+var spanid;
+var spanWidth;
+var eleWidth;
+
+document.write("<span style='left:-15%;' id='widthTester'></span>");
+
+
+
+for (r=0xFFFF; r <= 0x1F77F;r++){
+
+
+
+//initialize span
+spanHex=r.toString(16);
+spanHex=spanHex.toUpperCase();
+if (spanHex.length=='2'){spanHex='00'+spanHex;}
+else if (spanHex.length=='3'){spanHex='0'+spanHex;}
+
+alert(spanHex);
+alert(myValidationArray.indexOf(spanHex) >= 0);
+alert(myComboValidationArray.indexOf(spanHex));
+
+if (myValidationArray.indexOf(spanHex) >= 0 && myComboValidationArray.indexOf(spanHex) < 0 ) {
+
+ testWidth=document.getElementById("widthTester");
+ testWidth.innerHTML="&#x" + r.toString(16) + ";";
+ eleWidth=testWidth.offsetWidth;
+
+
+
+
+
+// alert (eleWidth)
+if(eleWidth!=0 && eleWidth!=50) {
+spanid='span'+spanHex;
+document.write("<span  id='" +spanid+ "'></span><br>");
+
+ utfExp=document.getElementById(spanid);
+ utfExp.innerHTML="<span style='font-family:Cardo;'>width::"+eleWidth+"::"
+                   +"&#x" + spanHex + "; u+" + spanHex +";</span>";
+
+}
+
+widthTester.innerHTML='';
+}
+
+}
+</script>
+</body>
+</html>

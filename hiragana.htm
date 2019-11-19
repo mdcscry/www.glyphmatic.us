@@ -1,0 +1,97 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<STYLE> @import url(http://fonts.googleapis.com/earlyaccess/notosansjp.css);</STYLE>
+
+		<title>Ikeda</title>
+	</head>
+
+
+<body>
+<script src="http://code.jquery.com/jquery-1.11.0.js"></script>
+
+<script type="text/javascript">
+
+var linkFont=[];
+
+var outString=''	;
+
+		var mycolors=[];
+		var myBcolors=[];
+		var colNum=2;
+
+		function setColor(hue,sat,light,opa){
+
+			for (colorCounter=1;colorCounter<=colNum;colorCounter++){
+				var toSpliceColor='hsla('
+				+  Math.round(Math.random()*10-20+hue) + ','
+				+  Math.round(40*Math.random()+sat-20)+ '%,'
+				+ (Math.round(Math.random()*20)+light) + '%,'
+				+ 1
+				+ ')';
+
+				mycolors.splice(1,0,toSpliceColor);
+			}
+		}
+
+		setColor(Math.round(Math.random()*20-10),Math.round(Math.random()*1800),Math.round(Math.random()*80),1);
+		setColor(Math.round(Math.random()*340),Math.round(Math.random()*800),Math.round(Math.random()*80),1);
+
+
+		function setBColor(hue,sat,light,opa){
+
+			for (colorCounter=1;colorCounter<=colNum;colorCounter++){
+				var toSpliceColor='hsla('
+				+ Math.round(Math.random()*360) + ','
+				+ Math.round(Math.random()*800) + '%,'
+				+ Math.round(Math.random()*50+50) + '%,'
+				+ 1
+				+ ')'
+
+				myBcolors.splice(1,0,toSpliceColor);
+			}
+		}
+
+		setBColor(Math.round(Math.random()*10),Math.round(Math.random()*400),Math.round(Math.random()*5),1);
+		document.body.style.backgroundColor = myBcolors[Math.round((myBcolors.length-1)*Math.random())];
+
+
+		navGlyph=[];
+		glyphCnt=50;
+
+		for (i=1;i<=glyphCnt;i++){
+
+			font='NOTO SANS JP';
+			elementName='glyphmatic' + i;
+			navGlyph[i] = document.createElement("div");
+			document.body.appendChild(navGlyph[i]);
+			navGlyph[i].innerHTML= "&#x3093;";
+			navGlyph[i].id=elementName;
+			navGlyph[i].style.position='relative';
+			navGlyph[i].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
+			navGlyph[i].style.fontSize=200+ Math.round( Math.random()*400-10 ) + 'px ';
+			navGlyph[i].style.padding= Math.round( Math.random()*40 ) + 'px';
+			navGlyph[i].style.lineHeight= Math.random()*1.5 ;
+			navGlyph[i].style.fontFamily=font;
+			navGlyph[i].style.cssFloat='left';
+			navGlyph[i].style.left='10px';
+			navGlyph[i].style.top='-10px';
+
+			//Syle the glyphs
+			navGlyph[i].style.textShadow=Math.round( Math.random()*3+1 ) + 'px '
+											+Math.round( Math.random()*3+1 ) + 'px '
+											+ mycolors[Math.round((mycolors.length-1)*Math.random())];
+			navGlyph[i].style.webkitTextFillColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+			navGlyph[i].style.webkitTextStrokeWidth=Math.round(Math.random()*3+1) +"px";
+			navGlyph[i].style.webkitTextStrokeColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+
+		}
+
+//	});
+
+//});
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<TITLE>2.DaGenerator-box_elements</TITLE>
+
+</head>
+
+
+<STYLE type="text/css">
+
+DIV   {
+	      -webkit-transition-property: background-color,color,font-size,-webkit-text-stroke-width,-webkit-text-stroke-color,-webkit-text-fill-color,rotate,skew;
+	      -webkit-transition-duration: 10s,3s,4s,5s,5s,5s,20s,20s;
+	      -webkit-transform-origin: 50% 50%;
+    position:absolute;
+    padding:0%;
+    margin:0%;
+    background:#FFFFFF;
+    font-size: 250px;
+    color:  #FFFFFF;
+
+}
+
+</STYLE>
+
+
+
+<body style="overflow: hidden;font-family:'Arial Unicode MS';font-weight:900;">
+
+<DIV id="container" style="height:100%;width:100%;"></DIV>
+
+<script type="text/javascript">
+
+var fontChangeRate=30000;
+
+
+
+var mycolors=[ '#FF0000','#BF3030','#A60000','#FF4040','#FF7373','ED002F','#B22D47','#9A001E','#F63E62','#F66F89'];
+//,'#FF5C00','#BF6430','#A63C00','#FF8540','#FFA573','#FF9C00','#BF8830','#A66500','#FFB540','#FFC973'];
+var container=document.getElementById("container");
+elem2_bg_color=mycolors[Math.round((mycolors.length-1)*Math.random())];
+container.style.backgroundColor=elem2_bg_color;
+document.body.style.backgroundColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+
+var myarray=[
+//mobile mandala
+164,167,176,212,213,335,334,333,450,611,612,618,619,632,629,631,650,664,684,685,728,730,732,736,784,785,865,916,920,923,926,928,934,936,937,948,952,966,977
+,1039,1055,1060,1078,1092,1126,1127,1130,1131,1136,1137,1138,1139,1146,1147,1150,1151,1160,1161,1192,1193,1217,1218,1244,1245,1255,1257,1258,1259,1337,1342
+,1349,1354,1355,1361,1363,1364,1366,1372,1374,1377,1390,1393,1401,1411,1413,1417,1418,1425,1426,1427,1428,1429,1431,1432,1435,1439,1457,1461,1462,1467,1488
+,1492,1501,1505,1508,1577,1607,1612,1615,1617,1637,1645,1660,1663,1664,1722,1724,1725,1726,1729,1731,1749,1755,1757,1758,1759,1768,1781,2311,2325,2336,2338
+,2349,2355,2406,2410,2413,2416,2444,2453,2464,2468,2534,2535,2537,2538,2543,2554,2947,2951,2952,2960,2965,2972,2979,2994,3051,3077,3078,3084,3095,3104,3109
+,3107,3110,3116,3121,3174,3175,3178,3179,3181,3207,3210,3216,3214,3220,3221,3222,3223,3225,3232,3235,3236,3237,3243,3249,3250,3251,3254,3257,3294,3296,3302
+,3303,3304,3306,3307,3339,3349,3356,3360,3364,3367,3368,3373,3376,3377,3374,3375,3380,3382,3588,3589,3604,3606,3629,3632,3651,3663,3664,3665,4259,4265,4276
+,4277,4278,4306,4310,4312,4322,4332,4333,4335,4336,4338,4341,4342,4347,4363,4370,4395,4396,4416,4423,4428,4439,4440,4441,4546,4590,4592,4601,8225,8226,8252
+,8362,8621,8733,8734,8756,8757,8758,8759,8780,8786,8801,8853,8855,8857,8901,8978,2127,12290,12295,12336,9991,10018,10019,10020,10021,10022,10023,10035,10036
+,10038,10039,10040,10041,10042,10043,10044,10045,10046,10047,10048,10049,10050,10051,10052,10053,10054,10055,10056,10057,10058,10070,9438,9386,9728,9800,9801
+,9802,9803,9806,9810,9811,9826,9830,64414,64422,64420,64427,64429,65268,65260,65252,65240,65236,65232,65288,'64831;&#64830','64830;&#64831','12297;&#12296','12296;&#12297'
+,'12299;&#12298','12298;&#12299'
+];
+
+//container div
+
+
+var divId=[];
+divCount=20;
+
+for (divCounter=1;divCounter<=divCount;divCounter++){
+ elementName='div'+divCounter;
+ divId[divCounter] = document.createElement("div");
+ divId[divCounter].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
+ divId[divCounter].id=elementName;
+ //alert(divId[divCounter].id);
+container.appendChild(divId[divCounter]);
+divId[divCounter].style.position='relative';
+divId[divCounter].style.cssFloat='left';
+divId[divCounter].style.background='transparent';
+divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
+		      		divId[divCounter].style.webkitTransform= 'skew('+ Math.round(Math.random()*720-360) +'deg,'+ Math.round(Math.random()*720-360) +'deg)';
+			  		divId[divCounter].style.textShadow=Math.round( Math.random()*20-10 ) + 'px '
+			  									+Math.round( Math.random()*20-10 ) + 'px '
+									+ mycolors[Math.round((mycolors.length-1)*Math.random())];
+  divId[divCounter].style.webkitTextFillColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+  divId[divCounter].style.webkitTextStrokeWidth=Math.round(Math.random()*60) +"px";
+  divId[divCounter].style.webkitTextStrokeColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+}
+
+	window.setInterval(function(){
+
+	for (intervLoop=1;intervLoop<=2;intervLoop++){
+		rndDiv=Math.round(Math.random()*(divCount-1))+1;
+		  try {
+		      divId[rndDiv].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
+		      		divId[rndDiv].style.webkitTransform= 'skew('+ Math.round(Math.random()*0) +'deg,'+ Math.round(Math.random()*720-360) +'deg)';
+			  		divId[rndDiv].style.textShadow=Math.round( Math.random()*20-10 ) + 'px '
+			  									+Math.round( Math.random()*20-10 ) + 'px '
+									+ mycolors[Math.round((mycolors.length-1)*Math.random())];
+			  divId[rndDiv].style.webkitTextFillColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+			  divId[rndDiv].style.webkitTextStrokeWidth=Math.round(Math.random()*20) +"px";
+  			  divId[rndDiv].style.webkitTextStrokeColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+		   } catch ( e ) {
+		      alert("Error: " + e.description + 'Value1: ' + rndDiv );
+           }
+		}
+		},Math.random()*fontChangeRate+1500);
+
+
+	window.setInterval(function(){
+
+	for (intervLoop=1;intervLoop<=2;intervLoop++){
+		rndDiv=Math.round(Math.random()*(divCount-1))+1;
+		//alert(rndDiv);
+		  try {
+		      divId[rndDiv].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
+		        divId[rndDiv].style.webkitTextFillColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+			    divId[rndDiv].style.webkitTextStrokeWidth=Math.round(Math.random()*50) +"px";
+  				divId[rndDiv].style.webkitTextStrokeColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+		      divId[rndDiv].style.webkitTransform = 'rotate(' + Math.round(Math.random()*4)*90 + 'deg)';
+		   } catch ( e ) {
+		      alert("Error: " + e.description + 'Value2: ' + rndDiv );
+           }
+		}
+		},Math.random()*fontChangeRate+10000);
+
+
+		 	window.setInterval(function(){
+
+		 	for (intervLoop=1;intervLoop<=2;intervLoop++){
+		 		rndDiv=Math.round(Math.random()*(divCount-1))+1;
+		 		//alert(rndDiv);
+		 		  try {
+		 		      divId[rndDiv].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
+		 		        divId[rndDiv].style.webkitTextFillColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+		 			    divId[rndDiv].style.webkitTextStrokeWidth=Math.round(Math.random()*50) +"px";
+		   				divId[rndDiv].style.webkitTextStrokeColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+		 		      divId[rndDiv].style.webkitTransform = 'rotate(' + Math.round(Math.random()*4)*90 + 'deg)';
+		 		   } catch ( e ) {
+		 		      alert("Error: " + e.description + 'Value2: ' + rndDiv );
+		            }
+		 		}
+		},Math.random()*fontChangeRate+100000);
+
+
+			window.setInterval(function(){
+
+			for (intervLoop=1;intervLoop<=2;intervLoop++){
+				rndDiv=Math.round(Math.random()*(divCount-1))+1;
+				//alert(rndDiv);
+				  try {
+
+				      divId[rndDiv].style.webkitTransform = 'rotateX(' + Math.round(Math.random()*4)*90 + 'deg)';
+				   } catch ( e ) {
+				      alert("Error: " + e.description + 'Value2: ' + rndDiv );
+		           }
+				}
+		},Math.random()*fontChangeRate+10000);
+
+					window.setInterval(function(){
+
+					for (intervLoop=1;intervLoop<=2;intervLoop++){
+						rndDiv=Math.round(Math.random()*(divCount-1))+1;
+						//alert(rndDiv);
+						  try {
+
+						      divId[rndDiv].style.webkitTransform = 'rotateY(' + Math.round(Math.random()*4)*90 + 'deg)';
+						   } catch ( e ) {
+						      alert("Error: " + e.description + 'Value2: ' + rndDiv );
+				           }
+						}
+		},Math.random()*fontChangeRate+10000);
+
+							window.setInterval(function(){
+
+							for (intervLoop=1;intervLoop<=2;intervLoop++){
+								rndDiv=Math.round(Math.random()*(divCount-1))+1;
+								//alert(rndDiv);
+								  try {
+
+								      divId[rndDiv].style.webkitTransform = 'rotateZ(' + Math.round(Math.random()*4)*90 + 'deg)';
+								   } catch ( e ) {
+								      alert("Error: " + e.description + 'Value2: ' + rndDiv );
+						           }
+								}
+		},Math.random()*fontChangeRate+100000);
+
+
+</script>
+</body></html>
