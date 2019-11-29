@@ -26,7 +26,7 @@ var ua=navigator.userAgent;
  langArray[107]=['k',65323,65355];
  langArray[108]=['l',204,205,206,207,296,298,318,316,314,322,320
  ,617];
- langArray[109]=['m',8357,625,3733,7745,7747,8357];
+ langArray[109]=['m',8357,625,7745,7747,8357]; //3667,3733 lao and thai not sure why they don't work..they did.
  langArray[110]=['n',303,8358,65326,65358,8469];
  langArray[111]=['o',65518,65463];
  langArray[112]=['p',7765,7767,1088,7765,7767,8164,8165,421];
