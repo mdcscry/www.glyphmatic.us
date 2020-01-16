@@ -76,7 +76,7 @@ var newRule='@font-face {font-family: Noto Sans Symbols; src: url("/tff/NotoSans
 //var newRule='@font-face {font-family: Noto Sans Symbols; src: url(file:///C:/Users/mcryer/flasher/tff/NotoSansSymbols-Regular.woff) format("woff");}';
 cssImportStyle.insertRule(newRule,cssImportRules.length);
 
-var newRule='@font-face {font-family: Noto Sans Yi; src: url(http://glyphmatic.us/tff/NotoSansYi-Regular.woff) format("woff");}';
+var newRule='@font-face {font-family: Noto Sans Yi; src: url("http://glyphmatic.us/tff/NotoSansYi-Regular.woff") format("woff");}';
 //var newRule='@font-face {font-family: Noto Sans Yi; src: url(file:///C:/Users/mcryer/flasher/tff/NotoSansYi-Regular.woff) format("woff");}';
 cssImportStyle.insertRule(newRule,cssImportRules.length);
 
