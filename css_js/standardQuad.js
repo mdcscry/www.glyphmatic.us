@@ -72,7 +72,7 @@ cssImportStyle.insertRule(newRule,cssImportRules.length);
 var newRule='@import url(http://fonts.googleapis.com/earlyaccess/notoserifthai.css);';//new
 cssImportStyle.insertRule(newRule,cssImportRules.length);
 
-var newRule='@font-face {font-family: Noto Sans Symbols; src: url(/tff/NotoSansSymbols-Regular.woff) format("woff");}';
+var newRule='@font-face {font-family: Noto Sans Symbols; src: url("/tff/NotoSansSymbols-Regular.woff") format("woff");}';
 //var newRule='@font-face {font-family: Noto Sans Symbols; src: url(file:///C:/Users/mcryer/flasher/tff/NotoSansSymbols-Regular.woff) format("woff");}';
 cssImportStyle.insertRule(newRule,cssImportRules.length);
 
