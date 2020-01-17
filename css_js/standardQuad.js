@@ -76,7 +76,7 @@ cssImportStyle.insertRule(newRule,cssImportRules.length);
 var newRule='@import url(//fonts.googleapis.com/earlyaccess/notosansavestan.css);';//new
 cssImportStyle.insertRule(newRule,cssImportRules.length);
 var newRule='@import url(//fonts.googleapis.com/earlyaccess/notosansvai.css);';//new
-ImportStyle.insertRule(newRule,cssImportRules.length);
+cssImportStyle.insertRule(newRule,cssImportRules.length);
 
 
 var newRule='@font-face {font-family: Noto Sans Symbols; src: url("/tff/NotoSansSymbols-Regular.woff") format("woff");}';
