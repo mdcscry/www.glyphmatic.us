@@ -76,7 +76,7 @@ cssImportStyle.insertRule(newRule,cssImportRules.length);
 var newRule='@import url(//fonts.googleapis.com/earlyaccess/notosansavestan.css);';//new
 cssImportStyle.insertRule(newRule,cssImportRules.length);
 var newRule='@import url(//fonts.googleapis.com/earlyaccess/notosansvai.css);';//new
-ssImportStyle.insertRule(newRule,cssImportRules.length);
+ImportStyle.insertRule(newRule,cssImportRules.length);
 
 
 var newRule='@font-face {font-family: Noto Sans Symbols; src: url("/tff/NotoSansSymbols-Regular.woff") format("woff");}';
@@ -89,19 +89,11 @@ var newRule='@font-face {font-family: Maya; src: url("/tff/Maya.woff") format("w
 cssImportStyle.insertRule(newRule,cssImportRules.length);
 
 
-
-
-
-
-
-
-
-
 if(browserPrefix != 'msie'){
-var newRule='@-' + browserPrefix +'-keyframes fadeOut{0%{opacity:.71;}100%{opacity:0;}}';
-cssStyle.insertRule(newRule,cssRules.length);
-var newRule='@-' + browserPrefix +'-keyframes fadeIn{0%{opacity:0;}100%{opacity:.71;}}';
-cssStyle.insertRule(newRule,cssRules.length);
+	var newRule='@-' + browserPrefix +'-keyframes fadeOut{0%{opacity:.71;}100%{opacity:0;}}';
+	cssStyle.insertRule(newRule,cssRules.length);
+	var newRule='@-' + browserPrefix +'-keyframes fadeIn{0%{opacity:0;}100%{opacity:.71;}}';
+	cssStyle.insertRule(newRule,cssRules.length);
 }
 
 
