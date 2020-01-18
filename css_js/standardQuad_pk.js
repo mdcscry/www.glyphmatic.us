@@ -72,26 +72,19 @@ var newRule='@import url(http://fonts.googleapis.com/earlyaccess/notoserifgeorgi
 cssImportStyle.insertRule(newRule,cssImportRules.length);
 var newRule='@import url(http://fonts.googleapis.com/earlyaccess/notoserifthai.css);';//new
 cssImportStyle.insertRule(newRule,cssImportRules.length);
-
-var newRule='@font-face {font-family: Noto Sans Symbols; src: url(http://glyphmatic.us/tff/NotoSansSymbols-Regular.woff) format("woff");}';
-//var newRule='@font-face {font-family: Noto Sans Symbols; src: url(file:///C:/Users/mcryer/flasher/tff/NotoSansSymbols-Regular.woff) format("woff");}';
+var newRule='@import url(//fonts.googleapis.com/earlyaccess/notosansavestan.css);';//new
 cssImportStyle.insertRule(newRule,cssImportRules.length);
-
-var newRule='@font-face {font-family: Noto Sans Yi; src: url(http://glyphmatic.us/tff/NotoSansYi-Regular.woff) format("woff");}';
-//var newRule='@font-face {font-family: Noto Sans Yi; src: url(file:///C:/Users/mcryer/flasher/tff/NotoSansYi-Regular.woff) format("woff");}';
-cssImportStyle.insertRule(newRule,cssImportRules.length);
-
-var newRule='@font-face {font-family: AdobeBlank; src: url(http://glyphmatic.us/tff/AdobeBlank.ttf.woff) format("woff");}';
-//var newRule='@font-face {font-family: AdobeBlank; src: url(file:///C:/Users/mcryer/flasher/tff/AdobeBlank.ttf.woff) format("woff");}';
-cssImportStyle.insertRule(newRule,cssImportRules.length);
-
-var newRule='@font-face {font-family: Noto Sans Avestan; src: url(http://glyphmatic.us/tff/NotoSansAvestan-Regular.woff) format("woff");}';
-//var newRule='@font-face {font-family: Noto Sans Avestan; src: url(file:///C:/Users/mcryer/flasher/tff/NotoSansAvestan-Regular.woff) format("woff");}';
+var newRule='@import url(//fonts.googleapis.com/earlyaccess/notosansvai.css);';//new
 cssImportStyle.insertRule(newRule,cssImportRules.length);
 
 
-var newRule='@font-face {font-family: Noto Sans Vai; src: url(http://glyphmatic.us/tff/NotoSansVai-Regular.woff) format("woff");}';
-//var newRule='@font-face {font-family: Noto Sans Vai; src: url(file:///C:/Users/mcryer/flasher/tff/NotoSansVai-Regular.woff) format("woff");}';
+var newRule='@font-face {font-family: Noto Sans Symbols; src: url("/tff/NotoSansSymbols-Regular.woff") format("woff");}';
+cssImportStyle.insertRule(newRule,cssImportRules.length);
+var newRule='@font-face {font-family: AdobeBlank; src: url("/tff/AdobeBlank.ttf.woff") format("woff");}';
+cssImportStyle.insertRule(newRule,cssImportRules.length);
+var newRule='@font-face {font-family: Aegyptus; src: url("/tff/Aegyptus0.woff") format("woff");}';
+cssImportStyle.insertRule(newRule,cssImportRules.length);
+var newRule='@font-face {font-family: Maya; src: url("/tff/Maya.woff") format("woff");}';
 cssImportStyle.insertRule(newRule,cssImportRules.length);
 
 
