@@ -1,6 +1,23 @@
 
 <html><head>
 <TITLE>glyphmatic.us</TITLE>
+
+
+
+<style type="text/css">
+
+	@import url(http://fonts.googleapis.com/css?family=Noto+Sans);
+    @font-face {font-family: 'Noto Sans Symbols'; src: url("/tff/NotoSansSymbols-Regular.woff") format("woff");}
+
+body{
+
+
+	font-family: 'Noto Sans','Noto Sans Symbols',sans serif;
+
+}
+
+</style>
+
 </head>
 
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -84,23 +101,23 @@ document.body.style.margin='0px';
 
 
 ////Builds the meta refresh
-var meta1 = document.createElement('meta');
-meta1.httpEquiv = "refresh";
+//var meta1 = document.createElement('meta');
+//meta1.httpEquiv = "refresh";
 //meta1.content="45,http://glyphmatic.us/g.us3.htm";
- if ((homeDetector.indexOf("home")>0) && (sRefresh==0)) {
-meta1.content="180,http://glyphmatic.us/g.us3.htm?home";
-} else if ((homeDetector.indexOf("home")>0) && (sRefresh==1)){
-meta1.content="180,http://glyphmatic.us/g.us3.htm?home&i=0"+insertArrayRnd;
-} else if ((homeDetector.indexOf("home")>0) && (sRefresh==2)){
-meta1.content="180,http://glyphmatic.us/g.us3.htm?home&i="+insertArrayRnd;
-}else if (sRefresh==1){
-meta1.content="180,http://glyphmatic.us/g.us3.htm?i=0"+insertArrayRnd;
-}else if (sRefresh==2){
-meta1.content="180,http://glyphmatic.us/g.us3.htm?i="+insertArrayRnd;
-}else{
-meta1.content="180,http://glyphmatic.us/g.us3.htm";
-}
-document.getElementsByTagName('head')[0].appendChild(meta1);
+// if ((homeDetector.indexOf("home")>0) && (sRefresh==0)) {
+//meta1.content="180,http://glyphmatic.us/g.us3.htm?home";
+//} else if ((homeDetector.indexOf("home")>0) && (sRefresh==1)){
+//meta1.content="180,http://glyphmatic.us/g.us3.htm?home&i=0"+insertArrayRnd;
+//} else if ((homeDetector.indexOf("home")>0) && (sRefresh==2)){
+//meta1.content="180,http://glyphmatic.us/g.us3.htm?home&i="+insertArrayRnd;
+//}else if (sRefresh==1){
+//meta1.content="180,http://glyphmatic.us/g.us3.htm?i=0"+insertArrayRnd;
+//}else if (sRefresh==2){
+//meta1.content="180,http://glyphmatic.us/g.us3.htm?i="+insertArrayRnd;
+//}else{
+//meta1.content="180,http://glyphmatic.us/g.us3.htm";
+//}
+//document.getElementsByTagName('head')[0].appendChild(meta1);
 
 
 
