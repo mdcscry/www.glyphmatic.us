@@ -73,8 +73,6 @@ var newRule='@import url(http://fonts.googleapis.com/earlyaccess/notoserifthai.c
 cssImportStyle.insertRule(newRule,cssImportRules.length);
 var newRule='@import url(//fonts.googleapis.com/earlyaccess/notosansavestan.css);';//new
 cssImportStyle.insertRule(newRule,cssImportRules.length);
-var newRule='@import url(//fonts.googleapis.com/earlyaccess/notosansavestan.css);';//new
-cssImportStyle.insertRule(newRule,cssImportRules.length);
 var newRule='@import url(//fonts.googleapis.com/earlyaccess/notosansvai.css);';//new
 cssImportStyle.insertRule(newRule,cssImportRules.length);
 
