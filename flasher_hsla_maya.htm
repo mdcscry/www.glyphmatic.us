@@ -67,12 +67,12 @@
 </table>
 <script type="text/javascript">
 var mycolors=[];
-var colNum=3;
+var colNum=8;
 
-setColor(Math.round(Math.random()*340),Math.round(Math.random()*800),Math.round(Math.random()*80),.3);
-setColor(Math.round(Math.random()*340),Math.round(Math.random()*800),Math.round(Math.random()*80),.3);
-setColor(Math.round(Math.random()*340),Math.round(Math.random()*800),Math.round(Math.random()*80),.3);
-setColor(Math.round(Math.random()*340),Math.round(Math.random()*800),Math.round(Math.random()*80),.3);
+setColor(Math.round(Math.random()*360),Math.round(Math.random()*1000),Math.round(Math.random()*50),.8);
+setColor(Math.round(Math.random()*360),Math.round(Math.random()*1000),Math.round(Math.random()*50),.8);
+setColor(Math.round(Math.random()*360),Math.round(Math.random()*1000),Math.round(Math.random()*90),.8);
+setColor(Math.round(Math.random()*360),Math.round(Math.random()*1000),Math.round(Math.random()*90),.8);
 
 function setColor(hue,sat,light,opa){
 
@@ -80,8 +80,8 @@ for (colorCounter=1;colorCounter<=colNum;colorCounter++){
 var toSpliceColor='hsla('
 +  Math.round(40*Math.random()+hue-20) + ','
 +  Math.round(40*Math.random()+sat-20)+ '%,'
-+ (Math.round(Math.random()*20)+light) + '%,'
-+ (Math.random(opa)+.6  )
++ (Math.round(Math.random()*5)+light) + '%,'
++ (Math.random(opa)+.5 )
 + ')';
 //alert (toSpliceColor);
 
@@ -159,16 +159,23 @@ myarray_mayan_numbers = [];
 
 myarray = myarray.concat(myarray)
                  .concat(myarray_phaistos)
+                 .concat(myarray_phaistos)
+                 .concat(myarray_phaistos)
                  .concat(myarray_aegean)
                  .concat(myarray_symbols)
                  .concat(myarray_hexagrams)
                  .concat(myarray_maya)
+                 .concat(myarray_anatolian)
+                 .concat(myarray_linearb)      
+                 .concat(myarray_anatolian)
+                 .concat(myarray_linearb)      
                  .concat(myarray_anatolian)
                  .concat(myarray_linearb)              
                  .concat(myarray_linearA)
                  .concat(myarray_runic)
                  .concat(myarray_egyptian)
                  .concat(myarray_alchemical)
+                 .concat(myarray_meroitic)
                  .concat(myarray_meroitic)
                  //.concat(myarray_mayan_numbers)                 
                  .concat(myarray_cuneiform);
