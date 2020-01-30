@@ -276,17 +276,18 @@ var outString=''	;
 $(function(){
 
 $.getJSON('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPEC-k91wzgVIMm9CZSJIINd-WKmR2Wmo', function(json) {
-
 //alert(JSON.stringify(json.items[1].family));
 for (i=1;i<=json.items.length-1;i++){
 for (subsetCnt=0;subsetCnt<=json.items[i].subsets.length-1;subsetCnt++){
 
-if (JSON.stringify(json.items[i].subsets[subsetCnt]) != '"latin"' && json.items[i].subsets.length==3){
-outString+= JSON.stringify(json.items[i].family)
-+ ':  '
-+ JSON.stringify(json.items[i].subsets[subsetCnt])
-+ '('+json.items[i].subsets.length +')'
-+ '<br>';
+//if (JSON.stringify(json.items[i].subsets[subsetCnt]) != '"latin"' && JSON.stringify(json.items[i].subsets[subsetCnt]) != '"latin-ext"' && json.items[i].//subsets.length==3){
+
+if (JSON.stringify(json.items[i].subsets[subsetCnt]) == '"latin-ext"' && json.items[i].subsets.length>0){	
+		outString+= JSON.stringify(json.items[i].family)
+		+ ':  '
+		+ JSON.stringify(json.items[i].subsets[subsetCnt])
+		+ '('+json.items[i].subsets.length +')'
+		+ '<br>';
 }
 }
 }
