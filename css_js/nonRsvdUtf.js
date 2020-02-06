@@ -1,6 +1,6 @@
 
 
-//myValidationArray['wigga'] = ['0020','0021']
+//myValidateionArray['wigga'] = ['0020','0021']
 
 
 
