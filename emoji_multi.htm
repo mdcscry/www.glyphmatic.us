@@ -1,5 +1,13 @@
 
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<HTML>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<HEAD>
+<STYLE type="text/css">
+
+
+</STYLE>
+
 
 
 <script type="text/javascript">
@@ -9,24 +17,35 @@ function getRandomInt(max) {
 }	
 
 list_of_chick = ["1f9d8","1f926","1f937","1f9d9","1f9da","1f9db","1f9dc","1f9dd",
-					"1f645","1f646","1f64b","1f64d","1f64e","1f64f","1f9d7","1f9de","1f9df","1f9d6","1f9b8","1f9b9","1f938","1f481","1f486","1f487"]
+					"1f645","1f646","1f64b","1f64d","1f64e","1f64f","1f9d7","1f9de","1f9df","1f9d6","1f9b8","1f9b9","1f481","1f486","1f487"]
 list_of_dude = [
-				"1f939","1f647","1f6b6","1f6b4","1f482","1f471","1f477","1f46e"
-				,"1f3c3","26f9","1f6a3","1f6b5"]
+				"1f939","1f647","1f6b6","1f6b4","1f482","1f471","1f477","1f46e",
+				"1f3c3","26f9","1f6a3","1f6b5","1f3cc","1f3c4","1f938","1f3ca","1f3cb",
+				"1f93d","1f93e"]
 
-special_creatures = ["1f9de","1f9df"]				
+special_creatures = ["1f9de","1f9df"]
+
+man_woman = ["1F468","1F469"]				
 
 myarray = ["1F468","1F469","1F468","1F469","1F468","1F469","1F468","1F469",
 			"1F468","1F469","1F468","1F469","1F468","1F469","1F468","1F469",
 			"1f466","1f467","1f46e","1f6a3",
-			"1f470","1f471","1f472","1f473","1f474","1f475","1f476","1f477","1f478","1f481","1f646","1f483","1f57a","1f482","1f471","1f476","1f477","1f47c","1f46e","1f3c3","1f3c7","26f9","1f9b8","1f9b9","1f9d6","1f647","1f6b6","1f930","1f931","1f9d7","1f6b4","1f57a","1f64b","1f64d","1f926","1f934","1f926","1f938","1f935","1f936","1f937","1f939","1f9d1","1f9d2","1f9d3","1f9d4","1f9d5","1f9d8","1f9d9","1f9da","1f9db","1f9dc","1f9dd","1f9d4","1f574","1f6b5",
-			"1f9de","1f9df"
+			"1f470","1f471","1f472","1f473","1f474","1f475","1f476","1f477","1f478","1f481","1f646","1f483","1f57a","1f482","1f471","1f476","1f477","1f47c","1f46e","1f3c3","1f3c7","26f9","1f9b8","1f9b9","1f9d6","1f647","1f6b6","1f930","1f931","1f9d7","1f6b4","1f57a","1f64b","1f64d","1f926","1f934","1f926","1f935","1f936","1f937","1f939","1f9d1","1f9d2","1f9d3","1f9d4","1f9d5","1f9d8","1f9d9","1f9da","1f9db","1f9dc","1f9dd","1f9d4","1f574","1f6b5",
+			"1f9de","1f9df","1f6c0","1f6cc","1f3c4","1f938","1f3ca","1f486","1f487","1f93d",
+			"1f93e"
 			]
 
-//myarray = []			
-myarrayFace = ["1f3fb","1f3fc","1f3fd","1f3fe","1f3ff"]
+		
 
-myarrayHair = ["1f9b0","1f9b1","1f9b2","1f9b3","1f9b3"]
+//myarray = []			
+myarrayFace = ["1f3fb","1f3fc","1f3fd","1f3fe","1f3ff"];
+
+myarrayHair = ["1f9b0","1f9b1","1f9b2","1f9b3","1f9b3"];
+
+myarrayProfession = ["2695","2696","1f33e","1f393","1f3eb","1f373","1f527",
+					"1f3ed","1f4bc","1f52c","1f4bb","1F3A4","1F3A8","2708",
+					"1F680","1F692"]
+//myarrayProfession = ["1f33e"]
 
 for (i=0 ; i <= 50;i++){
 
@@ -35,11 +54,18 @@ for (i=0 ; i <= 50;i++){
  if (getRandomInt(2)==1) {dude_flip=";&#x200D;&#x2642;</span>:"} else {dude_flip=";<\span>"}
 
 
- if ((hex_val == "1F468")|| ( hex_val == "1F469")){
+ if (man_woman.includes(hex_val)){
+
+ 	if (getRandomInt(2)==1){ 
+ 		injection = myarrayHair[Math.round((myarrayHair.length-1)*Math.random())] 
+ 		} else {
+ 		injection = myarrayProfession[Math.round((myarrayProfession.length-1)*Math.random())] 
+ 		} 		
+
+
  		document.write("<span>&#x" + hex_val +
  						 ";&#x" + myarrayFace[Math.round((myarrayFace.length-1)*Math.random())] +
- 						 ";&#x200d" +
- 						 ";&#x" + myarrayHair[Math.round((myarrayHair.length-1)*Math.random())] +
+ 						 ";&#x200d;&#x" + injection +
  						 ";<\span>");
  } else if (special_creatures.includes(hex_val)) {
 
@@ -56,7 +82,9 @@ for (i=0 ; i <= 50;i++){
 					 ";&#x" + myarrayFace[Math.round((myarrayFace.length-1)*Math.random())] + chick_flip); 
  } else {
  		document.write("<span>&#x" + hex_val +
- 						 ";&#x" + myarrayFace[Math.round((myarrayFace.length-1)*Math.random())] + ";<\span>"); 
+ 						 ";&#x" + myarrayFace[
+ 						Math.round((myarrayFace.length-1)*Math.random())] + 
+ 						";<\span>"); 
  }
 }
 </script>
