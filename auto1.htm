@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<style type="text/css"></style>
+
+
+		<script type ="text/JavaScript" src="./css_js/block_hex.js"></script>
+		<script type ="text/JavaScript" src="./css_js/block_hex_desc.js"></script>
+		<script type ="text/JavaScript" src="./css_js/exclude_glyph.js"></script>
+		<script type="text/javascript">
+
+
+
+
+		//block = blocks[Math.round((1)*Math.random())]   
+		//block = ''     
+		//document.write("<span>" + block + "<\span>");
+ 		//document.write("<span style='font-family:garamond;'>" + block_hex[block].length + "<\span><br>");
+
+
+ 		for (i=0 ; i <= 100 ;i++){	
+ 			//block = ''
+
+ 			//do { 
+ 			random_number = Math.round((blocks.length-1)*Math.random())
+ 			block = blocks[random_number] 
+ 			//}
+ 			//while (exclude_blocks.includes(block))
+ 			console.log(random_number)
+ 			console.log(block)	
+ 			//block = blocks[Math.round((1)*Math.random())] 
+ 			glyph_val = Math.round((block_hex[block].length-1)*Math.random())				
+			glyph = block_hex[block][glyph_val]
+			glyph_desc = block_hex_desc[block][glyph_val].replace(/ /g,"_")
+			//	if (!exclude_glyph.includes(glyph)){ 
+	 		document.write("<span title='" + glyph + "-" + glyph_desc +
+	 								"'>&#x" + glyph + ";");
+	 		document.write("<\span>"); 
+	 		//	} else {
+	 		//		document.write("<span>&nbsp;")
+	 		//		document.write("<\span>"); 
+	 		//	}
+			}
+
+ 		//for (i=0 ; i <= block_hex[block].length-1 ;i++){			
+ 		//	document.write("<span>&#x" + block_hex[block][i] + "; <\span>");		
+ 		//	document.write("<span> :" + block_hex[block][i] + " : <\span>");	
+ 		//	document.write("<span> &nbsp;" + block_hex_desc[block][i] + "<\span><br>");		
+		//}
+		</script>
+	</head>
+	<body style="font-size: 5em;">
+
+
+		<div id="spacious1"></div>
+
+
+	</body>
+</html>

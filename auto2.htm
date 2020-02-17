@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Auto2-ucoded</title>
+		<style type="text/css">
+			
+			table { border-style:solid;
+					border-color: gray;
+			}
+			tr{border-top-width: 30px}
+
+
+		</style>
+		<script type ="text/JavaScript" src="./css_js/block_hex.js"></script>
+		<script type ="text/JavaScript" src="./css_js/block_hex_desc.js"></script>
+		<script type ="text/JavaScript" src="./css_js/exclude_glyph.js"></script>
+	</head>
+	<body style="overflow: hidden;font-size: 2em;display: inline;">
+		<div style="font-size:.5em;"> &nbsp;&nbsp;Numbers of Unicode</div>
+		<table width="96%" top="20%" border=25 align=center>
+			<tr >
+				<TD id="row1" nowrap align="center">
+				</TD>
+			</tr>
+			<tr>
+				<TD id="row2" nowrap align="center">
+				</TD>			
+			</tr>
+			<tr>	
+				<TD id="row3" nowrap align="center">
+				</TD>				
+			</tr>
+			<tr>
+				<TD id="row4" nowrap align="center">
+				</TD>	
+			</tr>			
+			<tr>
+				<TD id="row5" nowrap align="center">
+				</TD>				
+			</tr>
+		</table>											
+	</body>
+
+	<script type="text/javascript">
+
+	 	function spectacular(number_of_glyphs) {
+	 		spans_string = ''
+	 		for (i=0 ; i <= number_of_glyphs ;i++){	
+
+	 			random_number = Math.round((blocks.length-1)*Math.random())
+	 			block = blocks[random_number] 
+
+	 			console.log(random_number)
+	 			console.log(block)
+	 			glyph_val = Math.round((block_hex[block].length-1)*Math.random())				
+				glyph = block_hex[block][glyph_val]
+				glyph_desc = block_hex_desc[block][glyph_val].replace(/ /g,"_")
+		 		spans_string = spans_string + "<span title='" + glyph + "-" + glyph_desc +
+		 								"'>&#x" + glyph + ";</span>";
+				}
+			return(spans_string)
+	 	}
+	    
+	    number_of_glyphs = 34;
+	    var row_1=document.getElementById('row1');
+	        row_1.innerHTML= spectacular(number_of_glyphs);
+	 	var row_2=document.getElementById('row2');
+	 		row_2.innerHTML= spectacular(number_of_glyphs);
+	 	var row_3=document.getElementById('row3');
+	        row_3.innerHTML= spectacular(number_of_glyphs);		 	
+	 	var row_4=document.getElementById('row4');
+	        row_4.innerHTML= spectacular(number_of_glyphs);		 	
+	 	var row_5=document.getElementById('row5');
+	        row_5.innerHTML= spectacular(number_of_glyphs);		 	
+
+	</script>
+
+</html>
