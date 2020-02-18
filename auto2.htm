@@ -9,6 +9,31 @@
 			}
 			tr{border-top-width: 30px}
 
+			[title] {
+				border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
+				border-radius:2px;
+				position: relative;
+			}
+			body.touched [title] > * {
+				user-select: none;
+			}
+			body.touched [title]:hover > * {
+				user-select: auto
+			}
+			body.touched [title]:hover:after {
+				position: absolute;
+				top: 100%;
+				right: -10%;
+				content: attr(title);
+				border: 1px solid rgba(0, 0, 0, 0.2);
+				background-color: white;
+				box-shadow: 1px 1px 3px;
+				padding: 0.3em;
+				z-index: 1;
+			}
+
+
+
 
 		</style>
 		<script type ="text/JavaScript" src="./css_js/block_hex.js"></script>
@@ -43,6 +68,11 @@
 
 	<script type="text/javascript">
 
+
+		document.body.addEventListener('touchstart', function() {
+  			document.body.classList.add('touched');
+		});
+
 	 	function spectacular(number_of_glyphs) {
 	 		spans_string = ''
 	 		for (i=0 ; i <= number_of_glyphs ;i++){	
@@ -55,8 +85,8 @@
 	 			glyph_val = Math.round((block_hex[block].length-1)*Math.random())				
 				glyph = block_hex[block][glyph_val]
 				glyph_desc = block_hex_desc[block][glyph_val].replace(/ /g,"_")
-		 		spans_string = spans_string + "<span title='" + glyph + "-" + glyph_desc +
-		 								"'>&#x" + glyph + ";</span>";
+		 		spans_string = spans_string + "<td style='border-color: red;' border=1><span title='" + glyph + "-" + glyph_desc +
+		 								"'>&#x" + glyph + ";</span></td>";
 				}
 			return(spans_string)
 	 	}
