@@ -10,8 +10,8 @@
 			tr{border-top-width: 30px}
 
 			[title] {
-				border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
-				border-radius:2px;
+				border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+				border-radius:1px;
 				position: relative;
 			}
 			body.touched [title] > * {
@@ -21,14 +21,14 @@
 				user-select: auto
 			}
 			body.touched [title]:hover:after {
+				font-size:.15em;
 				position: absolute;
 				top: 100%;
-				right: -10%;
+				right: 0%;
 				content: attr(title);
 				border: 1px solid rgba(0, 0, 0, 0.2);
 				background-color: white;
-				box-shadow: 1px 1px 3px;
-				padding: 0.3em;
+				padding: 0.1em;
 				z-index: 1;
 			}
 
