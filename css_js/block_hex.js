@@ -1,5 +1,29 @@
-blocks = ['Adlam','Aegean_Numbers','Ancient_Greek_Numbers','Arabic','Balinese','Bamum','Basic_Latin','Bengali','Brahmi','Chakma','Cham','CJK_Symbols_And_Punctuation','Common_Indic_Number_Forms','Coptic','Coptic_Epact_Numbers','Cuneiform_Numbers_And_Punctuation','Devanagari','Dingbats','Enclosed_Alphanumeric_Supplement','Enclosed_Alphanumerics','Enclosed_CJK_Letters_And_Months','Ethiopic','Gothic','Gujarati','Gurmukhi','Halfwidth_And_Fullwidth_Forms','Imperial_Aramaic','Inscriptional_Pahlavi','Inscriptional_Parthian','Javanese','Kanbun','Kannada','Kayah_Li','Khmer','Lao','Latin_1_Supplement','Lepcha','Limbu','Malayalam','Mathematical_Alphanumeric_Symbols','Meetei_Mayek','Mongolian','Myanmar','Myanmar_Extended_B','New_Tai_Lue','NKo','Number_Forms','Ol_Chiki','Old_Italic','Old_Persian','Old_South_Arabian','Oriya','Osmanya','Phoenician','Rumi_Numeral_Symbols','Runic','Saurashtra','Sinhala','Sinhala_Archaic_Numbers','Sundanese','Superscripts_And_Subscripts','Tai_Tham','Tamil','Telugu','Thai','Tibetan','Vai'];
+
+
+
+
+blocks = [
+'Adlam','Aegean_Numbers','Ancient_Greek_Numbers','Arabic','Balinese','Bamum','Basic_Latin'
+,'Bengali','Brahmi','Chakma','Cham','CJK_Symbols_And_Punctuation','Common_Indic_Number_Forms','Coptic'
+,'Coptic_Epact_Numbers','Cuneiform_Numbers_And_Punctuation',
+'Devanagari','Dingbats'
+,'Enclosed_Alphanumeric_Supplement','Enclosed_Alphanumerics','Enclosed_CJK_Letters_And_Months'
+,'Ethiopic','Gothic','Gujarati','Gurmukhi','Halfwidth_And_Fullwidth_Forms','Imperial_Aramaic'
+,'Inscriptional_Pahlavi','Inscriptional_Parthian','Javanese','Kanbun','Kannada','Kayah_Li','Khmer','Lao'
+,'Latin_1_Supplement','Lepcha','Limbu','Malayalam','Mathematical_Alphanumeric_Symbols','Meetei_Mayek'
+,'Mongolian','Myanmar','Myanmar_Extended_B','New_Tai_Lue','NKo','Number_Forms'
+,'Ol_Chiki','Old_Italic','Old_Persian','Old_South_Arabian','Oriya','Osmanya','Phoenician'
+,'Rumi_Numeral_Symbols','Runic','Saurashtra','Sinhala','Sinhala_Archaic_Numbers','Sundanese'
+,'Superscripts_And_Subscripts','Tai_Tham','Tamil','Telugu','Thai','Tibetan','Vai'
+];
+
+//blocks = ['Basic_Latin','Arabic','Devanagari']
+blocks = ['Adlam','Basic_Latin','Devanagari','Telugu','Basic_Latin','Arabic','Latin_1_Supplement',
+'Bengali','Thai','Myanmar','Kannada','Javanese','Balinese','Runic'
+]
+
 block_hex = {
+'ladies' : ['10081','101D5','14401','1680B'],
 'Adlam' : ['1E950','1E951','1E952','1E953','1E954','1E955','1E956','1E957','1E958','1E959'],
 'Aegean_Numbers' : ['10107','10108','10109','1010A','1010B','1010C','1010D','1010E','1010F','10110','10111','10112','10113','10114','10115','10116','10117','10118','10119','1011A','1011B','1011C','1011D','1011E','1011F','10120','10121','10122','10123','10124','10125','10126','10127','10128','10129','1012A','1012B','1012C','1012E','1012F','10130','10131','10132','10133'],
 'Ancient_Greek_Numbers' : ['10140','10141','10142','10143','10144','10145','10146','10147','10148','10149','1014A','1014B','1014C','1014D','1014E','1014F','10150','10151','10152','10153','10154','10155','10156','10157','10158','10159','1015A','1015B','1015C','1015D','1015E','1015F','10160','10161','10162','10163','10164','10165','10166','10167','10168','10169','1016A','1016B','1016C','1016D','1016E','1016F','10170','10171','10172','10173','10174','10175','10176','10177','10178','1018A','1018B'],
@@ -7,6 +31,7 @@ block_hex = {
 'Balinese' : ['1B50','1B51','1B52','1B53','1B54','1B55','1B56','1B57','1B58','1B59'],
 'Bamum' : ['A6E6','A6E7','A6E8','A6E9','A6EA','A6EB','A6EC','A6ED','A6EE','A6EF'],
 'Basic_Latin' : ['0030','0031','0032','0033','0034','0035','0036','0037','0038','0039'],
+'Latin_1_Supplement' : ['0030','0031','0032','0033','0034','0035','0036','0037','0038','0039'],
 'Bengali' : ['09E6','09E7','09E8','09E9','09EA','09EB','09EC','09ED','09EE','09EF','09F4','09F5','09F6','09F7','09F8','09F9'],
 'Brahmi' : ['11052','11053','11054','11055','11056','11057','11058','11059','1105A','1105B','1105C','1105D','1105E','1105F','11060','11061','11062','11063','11064','11065','11066','11067','11068','11069','1106A','1106B','1106C','1106D','1106E','1106F'],
 'Chakma' : ['11136','11137','11138','11139','1113A','1113B','1113C','1113D','1113E','1113F'],

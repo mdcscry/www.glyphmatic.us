@@ -3,11 +3,25 @@
 	<head>
 		<title>Auto2-ucoded</title>
 		<style type="text/css">
-			
-			table { border-style:solid;
-					border-color: gray;
+
+    		@font-face {font-family: Noto Serif Tibetan; src: url("/tff/NotoSerifTibetan-ExtraBold.ttf") format("ttf");}			
+
+
+
+			table { 
+					border-bottom:50px solid #110c11;
+					border-radius:20px;			
 			}
-			tr{border-top-width: 30px}
+
+
+			div {
+				display: inline;
+			}
+
+			tr.border_bottom td {
+  				border-bottom:1pt dotted red;
+  
+			}
 
 			[title] {
 				border-bottom: 1px solid rgba(0, 0, 0, 0.2);
@@ -32,7 +46,7 @@
 				z-index: 1;
 			}
 
-
+			body { background-color: black;color: lightgray }
 
 
 		</style>
@@ -41,29 +55,38 @@
 		<script type ="text/JavaScript" src="./css_js/exclude_glyph.js"></script>
 	</head>
 	<body style="overflow: hidden;font-size: 2em;display: inline;">
-		<div style="font-size:.5em;"> &nbsp;&nbsp;Numbers of Unicode</div>
-		<table width="96%" top="20%" border=25 align=center>
+	
+		<table style="overflow: hidden;" align='center'>
 			<tr >
-				<TD id="row1" nowrap align="center">
+				<TD id="row1" style="text-align:center" colspan=2 >
 				</TD>
 			</tr>
 			<tr>
-				<TD id="row2" nowrap align="center">
-				</TD>			
+				<TD id="row2" style="text-align:center" colspan=2 >
+
 			</tr>
 			<tr>	
-				<TD id="row3" nowrap align="center">
+				<TD id="row3" style="text-align:center" colspan=2>
 				</TD>				
 			</tr>
-			<tr>
-				<TD id="row4" nowrap align="center">
+			<tr class="border_bottom">
+				<TD id="row4" style="text-align:center" colspan=2>
 				</TD>	
 			</tr>			
 			<tr>
-				<TD id="row5" nowrap align="center">
-				</TD>				
+				<TD id="row5" style="text-align:center" colspan=2>
+				</TD>
 			</tr>
-		</table>											
+			<tr >
+				<td style='text-align:right;'>
+					<div style="font-size:.35em;font-family:'Noto Sans Mono';color:red"> &nbsp;&nbsp; Unicode &numero;</div>
+				</td>
+				<td style="text-align:right;">
+					<div style="font-size:.25em;font-family:'Noto Serif Mono';"> glyphmatic.us</div>
+				</td>
+			</tr>
+		</table>	
+										
 	</body>
 
 	<script type="text/javascript">
@@ -91,7 +114,7 @@
 			return(spans_string)
 	 	}
 	    
-	    number_of_glyphs = 34;
+	    number_of_glyphs = 20;
 	    var row_1=document.getElementById('row1');
 	        row_1.innerHTML= spectacular(number_of_glyphs);
 	 	var row_2=document.getElementById('row2');
