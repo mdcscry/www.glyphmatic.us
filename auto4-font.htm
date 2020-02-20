@@ -133,9 +133,9 @@
 			font = font.split("-")[0]
 				 //console.log("font: ",font)
             font_formatted = font.replace(/ /g,"")
-            	 //console.log("font_formatted: ",font_formatted)
-			newRule = "@font-face {font-family: '" + font + "'; src: url(" + '"/tff/' + font_formatted + '-Regular.ttf)"' + ' format("ttf");}'
-				//console.log(newRule)
+            	 console.log("font_formatted: ",font_formatted)
+			newRule = "@font-face {font-family: '" + font + "';" + 'src: url( "/tff/' + font_formatted + '-Regular.ttf")' + ' format("ttf");}'
+				console.log(newRule)
 			cssFontFaceStyle.insertRule(newRule,cssFontFaceRules.length);
 	 	}
 
