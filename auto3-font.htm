@@ -131,9 +131,9 @@
 	 	function attach_local_font(font){
 			//https://fontlibrary.org/
 			font = font.split("-")[0]
-				//console.log("font: ",font)
+				 //console.log("font: ",font)
             font_formatted = font.replace(/ /g,"")
-            	//console.log("font_formatted: ",font_formatted)
+            	 //console.log("font_formatted: ",font_formatted)
 			newRule = "@font-face {font-family: '" + font + "'; src: url(" + '"/tff/' + font_formatted + '-Regular.ttf)"' + ' format("ttf");}'
 				//console.log(newRule)
 			cssFontFaceStyle.insertRule(newRule,cssFontFaceRules.length);
@@ -142,16 +142,10 @@
 
 		function attach_font_family(font,spid){
 			var newRule = "font-family: '"+ font +"';";
-			//console.log("font-face: " + newRule)	
+			console.log("font-face: " + newRule)	
 			sid = "span#sid"+i
 			cssFontFamilyStyle.addRule(sid,newRule,0);
 		}
-
-
-
-
-
-
 
 
 		function git_the_random(seed,array){
@@ -180,14 +174,14 @@
 				if (font_du_jour.split("-")[1]=='EA'){
 					attach_an_early_access_font(font_du_jour)
 				} else if (font_du_jour.split("-")[1]=='local'){
-					console.log("in")
-					attach_local_font(font_du_jour)	
+					//console.log("in")
+					attach_local_font(font_du_jour.split("-")[0])	
 				} else {
 					attach_goog_font(font_du_jour)	
 				}	
 	
 
-				attach_font_family(font,i)
+				attach_font_family(font_du_jour.split("-")[0],i)
 
 		 		spans_string = spans_string + "<td><span id='sid"+ i + "' title='" + glyph + "-" + glyph_desc + "'>&#x" + glyph + ";</span></td>";
 				}
