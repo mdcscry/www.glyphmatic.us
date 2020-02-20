@@ -54,7 +54,7 @@ block_lang =[{}]
  block_lang['CJK_Unified_Ideographs_Extension_A'] = ['chinese-simplified','chinese-traditional','chinese-hongkong'];
  block_lang['Combining_Diacritical_Marks_Extended'] = ['latin','latin-ext'];
  block_lang['Combining_Diacritical_Marks_For_Symbols'] = ['latin','latin-ext'];
-// block_lang['Common_Indic_Number_Forms'] = [''];
+ block_lang['Common_Indic_Number_Forms'] = ['devanagari'];
 // block_lang['Control_Pictures'] = [''];
  block_lang['Coptic'] = ['coptic'];
  block_lang['Coptic_Epact_Numbers'] = ['coptic'];
@@ -81,7 +81,7 @@ block_lang =[{}]
  block_lang['Emoticons'] = ['symbols'];
  block_lang['Enclosed_Alphanumeric_Supplement'] = ['symbols'];
  block_lang['Enclosed_Alphanumerics'] = ['symbols'];
- block_lang['Enclosed_CJK_Letters_And_Months'] = [''];
+ block_lang['Enclosed_CJK_Letters_And_Months'] = ['chinese-simplified','chinese-traditional','chinese-hongkong'];
  block_lang['Enclosed_Ideographic_Supplement'] = [''];
  block_lang['Ethiopic'] = ['ethiopic'];
  block_lang['Ethiopic_Extended'] = ['ethiopic'];
@@ -101,7 +101,7 @@ block_lang =[{}]
  block_lang['Gujarati'] = ['gujarati'];
 // block_lang['Gunjala_Gondi'] = [''];
  block_lang['Gurmukhi'] = ['gurmukhi'];
-// block_lang['Halfwidth_And_Fullwidth_Forms'] = [''];
+ block_lang['Halfwidth_And_Fullwidth_Forms'] = ['latin'];
  block_lang['Hangul_Compatibility_Jamo'] = ['korean'];
  block_lang['Hangul_Jamo'] = ['korean'];
  block_lang['Hangul_Jamo_Extended_A'] = ['korean'];
@@ -114,7 +114,7 @@ block_lang =[{}]
  block_lang['Hiragana'] = [''];
 // block_lang['Ideographic_Description_Characters'] = [''];
 // block_lang['Ideographic_Symbols_And_Punctuation'] = [''];
- block_lang['Imperial_Aramaic'] = [''];
+ block_lang['Imperial_Aramaic'] = ['imperialaramaic'];
 // block_lang['Indic_Siyaq_Numbers'] = [''];
  block_lang['Inscriptional_Pahlavi'] = ['inscriptionalpahlavi'];
  block_lang['Inscriptional_Parthian'] = ['inscriptionalparthian'];
@@ -144,7 +144,7 @@ block_lang =[{}]
  block_lang['Latin_Extended_E'] = ['latin-ext'];
  block_lang['Lepcha'] = ['lepcha'];
  block_lang['Letterlike_Symbols'] = [''];
- block_lang['Limbu'] = [''];
+ block_lang['Limbu'] = ['limbu'];
  block_lang['Linear_A'] = ['symbols'];
  block_lang['Linear_B_Ideograms'] = ['symbols'];
  block_lang['Linear_B_Syllabary'] = ['symbols'];
@@ -187,9 +187,9 @@ block_lang =[{}]
  block_lang['Myanmar_Extended_B'] = ['myanmar'];
 // block_lang['Nabataean'] = [''];
 // block_lang['Nandinagari'] = [''];
- block_lang['New_Tai_Lue'] = ['newthailue'];
+ block_lang['New_Tai_Lue'] = ['newtailue'];
 // block_lang['Newa'] = [''];
-// block_lang['NKo'] = [''];
+ block_lang['NKo'] = ['nko'];
  block_lang['Number_Forms'] = ['symbols'];
 // block_lang['Nushu'] = [''];
 // block_lang['Nyiakeng_Puachue_Hmong'] = [''];
@@ -220,7 +220,7 @@ block_lang =[{}]
  block_lang['Playing_Cards'] = ['symbols'];
 // block_lang['Psalter_Pahlavi'] = [''];
  block_lang['Rejang'] = ['rejang'];
-// block_lang['Rumi_Numeral_Symbols'] = [''];
+ block_lang['Rumi_Numeral_Symbols'] = ['symbols'];
  block_lang['Runic'] = ['symbols'];
  block_lang['Samaritan'] = ['samaritan'];
  block_lang['Saurashtra'] = ['saurashtra'];
@@ -252,7 +252,7 @@ block_lang =[{}]
  block_lang['Tagalog'] = ['tagalog'];
  block_lang['Tagbanwa'] = ['tagbanwa'];
  block_lang['Tai_Le'] = ['taile'];
- block_lang['Tai_Tham'] = ['thaitham'];
+ block_lang['Tai_Tham'] = ['taitham'];
  block_lang['Tai_Viet'] = ['thaiviet'];
  block_lang['Tai_Xuan_Jing_Symbols'] = ['symbols'];
 // block_lang['Takri'] = [''];
@@ -312,6 +312,12 @@ lang_font['myanmar'] = [
 
  ]
 
+ lang_font['nko'] = [  
+
+	"Noto Sans NKo-local"  
+
+]
+
 
 lang_font['runic'] = [
 
@@ -345,7 +351,7 @@ lang_font['carian'] = [
 
 lang_font['inscriptionalpahlavi'] = [
 
-	"Noto Sans Inscriptional Pahlavi"
+	"Noto Sans Inscriptional Pahlavi-EA"
 
 ]
 
@@ -357,25 +363,25 @@ lang_font['javanese'] = [
 
 lang_font['batak'] = [
 
-	"Noto Sans Batak"                 
+	"Noto Sans Batak-EA"                 
 
 ]
 
 lang_font['phoenician'] = [
 
- 	"Noto Sans Phoenician"            
+ 	"Noto Sans Phoenician-EA"            
  
 ]
 
 lang_font['kayahli'] = [
 
- 	"Noto Sans Kayahli"    
+ 	"Noto Sans Kayahli-EA"    
 
 ]
 
 lang_font['rejang'] = [   
  
- 	"Noto Sans Rejang"              
+ 	"Noto Sans Rejang-EA"              
 
 ]  
 
@@ -655,6 +661,12 @@ lang_font['balinese'] = [
 ]
 
 
+lang_font['chakma'] = [
+
+	"Noto Sans Chakma-local"   
+
+]
+
 lang_font['cham'] = [
 
 	"Noto Sans Cham-EA"   
@@ -737,9 +749,9 @@ lang_font['myanmar'] = [
 
  lang_font['khmer'] = [    
 
-	"Noto Sans Khmer UI",
- 	"Noto Serif Khmer",     
- 	"Noto Sans Khmer",
+	"Noto Sans Khmer UI-EA",
+ 	"Noto Serif Khmer-EA",     
+ 	"Noto Sans Khmer-EA",
 	"Odor Mean Chey" 
 
 ]	
@@ -932,7 +944,7 @@ lang_font['oriya'] = [
 
 	"Baloo Bhaina",
 	"Noto Sans Oriya UI-EA", 
-	"Noto Sans Oriya"
+	"Noto Sans Oriya-EA"
 
 ]
 
@@ -992,7 +1004,7 @@ lang_font['chinese-simplified'] = [
 ]
 
 
-lang_font['chinese-simplified'] = [
+lang_font['chinese-traditional'] = [
 
 	"Noto Sans TC",
 	"Noto Serif TC"
@@ -1054,6 +1066,10 @@ lang_font['devanagari'] = [
 	"Yantramanav",
 	"Yatra One",
 
+]
+
+lang_font['cuneiform'] = [
+	"Noto Sans Cuneiform-EA"
 ]
 
 lang_font['cyrillic-ext'] = [

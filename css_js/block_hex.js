@@ -1,7 +1,4 @@
 
-
-
-
 blocks = [
 'Adlam','Aegean_Numbers','Ancient_Greek_Numbers','Arabic','Balinese','Bamum','Basic_Latin'
 ,'Bengali','Brahmi','Chakma','Cham','CJK_Symbols_And_Punctuation','Common_Indic_Number_Forms','Coptic'
@@ -17,10 +14,7 @@ blocks = [
 ,'Superscripts_And_Subscripts','Tai_Tham','Tamil','Telugu','Thai','Tibetan','Vai'
 ];
 
-//blocks = ['Basic_Latin','Arabic','Devanagari']
-blocks = ['Adlam','Basic_Latin','Devanagari','Telugu','Basic_Latin','Arabic','Latin_1_Supplement',
-'Bengali','Thai','Myanmar','Kannada','Javanese','Balinese','Runic'
-]
+
 
 block_hex = {
 'ladies' : ['10081','101D5','14401','1680B'],
