@@ -375,7 +375,7 @@ lang_font['phoenician'] = [
 
 lang_font['kayahli'] = [
 
- 	"Noto Sans Kayahli-EA"    
+ 	"Noto Sans Kayahli-local"    
 
 ]
 
