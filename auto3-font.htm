@@ -42,7 +42,7 @@
 				z-index: 1;
 			}
 
-			body { background-color: navy;color: lightgray }
+			body { background-color: purple;color: lightgray }
 
 
 		</style>
@@ -134,7 +134,7 @@
 				 //console.log("font: ",font)
             font_formatted = font.replace(/ /g,"")
             	 //console.log("font_formatted: ",font_formatted)
-			newRule = "@font-face {font-family: '" + font + "'; src: url(" + '"/tff/' + font_formatted + '-Regular.ttf")' + ' format("ttf");}'
+			newRule = "@font-face {font-family: " + font + "; src: url(" + '/tff/' + font_formatted + '-Regular.ttf)' + ' format("ttf");}'
 				console.log(newRule)
 			cssFontFaceStyle.insertRule(newRule,cssFontFaceRules.length);
 	 	}
