@@ -220,7 +220,7 @@ block_lang =[{}]
  block_lang['Playing_Cards'] = ['symbols'];
 // block_lang['Psalter_Pahlavi'] = [''];
  block_lang['Rejang'] = ['rejang'];
- block_lang['Rumi_Numeral_Symbols'] = ['symbols'];
+ block_lang['Rumi_Numeral_Symbols'] = ['rumi'];
  block_lang['Runic'] = ['symbols'];
  block_lang['Samaritan'] = ['samaritan'];
  block_lang['Saurashtra'] = ['saurashtra'];
@@ -228,7 +228,7 @@ block_lang =[{}]
  block_lang['Shavian'] = ['shavian'];
 // block_lang['Siddham'] = [''];
  block_lang['Sinhala'] = ['sinhala'];
- block_lang['Sinhala_Archaic_Numbers'] = ['sinhala'];
+ block_lang['Sinhala_Archaic_Numbers'] = ['sinhalaarchaic'];
 // block_lang['Small_Form_iants'] = [''];
 // block_lang['Small_Kana_Extension'] = [''];
 // block_lang['Sogdian'] = [''];
@@ -287,6 +287,12 @@ lang_font =[{}]
 lang_font['adlam'] = [  
 
 	"Noto Sans Adlam-local"  
+
+]
+
+lang_font['rumi'] = [  
+
+	"Noto Sans","Noto Serif","Noto Sans Mono"  
 
 ]
 
@@ -375,7 +381,7 @@ lang_font['phoenician'] = [
 
 lang_font['kayahli'] = [
 
- 	"Noto Sans Kayahli-local"    
+ 	"Noto Sans KayahLi-local","Noto Sans KayahLi-EA" ,"Noto Sans","Noto Serif","Noto Sans Mono"  
 
 ]
 
@@ -408,6 +414,7 @@ lang_font['gothic'] = [
 lang_font['sudanese'] = [
 
 	"Noto Sans Sundanese-EA" 
+
 ]           
 
 lang_font['samaritan'] = [
@@ -906,11 +913,13 @@ lang_font['gujarati'] = [
 
 ]
 
-
+lang_font['sinhalaarchaic'] = ["Noto Sans"]
 
 lang_font['sinhala'] = [
 
-	"Abhaya Libre"
+	"Abhaya Libre",
+	"Noto Sans Sinhala-EA"
+
 
 ]
 

@@ -1,4 +1,19 @@
 
+numbers_exlude_for_mac = ['A9F1','A9F2','A9F3','A9F4','A9F5','A9F6'//myanmar
+
+,'A830','AB32','A833','A834' //North Indic
+
+,'10E76','10E6C','10E62','10E74','10E75' //rumi
+
+,'0DE7','111F2','111E5'//sinhala
+
+,'102E9','102EB','10E6D','102E6'//coptic_epact
+
+,'A901','A903'//kayayli
+
+, '1C51','1C52','1C53','1C57'//olchicki
+]
+
 blocks = [
 'Adlam','Aegean_Numbers','Ancient_Greek_Numbers','Arabic','Balinese','Bamum','Basic_Latin'
 ,'Bengali','Brahmi','Chakma','Cham','CJK_Symbols_And_Punctuation','Common_Indic_Number_Forms','Coptic'
@@ -6,7 +21,8 @@ blocks = [
 'Devanagari','Dingbats'
 ,'Enclosed_Alphanumeric_Supplement','Enclosed_Alphanumerics','Enclosed_CJK_Letters_And_Months'
 ,'Ethiopic','Gothic','Gujarati','Gurmukhi','Halfwidth_And_Fullwidth_Forms','Imperial_Aramaic'
-,'Inscriptional_Pahlavi','Inscriptional_Parthian','Javanese','Kanbun','Kannada','Kayah_Li','Khmer','Lao'
+,'Inscriptional_Pahlavi','Inscriptional_Parthian','Javanese','Kanbun','Kannada',
+'Kayah_Li','Khmer','Lao'
 ,'Latin_1_Supplement','Lepcha','Limbu','Malayalam','Mathematical_Alphanumeric_Symbols','Meetei_Mayek'
 ,'Mongolian','Myanmar','Myanmar_Extended_B','New_Tai_Lue','NKo','Number_Forms'
 ,'Ol_Chiki','Old_Italic','Old_Persian','Old_South_Arabian','Oriya','Osmanya','Phoenician'
@@ -14,7 +30,7 @@ blocks = [
 ,'Superscripts_And_Subscripts','Tai_Tham','Tamil','Telugu','Thai','Tibetan','Vai'
 ];
 
-
+blocks=['Kayah_Li']
 
 block_hex = {
 'ladies' : ['10081','101D5','14401','1680B'],
