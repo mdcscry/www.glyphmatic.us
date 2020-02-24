@@ -24,10 +24,10 @@ block_lang =[{}]
  block_lang['Bamum'] = ['bamum'];
  block_lang['Bamum_Supplement'] = ['bamum'];
  block_lang['Basic_Latin'] = ['latin'];
-// block_lang['Bassa_Vah'] = [''];
+ block_lang['Bassa_Vah'] = ['bassahvah'];
  block_lang['Batak'] = ['batak'];
  block_lang['Bengali'] = ['bengali'];
-// block_lang['Bhaiksuki'] = [''];
+ block_lang['Bhaiksuki'] = ['bhaiksuki'];
  block_lang['Block_Elements'] = ['symbols'];
  block_lang['Bopomofo'] = ['bopomofo'];
  block_lang['Bopomofo_Extended'] = ['bopomofo'];
@@ -38,7 +38,7 @@ block_lang =[{}]
  block_lang['Buhid'] = ['buhid'];
 // block_lang['Byzantine_Musical_Symbols'] = [''];
  block_lang['Carian'] = ['carian'];
-// block_lang['Caucasian_Albanian'] = [''];
+ block_lang['Caucasian_Albanian'] = ['caucasianalbanian'];
  block_lang['Chakma'] = ['chakma'];
  block_lang['Cham'] = ['cham'];
  block_lang['Cherokee'] = ['cherokee'];
@@ -46,7 +46,7 @@ block_lang =[{}]
  block_lang['Chess_Symbols'] = ['symbols'];
  block_lang['CJK_Compatibility'] = ['chinese-simplified'];
  block_lang['CJK_Compatibility_Forms'] = ['chinese-simplified','chinese-traditional','chinese-hongkong'];
- block_lang['CJK_Compatibility_Ideographs'] = ['chinese-simplified','chinese-traditional','chinese-hongkong'];
+ block_lang['CJK_Compatibility_Ideographs'] = ['chinese-ideo'];
  block_lang['CJK_Radicals_Supplement'] = ['chinese-simplified','chinese-traditional','chinese-hongkong'];
  block_lang['CJK_Strokes'] = ['chinese-simplified','chinese-traditional','chinese-hongkong'];
  block_lang['CJK_Symbols_And_Punctuation'] = ['chinese-simplified','chinese-traditional','chinese-hongkong'];
@@ -63,21 +63,21 @@ block_lang =[{}]
  block_lang['Cuneiform_Numbers_And_Punctuation'] = ['cuneiform'];
  block_lang['Currency_Symbols'] = ['symbols'];
  block_lang['Cypriot_Syllabary'] = ['cypriot'];
- block_lang['Cyrillic'] = ['cyrillic'];
- block_lang['Cyrillic_Extended_B'] = ['cyrillic-ext'];
- block_lang['Cyrillic_Extended_C'] = ['cyrillic-ext'];
- block_lang['Cyrillic_Supplement'] = ['cyrillic-ext'];
+ block_lang['Cyrillic'] = ['cyrillic','cyrillic-ext'];
+ block_lang['Cyrillic_Extended_B'] = ['arimo'];
+ block_lang['Cyrillic_Extended_C'] = ['arimo'];
+ block_lang['Cyrillic_Supplement'] = ['arimo'];
  block_lang['Deseret'] = ['deseret'];
  block_lang['Devanagari'] = ['devanagari'];
  block_lang['Devanagari_Extended'] = ['devanagari'];
  block_lang['Dingbats'] = ['symbols'];
-// block_lang['Dogra'] = [''];
+ block_lang['Dogra'] = ['dogra'];
  block_lang['Domino_Tiles'] = ['symbols'];
-// block_lang['Duployan'] = [''];
+ block_lang['Duployan'] = ['duployan'];
  block_lang['Early_Dynastic_Cuneiform'] = ['cuneiform'];
  block_lang['Egyptian_Hieroglyphs'] = ['egyptianheiroglyphics'];
-// block_lang['Elbasan'] = [''];
-// block_lang['Elymaic'] = [''];
+ block_lang['Elbasan'] = ['elbasan'];
+ block_lang['Elymaic'] = ['elymaic'];
  block_lang['Emoticons'] = ['symbols'];
  block_lang['Enclosed_Alphanumeric_Supplement'] = ['symbols'];
  block_lang['Enclosed_Alphanumerics'] = ['symbols'];
@@ -95,11 +95,11 @@ block_lang =[{}]
  block_lang['Georgian_Supplement'] = ['georgian'];
  block_lang['Glagolitic'] = ['glagolitic'];
  block_lang['Gothic'] = ['gothic'];
-// block_lang['Grantha'] = [''];
+ block_lang['Grantha'] = ['grantha'];
  block_lang['Greek_And_Coptic'] = ['coptic','latin-ext'];
  block_lang['Greek_Extended'] = ['latin-ext'];
  block_lang['Gujarati'] = ['gujarati'];
-// block_lang['Gunjala_Gondi'] = [''];
+ block_lang['Gunjala_Gondi'] = ['gunjalagondi'];
  block_lang['Gurmukhi'] = ['gurmukhi'];
  block_lang['Halfwidth_And_Fullwidth_Forms'] = ['latin'];
  block_lang['Hangul_Compatibility_Jamo'] = ['korean'];
@@ -107,9 +107,9 @@ block_lang =[{}]
  block_lang['Hangul_Jamo_Extended_A'] = ['korean'];
  block_lang['Hangul_Jamo_Extended_B'] = ['korean'];
  block_lang['Hangul_Syllables'] = ['korean'];
-// block_lang['Hanifi_Rohingya'] = [''];
+ block_lang['Hanifi_Rohingya'] = ['hanifirohingya'];
  block_lang['Hanunoo'] = ['hanunoo'];
-// block_lang['Hatran'] = [''];
+ block_lang['Hatran'] = ['hatran'];
  block_lang['Hebrew'] = ['hebrew'];
  block_lang['Hiragana'] = ['japanese'];
 // block_lang['Ideographic_Description_Characters'] = [''];
@@ -132,8 +132,9 @@ block_lang =[{}]
  block_lang['Kharoshthi'] = ['kharoshthi'];
  block_lang['Khmer'] = ['khmer'];
  block_lang['Khmer_Symbols'] = ['khmer'];
-// block_lang['Khojki'] = [''];
-// block_lang['Khudawadi'] = [''];
+ block_lang['Khojki'] = ['khojki'];
+ block_lang['Khudawadi'] = ['khudawadi'];
+
  block_lang['Lao'] = ['lao'];
  block_lang['Latin_1_Supplement'] = ['latin','latin-ext'];
  block_lang['Latin_Extended_A'] = ['latin-ext'];
@@ -146,62 +147,64 @@ block_lang =[{}]
  block_lang['Lepcha'] = ['lepcha'];
  block_lang['Letterlike_Symbols'] = ['latin3'];
  block_lang['Limbu'] = ['limbu'];
- block_lang['Linear_A'] = ['symbols'];
+ block_lang['Linear_A'] = ['lineara'];
  block_lang['Linear_B_Ideograms'] = ['symbols'];
  block_lang['Linear_B_Syllabary'] = ['symbols'];
  block_lang['Lisu'] = ['lisu'];
  block_lang['Lycian'] = ['lycian'];
  block_lang['Lydian'] = ['lydian'];
-// block_lang['Mahajani'] = [''];
+ block_lang['Mahajani'] = ['mahajani'];
  block_lang['Mahjong_Tiles'] = ['symbols'];
 // block_lang['Makasar'] = [''];
  block_lang['Malayalam'] = ['malayalam'];
  block_lang['Mandaic'] = ['mandaic'];
-// block_lang['Manichaean'] = [''];
-// block_lang['Marchen'] = [''];
-// block_lang['Masaram_Gondi'] = [''];
+ block_lang['Manichaean'] = ['manichaean'];
+ block_lang['Marchen'] = ['marchen'];
+ block_lang['Masaram_Gondi'] = ['masaramgondi'];
  block_lang['Mathematical_Alphanumeric_Symbols'] = ['math'];
  block_lang['Mathematical_Operators'] = ['math'];
 // block_lang['Mayan_Numerals'] = [''];
 // block_lang['Medefaidrin'] = [''];
  block_lang['Meetei_Mayek'] = ['meeteimayek'];
  block_lang['Meetei_Mayek_Extensions'] = ['meeteimayek'];
-// block_lang['Mende_Kikakui'] = [''];
-// block_lang['Meroitic_Cursive'] = [''];
-// block_lang['Meroitic_Hieroglyphs'] = [''];
-// block_lang['Miao'] = [''];
+ block_lang['Mende_Kikakui'] = ['mendekikakui'];
+ block_lang['Meroitic_Cursive'] = ['meroitic'];
+ block_lang['Meroitic_Hieroglyphs'] = ['meroitic'];
+ block_lang['Miao'] = ['miao'];
  block_lang['Miscellaneous_Mathematical_Symbols_A'] = ['math'];
  block_lang['Miscellaneous_Mathematical_Symbols_B'] = ['math'];
  block_lang['Miscellaneous_Symbols'] = ['symbols'];
  block_lang['Miscellaneous_Symbols_And_Arrows'] = ['symbols'];
  block_lang['Miscellaneous_Symbols_And_Pictographs'] = ['symbols'];
  block_lang['Miscellaneous_Technical'] = ['symbols'];
-// block_lang['Modi'] = [''];
+ block_lang['Modi'] = ['modi'];
+
 // block_lang['Modifier_Tone_Letters'] = [''];
  block_lang['Mongolian'] = ['mongolian'];
  block_lang['Mongolian_Supplement'] = ['mongolian'];
-// block_lang['Mro'] = [''];
-// block_lang['Multani'] = [''];
+ block_lang['Mro'] = ['mro'];
+ block_lang['Multani'] = ['multani'];
  block_lang['Musical_Symbols'] = ['symbols'];
  block_lang['Myanmar'] = ['myanmar'];
  block_lang['Myanmar_Extended_A'] = ['myanmar'];
  block_lang['Myanmar_Extended_B'] = ['myanmar'];
-// block_lang['Nabataean'] = [''];
+ block_lang['Nabataean'] = ['nabataean'];
 // block_lang['Nandinagari'] = [''];
  block_lang['New_Tai_Lue'] = ['newtailue'];
-// block_lang['Newa'] = [''];
+ block_lang['Newa'] = ['newa'];
  block_lang['NKo'] = ['nko'];
  block_lang['Number_Forms'] = ['symbols'];
-// block_lang['Nushu'] = [''];
+
+// block_lang['Nushu'] = ['nushu'];
 // block_lang['Nyiakeng_Puachue_Hmong'] = [''];
  block_lang['Ogham'] = ['ogham'];
  block_lang['Ol_Chiki'] = ['olchiki'];
-// block_lang['Old_Hungarian'] = [''];
+ block_lang['Old_Hungarian'] = ['oldhungarian'];
  block_lang['Old_Italic'] = ['olditalic'];
-// block_lang['Old_North_Arabian'] = [''];
-// block_lang['Old_Permic'] = [''];
+ block_lang['Old_North_Arabian'] = ['oldnortharabian'];
+ block_lang['Old_Permic'] = ['oldpermic'];
  block_lang['Old_Persian'] = ['oldpersian'];
-// block_lang['Old_Sogdian'] = [''];
+ block_lang['Old_Sogdian'] = ['oldsogdian'];
  block_lang['Old_South_Arabian'] = ['oldsoutharabian'];
  block_lang['Old_Turkic'] = ['oldturkic'];
  block_lang['Optical_Character_Recognition'] = ['symbols'];
@@ -211,30 +214,32 @@ block_lang =[{}]
  block_lang['Osmanya'] = ['osmanya'];
 // block_lang['Ottoman_Siyaq_Numbers'] = [''];
 // block_lang['Pahawh_Hmong'] = [''];
-// block_lang['Palmyrene'] = [''];
-// block_lang['Pau_Cin_Hau'] = [''];
+
+ block_lang['Palmyrene'] = ['palmyrene'];
+ block_lang['Pau_Cin_Hau'] = ['paucinhau'];
  block_lang['Phags_Pa'] = ['phagspa'];
 ////////////// block_lang['Phaistos_Disc'] = [''];
  block_lang['Phoenician'] = ['phoenician'];
  block_lang['Phonetic_Extensions'] = ['phoneticextensions'];
  block_lang['Phonetic_Extensions_Supplement'] = ['phoneticextensions'];
  block_lang['Playing_Cards'] = ['symbols'];
-// block_lang['Psalter_Pahlavi'] = [''];
+ block_lang['Psalter_Pahlavi'] = ['psalterpahlavi'];
  block_lang['Rejang'] = ['rejang'];
  block_lang['Rumi_Numeral_Symbols'] = ['rumi'];
  block_lang['Runic'] = ['runic'];
  block_lang['Samaritan'] = ['samaritan'];
  block_lang['Saurashtra'] = ['saurashtra'];
-// block_lang['Sharada'] = [''];
+ block_lang['Sharada'] = ['sharada'];
  block_lang['Shavian'] = ['shavian'];
-// block_lang['Siddham'] = [''];
+ block_lang['Siddham'] = ['siddham'];
  block_lang['Sinhala'] = ['sinhala'];
  block_lang['Sinhala_Archaic_Numbers'] = ['sinhalaarchaic'];
-// block_lang['Small_Form_iants'] = [''];
-// block_lang['Small_Kana_Extension'] = [''];
-// block_lang['Sogdian'] = [''];
-// block_lang['Sora_Sompeng'] = [''];
-// block_lang['Soyombo'] = [''];
+
+ block_lang['Small_Form_Variants'] = ['latin'];
+ block_lang['Small_Kana_Extension'] = ['japanese'];
+ block_lang['Sogdian'] = ['sogdian'];
+ block_lang['Sora_Sompeng'] = ['sorasompeng'];
+ block_lang['Soyombo'] = ['soyombo'];
  block_lang['Spacing_Modifier_Letters'] = ['symbols'];
  block_lang['Sundanese'] = ['sudanese'];
  block_lang['Sundanese_Supplement'] = ['sudanese'];
@@ -249,24 +254,24 @@ block_lang =[{}]
  block_lang['Syloti_Nagri'] = ['sylotinagri'];
  block_lang['Symbols_And_Pictographs_Extended_A'] = ['symbols'];
  block_lang['Syriac'] = ['syriaceastern','syriacestrangela','syriacwestern'];
- block_lang['Syriac_Supplement'] = ['syriaceastern','syriacestrangela','syriacwestern'];
+ block_lang['Syriac_Supplement'] = ['syriac'];
  block_lang['Tagalog'] = ['tagalog'];
  block_lang['Tagbanwa'] = ['tagbanwa'];
  block_lang['Tai_Le'] = ['taile'];
  block_lang['Tai_Tham'] = ['taitham'];
  block_lang['Tai_Viet'] = ['taiviet'];
  block_lang['Tai_Xuan_Jing_Symbols'] = ['symbols'];
-// block_lang['Takri'] = [''];
+ block_lang['Takri'] = ['takri'];
  block_lang['Tamil'] = ['tamil'];
  block_lang['Tamil_Supplement'] = ['tamil'];
-// block_lang['Tangut'] = [''];
-// block_lang['Tangut_Components'] = [''];
+ block_lang['Tangut'] = ['tangut'];
+ block_lang['Tangut_Components'] = ['tangut'];
  block_lang['Telugu'] = ['telugu'];
  block_lang['Thaana'] = ['thaana'];
  block_lang['Thai'] = ['thai'];
  block_lang['Tibetan'] = ['tibetan'];
  block_lang['Tifinagh'] = ['tifinagh'];
-// block_lang['Tirhuta'] = [''];
+ block_lang['Tirhuta'] = ['tirhuta'];
  block_lang['Transport_And_Map_Symbols'] = ['symbols'];
  block_lang['Ugaritic'] = ['ugaritic'];
  block_lang['Unified_Canadian_Aboriginal_Syllabics'] = ['canadianaboriginal'];
@@ -274,16 +279,23 @@ block_lang =[{}]
  block_lang['Vai'] = ['vai'];
  block_lang['Vedic_Extensions'] = ['devanagari'];
  block_lang['Vertical_Forms'] = ['symbols'];
-// block_lang['Wancho'] = [''];
-// block_lang['Warang_Citi'] = [''];
-// block_lang['Yi_Radicals'] = ['yi'];
+ block_lang['Wancho'] = ['wancho'];
+ block_lang['Warang_Citi'] = ['warangciti'];
+ block_lang['Yi_Radicals'] = ['yi'];
  block_lang['Yi_Syllables'] = ['yi'];
  block_lang['Yijing_Hexagram_Symbols'] = ['symbols'];
-// block_lang['Zanabazar_Square'] = [''];
+ block_lang['Zanabazar_Square'] = ['zanabazarsquare'];
 
 
 lang_font =[{}]
 
+
+
+lang_font['arimo'] = [
+
+	 "Arimo"
+
+	]
 
 lang_font['ahom'] = [
 
@@ -308,6 +320,250 @@ lang_font['glagolitic'] = [
 	"Noto Sans Glagolitic-local"
 
 ]
+
+lang_font['bassahvah'] = [  
+
+	"Noto Sans BassaVah-local"
+
+]
+
+lang_font['bhaiksuki'] = [  
+
+	"Noto Sans Bhaiksuki-local"
+
+]
+
+lang_font['caucasianalbanian'] = [  
+
+	"Noto Sans Caucasian Albanian-local"
+
+]
+
+lang_font['dogra'] = [  
+
+	"Noto Serif Dogra-local"
+
+]
+
+lang_font['duployan'] = [  
+
+	"Noto Sans Duployan-local"
+
+]
+
+lang_font['elbasan'] = [  
+
+	"Noto Sans Elbasan-local"
+
+]
+
+lang_font['elymaic'] = [  
+
+	"Noto Sans Elymaic-local"
+
+]
+
+
+
+
+
+
+lang_font['grantha'] = [  
+
+	"Noto Sans Grantha-local"
+
+]
+lang_font['gunjalagondi'] = [  
+
+	"Noto Sans Gunjala Gondi-local"
+
+]
+lang_font['hanifirohingya'] = [  
+
+	"Noto Sans Hanifi Rohingya-local"
+
+]
+lang_font['hatran'] = [  
+
+	"Noto Sans Hatran-local"
+
+]
+lang_font['khojki'] = [  
+
+	"Noto Sans Khojki-local"
+
+]
+lang_font['khudawadi'] = [  
+
+	"Noto Sans Khudawadi-local"
+
+]
+lang_font['lineara'] = [  
+
+	"Noto Sans LinearA-local"
+
+]
+
+
+lang_font['mahajani'] = [  
+
+	"Noto Sans Mahajani-local"
+
+]
+lang_font['manichaean'] = [  
+
+	"Noto Sans Manichaean-local"
+
+]
+lang_font['marchen'] = [  
+
+	"Noto Sans Marchen-local"
+
+]
+lang_font['masaramgondi'] = [  
+
+	"Noto Sans Masaram Gondi-local"
+
+]
+
+lang_font['meroitic'] = [  
+
+	"Noto Sans Meroitic-local"
+
+]
+lang_font['miao'] = [  
+
+	"Noto Sans Miao-local"
+
+]
+lang_font['modi'] = [  
+
+	"Noto Sans Modi-local"
+
+]
+lang_font['mro'] = [  
+
+	"Noto Sans Mro-local"
+
+]
+lang_font['multani'] = [  
+
+	"Noto Sans Multani-local"
+
+]
+lang_font['mendekikakui'] = [  
+
+	"Noto Sans Mende Kikakui-local"
+
+]
+
+
+lang_font['nabataean'] = [  
+
+	"Noto Sans Nabataean-local"
+
+]
+lang_font['newa'] = [  
+
+	"Noto Sans Newa-local"
+
+]
+lang_font['oldhungarian'] = [  
+
+	"Noto Sans Old Hungarian-local"
+
+]
+
+lang_font['oldpermic'] = [  
+
+	"Noto Sans Old Permic-local"
+
+]
+lang_font['oldnortharabian'] = [  
+
+	"Noto Sans Old North Arabian-local"
+
+]
+lang_font['oldsogdian'] = [  
+
+	"Noto Sans Old Sogdian-local"
+
+]
+
+lang_font['palmyrene'] = [  
+
+	"Noto Sans Palmyrene-local"
+
+]
+lang_font['paucinhau'] = [  
+
+	"Noto Sans Pau Cin Hau-local"
+
+]
+lang_font['psalterpahlavi'] = [  
+
+	"Noto Sans Psalter Pahlavi-local"
+
+]
+lang_font['rejang'] = [  
+
+	"Noto Sans Rejang-local"
+
+]
+lang_font['sharada'] = [  
+
+	"Noto Sans Sharada-local"
+
+]
+
+lang_font['siddham'] = [  
+
+	"Noto Sans Siddham-local"
+
+]
+lang_font['smallkanaextension'] = [  
+
+	"Noto Sans Small Kana Extension-local"
+
+]
+
+lang_font['sogdian'] = [  
+
+	"Noto Sans Sogdian-local"
+
+]
+
+lang_font['sorasompeng'] = [  
+
+	"Noto Sans Sora Sompeng-local"
+
+]
+
+lang_font['soyombo'] = [  
+
+	"Noto Sans Soyombo-local"
+
+]
+
+
+lang_font['syriac'] = [  
+
+	"Noto Sans Syriac-local"
+
+]
+
+lang_font['takri'] = [  
+
+	"Noto Sans Takri-local"
+
+]
+
+//'Tangut','Tangut_Components','Tirhuta','Wancho','Warang_Citi','Zanabazar_Square'
+
+
+
+
+
 
 lang_font['rumi'] = [  
 
@@ -375,25 +631,20 @@ lang_font['carian']= [
 ]
 
 lang_font['runic'] = [
-
-	//"Droid Sans Ethiopic"//,            
+          
 	"Noto Sans Runic-EA"
 
  ]
 
 
-
-
 lang_font['kannada'] = [
-
-	//"Droid Sans Ethiopic"//,            
+         
 	"Noto Sans Kannada-EA"
 
  ]
 
 lang_font['ethiopic'] = [
-
-	//"Droid Sans Ethiopic"//,            
+         
 	"Noto Sans Ethiopic"
 
  ]
@@ -432,9 +683,36 @@ lang_font['phoenician'] = [
  
 ]
 
+
+lang_font['tangut'] = [
+
+ 	"Noto Serif Tangut-local"
+
+]
+lang_font['tirhuta'] = [
+
+ 	"Noto Sans Tirhuta-local"
+
+]
+lang_font['wancho'] = [
+
+ 	"Noto Sans Wancho-local"
+
+]
+lang_font['warangciti'] = [
+
+ 	"Noto Sans Warang Citi-local"
+
+]
+lang_font['zanabazarsquare'] = [
+
+ 	"Noto Sans Zanabazar Square-local"
+
+]
+
 lang_font['kayahli'] = [
 
- 	"Noto Sans KayahLi-local","Noto Sans KayahLi-EA" ,"Noto Sans","Noto Serif","Noto Sans Mono"  
+ 	"Noto Sans KayahLi-EA" 
 
 ]
 
@@ -1054,6 +1332,15 @@ lang_font['korean'] = [
 	"Yeon Sung"
 
 ]
+
+lang_font['chinese-ideo'] = [
+
+
+	"Noto Sans SC",
+	"Noto Serif SC"
+
+]
+
 
 
 

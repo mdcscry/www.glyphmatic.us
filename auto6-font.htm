@@ -192,6 +192,8 @@
 	 	function get_more_spectacular(block){
 
 		 		font_array = block_lang[block]
+		 		console.log(block + ':' +font_array)
+
 		 		super_font_seed = Math.round((font_array.length-1)*Math.random())
 		 		//console.log("super_font_seed: " + super_font_seed)
 		 		font_lookup = font_array[super_font_seed]
