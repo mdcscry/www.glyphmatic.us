@@ -1391,13 +1391,13 @@ lang_font['chinese-ideo'] = [
 
 	"Noto Sans SC",
 	"Noto Serif SC",
-	"Noto Sans CJK SC-cjk"
+	"Noto Sans CJK sc-cjk"
 
 ]
 
 lang_font['chinese-cjk'] = [
 
-	"Noto Sans CJK SC-cjk",
+	"Noto Sans CJK sc-cjk",
 
 ]
 
