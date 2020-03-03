@@ -808,7 +808,7 @@ lang_font['brahmi'] = [
 
 lang_font['olchiki'] = [           
 
-	"Noto Sans Olchiki-local"  
+	"Noto Sans OlChiki-local"  
 ] 
 
 lang_font['shavian'] = [
@@ -825,7 +825,7 @@ lang_font['tagbanwa'] = [
 
 lang_font['oldturkic'] = [
 
-	"Noto Sans Oldturkic-local" 
+	"Noto Sans OldTurkic-local" 
 
 ]                    
 
@@ -886,7 +886,7 @@ lang_font['sylotinagri'] = [
 
 lang_font['phagspa'] = [           
 
-	"Noto Sans Phagspa-local"
+	"Noto Sans PhagsPa-local"
 
 ]
 
@@ -1418,18 +1418,17 @@ lang_font['chinese-simplified'] = [
 ]
 
 
-lang_font['bopomofo'] = [  
-	"Noto Sans Bopomofo-local",  
+lang_font['bopomofo'] = [   
 	"Noto Sans SC",
 	"Noto Serif SC",
 	"Noto Sans TC",
 	"Noto Serif TC",
-	"Noto Sans CJK SC-cjk",
-	"Noto Serif CJK SC-cjk",
-    "Noto Sans CJK TC-cjk",
-    "Noto Serif CJK TC-cjk",
-    "Noto Sans Mono CJK TC-cjk",
-    "Noto Sans Mono CJK SC-cjk"
+	"Noto Sans CJK sc-cjk",
+	"Noto Serif CJK sc-cjk",
+    "Noto Sans CJK sc-cjk",
+    "Noto Serif CJK tc-cjk",
+    "Noto Sans Mono CJK tc-cjk",
+    "Noto Sans Mono CJK tc-cjk"
 	
 ]
 
