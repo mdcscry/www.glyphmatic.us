@@ -68,9 +68,9 @@ block_lang =[{}]
  block_lang['Cypriot_Syllabary'] = ['cypriot'];
  block_lang['Cyrillic'] = ['cyrillic','cyrillic-ext'];
  block_lang['Cyrillic_Extended_A'] = ['cyrillic-ext']; 
- block_lang['Cyrillic_Extended_B'] = ['arimo'];
+ block_lang['Cyrillic_Extended_B'] = ['display'];
  block_lang['Cyrillic_Extended_C'] = ['display'];
- block_lang['Cyrillic_Supplement'] = ['arimo'];
+ block_lang['Cyrillic_Supplement'] = ['display'];
  block_lang['Deseret'] = ['deseret'];
  block_lang['Devanagari'] = ['devanagari'];
  block_lang['Devanagari_Extended'] = ['devanagari'];
@@ -148,7 +148,7 @@ block_lang =[{}]
 
  block_lang['Latin_Extended_B'] = ['latin3'];
  block_lang['Latin_Extended_C'] = ['latin3'];
- block_lang['Latin_Extended_D'] = ['latin3'];
+ block_lang['Latin_Extended_D'] = ['display'];
  block_lang['Latin_Extended_E'] = ['display'];
  block_lang['Lepcha'] = ['lepcha'];
  block_lang['Letterlike_Symbols'] = ['latin3'];
@@ -249,12 +249,12 @@ block_lang =[{}]
  block_lang['Spacing_Modifier_Letters'] = ['symbols'];
  block_lang['Sundanese'] = ['sudanese'];
  block_lang['Sundanese_Supplement'] = ['sudanese'];
- block_lang['Superscripts_And_Subscripts'] = ['symbols'];
+ block_lang['Superscripts_And_Subscripts'] = ['display'];
  block_lang['Supplemental_Arrows_A'] = ['symbols'];
  block_lang['Supplemental_Arrows_B'] = ['symbols'];
  block_lang['Supplemental_Arrows_C'] = ['symbols'];
  block_lang['Supplemental_Mathematical_Operators'] = ['symbols'];
- block_lang['Supplemental_Punctuation'] = ['symbols'];
+ block_lang['Supplemental_Punctuation'] = ['display'];
  block_lang['Supplemental_Symbols_And_Pictographs'] = ['symbols'];
 // block_lang['Sutton_SignWriting'] = [''];
  block_lang['Syloti_Nagri'] = ['sylotinagri'];
@@ -802,7 +802,7 @@ lang_font['samaritan'] = [
 
 lang_font['brahmi'] = [
 
-	"Noto Sans Brahmi-EA"     
+	"Noto Sans Brahmi-local"     
 
 ] 
 
@@ -850,7 +850,7 @@ lang_font['cypriot'] = [
 
 lang_font['olditalic'] = [
 
-	"Noto Sans Old Italic-EA"
+	"Noto Sans Old Italic-local"
 
 ]
 
@@ -1635,15 +1635,8 @@ lang_font['cyrillic'] = [
 	"Montserrat",
 	"Montserrat Alternates",
 	"Neucha",
-	"Noto Sans",
-	"Noto Sans SC",
-	"Noto Serif",
-	"Noto Serif SC",
-	"Noto Serif TC",
 	"Nunito",
 	"Old Standard TT",
-	"Open Sans",
-	"Open Sans Condensed",
 	"Oranienbaum",
 	"Oswald",
 	"PT Mono",
@@ -1685,7 +1678,7 @@ lang_font['cyrillic'] = [
 	"Vollkorn",
 	"Vollkorn SC",
 	"Yanone Kaffeesatz",
-	"Yeseva One",
+	"Yeseva One"
 
 ];
 
