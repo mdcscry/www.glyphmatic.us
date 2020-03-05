@@ -102,8 +102,8 @@ block_lang =[{}]
  block_lang['Glagolitic_Supplement'] = ['glagolitic']; 
  block_lang['Gothic'] = ['gothic'];
  block_lang['Grantha'] = ['grantha'];
- block_lang['Greek_And_Coptic'] = ['coptic','latin-ext'];
- block_lang['Greek_Extended'] = ['latin-ext'];
+ block_lang['Greek_And_Coptic'] = ['noto_trio'];
+ block_lang['Greek_Extended'] = ['noto_trio'];
  block_lang['Gujarati'] = ['gujarati'];
  block_lang['Gunjala_Gondi'] = ['gunjalagondi'];
  block_lang['Gurmukhi'] = ['gurmukhi'];
@@ -297,6 +297,14 @@ block_lang =[{}]
 lang_font =[{}]
 
 
+
+lang_font['noto_trio'] = [
+
+	"Noto Sans",
+	"Noto Serif",
+	"Noto Sans Mono-local"
+
+]
 
 lang_font['pahawhhmong'] = [
 

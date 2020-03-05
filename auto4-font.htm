@@ -1,12 +1,29 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html>
 	<head>
-		<title>Auto2-ucoded</title>
+		<title>Auto3-all</title>
 		<style type="text/css">
 
+
+			@import url('http://fonts.googleapis.com/css?family=Noto+Sans|Noto+Serif|Arimo|Cousine');
+
+
+			@font-face {font-family: "Noto Emoji"; src: url(/tff/NotoEmoji-Regular.ttf);}
+			@font-face {font-family: "Noto Sans Symbols"; src: url(/tff/NotoSansSymbols-Regular.ttf);}			
+			@font-face {font-family: "Noto Sans Symbols2"; src: url(/tff/NotoSansSymbols2-Regular.ttf);}
+			@font-face {font-family: "Noto Sans Mono"; src: url(/tff/NotoSansMono-Regular.ttf);}
+			@font-face {font-family: "Noto Sans Display"; src: url(/tff/NotoSansDisplay-Regular.ttf);}			
+
+
 			table { 
-					border-bottom:50px solid #110c11;
+					border-bottom:50px solid white;
 					border-radius:20px;			
+			}
+
+
+			td {
+  				border-bottom:2pt dotted white;
+  
 			}
 
 
@@ -14,13 +31,9 @@
 				display: inline;
 			}
 
-			tr.border_bottom td {
-  				border-bottom:1pt dotted red;
-  
-			}
 
 			[title] {
-				border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+				border-bottom: 0px solid rgba(0, 0, 0, 0.2);
 				border-radius:1px;
 				position: relative;
 			}
@@ -40,9 +53,10 @@
 				background-color: white;
 				padding: 0.1em;
 				z-index: 1;
+				color: black;
 			}
 
-			body { background-color: black;color: lightgray }
+			body { background-color: white}
 
 
 		</style>
@@ -59,26 +73,27 @@
 			</tr>
 			<tr>
 				<TD id="row2" style="text-align:center" colspan=2 >
-
+				</TD>
 			</tr>
 			<tr>	
 				<TD id="row3" style="text-align:center" colspan=2>
 				</TD>				
 			</tr>
-			<tr class="border_bottom">
+
+			<tr id="border_bottom" class="border_bottom">
 				<TD id="row4" style="text-align:center" colspan=2>
 				</TD>	
 			</tr>			
 			<tr>
 				<TD id="row5" style="text-align:center" colspan=2>
 				</TD>
-			</tr>
+			</tr> 
 			<tr >
 				<td style='text-align:right;'>
-					<div style="font-size:.35em;font-family:'Noto Sans Mono';color:red"> &nbsp;&nbsp; Unicode &numero;</div>
+					<div id="unidesc" class="description" style="font-size:.5em;font-family:'Noto Sans Mono'"> &nbsp;&nbsp;Unicode</div>
 				</td>
 				<td style="text-align:right;">
-					<div style="font-size:.25em;font-family:'Noto Serif Mono';"> glyphmatic.us</div>
+					<div id = "glyphfoot" class="description" style="font-size:.25em;font-family:'Noto Sans Mono';"> glyphmatic.us</div>
 				</td>
 			</tr>
 		</table>	
@@ -107,6 +122,48 @@
 		});
 		//console.log("cssImportRules: "+  cssImportRules.length)
 
+
+
+		var mycolors=["#CD5C5C","#96cdcd"//,"beige","blanchedalmond"
+		//,"cornsilk","gainsboro"
+		,"#cdc9c9"
+		//,"honeydew","ivory"
+		,"#cdc9c9","#cdc9c9","#cdc9c9"
+		//,"lavenderblush","lemonchiffon"
+		//,"lightgoldenrodyellow"
+		//,"linen","mintcream","oldlace"
+		//,"papayawhip","seashell"
+		,"#cdc9c9","#8A8A8A","#7f7f7f","#CD5C5C","#96cdcd","#CD5C5C"
+
+		];
+
+		//var mycolors = ["white","red","red","blue","green","orange","purple","yellow","yellow","white"]
+
+		//var mycolors=["#CD5C5C","linen","mintcream","MintCream"];
+
+
+		function randn_bm() {
+		    let u = 0, v = 0;
+		    while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
+		    while(v === 0) v = Math.random();
+		    let num = Math.sqrt( -4.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+		    num = num / 10.0 + 0.5; // Translate to 0 -> 1
+		    if (num > 1 || num < 0) return randn_bm(); // resample between 0 and 1
+		    return num;
+		}
+
+
+
+
+	    var footdesc = document.getElementById("unidesc");
+	    var footglyph = document.getElementById("glyphfoot");
+		bb = document.getElementsByTagName("td")
+
+	    bb[4].style.borderBottomColor = mycolors[Math.round(randn_bm()*mycolors.length-1)] 
+	    footdesc.style.color =  mycolors[Math.round(randn_bm()*mycolors.length-1)] 
+	    footglyph.style.color =  mycolors[Math.round(randn_bm()*mycolors.length-1)] 
+
+
 		function attach_goog_font(font){
 			gf_prefix = '//fonts.googleapis.com/css?family='
             font_formatted = font.replace(/ /g,"+")
@@ -133,17 +190,23 @@
 			font = font.split("-")[0]
 				 //console.log("font: ",font)
             font_formatted = font.replace(/ /g,"")
-            	 console.log("font_formatted: ",font_formatted)
-			newRule = "@font-face {font-family: '" + font + "';" + 'src: url( "/tff/' + font_formatted + '-Regular.ttf")' + ' format("ttf");}'
-				console.log(newRule)
+            	 //console.log("font_formatted: ",font_formatted)
+			newRule = "@font-face {font-family: " + font + "; src: url(" + '/tff/' + font_formatted + '-Regular.ttf);}'
+				//console.log(newRule)
 			cssFontFaceStyle.insertRule(newRule,cssFontFaceRules.length);
 	 	}
 
 
 		function attach_font_family(font,spid){
-			var newRule = "font-family: '"+ font +"';";
-			console.log("font-face: " + newRule)	
+			var newRule = "font-family: '"+ font +"','Noto Emoji','Noto Sans Symbols','Noto Sans Symbols2','Noto Sans','Arimo','Cousine','Noto Sans Display';";
+			numma = randn_bm()
+			//console.log(numma)
+			muchRandomness = Math.abs(Math.round(randn_bm()*mycolors.length-1))
+			console.log(muchRandomness)
+			newRule += newRule + "color: " + mycolors[muchRandomness] + ";"
+			//console.log("font-face: " + newRule)	
 			sid = "span#sid"+i
+			console.log(sid)
 			cssFontFamilyStyle.addRule(sid,newRule,0);
 		}
 
@@ -152,36 +215,43 @@
 			val = Math.round((array[seed].length-1)*Math.random())
 			//console.log("val: "+val)
 			return(val)
-		}		
+		}	
+
+	
 
 	 	function spectacular(start,number_of_glyphs) {
 	 		spans_string = ''
+	 		glyph_val = ''
 
 	 		for (i=start ; i <= start+number_of_glyphs ;i++){	
+ 			
+		 			random_number = Math.round((blocks.length-1)*Math.random())
+		 			block = blocks[random_number] 
 
-	 			random_number = Math.round((blocks.length-1)*Math.random())
-	 			block = blocks[random_number] 
+		 				//console.log(random_number)
+		 				//console.log(block)
 
-	 				//console.log(random_number)
-	 				//console.log(block)
-	 			glyph_val = git_the_random(block,block_hex)				
-				glyph = block_hex[block][glyph_val]
-					//console.log(glyph)
-				glyph_desc = block_hex_desc[block][glyph_val].replace(/ /g,"_")
+		 				glyph_val = git_the_random(block,block_hex)		
+		 					
 
-				font_du_jour = get_more_spectacular(block)
+					glyph = block_hex[block][glyph_val]
+						//console.log(glyph)
+					glyph_desc = block_hex_desc[block][glyph_val].replace(/ /g,"_")
+
+					font_du_jour = get_more_spectacular(block)
+					
+					if (font_du_jour.split("-")[1]=='EA'){
+						attach_an_early_access_font(font_du_jour)
+					} else if (font_du_jour.split("-")[1]=='local'){
+						//console.log("in")
+						attach_local_font(font_du_jour.split("-")[0])	
+					} else {
+						attach_goog_font(font_du_jour)	
+					}	
+		
+
+					attach_font_family(font_du_jour.split("-")[0],i)
 				
-				if (font_du_jour.split("-")[1]=='EA'){
-					attach_an_early_access_font(font_du_jour)
-				} else if (font_du_jour.split("-")[1]=='local'){
-					//console.log("in")
-					attach_local_font(font_du_jour.split("-")[0])	
-				} else {
-					attach_goog_font(font_du_jour)	
-				}	
-	
-
-				attach_font_family(font_du_jour.split("-")[0],i)
 
 		 		spans_string = spans_string + "<td><span id='sid"+ i + "' title='" + glyph + "-" + glyph_desc + "'>&#x" + glyph + ";</span></td>";
 				}
@@ -192,13 +262,15 @@
 	 	function get_more_spectacular(block){
 
 		 		font_array = block_lang[block]
+		 		//console.log(block + ':' +font_array)
+
 		 		super_font_seed = Math.round((font_array.length-1)*Math.random())
 		 		//console.log("super_font_seed: " + super_font_seed)
 		 		font_lookup = font_array[super_font_seed]
-	 				console.log("font_lookup: " + font_lookup)
+	 				//console.log("font_lookup: " + font_lookup)
 	 				//console.log("lang_font: " + lang_font[font_lookup])	
 		 		font_seed = Math.round((lang_font[font_lookup].length-1)*Math.random())
-		 			console.log("font_seed: " + 	font_seed)		 		
+		 			//console.log("font_seed: " + 	font_seed)		 		
 		 		font = lang_font[font_lookup][font_seed]
 		 			//console.log("font: ",font)
 	 			return(font)	
@@ -219,7 +291,7 @@
 
 	 	//}
 	    
-	    number_of_glyphs = 20;
+	    number_of_glyphs = 22;
 	    var row_1=document.getElementById('row1');
 	        row_1.innerHTML= spectacular(0,number_of_glyphs-1);
 	 	var row_2=document.getElementById('row2');
