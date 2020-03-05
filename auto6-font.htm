@@ -12,8 +12,10 @@
 			@font-face {font-family: "Noto Sans Symbols"; src: url(/tff/NotoSansSymbols-Regular.ttf);}			
 			@font-face {font-family: "Noto Sans Symbols2"; src: url(/tff/NotoSansSymbols2-Regular.ttf);}
 			@font-face {font-family: "Noto Sans Mono"; src: url(/tff/NotoSansMono-Regular.ttf);}
-			@font-face {font-family: "Noto Sans Display"; src: url(/tff/NotoSansDisplay-Regular.ttf);}			
-
+			@font-face {font-family: "Noto Sans Display"; src: url(/tff/NotoSansDisplay-Regular.ttf);}	
+			@font-face {font-family: "Noto Sans CJK SC"; src: url(/tff/NotoSansCJKsc-Regular.otf);}	
+			@font-face {font-family: "Noto Sans Sinhala"; src: url(/tff/NotoSansSinhala-Regular.ttf);}			
+			@font-face {font-family: "Noto Sans Devanagari"; src: url(/tff/NotoSansDevanagari-Regular.ttf);}
 
 			table { 
 					border-bottom:50px solid #110c11;
@@ -87,10 +89,10 @@
 			</tr>
 			<tr >
 				<td style='text-align:right;'>
-					<div style="font-size:.5em;font-family:'Noto Mono';color:red"> Unicode</div>
+					<div style="font-size:.5em;font-family:'Noto Sans Mono';color:red"> Unicode</div>
 				</td>
 				<td style="text-align:right;">
-					<div style="font-size:.25em;font-family:'Noto Mono';"> glyphmatic.us</div>
+					<div style="font-size:.25em;font-family:'Noto Sans Mono';"> glyphmatic.us</div>
 				</td>
 			</tr>
 		</table>	
@@ -140,20 +142,21 @@
 
 
 
-	 	function attach_local_font(font){
+	 	function attach_local_font(font,filetype){
 			//https://fontlibrary.org/
 			font = font.split("-")[0]
 				 //console.log("font: ",font)
             font_formatted = font.replace(/ /g,"")
-            	 //console.log("font_formatted: ",font_formatted)
-			newRule = "@font-face {font-family: " + font + "; src: url(" + '/tff/' + font_formatted + '-Regular.ttf);}'
+            	 console.log("font_formatted: ",font_formatted)
+			newRule = "@font-face {font-family: " + font + "; src: url(" + '/tff/' + font_formatted + '-Regular'+filetype+');}'
 				console.log(newRule)
 			cssFontFaceStyle.insertRule(newRule,cssFontFaceRules.length);
 	 	}
 
 
 		function attach_font_family(font,spid){
-			var newRule = "font-family: '"+ font +"','Noto Emoji','Noto Sans Symbols','Noto Sans Symbols2','Noto Sans','Arimo','Cousine','Noto Sans Display';";
+			var newRule = "font-family: '"+ font +"','Noto Emoji','Noto Sans Symbols','Noto Sans Symbols2'" +
+					",'Noto Sans','Arimo','Cousine','Noto Sans Sinhala','Noto Sans CJK SC','Noto Sans Devanagari';";
 			console.log("font-face: " + newRule)	
 			sid = "span#sid"+i
 			cssFontFamilyStyle.addRule(sid,newRule,0);
@@ -193,7 +196,10 @@
 						attach_an_early_access_font(font_du_jour)
 					} else if (font_du_jour.split("-")[1]=='local'){
 						//console.log("in")
-						attach_local_font(font_du_jour.split("-")[0])	
+						attach_local_font(font_du_jour.split("-")[0],'.ttf')	
+					} else if (font_du_jour.split("-")[1]=='cjk'){
+						//console.log("in")
+						attach_local_font(font_du_jour.split("-")[0],'.otf')		
 					} else {
 						attach_goog_font(font_du_jour)	
 					}	
