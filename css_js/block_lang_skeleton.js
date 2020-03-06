@@ -107,7 +107,7 @@ block_lang =[{}]
  block_lang['Gujarati'] = ['gujarati'];
  block_lang['Gunjala_Gondi'] = ['gunjalagondi'];
  block_lang['Gurmukhi'] = ['gurmukhi'];
- block_lang['Halfwidth_And_Fullwidth_Forms'] = ['latin'];
+ block_lang['Halfwidth_And_Fullwidth_Forms'] = ['chinese-cjk'];
  block_lang['Hangul_Compatibility_Jamo'] = ['korean'];
  block_lang['Hangul_Jamo'] = ['korean'];
  block_lang['Hangul_Jamo_Extended_A'] = ['chinese-cjk'];
@@ -192,7 +192,7 @@ block_lang =[{}]
  block_lang['Multani'] = ['multani'];
  block_lang['Musical_Symbols'] = ['music'];
  block_lang['Myanmar'] = ['myanmar'];
- block_lang['Myanmar_Extended_A'] = ['myanmar'];
+ block_lang['Myanmar_Extended_A'] = ['myanmar-local'];
  block_lang['Myanmar_Extended_B'] = ['myanmar-local'];
  block_lang['Nabataean'] = ['nabataean'];
 // block_lang['Nandinagari'] = [''];
@@ -412,7 +412,9 @@ lang_font['elymaic'] = [
 
 lang_font['grantha'] = [  
 
-	"Noto Sans Grantha-local"
+	"Noto Sans Grantha-local",
+	"Noto Serif Grantha-local"
+
 
 ]
 lang_font['gunjalagondi'] = [  
@@ -642,7 +644,8 @@ lang_font['egyptianheiroglyphics'] = [
 lang_font['myanmar-local'] = [
 
 	//"Droid Sans Ethiopic"//,            
-	"Noto Sans Myanmar-local"
+	"Noto Sans Myanmar-local",
+	"Noto Serif Myanmar-local"
 
 ]
 
@@ -693,13 +696,15 @@ lang_font['runic'] = [
 
 lang_font['kannada'] = [
          
-	"Noto Sans Kannada-EA"
+	"Noto Sans Kannada-EA",
+	"Noto Serif Kannada-local"
 
  ]
 
 lang_font['ethiopic'] = [
          
-	"Noto Sans Ethiopic"
+	"Noto Sans Ethiopic",
+	"Noto Serif Ethiopic-local"
 
  ]
 
@@ -906,7 +911,7 @@ lang_font['canadianaboriginal'] = [
 
 lang_font['mongolian'] = [   
 	
-	"Noto Sans Mongolian-local"
+	"Noto Sans Mongolian-EA"
 
 ]
 
@@ -1090,7 +1095,8 @@ lang_font['cherokee'] = [
 
 lang_font['armenian'] = [
 
-	"Noto Sans Armenian-local"
+	"Noto Sans Armenian-local",
+	"Noto Serif Armenian-local"
 
 ]
 
@@ -1166,7 +1172,8 @@ lang_font['thai'] = [
 
 lang_font['telugu'] = [
 
-	"Ponnala-EA",                   
+	"Ponnala-EA",    
+	"Noto Serif Telugu-local",	               
 	"Noto Sans Telugu UI-EA",
 	"Nats-EA",
 	"Gurajada-EA",
@@ -1196,15 +1203,17 @@ lang_font['telugu'] = [
 lang_font['gurmukhi'] = [
 
 	"Baloo Paaji",
-	"Mukta Mahee"
+	"Mukta Mahee",
+	"Noto Sans Gurmukhi",
+	"Noto Serif Gurmukhi"
 
 ]
 
 
                
 lang_font['malayalam'] = [   
-
- 	"Noto Sans Malayalam UI"       
+	"Noto Sans Malayalam-EA",
+ 	"Noto Serif Malayalam-local"       
 
 ]                                         
 
@@ -1212,7 +1221,8 @@ lang_font['bengali'] = [
 
 	"Noto Sans Bengali UI-EA",
 	"Lohit Bengali-EA",
-	"Noto Sans Bengali-EA"
+	"Noto Sans Bengali-EA",
+	"Noto Serif Bengali-local"	
 
 ]
 
@@ -1221,6 +1231,8 @@ lang_font['bengali'] = [
 lang_font['tamil'] = [
 
 	"Noto Sans Tamil UI-EA",  
+	"Noto Serif Tamil-local",
+	"Noto Serif Tamil Slanted-local",	
 	"Lohit Tamil-EA", 
 	"Karla Tamil Inclined-EA",                     
 	"Karla Tamil Upright-EA", 
@@ -1292,7 +1304,8 @@ lang_font['japanese'] = [
 lang_font['gujarati'] = [
 
 	"Noto Sans Gujarati-EA",       
-	"Noto Sans Gujarati UI-EA",   
+	"Noto Sans Gujarati UI-EA", 
+	"Noto Serif Gujarati-local",  
 	"Hind Vadodara",
 	"Kumar One",
 	"Kumar One Outline",
@@ -1305,14 +1318,16 @@ lang_font['gujarati'] = [
 
 lang_font['sinhalaarchaic'] = [	
 
-	"Noto Sans Sinhala-local"
+	"Noto Sans Sinhala-local",
+	"Noto Serif Sinhala-local"	
 
 	]
 
 lang_font['sinhala'] = [
 
 	"Abhaya Libre",
-	"Noto Sans Sinhala-local"
+	"Noto Sans Sinhala-local",
+	"Noto Serif Sinhala-local"	
 
 
 ]
@@ -1321,8 +1336,8 @@ lang_font['sinhala'] = [
 lang_font['hebrew'] = [
 
 	"Open Sans Hebrew-EA",
-	"Open Sans Hebrew Condense-EA",
 	"Noto Sans Hebrew-EA",
+	"Noto Serif Hebrew-local",
 	"Alef",
 	"Amatic SC",
 	"Arimo",
@@ -1338,8 +1353,7 @@ lang_font['hebrew'] = [
 	"Rubik",
 	"Secular One",
 	"Suez One",
-	"Tinos",
-	"ela Round",
+	"Tinos"
 
 ]
 
@@ -1458,6 +1472,7 @@ lang_font['devanagari'] = [
 	"Lohit Devanagari-EA",
  	"Noto Sans Devanagari UI-EA",                   
 	"Noto Sans Devanagari-EA",  
+	"Noto Serif Devanagari-local", 	
 	"Amiko",
 	"Amita",
 	"Arya",
@@ -1699,7 +1714,8 @@ lang_font['latin3'] = [
 
 lang_font['display'] = [
 
-	"Noto Sans Display-local"
+	"Noto Sans Display-local",
+	"Noto Serif Display-local"
 
 	]
 
