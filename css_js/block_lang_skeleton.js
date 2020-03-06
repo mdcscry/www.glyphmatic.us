@@ -1031,8 +1031,8 @@ lang_font['inscriptionalparthian'] = [
 
 lang_font['georgian'] = [ 
 
-	"Noto Sans Georgian-EA",
-	"Noto Serif Georgian-EA"       
+	"Noto Sans Georgian-local",
+	"Noto Serif Georgian-local"       
  
 ]
 
@@ -1083,7 +1083,7 @@ lang_font['cherokee'] = [
 
 lang_font['armenian'] = [
 
-	"Noto Sans Armenian-EA"
+	"Noto Sans Armenian-local"
 
 ]
 
