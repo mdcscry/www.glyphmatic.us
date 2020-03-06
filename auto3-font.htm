@@ -16,6 +16,7 @@
 			@font-face {font-family: "Noto Sans CJK SC"; src: url(/tff/NotoSansCJKsc-Regular.otf);}	
 			@font-face {font-family: "Noto Sans Sinhala"; src: url(/tff/NotoSansSinhala-Regular.ttf);}	
 			@font-face {font-family: "Noto Sans Devanagari"; src: url(/tff/NotoSansDevanagari-Regular.ttf);}
+			@font-face {font-family: "Noto Sans Lao"; src: url(/tff/NotoSansLao-Regular.ttf);}			
 
 			table { 
 					border-bottom:50px solid white;
@@ -187,20 +188,20 @@
 
 
 
-	 	function attach_local_font(font){
+	 	function attach_local_font(font,filetype){
 			//https://fontlibrary.org/
 			font = font.split("-")[0]
 				 //console.log("font: ",font)
             font_formatted = font.replace(/ /g,"")
             	 //console.log("font_formatted: ",font_formatted)
-			newRule = "@font-face {font-family: " + font + "; src: url(" + '/tff/' + font_formatted + '-Regular.ttf);}'
+			newRule = "@font-face {font-family: " + font + "; src: url(" + '/tff/' + font_formatted + '-Regular'+ filetype +');}'
 				//console.log(newRule)
 			cssFontFaceStyle.insertRule(newRule,cssFontFaceRules.length);
 	 	}
 
 
 		function attach_font_family(font,spid){
-			var newRule = "font-family: '"+ font +"','Noto Emoji','Noto Sans Symbols','Noto Sans Symbols2'" + ",'Noto Sans','Arimo','Cousine','Noto Sans Sinhala','Noto Sans CJK SC','Noto Sans Devanagari';";
+			var newRule = "font-family: '"+ font +"','Noto Sans Symbols','Noto Sans Symbols2'" + ",'Noto Sans','Arimo','Cousine','Noto Sans Sinhala','Noto Sans CJK SC','Noto Sans Devanagari','Noto Sans Lao';";
 			numma = randn_bm()
 			//console.log(numma)
 			muchRandomness = Math.abs(Math.round(randn_bm()*mycolors.length-1))
@@ -246,7 +247,10 @@
 						attach_an_early_access_font(font_du_jour)
 					} else if (font_du_jour.split("-")[1]=='local'){
 						//console.log("in")
-						attach_local_font(font_du_jour.split("-")[0])	
+						attach_local_font(font_du_jour.split("-")[0],'.ttf')	
+					} else if (font_du_jour.split("-")[1]=='cjk'){
+						//console.log("in")
+						attach_local_font(font_du_jour.split("-")[0],'.otf')							
 					} else {
 						attach_goog_font(font_du_jour)	
 					}	
