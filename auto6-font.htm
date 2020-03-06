@@ -148,16 +148,16 @@
 				 //console.log("font: ",font)
             font_formatted = font.replace(/ /g,"")
             	 console.log("font_formatted: ",font_formatted)
-			newRule = "@font-face {font-family: " + font + "; src: url(" + '/tff/' + font_formatted + '-Regular'+filetype+');}'
+			newRule = "@font-face {font-family: " + font + "; src: url(" + '/tff/' + font_formatted + '-Regular'+ filetype +');}'
 				console.log(newRule)
 			cssFontFaceStyle.insertRule(newRule,cssFontFaceRules.length);
 	 	}
 
 
 		function attach_font_family(font,spid){
-			var newRule = "font-family: '"+ font +"','Noto Emoji','Noto Sans Symbols','Noto Sans Symbols2'" +
-					",'Noto Sans','Arimo','Cousine','Noto Sans Sinhala','Noto Sans CJK SC','Noto Sans Devanagari';";
-			console.log("font-face: " + newRule)	
+			var newRule = "font-family: '"+ font +"','Noto Emoji','Noto Sans Symbols','Noto Sans Symbols2'" +",'Noto Sans','Arimo','Cousine','Noto Sans Sinhala','Noto Sans CJK SC','Noto Sans Devanagari';";
+
+			//console.log("font-face: " + newRule)	
 			sid = "span#sid"+i
 			cssFontFamilyStyle.addRule(sid,newRule,0);
 		}

@@ -1,6 +1,8 @@
+
+
 block_lang =[{}]
 
-
+block_lang['block_of_women'] = ['101D5']
 
  block_lang['Adlam'] = ['adlam'];
  block_lang['Aegean_Numbers'] = ['symbols'];
@@ -290,7 +292,7 @@ block_lang =[{}]
  block_lang['Warang_Citi'] = ['warangciti'];
  block_lang['Yi_Radicals'] = ['yi'];
  block_lang['Yi_Syllables'] = ['yi'];
- block_lang['Yijing_Hexagram_Symbols'] = ['symbols'];
+ block_lang['Yijing_Hexagram_Symbols'] = ['symbols2'];
  block_lang['Zanabazar_Square'] = ['zanabazarsquare'];
 
 
@@ -1204,8 +1206,8 @@ lang_font['gurmukhi'] = [
 
 	"Baloo Paaji",
 	"Mukta Mahee",
-	"Noto Sans Gurmukhi",
-	"Noto Serif Gurmukhi"
+	"Noto Sans Gurmukhi-local",
+	"Noto Serif Gurmukhi-local"
 
 ]
 
@@ -1399,7 +1401,6 @@ lang_font['korean'] = [
 	"Single Day",
 	"Song Myung",
 	"Stylish",
-	"Sunflower",
 	"Yeon Sung",
 	"Noto Sans KR",
 	"Noto Serif KR"
@@ -2571,7 +2572,6 @@ lang_font['latin'] = [
 	"Spinnaker",
 	"Spirax",
 	"Squada One",
-	"Sree Krushnadeaya",
 	"Sriracha",
 	"Srisakdi",
 	"Staatliches",
@@ -2592,7 +2592,6 @@ lang_font['latin'] = [
 	"Supermercado One",
 	"Sura",
 	"Suranna",
-	"Suraam",
 	"Swanky and Moo Moo",
 	"Syncopate",
 	"Tajawal",
@@ -2634,8 +2633,6 @@ lang_font['latin'] = [
 	"Unna",
 	"VT323",
 	"Vampiro One",
-	"ela",
-	"ela Round",
 	"Vast Shadow",
 	"Vesper Libre",
 	"Vibes",

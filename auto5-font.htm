@@ -192,14 +192,14 @@
 
 
 
-	 	function attach_local_font(font){
+	 	function attach_local_font(font,filetype){
 			//https://fontlibrary.org/
 			font = font.split("-")[0]
 				 //console.log("font: ",font)
             font_formatted = font.replace(/ /g,"")
-            	 //console.log("font_formatted: ",font_formatted)
-			newRule = "@font-face {font-family: " + font + "; src: url(" + '/tff/' + font_formatted + '-Regular.ttf);}'
-				//console.log(newRule)
+            	 console.log("font_formatted: ",font_formatted)
+			newRule = "@font-face {font-family: " + font + "; src: url(" + '/tff/' + font_formatted + '-Regular'+filetype+');}'
+				console.log(newRule)
 			cssFontFaceStyle.insertRule(newRule,cssFontFaceRules.length);
 	 	}
 
@@ -251,7 +251,10 @@
 						attach_an_early_access_font(font_du_jour)
 					} else if (font_du_jour.split("-")[1]=='local'){
 						//console.log("in")
-						attach_local_font(font_du_jour.split("-")[0])	
+						attach_local_font(font_du_jour.split("-")[0],'.ttf')	
+					} else if (font_du_jour.split("-")[1]=='cjk'){
+						//console.log("in")
+						attach_local_font(font_du_jour.split("-")[0],'.otf')							
 					} else {
 						attach_goog_font(font_du_jour)	
 					}	
