@@ -906,7 +906,7 @@ lang_font['canadianaboriginal'] = [
 
 lang_font['mongolian'] = [   
 	
-	"Noto Sans Mongolian-EA"
+	"Noto Sans Mongolian-local"
 
 ]
 
@@ -1039,8 +1039,8 @@ lang_font['inscriptionalparthian'] = [
 
 lang_font['georgian'] = [ 
 
-	"Noto Sans Georgian-EA",
-	"Noto Serif Georgian-EA"       
+	"Noto Sans Georgian-local",
+	"Noto Serif Georgian-local"       
  
 ]
 
@@ -1049,7 +1049,6 @@ lang_font['meeteimayek'] = [
 	"Noto Sans Meetei Mayek-EA" 
 
 ]            
-
 
 
 lang_font['balinese'] = [
@@ -1091,7 +1090,7 @@ lang_font['cherokee'] = [
 
 lang_font['armenian'] = [
 
-	"Noto Sans Armenian-EA"
+	"Noto Sans Armenian-local"
 
 ]
 
@@ -1138,7 +1137,7 @@ lang_font['lao'] = [
 lang_font['myanmar'] = [
 
 	"Myanmar Sans Pro-EA",     
-	"Noto Sans Myanmar-EA",              
+	"Noto Sans Myanmar-local",              
 	"Noto Sans Myanmar UI-EA",  
 	"Khyay-EA"
 
@@ -1692,7 +1691,9 @@ lang_font['cyrillic'] = [
 
 
 lang_font['latin3'] = [
-	"Cousine",'Arimo'
+
+	"Cousine","Arimo"
+
 	]
 
 
