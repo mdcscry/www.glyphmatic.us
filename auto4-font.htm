@@ -15,6 +15,8 @@
 			@font-face {font-family: "Noto Sans CJK SC"; src: url(/tff/NotoSansCJKsc-Regular.otf);}	
 			@font-face {font-family: "Noto Sans Sinhala"; src: url(/tff/NotoSansSinhala-Regular.ttf);}	
 			@font-face {font-family: "Noto Sans Devanagari"; src: url(/tff/NotoSansDevanagari-Regular.ttf);}		
+			@font-face {font-family: "Noto Sans Lao"; src: url(/tff/NotoSansLao-Regular.ttf);}			
+
 
 
 			table { 
@@ -200,7 +202,7 @@
 
 		function attach_font_family(font,spid){
 			var newRule = "font-family: '"+ font +"','Noto Emoji','Noto Sans Symbols','Noto Sans Symbols2'" +
-				",'Noto Sans','Arimo','Cousine','Noto Sans Sinhala','Noto Sans CJK SC','Noto Sans Devanagari';";
+				",'Noto Sans','Arimo','Cousine','Noto Sans Sinhala','Noto Sans CJK SC','Noto Sans Devanagari','Noto Sans Lao';";
 			numma = randn_bm()
 			//console.log(numma)
 			muchRandomness = Math.abs(Math.round(randn_bm()*mycolors.length-1))
