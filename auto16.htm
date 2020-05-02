@@ -1,7 +1,7 @@
 <!DOCTYPE html> 
 <html>
 	<head>
-		<title>Auto6-all</title>
+		<title>Auto16</title>
 		<style type="text/css">
 
 
@@ -20,9 +20,7 @@
 
 
 			table { 
-					border-bottom:50px solid #110c11;
-					border-radius:20px;	
-					top:-10%;		
+				border: 2px solid #110c11;
 			}
 
 
@@ -30,12 +28,9 @@
 				display: inline;
 			}
 
-			tr { line-height: 4.5em; }
+			tr { line-height: 1em; }
 
-			tr.border_bottom td {
-  				border-bottom:2pt dotted red;
-  
-			}
+		
 
 			[title] {
 				border-bottom: 1px solid rgba(0, 0, 0, 0.2);
@@ -72,34 +67,26 @@
 	<body>
 	
 		<table  align='center' width=75%>
-			<tr >
-				<TD id="row1" style="text-align:center" colspan=2 >
+			<tr class="glyph" id="row1">
+				<TD id="row11" style="text-align:center" >
+				</TD>
+				<TD id="row12" style="text-align:center" >
+				</TD>
+				<TD id="row13" style="text-align:center" >
+				</TD>
+				<TD id="row14" style="text-align:center" >
 				</TD>
 			</tr>
-			<tr>
-				<TD id="row2" style="text-align:center" colspan=2 >
-
-			</tr>
-			<tr>	
-				<TD id="row3" style="text-align:center" colspan=2>
-				</TD>				
-			</tr>
-			<tr class="border_bottom">
-				<TD id="row4" style="text-align:center" colspan=2>
-				</TD>	
-			</tr>			
-			<tr>
-				<TD id="row5" style="text-align:center" colspan=2>
+			<tr class="desc" id="row1desc">
+				<TD id="row11desc" style="text-align:center" >
 				</TD>
-			</tr>
-			<tr >
-				<td style='text-align:right;width:58%'>
-					<div style="font-size:1.25em;font-family:'Noto Sans Mono';color:red"> Unicode</div>
-				</td>
-				<td style="text-align:right;width:42%">
-					<div style="font-size:.75em;font-family:'Noto Sans Mono';"> glyphmatic.us</div>
-				</td>
-			</tr>
+				<TD id="row12desc" style="text-align:center" >
+				</TD>
+				<TD id="row13desc" style="text-align:center" >
+				</TD>
+				<TD id="row14desc" style="text-align:center" >
+				</TD>
+			</tr>					
 		</table>	
 										
 	</body>
@@ -237,9 +224,10 @@
 					attach_font_family(font_du_jour.split("-")[0],i)
 				
 
-		 		spans_string = spans_string + "<td><span id='sid"+ i + "' title='" + glyph + "-" + glyph_desc + "'>&#x" + glyph + ";</span></td>";
+		 			returnArray[0] = "&#x" + glyph + ";";
+		 			returnArray[1] = glyph_desc
 				}
-			return(spans_string)
+			return(returnArray)
 	 	}
 
 
@@ -261,17 +249,25 @@
 	 	}	 		
 
 	    
-	    number_of_glyphs = 20;
-	    var row_1=document.getElementById('row1');
-	        row_1.innerHTML= spectacular(0,number_of_glyphs-1);
-	 	var row_2=document.getElementById('row2');
-	 		row_2.innerHTML= spectacular(number_of_glyphs,number_of_glyphs-1);
-	 	var row_3=document.getElementById('row3');
-	        row_3.innerHTML= spectacular(number_of_glyphs*2,number_of_glyphs-1);		 	
-	 	var row_4=document.getElementById('row4');
-	        row_4.innerHTML= spectacular(number_of_glyphs*3,number_of_glyphs-1);		 	
-	 	var row_5=document.getElementById('row5');
-	        row_5.innerHTML= spectacular(number_of_glyphs*4,number_of_glyphs-1);		 	
+	    number_of_glyphs = 1;
+
+	    var row11=document.getElementById('row11');
+	        row11.innerHTML= spectacular(11,number_of_glyphs);
+	 	var row12=document.getElementById('row12');
+	 		row12.innerHTML= spectacular(12,number_of_glyphs);
+	 	var row13=document.getElementById('row13');
+	        row13.innerHTML= spectacular(13,number_of_glyphs);		 	
+	 	var row14=document.getElementById('row14');
+	        row14.innerHTML= spectacular(14,number_of_glyphs);		 	
+
+	    var row11desc=document.getElementById('row11desc');
+	        row11desc.innerHTML= spectacular(11,number_of_glyphs);
+	 	var row12desc=document.getElementById('row12desc');
+	 		row12desc.innerHTML= spectacular(12,number_of_glyphs);
+	 	var row13desc=document.getElementById('row13desc');
+	        row13desc.innerHTML= spectacular(13,number_of_glyphs);		 	
+	 	var row14desc=document.getElementById('row14desc');
+	        row14desc.innerHTML= spectacular(14,number_of_glyphs);	 	
 
 	</script>
 

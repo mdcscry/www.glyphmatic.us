@@ -5,13 +5,13 @@ block_lang =[{}]
 block_lang['block_of_women'] = ['101D5']
 
  block_lang['Adlam'] = ['adlam'];
- block_lang['Aegean_Numbers'] = ['symbols'];
+ block_lang['Aegean_Numbers'] = ['linearb'];
  block_lang['Ahom'] = ['ahom'];
  block_lang['Alchemical_Symbols'] = ['symbols'];
  block_lang['Alphabetic_Presentation_Forms'] = ['symbols'];
  block_lang['Anatolian_Hieroglyphs'] = ['anatolianheiroglyphics'];
  block_lang['Ancient_Greek_Musical_Notation'] = ['music'];
- block_lang['Ancient_Greek_Numbers'] = ['symbols'];
+ block_lang['Ancient_Greek_Numbers'] = ['symbols2'];
  block_lang['Ancient_Symbols'] = ['symbols'];
  block_lang['Arabic'] = ['arabic'];
  block_lang['Arabic_Extended_A'] = ['arabic'];
@@ -64,6 +64,7 @@ block_lang['block_of_women'] = ['101D5']
  block_lang['Coptic'] = ['coptic'];
  block_lang['Coptic_Epact_Numbers'] = ['coptic'];
  block_lang['Counting_Rod_Numerals'] = ['symbols2'];
+ block_lang['CretanHiero'] = ['cretan']; 
  block_lang['Cuneiform'] = ['cuneiform'];
  block_lang['Cuneiform_Numbers_And_Punctuation'] = ['cuneiform'];
  block_lang['Currency_Symbols'] = ['symbols'];
@@ -73,6 +74,8 @@ block_lang['block_of_women'] = ['101D5']
  block_lang['Cyrillic_Extended_B'] = ['display'];
  block_lang['Cyrillic_Extended_C'] = ['display'];
  block_lang['Cyrillic_Supplement'] = ['display'];
+ //block_lang['CyproMinoan'] = ['aegean_douros'] 
+ block_lang['CyproMinoan'] = ['cyprominoan']  
  block_lang['Deseret'] = ['deseret'];
  block_lang['Devanagari'] = ['devanagari'];
  block_lang['Devanagari_Extended'] = ['devanagari'];
@@ -172,6 +175,7 @@ block_lang['block_of_women'] = ['101D5']
  block_lang['Mathematical_Alphanumeric_Symbols'] = ['math'];
  block_lang['Mathematical_Operators'] = ['math'];
  block_lang['Mayan_Numerals'] = ['mayan'];
+ block_lang['Maya'] = ['maya'];
 // block_lang['Medefaidrin'] = [''];
  block_lang['Meetei_Mayek'] = ['meeteimayek'];
  block_lang['Meetei_Mayek_Extensions'] = ['meeteimayek'];
@@ -179,6 +183,7 @@ block_lang['block_of_women'] = ['101D5']
  block_lang['Meroitic_Cursive'] = ['meroitic'];
  block_lang['Meroitic_Hieroglyphs'] = ['meroitic'];
  block_lang['Miao'] = ['miao'];
+
  block_lang['Miscellaneous_Mathematical_Symbols_A'] = ['math'];
  block_lang['Miscellaneous_Mathematical_Symbols_B'] = ['math'];
  block_lang['Miscellaneous_Symbols'] = ['symbols'];
@@ -226,7 +231,7 @@ block_lang['block_of_women'] = ['101D5']
  block_lang['Palmyrene'] = ['palmyrene'];
  block_lang['Pau_Cin_Hau'] = ['paucinhau'];
  block_lang['Phags_Pa'] = ['phagspa'];
- block_lang['Phaistos_Disc'] = ['symbols2'];
+ block_lang['Phaistos_Disc'] = ['symbols2','aegean_douros'];
  block_lang['Phoenician'] = ['phoenician'];
  block_lang['Phonetic_Extensions'] = ['phoneticextensions'];
  block_lang['Phonetic_Extensions_Supplement'] = ['phoneticextensions'];
@@ -298,6 +303,18 @@ block_lang['block_of_women'] = ['101D5']
 
 lang_font =[{}]
 
+lang_font['cyprominoan'] = [
+
+	"cypro_minoan-fontlibrary"
+
+]
+
+
+lang_font['aegean_douros'] = [
+
+	"aegean-fontlibrary"
+
+]
 
 
 lang_font['noto_trio'] = [
@@ -320,6 +337,17 @@ lang_font['mayan'] = [
 
 	]
 
+lang_font['maya'] = [
+
+	'maya-fontlibrary'
+
+	]	
+
+lang_font['cretan'] = [
+
+	'cretan_hieroglyphs-fontlibrary'
+
+	]
 
 lang_font['arimo'] = [
 
@@ -409,9 +437,6 @@ lang_font['elymaic'] = [
 
 
 
-
-
-
 lang_font['grantha'] = [  
 
 	"Noto Sans Grantha-local",
@@ -446,13 +471,15 @@ lang_font['khudawadi'] = [
 ]
 lang_font['lineara'] = [  
 
-	"Noto Sans LinearA-local"
+	"Noto Sans LinearA-local",
+	"aegean-fontlibrary"
 
 ]
 
 lang_font['linearb'] = [  
 
-	"Noto Sans LinearB-local"
+	"Noto Sans LinearB-local",
+	"aegean-fontlibrary" 
 
 ]
 
@@ -614,6 +641,7 @@ lang_font['takri'] = [
 lang_font['symbols2'] = [
 
 	"Noto Sans Symbols2-local"
+	,"symbola-fontlibrary"
 
 ]
 
@@ -625,7 +653,8 @@ lang_font['modifier'] = [
 
 lang_font['symbols'] = [  
 
-	"Noto Sans Symbols-local"  
+	"Noto Sans Symbols-local" 
+	,"symbola-fontlibrary" 
 
 ]
 
@@ -821,6 +850,7 @@ lang_font['brahmi'] = [
 
 ] 
 
+
 lang_font['olchiki'] = [           
 
 	"Noto Sans OlChiki-local"  
@@ -846,7 +876,14 @@ lang_font['oldturkic'] = [
 
 lang_font['tifinagh'] = [          
 
-	"Noto Sans Tifinagh-EA" 
+	"Noto Sans Tifinagh-EA",
+	"Noto Sans Tifinagh Adrar-local",	
+	"Noto Sans Tifinagh Ghat-local",	
+	"Noto Sans Tifinagh Ahaggar-local",
+	"Noto Sans Tifinagh Hawad-local",
+	"Noto Sans Tifinagh Air-local",
+	"Noto Sans Tifinagh Agraw Imazighen-local",		
+	"Noto Sans Tifinagh SIL-local"	
 
 ]             
 
