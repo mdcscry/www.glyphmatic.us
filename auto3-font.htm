@@ -18,15 +18,11 @@
 			@font-face {font-family: "Noto Sans Devanagari"; src: url(/tff/NotoSansDevanagari-Regular.ttf);}
 			@font-face {font-family: "Noto Sans Lao"; src: url(/tff/NotoSansLao-Regular.ttf);}			
 
-			table { 
-					border-bottom:50px solid white;
-					border-radius:20px;			
-			}
 
-
-			td {
-  				border-bottom:2pt dotted white;
-  
+			table { width:55%;
+					border-bottom:50px solid #cdc9c9;
+					border-radius:20px;	
+	
 			}
 
 
@@ -34,9 +30,14 @@
 				display: inline;
 			}
 
+			td {
+  				border-bottom:2pt dotted white;
+  
+			}
+
 
 			[title] {
-				border-bottom: 0px solid rgba(0, 0, 0, 0.2);
+				border-bottom: 1px solid white;
 				border-radius:1px;
 				position: relative;
 			}
@@ -59,7 +60,7 @@
 				color: black;
 			}
 
-			body { background-color: white}
+			body { background-color: white; }
 
 
 		</style>
@@ -67,36 +68,37 @@
 		<script type ="text/JavaScript" src="./css_js/block_hex_desc.js"></script>
 		<script type ="text/JavaScript" src="./css_js/block_lang_skeleton.js"></script>
 	</head>
-	<body style="overflow: hidden;font-size: 2em;display: inline;">
+	<body style="overflow: hidden;font-size: 1.9em;display: inline;">
 	
-		<table style="overflow: hidden;" align='center'>
+		<table  id="tab" align='center' width=80%>
 			<tr >
-				<TD id="row1" style="text-align:center" colspan=2 >
+				<TD id="row1" style="text-align:center" colspan=3 >
 				</TD>
 			</tr>
 			<tr>
-				<TD id="row2" style="text-align:center" colspan=2 >
-				</TD>
+				<TD id="row2" style="text-align:center" colspan=3 >
+
 			</tr>
 			<tr>	
-				<TD id="row3" style="text-align:center" colspan=2>
+				<TD id="row3" style="text-align:center" colspan=3>
 				</TD>				
 			</tr>
-
-			<tr id="border_bottom" class="border_bottom">
-				<TD id="row4" style="text-align:center" colspan=2>
+			<tr class="border_bottom">
+				<TD id="row4" style="text-align:center" colspan=3>
 				</TD>	
 			</tr>			
 			<tr>
-				<TD id="row5" style="text-align:center" colspan=2>
+				<TD id="row5" style="text-align:center" colspan=3>
 				</TD>
-			</tr> 
+			</tr>
 			<tr >
-				<td style='text-align:right;'>
-					<div id="unidesc" class="description" style="font-size:.5em;font-family:'Noto Sans Mono'"> &nbsp;&nbsp;Unicode</div>
+				<td width=33%></td>
+				<td width=33% style='text-align:center;'>
+					<div id="unidesc" class="description" style="font-size:.8em;font-family:'Noto Sans Mono'"> &nbsp;&nbsp;Unicode</div>
 				</td>
-				<td style="text-align:right;">
-					<div id = "glyphfoot" class="description" style="font-size:.25em;font-family:'Noto Sans Mono';"> glyphmatic.us</div>
+
+				<td width=33% style="text-align:right;">
+					<div id = "glyphfoot" class="description" style="font-size:.6em;font-family:'Noto Sans Mono';"> glyphmatic.us</div>
 				</td>
 			</tr>
 		</table>	
@@ -125,24 +127,7 @@
 		});
 		//console.log("cssImportRules: "+  cssImportRules.length)
 
-
-
-		var mycolors=["#CD5C5C","#96cdcd"//,"beige","blanchedalmond"
-		//,"cornsilk","gainsboro"
-		,"#cdc9c9"
-		//,"honeydew","ivory"
-		,"#cdc9c9","#cdc9c9","#cdc9c9"
-		//,"lavenderblush","lemonchiffon"
-		//,"lightgoldenrodyellow"
-		//,"linen","mintcream","oldlace"
-		//,"papayawhip","seashell"
-		,"#cdc9c9","#8A8A8A","#7f7f7f","#CD5C5C","#96cdcd","#CD5C5C"
-
-		];
-
 		var mycolors = ["white","red","red","blue","green","orange","purple","yellow","yellow","white"]
-
-		//var mycolors=["#CD5C5C","linen","mintcream","MintCream"];
 
 
 		function randn_bm() {
@@ -160,11 +145,16 @@
 
 	    var footdesc = document.getElementById("unidesc");
 	    var footglyph = document.getElementById("glyphfoot");
-		bb = document.getElementsByTagName("td")
+		var bb = document.getElementsByTagName("td")
+		var table = document.getElementById("tab");
+
 
 	    bb[4].style.borderBottomColor = mycolors[Math.round(randn_bm()*mycolors.length-1)] 
+	    table.style.borderBottomColor = mycolors[Math.round(randn_bm()*mycolors.length-1)] 
 	    footdesc.style.color =  mycolors[Math.round(randn_bm()*mycolors.length-1)] 
 	    footglyph.style.color =  mycolors[Math.round(randn_bm()*mycolors.length-1)] 
+
+
 
 
 		function attach_goog_font(font){
@@ -193,7 +183,7 @@
 			font = font.split("-")[0]
 				 //console.log("font: ",font)
             font_formatted = font.replace(/ /g,"")
-            	 //console.log("font_formatted: ",font_formatted)
+            	 console.log("font_formatted: ",font_formatted)
 			newRule = "@font-face {font-family: " + font + "; src: url(" + '/tff/' + font_formatted + '-Regular'+ filetype +');}'
 				//console.log(newRule)
 			cssFontFaceStyle.insertRule(newRule,cssFontFaceRules.length);
@@ -201,17 +191,32 @@
 
 
 		function attach_font_family(font,spid){
-			var newRule = "font-family: '"+ font +"','Noto Emoji','Noto Sans Symbols','Noto Sans Symbols2'" + ",'Noto Sans','Arimo','Cousine','Noto Sans Sinhala','Noto Sans CJK SC','Noto Sans Devanagari','Noto Sans Lao';";
+
+			console.log("infontfamily: "+font)
+			if (font=='maya'){ fontsize='3.75em' }else{ fontsize='2.75em' }
+
+			var newRule = "font-family: '"+ font +"','Noto Emoji','Noto Sans Symbols','Noto Sans Symbols2'" +",'Noto Sans','Arimo','Cousine','Noto Sans Sinhala','Noto Sans CJK SC','Noto Sans Devanagari','Noto Sans Lao';font-size: "+ fontsize + ";"
 			numma = randn_bm()
 			//console.log(numma)
 			muchRandomness = Math.abs(Math.round(randn_bm()*mycolors.length-1))
 			console.log(muchRandomness)
 			newRule += newRule + "color: " + mycolors[muchRandomness] + ";"
-			//console.log("font-face: " + newRule)	
+
+			console.log("font-face: " + newRule)	
 			sid = "span#sid"+i
-			console.log(sid)
 			cssFontFamilyStyle.addRule(sid,newRule,0);
 		}
+
+	 	function attach_network_font(font,url){
+	 		font = font.replace(/_/g,"-")
+
+			var fileref = document.createElement("link");
+				fileref.rel = "stylesheet";
+				fileref.type = "text/css";				
+				fileref.href = "https://fontlibrary.org/face/"+ font;
+				document.getElementsByTagName("head")[0].appendChild(fileref)
+	 		console.log(fileref)
+	 	}
 
 
 		function git_the_random(seed,array){
@@ -231,8 +236,8 @@
 		 			random_number = Math.round((blocks.length-1)*Math.random())
 		 			block = blocks[random_number] 
 
-		 				console.log(random_number)
-		 				console.log(block_hex)
+		 				//console.log(random_number)
+		 				//console.log(block)
 
 		 				glyph_val = git_the_random(block,block_hex)		
 		 					
@@ -250,7 +255,16 @@
 						attach_local_font(font_du_jour.split("-")[0],'.ttf')	
 					} else if (font_du_jour.split("-")[1]=='cjk'){
 						//console.log("in")
-						attach_local_font(font_du_jour.split("-")[0],'.otf')							
+						attach_local_font(font_du_jour.split("-")[0],'.otf')	
+					} else if (font_du_jour.split("-")[1]=='fontlibrary'){
+						//console.log("in")
+						attach_network_font(font_du_jour.split("-")[0],'https://fontlibrary.org/face/')	
+
+						if (font_du_jour.split("-")[0]=='cretan_hieroglyphs'){
+							font_du_jour = 'CretanHieroglyphsRegular-fontlibrary'	
+						} else if (font_du_jour.split("-")[0]=='cypro_minoan'){
+							font_du_jour = 'CyproMinoanRegular-fontlibrary'	
+						}
 					} else {
 						attach_goog_font(font_du_jour)	
 					}	
@@ -268,36 +282,22 @@
 	 	function get_more_spectacular(block){
 
 		 		font_array = block_lang[block]
-		 		//console.log(block + ':' +font_array)
+		 		console.log(block + ':' +font_array)
 
 		 		super_font_seed = Math.round((font_array.length-1)*Math.random())
 		 		//console.log("super_font_seed: " + super_font_seed)
 		 		font_lookup = font_array[super_font_seed]
-	 				//console.log("font_lookup: " + font_lookup)
+	 				console.log("font_lookup: " + font_lookup)
 	 				//console.log("lang_font: " + lang_font[font_lookup])	
 		 		font_seed = Math.round((lang_font[font_lookup].length-1)*Math.random())
-		 			//console.log("font_seed: " + 	font_seed)		 		
+		 			console.log("font_seed: " + 	font_seed)		 		
 		 		font = lang_font[font_lookup][font_seed]
 		 			//console.log("font: ",font)
 	 			return(font)	
 	 	}	 		
 
-
-
-	 	function attach_a_local_file_font(font){
-
-	 	}
-
-
-
-
-
-	 	//  font = git_the_random(block,block_lang)
-	 	//  font = block_lang[block][block_lang[block].length-1*Math.random()]
-
-	 	//}
 	    
-	    number_of_glyphs = 22;
+	    number_of_glyphs = 18;
 	    var row_1=document.getElementById('row1');
 	        row_1.innerHTML= spectacular(0,number_of_glyphs-1);
 	 	var row_2=document.getElementById('row2');
