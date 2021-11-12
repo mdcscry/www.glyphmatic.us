@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>C O T T A G E C O R E</title>
+		<title>I N F I N I T Y</title>
 	</head>
 
 
@@ -51,14 +51,14 @@ $(function(){
 				+  Math.round(Math.random()*10-20+hue) + ','
 				+  Math.round(40*Math.random()+sat-20)+ '%,'
 				+ (Math.round(Math.random()*20)+light) + '%,'
-				+ (Math.random(opa)+1)
+				+ (1)
 				+ ')';
 
 				mycolors.splice(1,0,toSpliceColor);
 			}
 		}
 
-		setColor(Math.round(Math.random()*20-10),Math.round(Math.random()*1800),Math.round(Math.random()*80),1);
+		setColor(Math.round(Math.random()*80-10),Math.round(Math.random()*1800),Math.round(Math.random()*80),1);
 		setColor(Math.round(Math.random()*340),Math.round(Math.random()*800),Math.round(Math.random()*80),1);
 
 
@@ -77,11 +77,11 @@ $(function(){
 		}
 
 		setBColor(Math.round(Math.random()*10),Math.round(Math.random()*400),Math.round(Math.random()*5),1);
-		document.body.style.backgroundColor = myBcolors[Math.round((myBcolors.length-1)*Math.random())];
+		document.body.style.backgroundColor = "black";
 
 
 		navGlyph=[];
-		glyphCnt=500;
+		glyphCnt=10;
 
 		for (i=1;i<=glyphCnt;i++){
 
@@ -89,25 +89,27 @@ $(function(){
 			elementName='glyphmatic' + i;
 			navGlyph[i] = document.createElement("div");
 			document.body.appendChild(navGlyph[i]);
-			navGlyph[i].innerHTML= "CottageCore";
+			navGlyph[i].innerHTML= "#######################################################################" ;
+			//navGlyph[i].innerHTML= "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" ;
+			//navGlyph[i].innerHTML= "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||" ;		
+			//navGlyph[i].innerHTML= "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" ;					
 			navGlyph[i].id=elementName;
 			navGlyph[i].style.position='relative';
 			navGlyph[i].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
-			navGlyph[i].style.fontSize=40+ Math.round( Math.random()*30-10 ) + 'px ';
-			navGlyph[i].style.padding=3+ Math.round( Math.random()*15 ) + 'px';
-			navGlyph[i].style.lineHeight= Math.random()+1.9;
+		//	navGlyph[i].style.color= "#ffffff";			
+			navGlyph[i].style.fontSize='50px';
+		//	navGlyph[i].style.padding=3+ Math.round( Math.random()*15 ) + 'px';
+		//	navGlyph[i].style.lineHeight= Math.random()+.3;
 			navGlyph[i].style.fontFamily=font;
-			navGlyph[i].style.cssFloat='left';
-			navGlyph[i].style.left='10px';
-			navGlyph[i].style.top='-10px';
+		//	navGlyph[i].style.cssFloat='left';
+		//	navGlyph[i].style.left='10px';
+		//	navGlyph[i].style.top='-10px';
 
 			//Syle the glyphs
-			navGlyph[i].style.textShadow=Math.round( Math.random()*4-1 ) + 'px '
-											+Math.round( Math.random()*4-1 ) + 'px '
-											+ mycolors[Math.round((mycolors.length-1)*Math.random())];
-			navGlyph[i].style.webkitTextFillColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
-			navGlyph[i].style.webkitTextStrokeWidth=Math.round(Math.random()*3-1) +"px";
-			navGlyph[i].style.webkitTextStrokeColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+		//	navGlyph[i].style.textShadow="#ffffff";
+		//	navGlyph[i].style.webkitTextFillColor="#ffffff";
+		//	navGlyph[i].style.webkitTextStrokeWidth="#ffffff";
+		//	navGlyph[i].style.webkitTextStrokeColor="#ffffff";
 
 		}
 

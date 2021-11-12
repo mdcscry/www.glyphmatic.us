@@ -19,15 +19,18 @@
 			@font-face {font-family: "Noto Sans Lao"; src: url(/tff/NotoSansLao-Regular.ttf);}			
 
 
-			table { 
+			table { width:55%;
 					border-bottom:50px solid #110c11;
 					border-radius:20px;	
 					top:-10%;		
 			}
 
-
+			span {
+				margin: 20px;
+			}
 			div {
 				display: inline;
+
 			}
 
 			tr { line-height: 4.5em; }
@@ -54,7 +57,7 @@
 				top: 100%;
 				right: 0%;
 				content: attr(title);
-				border: 1px solid rgba(0, 0, 0, 0.2);
+				border: 5px solid rgba(0, 0, 0, 0.2);
 				background-color: white;
 				padding: 0.1em;
 				z-index: 1;
@@ -69,7 +72,7 @@
 		<script type ="text/JavaScript" src="./css_js/block_hex_desc.js"></script>
 		<script type ="text/JavaScript" src="./css_js/block_lang_skeleton.js"></script>
 	</head>
-	<body>
+	<body style="overflow: hidden;font-size: 1.9em;display: inline;">
 	
 		<table  align='center' width=75%>
 			<tr >
@@ -261,7 +264,8 @@
 	 	}	 		
 
 	    
-	    number_of_glyphs = 20;
+	    number_of_glyphs = 10;
+	    captured = ''
 	    var row_1=document.getElementById('row1');
 	        row_1.innerHTML= spectacular(0,number_of_glyphs-1);
 	 	var row_2=document.getElementById('row2');

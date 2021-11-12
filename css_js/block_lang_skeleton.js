@@ -2,8 +2,7 @@
 
 block_lang =[{}]
 
-block_lang['block_of_women'] = ['101D5']
-
+ block_lang['block_of_women'] = ['101D5']
  block_lang['Adlam'] = ['adlam'];
  block_lang['Aegean_Numbers'] = ['linearb'];
  block_lang['Ahom'] = ['ahom'];
@@ -96,6 +95,7 @@ block_lang['block_of_women'] = ['101D5']
  block_lang['Ethiopic'] = ['ethiopic'];
  block_lang['Ethiopic_Extended'] = ['ethiopic'];
  block_lang['Ethiopic_Extended_A'] = ['ethiopic'];
+ block_lang['Ethiopic_Extended_B'] = ['ethiopicextendedb']
  block_lang['Ethiopic_Supplement'] = ['ethiopic'];
  block_lang['General_Punctuation'] = ['symbols'];
  block_lang['Geometric_Shapes'] = ['symbols'];
@@ -176,7 +176,7 @@ block_lang['block_of_women'] = ['101D5']
  block_lang['Mathematical_Operators'] = ['math'];
  block_lang['Mayan_Numerals'] = ['mayan'];
  block_lang['Maya'] = ['maya'];
-// block_lang['Medefaidrin'] = [''];
+ block_lang['Medefaidrin'] = ['medefaidrin'];
  block_lang['Meetei_Mayek'] = ['meeteimayek'];
  block_lang['Meetei_Mayek_Extensions'] = ['meeteimayek'];
  block_lang['Mende_Kikakui'] = ['mendekikakui'];
@@ -208,7 +208,7 @@ block_lang['block_of_women'] = ['101D5']
  block_lang['NKo'] = ['nko'];
  block_lang['Number_Forms'] = ['symbols'];
 
-// block_lang['Nushu'] = ['nushu'];
+ block_lang['Nushu'] = ['nushu'];
 // block_lang['Nyiakeng_Puachue_Hmong'] = [''];
  block_lang['Ogham'] = ['ogham'];
  block_lang['Ol_Chiki'] = ['olchiki'];
@@ -263,7 +263,7 @@ block_lang['block_of_women'] = ['101D5']
  block_lang['Supplemental_Mathematical_Operators'] = ['symbols'];
  block_lang['Supplemental_Punctuation'] = ['display'];
  block_lang['Supplemental_Symbols_And_Pictographs'] = ['symbols'];
-// block_lang['Sutton_SignWriting'] = [''];
+ block_lang['Sutton_SignWriting'] = ['sutton_signwriting'];
  block_lang['Syloti_Nagri'] = ['sylotinagri'];
  block_lang['Symbols_And_Pictographs_Extended_A'] = ['symbols'];
  block_lang['Syriac'] = ['syriaceastern','syriacestrangela','syriacwestern'];
@@ -276,7 +276,7 @@ block_lang['block_of_women'] = ['101D5']
  block_lang['Tai_Xuan_Jing_Symbols'] = ['symbols'];
  block_lang['Takri'] = ['takri'];
  block_lang['Tamil'] = ['tamil'];
- block_lang['Tamil_Supplement'] = ['tamil'];
+ block_lang['Tamil_Supplement'] = ['tamilsupplement'];
  block_lang['Tangut'] = ['tangut'];
  block_lang['Tangut_Components'] = ['tangut'];
  block_lang['Telugu'] = ['telugu'];
@@ -299,9 +299,31 @@ block_lang['block_of_women'] = ['101D5']
  block_lang['Yi_Syllables'] = ['yi'];
  block_lang['Yijing_Hexagram_Symbols'] = ['symbols2'];
  block_lang['Zanabazar_Square'] = ['zanabazarsquare'];
+ block_lang['Nyiakeng_Puachue_Hmong'] = ['pahawhhmong']; 
+ block_lang['Yezidi'] = ['yezidi']; 
 
 
 lang_font =[{}]
+
+
+lang_font['tamilsupplement'] = [
+
+	"Noto Sans Tamil Supplement-local"
+
+]
+
+lang_font['pahawhhmong'] = [
+
+	"Noto Sans Puachue Hmong-local"
+
+]
+
+lang_font['yezidi'] = [
+
+	"Noto Serif Yezidi-local"
+
+]
+
 
 lang_font['cyprominoan'] = [
 
@@ -653,8 +675,14 @@ lang_font['modifier'] = [
 
 lang_font['symbols'] = [  
 
-	"Noto Sans Symbols-local" 
-	,"symbola-fontlibrary" 
+	//"Noto Sans Symbols-local" 
+	//,
+	"symbola-fontlibrary" 
+		,"Noto Sans CJK sc-cjk"
+
+ 	,"STIXTwoMath-local"
+ 	,"Hind Unic-local"
+ 	,"Julia Mono-local"
 
 ]
 
@@ -735,9 +763,22 @@ lang_font['kannada'] = [
 lang_font['ethiopic'] = [
          
 	"Noto Sans Ethiopic",
-	"Noto Serif Ethiopic-local"
+	"Noto Serif Ethiopic-local",
+    "AbyssinicaSil-local"
 
  ]
+
+lang_font['ethiopicextendedb'] = [
+
+	"Gurage Ethiopia Jiret-local",
+	"AbyssinicaSil-local",
+	"Gurage Ethiopic Fantuwua-local",
+	"Gurage Ethiopic Wookianos-local",
+	"Gurage Noto Sans Ethiopic-local",
+	"Gurage Noto Serif Ethiopic-local",	
+
+
+]
 
 
 lang_font['inscriptionalpahlavi'] = [
@@ -921,6 +962,12 @@ lang_font['bamum'] = [
 lang_font['math'] = [     
 
  	"Noto Sans Math-local"
+ 	,"symbola-fontlibrary"
+ 	,"Noto Sans CJK sc-cjk"
+
+ 	,"STIXTwoMath-local"
+ 	,"Hind Unic-local"
+ 	,"Julia Mono-local"
 
 ]
 
@@ -1251,7 +1298,7 @@ lang_font['gurmukhi'] = [
 
                
 lang_font['malayalam'] = [   
-	"Noto Sans Malayalam-EA",
+	"Noto Sans Malayalam-local",
  	"Noto Serif Malayalam-local"       
 
 ]                                         
@@ -1756,7 +1803,17 @@ lang_font['display'] = [
 	"Noto Serif Display-local"
 
 	]
+lang_font['medefaidrin'] = [
+	"Noto Sans Medefaidrin"
+]
 
+lang_font['nushu'] = [
+	"Noto Sans Nushu"
+]
+
+lang_font['sutton_signwriting'] = [
+	"Noto Sans Signwriting-local"
+]
 
 lang_font['latin'] = [
 	"Abel",

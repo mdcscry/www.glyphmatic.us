@@ -1,0 +1,46 @@
+CretanHieroDescArray = []
+for (i=0xF2000; i <= 0xF23FB;i++){
+	CretanHieroDescArray.push("CRETAN_HIEROGLYPHICS" + i.toString(16));	
+}
+
+
+CyproMinoanDescArray = []
+for (i=0xF1000; i <= 0xF126E;i++){
+	CyproMinoanDescArray.push("CYPROMINOAN_HIEROGLHYPHICS" + i.toString(16));
+}
+
+
+MayaDescArray = []
+for (i=0xF6200; i <= 0xf6847;i++){
+	MayaDescArray.push("MAYAN_HIEROGLYPHICS" + i.toString(16));	
+}
+block_hex_desc = {
+'Arabic' : ['AFGHANI SIGN'],
+'Basic_Latin' : ['DOLLAR SIGN'],
+'Arabic_Presentation_Forms_A' : ['RIAL SIGN'],
+'Armenian' : ['ARMENIAN DRAM SIGN'],
+'Bengali' : ['BENGALI RUPEE MARK','BENGALI RUPEE SIGN','BENGALI GANDA MARK'],
+'Common_Indic_Number_Forms' : ['NORTH INDIC RUPEE MARK'],
+'Currency_Symbols' : ['EURO-CURRENCY SIGN','COLON SIGN','CRUZEIRO SIGN','FRENCH FRANC SIGN'
+,'LIRA SIGN','MILL SIGN','NAIRA SIGN','PESETA SIGN','RUPEE SIGN','WON SIGN','NEW SHEQEL SIGN'
+,'DONG SIGN','EURO SIGN','KIP SIGN','TUGRIK SIGN','DRACHMA SIGN','GERMAN PENNY SIGN'
+,'PESO SIGN','GUARANI SIGN','AUSTRAL SIGN','HRYVNIA SIGN','CEDI SIGN','LIVRE TOURNOIS SIGN'
+,'SPESMILO SIGN','TENGE SIGN','INDIAN RUPEE SIGN','TURKISH LIRA SIGN','NORDIC MARK SIGN'
+,'MANAT SIGN','RUBLE SIGN','LARI SIGN','BITCOIN SIGN','BITCOIN SIGN','BITCOIN SIGN','BITCOIN SIGN','BITCOIN SIGN'
+,'BITCOIN SIGN','BITCOIN SIGN','BITCOIN SIGN'],
+'Gujarati' : ['GUJARATI RUPEE SIGN'],
+'Halfwidth_And_Fullwidth_Forms' : ['FULLWIDTH DOLLAR SIGN','FULLWIDTH CENT SIGN','FULLWIDTH POUND SIGN','FULLWIDTH YEN SIGN','FULLWIDTH WON SIGN'],
+'Indic_Siyaq_Numbers' : ['INDIC SIYAQ RUPEE MARK'],
+'Khmer' : ['KHMER CURRENCY SYMBOL RIEL'],
+'Latin_1_Supplement' : ['CENT SIGN','POUND SIGN','CURRENCY SIGN','YEN SIGN'],
+'NKo' : ['NKO DOROME SIGN','NKO TAMAN SIGN'],
+'Small_Form_Variants' : ['SMALL DOLLAR SIGN'],
+'Tamil' : ['TAMIL RUPEE SIGN'],
+'Tamil_Supplement' : ['TAMIL SIGN KAACU','TAMIL SIGN PANAM','TAMIL SIGN PON','TAMIL SIGN VARAAKAN'],
+'Thai' : ['THAI CURRENCY SYMBOL BAHT'],
+'Wancho' : ['WANCHO NGUN SIGN'],
+
+'Maya' : MayaDescArray,
+'CretanHiero' : CretanHieroDescArray,
+'CyproMinoan' : CyproMinoanDescArray
+}
