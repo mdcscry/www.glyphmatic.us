@@ -1,0 +1,128 @@
+
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<TITLE>1.DeGenerator-legacy</TITLE>
+
+</head>
+
+
+<STYLE type="text/css">
+
+
+
+
+
+DIV   {
+	      -webkit-transition-property: background-color,color;
+	      -webkit-transition-duration: 10s,5s;
+
+    padding:0%;
+    margin:0%;
+    background:#FFFFFF;
+    font-size: 50px;
+    color:  #000000;
+    left: 0%;
+    align: center;
+}
+
+</STYLE>
+
+
+<body style="overflow: hidden;">
+
+
+
+<script type="text/javascript">
+
+var fontChangeRate=400;
+
+var mycolors=['#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1'
+//,'#00FA9A','#00FF00','#00FF7F','#00FFFF','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#2E8B57','#2F4F4F'
+//,'#2F4F4F','#32CD32','#3CB371','#40E0D0','#4169E1','#4682B4','#483D8B','#48D1CC','#4B0082','#556B2F','#5F9EA0'
+//,'#6495ED','#66CDAA','#696969','#696969','#6A5ACD','#6B8E23','#708090','#708090','#778899','#778899','#7B68EE'
+//,'#7CFC00','#7FFF00','#7FFFD4','#800000','#800080','#808000','#808080','#808080','#87CEEB','#87CEFA','#8A2BE2'
+//,'#8B0000','#8B008B','#8B4513','#8FBC8F','#90EE90','#9370DB','#9400D3','#98FB98','#9932CC','#9ACD32','#A0522D'
+//,'#A52A2A','#A9A9A9','#A9A9A9','#ADD8E6','#ADFF2F','#AFEEEE','#B0C4DE','#B0E0E6','#B22222','#B8860B','#BA55D3'
+//,'#BC8F8F','#BDB76B','#C0C0C0','#C71585','#CD5C5C','#CD853F','#D2691E','#D2B48C','#D3D3D3','#D3D3D3','#D8BFD8'
+//,'#DA70D6','#DAA520','#DB7093','#DC143C','#DCDCDC','#DDA0DD','#DEB887','#E0FFFF','#E6E6FA','#E9967A','#EE82EE'
+//,'#EEE8AA','#F08080','#F0E68C','#F0F8FF','#F0FFF0','#F0FFFF','#F4A460','#F5DEB3','#F5F5DC','#F5F5F5','#F5FFFA'
+//,'#F8F8FF','#FA8072','#FAEBD7','#FAF0E6','#FAFAD2','#FDF5E6','#FF0000','#FF00FF','#FF00FF','#FF1493','#FF4500'
+//,'#FF6347','#FF69B4','#FF7F50','#FF8C00','#FFA07A','#FFA500','#FFB6C1','#FFC0CB','#FFD700','#FFDAB9','#FFDEAD'
+//,'#FFE4B5','#FFE4C4','#FFE4E1','#FFEBCD','#FFEFD5','#FFF0F5','#FFF5EE','#FFF8DC','#FFFACD','#FFFAF0','#FFFAFA'
+,'#FFFF00','#FFFFE0','#FFFFF0','#FFFFFF' ];
+
+//const myarray = [129792, 129793, 129794, 129795, 129796, 129797, 129798, 129799, 129800, 129801, 129802, 129803, 129804, 129805, 129806, 129807, 129808, 129809, 129810, 129811, 129812, 129813, 129814, 129815, 129816, 129817, 129818, 129819, 129820, 129821, 129822, 129823, 129824, 129825, 129826, 129827, 129828, 129829, 129830, 129831, 129832, 129833, 129834, 129835, 129836, 129837, 129838, 129839, 129840, 129841, 129842, 129843, 129844, 129845, 129846, 129847, 129848, 129849, 129850, 129851, 129852, 129853, 129854, 129855, 129856, 129857, 129858, 129859, 129860, 129861, 129862, 129863, 129864, 129865, 129866, 129867, 129868, 129869, 129870, 129871, 129872, 129873, 129874, 129875, 129876, 129877, 129878, 129879, 129880, 129881, 129882, 129883, 129884, 129885, 129886, 129887, 129888, 129889, 129890, 129891, 129892, 129893, 129894, 129895, 129896, 129897, 129898, 129899, 129900, 129901, 129902, 129903, 129904, 129905, 129906, 129907, 129908, 129909, 129910, 129911, 129912, 129913, 129914, 129915, 129916, 129917, 129918, 129919, 129920, 129921, 129922, 129923, 129924, 129925, 129926, 129927, 129928, 129929, 129930, 129931, 129932, 129933, 129934, 129935, 129936, 129937, 129938, 129939, 129940, 129941, 129942, 129943, 129944, 129945, 129946, 129947, 129948, 129949, 129950, 129951, 129952, 129953, 129954, 129955, 129956, 129957, 129958, 129959, 129960, 129961, 129962, 129963, 129964, 129965, 129966, 129967, 129968, 129969, 129970, 129971, 129972, 129973, 129974, 129975, 129976, 129977, 129978, 129979, 129980, 129981, 129982, 129983, 129984, 129985, 129986, 129987, 129988, 129989, 129990, 130032, 130033, 130034, 130035, 130036, 130037, 130038, 130039, 130040, 130041];
+
+const myarray = ['1FB00', '1FB01', '1FB02', '1FB03', '1FB04', '1FB05', '1FB06', '1FB07', '1FB08', '1FB09', '1FB0A', '1FB0B', '1FB0C', '1FB0D', '1FB0E', '1FB0F', '1FB10', '1FB11', '1FB12', '1FB13', '1FB14', '1FB15', '1FB16', '1FB17', '1FB18', '1FB19', '1FB1A', '1FB1B', '1FB1C', '1FB1D', '1FB1E', '1FB1F', '1FB20', '1FB21', '1FB22', '1FB23', '1FB24', '1FB25', '1FB26', '1FB27', '1FB28', '1FB29', '1FB2A', '1FB2B', '1FB2C', '1FB2D', '1FB2E', '1FB2F', '1FB30', '1FB31', '1FB32', '1FB33', '1FB34', '1FB35', '1FB36', '1FB37', '1FB38', '1FB39', '1FB3A', '1FB3B', '1FB3C', '1FB3D', '1FB3E', '1FB3F', '1FB40', '1FB41', '1FB42', '1FB43', '1FB44', '1FB45', '1FB46', '1FB47', '1FB48', '1FB49', '1FB4A', '1FB4B', '1FB4C', '1FB4D', '1FB4E', '1FB4F', '1FB50', '1FB51', '1FB52', '1FB53', '1FB54', '1FB55', '1FB56', '1FB57', '1FB58', '1FB59', '1FB5A', '1FB5B', '1FB5C', '1FB5D', '1FB5E', '1FB5F', '1FB60', '1FB61', '1FB62', '1FB63', '1FB64', '1FB65', '1FB66', '1FB67', '1FB68', '1FB69', '1FB6A', '1FB6B', '1FB6C', '1FB6D', '1FB6E', '1FB6F', '1FB70', '1FB71', '1FB72', '1FB73', '1FB74', '1FB75', '1FB76', '1FB77', '1FB78', '1FB79', '1FB7A', '1FB7B', '1FB7C', '1FB7D', '1FB7E', '1FB7F', '1FB80', '1FB81', '1FB82', '1FB83', '1FB84', '1FB85', '1FB86', '1FB87', '1FB88', '1FB89', '1FB8A', '1FB8B', '1FB8C', '1FB8D', '1FB8E', '1FB8F', '1FB90', '1FB91', '1FB92', '1FB93', '1FB94', '1FB95', '1FB96', '1FB97', '1FB98', '1FB99', '1FB9A', '1FB9B', '1FB9C', '1FB9D', '1FB9E', '1FB9F', '1FBA0', '1FBA1', '1FBA2', '1FBA3', '1FBA4', '1FBA5', '1FBA6', '1FBA7', '1FBA8', '1FBA9', '1FBAA', '1FBAB', '1FBAC', '1FBAD', '1FBAE', '1FBAF', '1FBB0', '1FBB1', '1FBB2', '1FBB3', '1FBB4', '1FBB5', '1FBB6', '1FBB7', '1FBB8', '1FBB9', '1FBBA', '1FBBB', '1FBBC', '1FBBD', '1FBBE', '1FBBF', '1FBC0', '1FBC1', '1FBC2', '1FBC3', '1FBC4', '1FBC5', '1FBC6', '1FBC7', '1FBC8', '1FBC9', '1FBCA'
+, '1FBF0', '1FBF1', '1FBF2', '1FBF3', '1FBF4', '1FBF5', '1FBF6', '1FBF7', '1FBF8', '1FBF9'];
+
+document.body.style.backgroundColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+
+//container div
+
+var containerCount=1000;
+var containerId=[];
+
+for (containerCounter=1;containerCounter<=containerCount;containerCounter++){
+	containerName='container' + containerCounter;
+	containerId[containerCounter] = document.createElement("div");
+	document.body.appendChild(containerId[containerCounter]);
+	containerId[containerCounter].id=containerName+'-div0';
+	containerId[containerCounter].innerHTML= '&#x'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
+
+	//style
+	containerId[containerCounter].style.position='relative';
+	containerId[containerCounter].style.cssFloat='left';
+	containerId[containerCounter].style.opacity=0.5;
+	containerId[containerCounter].style.width='50px';
+	containerId[containerCounter].style.textAlign='center';
+	containerId[containerCounter].style.lineHeight=1.025;
+	containerId[containerCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
+
+var divId=[];
+
+
+for (divCounter=1;divCounter<=8;divCounter++){
+ elementName=containerName + '-div'+divCounter;
+ divId[divCounter] = document.createElement("div");
+ divId[divCounter].innerHTML= '&#x'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
+
+ //alert(divId[divCounter].id);
+containerId[containerCounter].appendChild(divId[divCounter]);
+divId[divCounter].id=elementName;
+divId[divCounter].style.position='absolute';
+divId[divCounter].style.cssFloat='none';
+divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
+divId[divCounter].style.opacity=0.65;
+divId[divCounter].style.lineHeight=1.025;
+divId[divCounter].style.top=0;
+//divId[divCounter].style.left=0;
+divId[divCounter].style.width='175px';
+divId[divCounter].style.backgroundColor='transparent';
+
+}
+}
+
+	window.setInterval(function(){
+
+		rndDivContainer=Math.round(Math.random()*(containerCount-1)+1);
+		//rndDivContainer=1;
+		rndDivChild=Math.round(Math.random()*7+1);
+		elementName='container' + rndDivContainer + '-div'+ rndDivChild;
+		 node=document.getElementById(elementName);
+		  try {
+		      node.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
+		      node.innerHTML= '&#x'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
+              //node.innerHTML= '&#x0021';
+		   } catch ( e ) {
+		      alert("Error: " + e.description + 'Value: ' + elementName );
+  			 }
+
+
+		},Math.random()*fontChangeRate);
+
+
+
+
+</script>
+</body></html>
