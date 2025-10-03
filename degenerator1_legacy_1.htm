@@ -27,7 +27,7 @@ DIV   {
     padding:0%;
     margin:0%;
     background:#FFFFFF;
-    font-size: 50px;
+    font-size: 1050px;
     color:  #000000;
     left: 0%;
     align: center;
@@ -36,7 +36,7 @@ DIV   {
 </STYLE>
 
 
-<body style="overflow: hidden;">
+<body style="overflow:hidden;">
 
 
 
@@ -82,9 +82,10 @@ for (containerCounter=1;containerCounter<=containerCount;containerCounter++){
 	containerId[containerCounter].style.position='relative';
 	containerId[containerCounter].style.cssFloat='left';
 	containerId[containerCounter].style.opacity=0.5;
-	containerId[containerCounter].style.width='50px';
+    containerId[containerCounter].style.fontSize='125px';    
+	containerId[containerCounter].style.width='125px';
 	containerId[containerCounter].style.textAlign='center';
-	containerId[containerCounter].style.lineHeight=1.025;
+	containerId[containerCounter].style.lineHeight=1;
 	containerId[containerCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
 
 var divId=[];
@@ -102,10 +103,11 @@ divId[divCounter].style.position='absolute';
 divId[divCounter].style.cssFloat='none';
 divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
 divId[divCounter].style.opacity=0.65;
-divId[divCounter].style.lineHeight=1.025;
+divId[divCounter].style.lineHeight=1;
+divId[divCounter].style.fontSize='125px';  
 divId[divCounter].style.top=0;
 //divId[divCounter].style.left=0;
-divId[divCounter].style.width='175px';
+divId[divCounter].style.width='125px';
 divId[divCounter].style.backgroundColor='transparent';
 
 }
