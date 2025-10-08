@@ -6,11 +6,10 @@ whirldFontArray=['Noto Sans'
 ,'Amiri'
 ,'Quivira'
 ,'Symbola'
-,'Sun-Exta'
 ,'code2000'
 ,'aegyptus'
 ,'aegean'
-,'maya'
+,'Maya'
 ,'anatolian'
 
 ,'aksara bali'
@@ -31,17 +30,16 @@ whirldFontArray=['Noto Sans'
 
 ];
 
-myFontSet[0]=['x2648','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Sun-ExtA','Symbola'];//crosses
+myFontSet[0]=['x2648','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//crosses
 
-//myFontSet[0]=['9766','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Sun-ExtA','Symbola'];//crosses
-myFontSet[1]=['9767','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Sun-ExtA','Symbola'];
-myFontSet[2]=['9768','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Sun-ExtA','Symbola'];
-myFontSet[3]=['9769','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Sun-ExtA','Symbola'];
-myFontSet[4]=['10009','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Sun-ExtA','Symbola'];
-myFontSet[5]=['10010','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Sun-ExtA','Symbola'];
-myFontSet[6]=['10015','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Sun-ExtA','Symbola'];
-myFontSet[7]=['10016','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Sun-ExtA','Symbola'];
-myFontSet[8]=['xFDFD','Paktype Tehreer','Paktype Tehreer','Amiri','PakType Ajrak','_PDMS_Saleem_QuranFont','jameel noori nastaleeq','fajer noori nastalique','paktype naqsh'];//bismullah
+myFontSet[1]=['9767','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];
+myFontSet[2]=['9768','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];
+myFontSet[3]=['9769','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];
+myFontSet[4]=['10009','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];
+myFontSet[5]=['10010','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];
+myFontSet[6]=['10015','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];
+myFontSet[7]=['10016','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];
+myFontSet[8]=['xFDFD','Paktype Tehreer','Amiri','PakType Ajrak','_PDMS_Saleem_QuranFont','jameel noori nastaleeq','fajer noori nastalique','paktype naqsh'];//bismullah
 myFontSet[9]=['x1F548','Symbola','Noto Sans Symbols-Black'];//ankh
 myFontSet[10]=['x2670','Code2000','Code2000','Symbola','Noto Sans Symbols-Black','Segoe UI Symbol','Estrangelo Edessa','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans'];//cross
 myFontSet[11]=['x2671','Code2000','Symbola','Noto Sans Symbols-Black','Segoe UI Symbol','Estrangelo Edessa','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans'];//cross
@@ -51,79 +49,77 @@ myFontSet[14]=['x26E6','Symbola','Noto Sans Symbols-Black'];//star
 myFontSet[15]=['x26E7','Symbola','Noto Sans Symbols-Black','Quivira'];//star
 myFontSet[16]=['x2693','Symbola','Noto Sans Symbols-Black','Quivira','Code2000','Segoe UI Symbol','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSans','FreeSerif'];//anchor
 myFontSet[17]=['x2696','Symbola','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSans','FreeSerif'];//scales
-myFontSet[18]=['x06E9','_PDMS_Saleem_QuranFont','Amiri','Arabic Typesetting','Arial Unicode MS','Courier New','Droid Arabic Kufi','Droid Arabic Naskh','Lateef','Microsoft Uighur','PakType Naskh Basic','Sakkal Majalla','Scheherazade','Segoe UI','Sun-Exta','Tahoma','Times New Roman'];//sujduh
-myFontSet[19]=['x06DE','_PDMS_Saleem_QuranFont','Amiri','Arabic Typesetting','Arial Unicode MS','Courier New','Droid Arabic Kufi','Droid Arabic Naskh','Lateef','Microsoft Uighur','MPH 2B Damase','PakType Naskh Basic','Sakkal Majalla','Scheherazade','Segoe UI','Sun-Exta','Tahoma','Times New Roman'];//elhizb
-myFontSet[20]=['9770','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Arial Unicode Ms','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Sun-Exta','Symbola'];//cresent
-myFontSet[21]=['9773','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Arial Unicode MS','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Sun-Exta','Symbola'];//hammer and sickle
-myFontSet[22]=['10017','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Arial Unicode MS','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Sun-Exta','Symbola'];//star of david
-myFontSet[23]=['x0AD0','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Arial Unicode MS','Code2000','Sun-Exta','Shruti'];//shruti sacred om
-myFontSet[24]=['x006F;&#x0310;&#x006D','Akshar Unicode','Annapurna SIL','Arial','Arial Unicode MS','Arimo','Calibri','Cambria','Cambria Math','Cardo','Code2000','Consolas','Courier New','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSans','FreeSerif','JG NKo','Jomolhari','Lucida Sans Unicode','Microsoft PhagsPa','Microsoft Sans Serif','Noto Sans','Noto Sans South Asian UI','Noto Sans Southeast Asian','Noto Sans UI','Noto Serif','Quivira','Segoe UI','Siddhanta','Sun-ExtA','Symbola','Tahoma','Tibetan Machine Uni','Times New Roman'];//om
-myFontSet[25]=['x006F;&#x030A;&#x006D','Akshar Unicode','Annapurna SIL','Arial','Arial Unicode MS','Arimo','Calibri','Cambria','Cambria Math','Cardo','Code2000','Consolas','Courier New','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSans','FreeSerif','JG NKo','Jomolhari','Lucida Sans Unicode','Microsoft PhagsPa','Microsoft Sans Serif','Noto Sans','Noto Sans South Asian UI','Noto Sans Southeast Asian','Noto Sans UI','Noto Serif','Quivira','Segoe UI','Siddhanta','Sun-ExtA','Symbola','Tahoma','Tibetan Machine Uni','Times New Roman'];//om circle
-myFontSet[26]=['x0A74','FreeSans','Arial Unicode MS','Code2000','Raavi','Sun-ExtA','Noto Sans South Asian UI'];//ik onkar
+myFontSet[18]=['x06E9','_PDMS_Saleem_QuranFont','Amiri','Arabic Typesetting','Arial Unicode MS','Courier New','Droid Arabic Kufi','Droid Arabic Naskh','Lateef','Microsoft Uighur','PakType Naskh Basic','Sakkal Majalla','Scheherazade','Segoe UI','Tahoma','Times New Roman'];//sujduh
+myFontSet[19]=['x06DE','_PDMS_Saleem_QuranFont','Amiri','Arabic Typesetting','Arial Unicode MS','Courier New','Droid Arabic Kufi','Droid Arabic Naskh','Lateef','Microsoft Uighur','MPH 2B Damase','PakType Naskh Basic','Sakkal Majalla','Scheherazade','Segoe UI','Tahoma','Times New Roman'];//elhizb
+myFontSet[20]=['9770','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Arial Unicode Ms','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//cresent
+myFontSet[21]=['9773','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Arial Unicode MS','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//hammer and sickle
+myFontSet[22]=['10017','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Arial Unicode MS','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//star of david
+myFontSet[23]=['x0AD0','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Arial Unicode MS','Code2000','Shruti'];//shruti sacred om
+myFontSet[24]=['x006F;&#x030A;&#x006D','Akshar Unicode','Annapurna SIL','Arial','Arial Unicode MS','Arimo','Calibri','Cambria','Cambria Math','Cardo','Code2000','Consolas','Courier New','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSans','FreeSerif','JG NKo','Jomolhari','Lucida Sans Unicode','Microsoft PhagsPa','Microsoft Sans Serif','Noto Sans','Noto Sans South Asian UI','Noto Sans Southeast Asian','Noto Sans UI','Noto Serif','Quivira','Segoe UI','Siddhanta','Symbola','Tahoma','Tibetan Machine Uni','Times New Roman'];//om
+myFontSet[26]=['x0A74','FreeSans','Arial Unicode MS','Code2000','Raavi','Noto Sans South Asian UI'];//ik onkar
 myFontSet[27]=['x1F549','Symbola'];//sacred om
-myFontSet[28]=['x0950','Akshar Unicode','Annapurna SIL','Aparajita','Arial Unicode MS','Code2000','FreeSans','FreeSerif','Kokila','Mangal','Noto Sans','Noto Sans Devanagari','Noto Sans Devanagari UI','Noto Sans South Asian UI','Siddhanta','Sun-ExtA','Utsaah'];//sacred om
-myFontSet[29]=['x0FD5','Siddhanta','Siddhanta','Tibetan Machine Uni'];//Tibetan Swastikas
-myFontSet[30]=['x0FD6','Siddhanta','Siddhanta','Tibetan Machine Uni'];//Tibetan Swastikas
-myFontSet[31]=['x0FD7','Siddhanta','Siddhanta','Tibetan Machine Uni'];//Tibetan Swastikas
-myFontSet[32]=['x0FD8','Siddhanta','Siddhanta','Tibetan Machine Uni'];//Tibetan Swastikas
+myFontSet[28]=['x0950','Akshar Unicode','Annapurna SIL','Aparajita','Arial Unicode MS','Code2000','FreeSans','FreeSerif','Kokila','Mangal','Noto Sans','Noto Sans Devanagari','Noto Sans Devanagari UI','Noto Sans South Asian UI','Siddhanta','Utsaah'];//sacred om
+myFontSet[29]=['x0FD5','Siddhanta','Tibetan Machine Uni','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan Swastikas
+myFontSet[30]=['x0FD6','Siddhanta','Tibetan Machine Uni','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan Swastikas
+myFontSet[31]=['x0FD7','Siddhanta','Tibetan Machine Uni','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan Swastikas
+myFontSet[32]=['x0FD8','Siddhanta','Tibetan Machine Uni','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan Swastikas
 
-myFontSet[33]=['x0F00','Arial Unicode MS','Arial Unicode MS','Jomolhari','Microsoft Himalaya','Sun-ExtA','Tibetan Machine Uni'];//sacred om
+myFontSet[33]=['x0F00','Arial Unicode MS','Microsoft Himalaya','Tibetan Machine Uni','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//sacred om
 myFontSet[34]=['x0BD0','Droid Sans Tamil','Droid Sans Tamil','Latha','Maduram','Noto Sans Tamil','Vijaya'];//tamil sacred om
-myFontSet[35]=['2451;&#2433','Arial Unicode MS','Code2000','FreeSans','Noto Sans Bengali','Shonar Bangla','Sun-ExtA','Vrinda'];//bengali sacred om
-myFontSet[36]=['x0c13;&#x0c02','Arial Unicode MS','Akshar Unicode','Code2000','Gautami','Noto Sans Telugu','Pothana2000','Sun-ExtA','Vani'];//telugu sacred om
-myFontSet[37]=['x0D13;&#x0D02','Arial Unicode MS','Akshar Unicode','Code2000','Kartika','Noto Sans Malayalam','Sun-ExtA'];//malayalam sacred om
+myFontSet[35]=['2451;&#x2433','Arial Unicode MS','Code2000','FreeSans','Noto Sans Bengali','Shonar Bangla','Vrinda'];//bengali sacred om
+myFontSet[36]=['x0c13;&#x0c02','Arial Unicode MS','Akshar Unicode','Code2000','Gautami','Noto Sans Telugu','Pothana2000','Vani'];//telugu sacred om
+myFontSet[37]=['x0D13;&#x0D02','Arial Unicode MS','Akshar Unicode','Code2000','Kartika','Noto Sans Malayalam',];//malayalam sacred om
 
 myFontSet[38]=['xFDFB','_PDMS_Saleem_QuranFont ','Arial Unicode MS ','Jameel Noori Nastaleeq ','Kinza','Noto Naskh Arabic UI','Pak Nastaleeq','PakType Ajrak','PakType Naqsh ','PakType Naskh Basic','PakType Tehreer','Sakkal Majalla',''];//alehye
 
 myFontSet[39]=['xFDF2','PakType Tehreer','_PDMS_Saleem_QuranFont','Amiri','Andalus','Arabic Typesetting','Arial Unicode MS','Code2000','Courier New','Diwani Bent','Diwani Simple Outline','Diwani Simple Striped','Droid Arabic Kufi','Droid Arabic Naskh','Fajer Noori Nastalique','Jameel Noori Nastaleeq','FreeSerif','Kinza','Lateef','Microsoft Uighur','MPH 2B Damase','MV Boli','Nafees Web Naskh','Old Antic Decorative','Old Antic Outline','Pak Nastaleeq','PakType Ajrak','PakType Naqsh','PakType Naskh Basic','Sakkal Majalla','Scheherazade','Segoe UI','Simplified Arabic','Tahoma','Times New Roman','Traditional Arabic','Urdu Naskh Asiatype'];//allah
-myFontSet[40]=['x262E','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Arial Unicode MS','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols','Quivira','Segoe UI Symbol','Sun-Exta','Symbola'];//peace sign
-myFontSet[41]=['x262F','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Arial Unicode MS','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols','Quivira','Segoe UI Symbol','Sun-Exta','Symbola'];//yin yang
-myFontSet[42]=['x270C','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Arial Unicode MS','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols','Quivira','Segoe UI Symbol','Sun-Exta','Symbola'];//peace sign hand
-myFontSet[43]=['x05D9;&#x05D4;&#x05D5;&#x05D4','Aharoni','Aramaic Early Br Rkb','Aramaic Imperial Yeb','Aramaic VIIBCE','Arial','Arial Unicode MS','Cardo','Code2000','Courier New','David','FrankRuehl','FreeSans','Gisha', 'Hebrew Paleo Gezer' ,'Hebrew Paleo Lachish' ,'Hebrew Paleo Mesha' ,'Hebrew Paleo Qumran' ,'Hebrew Paleo Siloam' ,'Hebrew Samaritan' ,'Hebrew SoferStam Ashkenaz' ,'Hebrew Square BenKosba' ,'Hebrew Square Bet-Shearim' ,'Hebrew Square Habakkuk' ,'Hebrew Square Isaiah','Keter YG' ,'Levenim MT' ,'Lucida Sans Unicode' ,'Miriam' ,'MPH 2B Damase' ,'Narkism' ,'Noto Sans Hebrew' ,'Phoenician Ahiram' ,'Proto Canaanite' ,'Quivira','Rod','Sun-Exta','Tahoma' ,'Times New Roman'];//tetragrammaton pure
+myFontSet[40]=['x262E','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Arial Unicode MS','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//peace sign
+myFontSet[41]=['x262F','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Arial Unicode MS','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//yin yang
+myFontSet[42]=['x270C','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Arial Unicode MS','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols 2','Quivira','Segoe UI Symbol','Symbola'];//peace sign hand
+myFontSet[43]=['x05D9;&#x05D4;&#x05D5;&#x05D4','Aharoni','Aramaic Early Br Rkb','Aramaic Imperial Yeb','Aramaic VIIBCE','Arial','Arial Unicode MS','Cardo','Code2000','Courier New','David','FrankRuehl','FreeSans','Gisha', 'Hebrew Paleo Gezer' ,'Hebrew Paleo Lachish' ,'Hebrew Paleo Mesha' ,'Hebrew Paleo Qumran' ,'Hebrew Paleo Siloam' ,'Hebrew Samaritan' ,'Hebrew SoferStam Ashkenaz' ,'Hebrew Square BenKosba' ,'Hebrew Square Bet-Shearim' ,'Hebrew Square Habakkuk' ,'Hebrew Square Isaiah','Keter YG' ,'Levenim MT' ,'Lucida Sans Unicode' ,'Miriam' ,'MPH 2B Damase' ,'Narkism' ,'Noto Sans Hebrew' ,'Phoenician Ahiram' ,'Proto Canaanite' ,'Quivira','Rod','Tahoma' ,'Times New Roman'];//tetragrammaton pure
 
-myFontSet[44]=['x05D9;&#x05B0;&#x05D4;&#x05B9;&#x05D5;&#x05B8;&#x05D4','Aharoni','Aramaic Early Br Rkb','Aramaic Imperial Yeb','Aramaic VIIBCE','Arial','Arial Unicode MS','Cardo','Code2000','Courier New','David','FrankRuehl','FreeSans','Gisha', 'Hebrew Paleo Gezer' ,'Hebrew Paleo Lachish' ,'Hebrew Paleo Mesha' ,'Hebrew Paleo Qumran' ,'Hebrew Paleo Siloam' ,'Hebrew Samaritan' ,'Hebrew SoferStam Ashkenaz' ,'Hebrew Square BenKosba' ,'Hebrew Square Bet-Shearim' ,'Hebrew Square Habakkuk' ,'Hebrew Square Isaiah','Keter YG' ,'Levenim MT' ,'Lucida Sans Unicode' ,'Miriam' ,'MPH 2B Damase' ,'Narkism' ,'Noto Sans Hebrew' ,'Phoenician Ahiram' ,'Proto Canaanite' ,'Quivira','Rod','Sun-Exta','Tahoma' ,'Times New Roman'];//tetragrammaton adonai
-myFontSet[45]=['x05D9;&#x05B0;&#x05D4;&#x05D5;&#x05B8;&#x05D4','Aharoni','Aramaic Early Br Rkb','Aramaic Imperial Yeb','Aramaic VIIBCE','Arial','Arial Unicode MS','Cardo','Code2000','Courier New','David','FrankRuehl','FreeSans','Gisha', 'Hebrew Paleo Gezer' ,'Hebrew Paleo Lachish' ,'Hebrew Paleo Mesha' ,'Hebrew Paleo Qumran' ,'Hebrew Paleo Siloam' ,'Hebrew Samaritan' ,'Hebrew SoferStam Ashkenaz' ,'Hebrew Square BenKosba' ,'Hebrew Square Bet-Shearim' ,'Hebrew Square Habakkuk' ,'Hebrew Square Isaiah','Keter YG' ,'Levenim MT' ,'Lucida Sans Unicode' ,'Miriam' ,'MPH 2B Damase' ,'Narkism' ,'Noto Sans Hebrew' ,'Phoenician Ahiram' ,'Proto Canaanite' ,'Quivira','Rod','Sun-Exta','Tahoma' ,'Times New Roman'];//tetragrammaton biblical scholars
-myFontSet[46]=['x05D9;&#x05B7;&#x05D4;&#x05B0;&#x05D5;&#x05B6;&#x05D4','Aharoni','Aramaic Early Br Rkb','Aramaic Imperial Yeb','Aramaic VIIBCE','Arial','Arial Unicode MS','Cardo','Code2000','Courier New','David','FrankRuehl','FreeSans','Gisha', 'Hebrew Paleo Gezer' ,'Hebrew Paleo Lachish' ,'Hebrew Paleo Mesha' ,'Hebrew Paleo Qumran' ,'Hebrew Paleo Siloam' ,'Hebrew Samaritan' ,'Hebrew SoferStam Ashkenaz' ,'Hebrew Square BenKosba' ,'Hebrew Square Bet-Shearim' ,'Hebrew Square Habakkuk' ,'Hebrew Square Isaiah','Keter YG' ,'Levenim MT' ,'Lucida Sans Unicode' ,'Miriam' ,'MPH 2B Damase' ,'Narkism' ,'Noto Sans Hebrew' ,'Phoenician Ahiram' ,'Proto Canaanite' ,'Quivira','Rod','Sun-Exta','Tahoma' ,'Times New Roman'];//tetragrammaton final
+myFontSet[44]=['x05D9;&#x05B0;&#x05D4;&#x05B9;&#x05D5;&#x05B8;&#x05D4','Aharoni','Aramaic Early Br Rkb','Aramaic Imperial Yeb','Aramaic VIIBCE','Arial','Arial Unicode MS','Cardo','Code2000','Courier New','David','FrankRuehl','FreeSans','Gisha', 'Hebrew Paleo Gezer' ,'Hebrew Paleo Lachish' ,'Hebrew Paleo Mesha' ,'Hebrew Paleo Qumran' ,'Hebrew Paleo Siloam' ,'Hebrew Samaritan' ,'Hebrew SoferStam Ashkenaz' ,'Hebrew Square BenKosba' ,'Hebrew Square Bet-Shearim' ,'Hebrew Square Habakkuk' ,'Hebrew Square Isaiah','Keter YG' ,'Levenim MT' ,'Lucida Sans Unicode' ,'Miriam' ,'MPH 2B Damase' ,'Narkism' ,'Noto Sans Hebrew' ,'Phoenician Ahiram' ,'Proto Canaanite' ,'Quivira','Rod','Tahoma' ,'Times New Roman'];//tetragrammaton adonai
+myFontSet[45]=['x05D9;&#x05B0;&#x05D4;&#x05D5;&#x05B8;&#x05D4','Aharoni','Aramaic Early Br Rkb','Aramaic Imperial Yeb','Aramaic VIIBCE','Arial','Arial Unicode MS','Cardo','Code2000','Courier New','David','FrankRuehl','FreeSans','Gisha', 'Hebrew Paleo Gezer' ,'Hebrew Paleo Lachish' ,'Hebrew Paleo Mesha' ,'Hebrew Paleo Qumran' ,'Hebrew Paleo Siloam' ,'Hebrew Samaritan' ,'Hebrew SoferStam Ashkenaz' ,'Hebrew Square BenKosba' ,'Hebrew Square Bet-Shearim' ,'Hebrew Square Habakkuk' ,'Hebrew Square Isaiah','Keter YG' ,'Levenim MT' ,'Lucida Sans Unicode' ,'Miriam' ,'MPH 2B Damase' ,'Narkism' ,'Noto Sans Hebrew' ,'Phoenician Ahiram' ,'Proto Canaanite' ,'Quivira','Rod','Tahoma' ,'Times New Roman'];//tetragrammaton biblical scholars
+myFontSet[46]=['x05D9;&#x05B7;&#x05D4;&#x05B0;&#x05D5;&#x05B6;&#x05D4','Aharoni','Aramaic Early Br Rkb','Aramaic Imperial Yeb','Aramaic VIIBCE','Arial','Arial Unicode MS','Cardo','Code2000','Courier New','David','FrankRuehl','FreeSans','Gisha', 'Hebrew Paleo Gezer' ,'Hebrew Paleo Lachish' ,'Hebrew Paleo Mesha' ,'Hebrew Paleo Qumran' ,'Hebrew Paleo Siloam' ,'Hebrew Samaritan' ,'Hebrew SoferStam Ashkenaz' ,'Hebrew Square BenKosba' ,'Hebrew Square Bet-Shearim' ,'Hebrew Square Habakkuk' ,'Hebrew Square Isaiah','Keter YG' ,'Levenim MT' ,'Lucida Sans Unicode' ,'Miriam' ,'MPH 2B Damase' ,'Narkism' ,'Noto Sans Hebrew' ,'Phoenician Ahiram' ,'Proto Canaanite' ,'Quivira','Rod','Tahoma' ,'Times New Roman'];//tetragrammaton final
 
 
-//myFontSet[44]=['x05D9;&#x05B0;&#x05D4;&#x05B9;&#x05D5;&#x05B8;&#x05D4','Aharoni','Aharoni','Arial','Arial Unicode MS','Cardo','Code2000','Courier New','David','FrankRuehl','FreeSans','Gisha','Keter YG' ,'Levenim MT' ,'Lucida Sans Unicode' ,'Miriam' ,'MPH 2B Damase' ,'Narkism' ,'Noto Sans Hebrew' ,'Quivira' ,'Rod' ,'Sun-ExtA' ,'Tahoma' ,'Times New Roman'];//tetragrammaton adonai
-//myFontSet[45]=['x05D9;&#x05B0;&#x05D4;&#x05D5;&#x05B8;&#x05D4','Aharoni','Aharoni','Arial','Arial Unicode MS','Cardo','Code2000','Courier New','David','FrankRuehl','FreeSans','Gisha','Keter YG' ,'Levenim MT' ,'Lucida Sans Unicode' ,'Miriam' ,'MPH 2B Damase' ,'Narkism' ,'Noto Sans Hebrew' ,'Quivira' ,'Rod' ,'Sun-ExtA' ,'Tahoma' ,'Times New Roman'];//tetragrammaton biblical scholars
-//myFontSet[46]=['x05D9;&#x05B7;&#x05D4;&#x05B0;&#x05D5;&#x05B6;&#x05D4','Aharoni','Aharoni','Arial','Arial Unicode MS','Cardo','Code2000','Courier New','David','FrankRuehl','FreeSans','Gisha','Keter YG' ,'Levenim MT' ,'Lucida Sans Unicode' ,'Miriam' ,'MPH 2B Damase' ,'Narkism' ,'Noto Sans Hebrew' ,'Quivira' ,'Rod' ,'Sun-ExtA' ,'Tahoma' ,'Times New Roman'];//tetragrammaton final
-myFontSet[47]=['x2638','Arial Unicode Ms','Arial Unicode Ms','MS UI Gothic','Meiryo UI','Code2000','Jomolhari','Noto Sans Symbols','Quivira','Segoe UI Symbol','Siddhanta','Sun-exta','Symbola','Tibetan Machine Uni'];//dharma wheel
-myFontSet[48]=['x0FCA','Tibetan Machine Uni','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari Regular','Sun-Exta'];//Tibetan yin yang
-myFontSet[49]=['x0FCB','Tibetan Machine Uni','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari Regular','Sun-Exta'];//Tibetan yin yang
-myFontSet[50]=['x0FCC','Tibetan Machine Uni','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari Regular','Sun-Exta'];//Tibetan yin yang
-myFontSet[51]=['x262C','Arial Unicode Ms','Arial Unicode MS','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols','Quivira','Segoe UI Symbol','Sun-Exta','Symbola'];//adi shakti
-myFontSet[52]=['x262B','Arial Unicode Ms','Arial Unicode MS','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols','Quivira','Segoe UI Symbol','Sun-Exta','Symbola'];//farsi
-myFontSet[53]=['x0F15','Tibetan Machine Uni','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari Regular','Sun-Exta'];//Tibetan
-myFontSet[54]=['x0F16','Tibetan Machine Uni','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari Regular','Sun-Exta'];//Tibetan
-myFontSet[55]=['x0F17','Tibetan Machine Uni','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari Regular','Sun-Exta'];//Tibetan
-myFontSet[56]=['x0FC4','Tibetan Machine Uni','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari Regular','Sun-Exta'];//Tibetan
-myFontSet[57]=['x0FC5','Tibetan Machine Uni','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari Regular','Sun-Exta'];//Tibetan
-myFontSet[58]=['x0FC7','Tibetan Machine Uni','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari Regular','Sun-Exta'];//Tibetan
-myFontSet[59]=['x0F13','Tibetan Machine Uni','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari Regular','Sun-Exta'];//Tibetan
-myFontSet[60]=['x0FC7','Tibetan Machine Uni','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari Regular','Sun-Exta'];//Tibetan
-myFontSet[61]=['x0FC2','Tibetan Machine Uni','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari Regular','Sun-Exta'];//Tibetan
-myFontSet[62]=['x0FC3','Tibetan Machine Uni','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari Regular','Sun-Exta'];//Tibetan
+//myFontSet[44]=['x05D9;&#x05B0;&#x05D4;&#x05B9;&#x05D5;&#x05B8;&#x05D4','Aharoni','Aharoni','Arial','Arial Unicode MS','Cardo','Code2000','Courier New','David','FrankRuehl','FreeSans','Gisha','Keter YG' ,'Levenim MT' ,'Lucida Sans Unicode' ,'Miriam' ,'MPH 2B Damase' ,'Narkism' ,'Noto Sans Hebrew' ,'Quivira' ,'Rod' , ,'Tahoma' ,'Times New Roman'];//tetragrammaton adonai
+//myFontSet[45]=['x05D9;&#x05B0;&#x05D4;&#x05D5;&#x05B8;&#x05D4','Aharoni','Aharoni','Arial','Arial Unicode MS','Cardo','Code2000','Courier New','David','FrankRuehl','FreeSans','Gisha','Keter YG' ,'Levenim MT' ,'Lucida Sans Unicode' ,'Miriam' ,'MPH 2B Damase' ,'Narkism' ,'Noto Sans Hebrew' ,'Quivira' ,'Rod' , ,'Tahoma' ,'Times New Roman'];//tetragrammaton biblical scholars
+//myFontSet[46]=['x05D9;&#x05B7;&#x05D4;&#x05B0;&#x05D5;&#x05B6;&#x05D4','Aharoni','Aharoni','Arial','Arial Unicode MS','Cardo','Code2000','Courier New','David','FrankRuehl','FreeSans','Gisha','Keter YG' ,'Levenim MT' ,'Lucida Sans Unicode' ,'Miriam' ,'MPH 2B Damase' ,'Narkism' ,'Noto Sans Hebrew' ,'Quivira' ,'Rod' , ,'Tahoma' ,'Times New Roman'];//tetragrammaton final
+myFontSet[47]=['x2638','Arial Unicode Ms','Arial Unicode Ms','Meiryo UI','Code2000','Jomolhari','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Siddhanta','Symbola','Tibetan Machine Uni'];//dharma wheel
+myFontSet[48]=['x0FCA','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan yin yang
+myFontSet[49]=['x0FCB','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan yin yang
+myFontSet[50]=['x0FCC','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan yin yang
+myFontSet[51]=['x262C','Arial Unicode Ms','Arial Unicode MS','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//adi shakti
+myFontSet[52]=['x262B','Arial Unicode Ms','Arial Unicode MS','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//farsi
+myFontSet[53]=['x0F15','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan
+myFontSet[54]=['x0F16','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan
+myFontSet[55]=['x0F17','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan
+myFontSet[56]=['x0FC4','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan
+myFontSet[57]=['x0FC5','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan
+myFontSet[58]=['x0FC7','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan
+myFontSet[59]=['x0F13','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan
+myFontSet[61]=['x0FC2','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan
+myFontSet[62]=['x0FC3','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan
 myFontSet[63]=['x0FC6','Tibetan Machine Uni'];//Tibetan
-myFontSet[64]=['x0FC8','Tibetan Machine Uni','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari Regular','Sun-Exta'];//Tibetan
-myFontSet[65]=['x0FC9','Tibetan Machine Uni','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari Regular','Sun-Exta'];//Tibetan
-myFontSet[66]=['x5FE2','Arial Unicode MS','Arial Unicode MS','Code2000','DFKai-SB','FangSong','KaiTi','Meiryo','Meiryo UI ','Microsoft JhengHei','Microsoft YaHei','MingLiU','MingLiU_HKSCS','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','NSimSun','PMingLiU','SimHei','SimSun','Sun-ExtA'];//satori
-myFontSet[67]=['x41A8','Code2000','FangSong','KaiTi','Microsoft JhengHei','Microsoft YaHei','MingLiU','MingLiU_HKSCS','NSimSun','PMingLiU','SimHei','SimSun','Sun-ExtA'];//void heaven
-myFontSet[68]=['x51A5','Arial Unicode MS','Batang','BatangChe','Code2000','DFKai-SB','Dotum','DotumChe','FangSong','Gulim','GulimChe','Gungsuh','GungsuhChe','Jurchen','KaiTi','Meiryo','Meiryo UI','Microsoft JhengHei ','Microsoft YaHei','MingLiU','MingLiU_HKSCS','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','Nanum Brush Script','NSimSun','PMingLiU','SimHei','SimSun','Sun-ExtA'];//void heaven
-myFontSet[69]=['x7A7A','Arial Unicode MS','Batang','BatangChe','Code2000','DFKai-SB','Dotum','DotumChe','FangSong','Gulim','GulimChe','Gungsuh','GungsuhChe','KaiTi','Meiryo','Meiryo UI','Microsoft JhengHei ','Microsoft YaHei','MingLiU','MingLiU_HKSCS','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','NSimSun','PMingLiU','SimHei','SimSun','Sun-ExtA'];//empty
-myFontSet[70]=['x7985','Arial Unicode MS','Arial Unicode MS','Code2000','DFKai-SB','FangSong','KaiTi','Meiryo','Meiryo UI ','Microsoft JhengHei','Microsoft YaHei','MingLiU','MingLiU_HKSCS','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','NSimSun','PMingLiU','SimHei','SimSun','Sun-ExtA'];//zen
-myFontSet[71]=['x795E','Arial Unicode MS','Batang','BatangChe','Code2000','DFKai-SB','Dotum','DotumChe','FangSong','Gulim','GulimChe','Gungsuh','GungsuhChe','KaiTi','Meiryo','Meiryo UI','Microsoft JhengHei ','Microsoft YaHei','MingLiU','MingLiU_HKSCS','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','NSimSun','PMingLiU','SimHei','SimSun','Sun-ExtA'];//han god
-myFontSet[72]=['x9053','Arial Unicode MS','Batang','BatangChe','Code2000','DFKai-SB','Dotum','DotumChe','FangSong','Gulim','GulimChe','Gungsuh','GungsuhChe','KaiTi','Meiryo','Meiryo UI','Microsoft JhengHei ','Microsoft YaHei','MingLiU','MingLiU_HKSCS','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','NSimSun','PMingLiU','SimHei','SimSun','Sun-ExtA'];//han taoism
+myFontSet[64]=['x0FC8','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan
+myFontSet[65]=['x0FC9','Tibetan Machine Uni','Microsoft Himalaya','Jomolhari','Noto Sans Zanabazar Square','Uchen','Noto Serif Tibetan'];//Tibetan
+myFontSet[66]=['x5FE2','Arial Unicode MS','Arial Unicode MS','Code2000','DFKai-SB','FangSong','KaiTi','Meiryo','Meiryo UI ','Microsoft JhengHei','Microsoft YaHei','MingLiU','MingLiU_HKSCS','MS Gothic','MS Mincho','MS PGothic','MS PMincho','NSimSun','PMingLiU','SimHei','SimSun',];//satori
+myFontSet[67]=['x41A8','Code2000','FangSong','KaiTi','Microsoft JhengHei','Microsoft YaHei','MingLiU','MingLiU_HKSCS','NSimSun','PMingLiU','SimHei','SimSun',];//void heaven
+myFontSet[68]=['x51A5','Arial Unicode MS','Batang','BatangChe','Code2000','DFKai-SB','Dotum','DotumChe','FangSong','Gulim','GulimChe','Gungsuh','GungsuhChe','Jurchen','KaiTi','Meiryo','Meiryo UI','Microsoft JhengHei ','Microsoft YaHei','MingLiU','MingLiU_HKSCS','MS Gothic','MS Mincho','MS PGothic','MS PMincho','Nanum Brush Script','NSimSun','PMingLiU','SimHei','SimSun',];//void heaven
+myFontSet[69]=['x7A7A','Arial Unicode MS','Batang','BatangChe','Code2000','DFKai-SB','Dotum','DotumChe','FangSong','Gulim','GulimChe','Gungsuh','GungsuhChe','KaiTi','Meiryo','Meiryo UI','Microsoft JhengHei ','Microsoft YaHei','MingLiU','MingLiU_HKSCS','MS Gothic','MS Mincho','MS PGothic','MS PMincho','NSimSun','PMingLiU','SimHei','SimSun',];//empty
+myFontSet[70]=['x7985','Arial Unicode MS','Arial Unicode MS','Code2000','DFKai-SB','FangSong','KaiTi','Meiryo','Meiryo UI ','Microsoft JhengHei','Microsoft YaHei','MingLiU','MingLiU_HKSCS','MS Gothic','MS Mincho','MS PGothic','MS PMincho','NSimSun','PMingLiU','SimHei','SimSun',];//zen
+myFontSet[71]=['x795E','Arial Unicode MS','Batang','BatangChe','Code2000','DFKai-SB','Dotum','DotumChe','FangSong','Gulim','GulimChe','Gungsuh','GungsuhChe','KaiTi','Meiryo','Meiryo UI','Microsoft JhengHei ','Microsoft YaHei','MingLiU','MingLiU_HKSCS','MS Gothic','MS Mincho','MS PGothic','MS PMincho','NSimSun','PMingLiU','SimHei','SimSun',];//han god
+myFontSet[72]=['x9053','Arial Unicode MS','Batang','BatangChe','Code2000','DFKai-SB','Dotum','DotumChe','FangSong','Gulim','GulimChe','Gungsuh','GungsuhChe','KaiTi','Meiryo','Meiryo UI','Microsoft JhengHei ','Microsoft YaHei','MingLiU','MingLiU_HKSCS','MS Gothic','MS Mincho','MS PGothic','MS PMincho','NSimSun','PMingLiU','SimHei','SimSun',];//han taoism
 
-myFontSet[73]=['x2625','Aegean','Aegyptus','Analecta','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condense','Everson Mono','FreeSerif','Gardiner','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','Noto Sans Symbols','Quivira','Segoe UI Symbol','Sun-ExtA','Symbola'];//ankh
+myFontSet[73]=['x2625','Aegean','Aegyptus','Analecta','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condense','Everson Mono','FreeSerif','Gardiner','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','-Black','Quivira','Segoe UI Symbol','Symbola'];//ankh
 
-myFontSet[74]=['x2624','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mon','FreeSerif','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Sun-ExtA','Symbola'];//caduceus
-myFontSet[75]=['xC2E0','Arial Unicode MS','Batang','BatangChe','BM HANNA','Code2000','Dotum','DotumChe','Gulim','GulimChe','Gungsuh','GungsuhChe','Malgun Gothic','Malgun Gothic','Nanum Brush Script','Sun-ExtA'];//hangul god
-myFontSet[76]=['62931','maya'];//spiral
+myFontSet[74]=['x2624','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mon','FreeSerif','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//caduceus
+myFontSet[75]=['xC2E0','Arial Unicode MS','Batang','BatangChe','BM HANNA','Code2000','Dotum','DotumChe','Gulim','GulimChe','Gungsuh','GungsuhChe','Malgun Gothic','Malgun Gothic','Nanum Brush Script',];//hangul god
+myFontSet[76]=['62931','Maya'];//spiral
 myFontSet[77]=['xAA5C','Code2000'];//cham spiral
 myFontSet[78]=['x1F4AE','Symbola','Noto Sans Symbols-Black'];//Lotus
-myFontSet[79]=['x1F54A','Symbola','Noto Sans Symbols-Black'];//Dove of Peace
+myFontSet[79]=['x1F54A','Symbola','Noto Sans Symbols 2'];//Dove of Peace
 myFontSet[80]=['x1F54F','Symbola','Noto Sans Symbols-Black'];//Bowl of Hygeia
 
 
@@ -147,7 +143,7 @@ myFontSet[92]=['x1455B','Anatolian','Anatolian_Douros'];//anatolian;
 //myFontSet[97]=['xF235F','Aegean'];//aegean;
 //myFontSet[98]=['xF236F','Aegean'];//aegean;
 //myFontSet[99]=['xF23C2','Aegean'];//aegean;
-myFontSet[100]=['x1F41A','Symbola','Noto Sans Symbols 2','Noto Sans Symbols'];//conch;
+myFontSet[100]=['x1F41A','Symbola','Noto Sans Symbols-Black'];//conch;
 myFontSet[101]=['x2695','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//staff of aesculapius;
 myFontSet[102]=['x269A','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//staff of hermes;
 myFontSet[103]=['x269B','Code2000','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//atom symbol;
@@ -158,11 +154,11 @@ myFontSet[105]=['x221E','Code2000'];//infinity;
 myFontSet[106]=['x534D','Code2000'];//chinese swastica left; cjk unified ideographs
 myFontSet[107]=['x5300','Code2000'];//chinese swastica right;
 
-myFontSet[108]=['x2729','Arial Unicode MS','Code2000','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','Noto Sans Symbols','Quivira','Segoe UI Symbol','Sun-ExtA','Symbola'];//5 pointed star;
-myFontSet[109]=['x2742','Arial Unicode MS','Code2000','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','MS UI Gothic','Noto Sans Symbols','Quivira','Segoe UI Symbol','Sun-ExtA','Symbola'];//circled 8 point star
-myFontSet[110]=['x26E9','Noto Sans Symbols','Quivira','Symbola'];//shinto shrine
-myFontSet[111]=['x269C','Code2000','Everson Mono ','FreeSerif','Noto Sans Symbols','Segoe UI Symbol','Symbola'];
-
+myFontSet[108]=['x2729','Arial Unicode MS','Code2000','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','-Black','Quivira','Segoe UI Symbol','Symbola'];//5 pointed star;
+myFontSet[109]=['x2742','Arial Unicode MS','Code2000','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//circled 8 point star
+myFontSet[110]=['x26E9','Noto Sans Symbols-Black','Quivira','Symbola'];//shinto shrine
+myFontSet[111]=['x269C','Code2000','Everson Mono ','FreeSerif','Noto Sans Symbols-Black','Segoe UI Symbol','Symbola'];
+myFontSet[112]=['9766','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//crosses
 
 
 //myFontSet[]=['x0A14;&#x0A01','Symbola'];//Gurmuckhi om
