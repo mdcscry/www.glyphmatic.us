@@ -168,42 +168,42 @@ body {
     color: #eee;
 }
 
-.glyph-row {
-    margin-bottom: 30px;
+.font-section {
+    margin-bottom: 20px;
     border-bottom: 1px solid #333;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
 }
 
-.glyph-header {
-    font-size: 14px;
+.font-header {
+    font-size: 16px;
     margin-bottom: 10px;
-    color: #888;
+    color: #fff;
+    font-weight: bold;
 }
 
-.font-samples {
+.glyph-samples {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 8px;
 }
 
 .glyph-sample {
     text-align: center;
-    padding: 10px;
+    padding: 5px;
     background: #2a2a2a;
     border-radius: 4px;
-    min-width: 80px;
+    min-width: 60px;
 }
 
 .glyph-char {
-    font-size: 48px;
+    font-size: 36px;
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 }
 
-.font-name {
+.codepoint {
     font-size: 11px;
     color: #666;
-    word-break: break-word;
 }
 </style>
 </head>
@@ -212,8 +212,32 @@ body {
 <h1>Glyph/Font Tester</h1>
 <div id="output"></div>
 
+
 <script>
 const output = document.getElementById('output');
+
+function parseCodePoint(codePointStr) {
+    // Handle sequences like "x05D9;&#x05B0;&#x05D4;..."
+    if (codePointStr.includes(';')) {
+        const parts = codePointStr.split(';').filter(p => p.length > 0);
+        const chars = parts.map(p => {
+            const hex = p.replace(/&#x|x/g, '').trim();
+            console.log('Parsing:', p, '-> hex:', hex, '-> codepoint:', parseInt(hex, 16));
+            return String.fromCodePoint(parseInt(hex, 16));
+        }).join('');
+        console.log('Final char:', chars, 'length:', chars.length);
+        return chars;
+    }
+    
+    if (codePointStr.startsWith('x')) {
+        return String.fromCodePoint(parseInt(codePointStr.substring(1), 16));
+    } else {
+        return String.fromCodePoint(parseInt(codePointStr));
+    }
+}
+
+// Build font-to-glyphs map
+const fontMap = {};
 
 myFontSet.forEach((fontData, index) => {
     if (!fontData) return;
@@ -221,22 +245,30 @@ myFontSet.forEach((fontData, index) => {
     const codePoint = fontData[0];
     const fonts = fontData.slice(1);
     
-    const char = codePoint.startsWith('x') 
-        ? String.fromCodePoint(parseInt(codePoint.substring(1), 16))
-        : String.fromCodePoint(parseInt(codePoint));
-    
-    const row = document.createElement('div');
-    row.className = 'glyph-row';
+    fonts.forEach(font => {
+        if (!fontMap[font]) {
+            fontMap[font] = [];
+        }
+        fontMap[font].push(codePoint);
+    });
+});
+
+// Render by font
+Object.keys(fontMap).sort().forEach(font => {
+    const section = document.createElement('div');
+    section.className = 'font-section';
     
     const header = document.createElement('div');
-    header.className = 'glyph-header';
-    header.textContent = `U+${codePoint.startsWith('x') ? codePoint.substring(1) : parseInt(codePoint).toString(16).toUpperCase()} (${codePoint})`;
-    row.appendChild(header);
+    header.className = 'font-header';
+    header.textContent = font;
+    section.appendChild(header);
     
     const samples = document.createElement('div');
-    samples.className = 'font-samples';
+    samples.className = 'glyph-samples';
     
-    fonts.forEach(font => {
+    fontMap[font].forEach(codePoint => {
+        const char = parseCodePoint(codePoint);
+        
         const sample = document.createElement('div');
         sample.className = 'glyph-sample';
         
@@ -245,19 +277,20 @@ myFontSet.forEach((fontData, index) => {
         charSpan.style.fontFamily = `'${font}'`;
         charSpan.textContent = char;
         
-        const fontLabel = document.createElement('div');
-        fontLabel.className = 'font-name';
-        fontLabel.textContent = font;
+        const cpLabel = document.createElement('div');
+        cpLabel.className = 'codepoint';
+        cpLabel.textContent = `U+${codePoint.startsWith('x') ? codePoint.substring(1) : parseInt(codePoint).toString(16).toUpperCase()}`;
         
         sample.appendChild(charSpan);
-        sample.appendChild(fontLabel);
+        sample.appendChild(cpLabel);
         samples.appendChild(sample);
     });
     
-    row.appendChild(samples);
-    output.appendChild(row);
+    section.appendChild(samples);
+    output.appendChild(section);
 });
 </script>
+
 
 </body>
 </html>

@@ -260,19 +260,19 @@ function changeDropShadowSimpleV(){
 function hexTester(){
 
 	 rndGlyph=Math.round(Math.random()*(myFontSet.length-1));
+
 	// rndGlyph=0;
 
 	//rndGlyph=Math.round(Math.random()*3+1)+42;
-	hexTest=myFontSet[rndGlyph][0];
-	//hexTest=myFontSet[111][0];
+	hexTest=myFontSet[111][0];
 
-	if ( myComboValidationArray.indexOf(hexTest) < 0 ) {
+	if ( myComboValidationArray.indexOf(hexTest) < -1 ) {
 		 testWidth=document.getElementById("widthTester");
 		 testWidth.innerHTML="&#x" + hexTest + ";";
 		 eleWidth=testWidth.offsetWidth;
 		 widthTester.innerHTML='';
 		if(eleWidth>5 ) { return true ;}
-	} else {return false;}
+	} else {return True;}
 }
 
 function hexTesterInterface(){
@@ -294,7 +294,7 @@ return utfExpString;
 function changeHtmlDisplayInline(){
 
 		var rndContainer=Math.round(Math.random()*(divCounter-1)+1);
-		for (rndSp=1;rndSp<=3;rndSp++){
+		for (rndSp=1;rndSp<=10;rndSp++){
 				rtrnVal=hexTesterInterface();
 				span_rnd='span'+rndContainer+'_'+rndSp;
 		 		spanRndId=document.getElementById(span_rnd);

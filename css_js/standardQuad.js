@@ -71,19 +71,17 @@ var newRule='@import url(http://fonts.googleapis.com/earlyaccess/notoserifgeorgi
 cssImportStyle.insertRule(newRule,cssImportRules.length);
 var newRule='@import url(http://fonts.googleapis.com/earlyaccess/notoserifthai.css);';//new
 cssImportStyle.insertRule(newRule,cssImportRules.length);
-var newRule='@import url(//fonts.googleapis.com/earlyaccess/notosansavestan.css);';//new
-cssImportStyle.insertRule(newRule,cssImportRules.length);
-var newRule='@import url(//fonts.googleapis.com/earlyaccess/notosansvai.css);';//new
+var newRule="@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100..900&display=swap');";//new
 cssImportStyle.insertRule(newRule,cssImportRules.length);
 
 
-var newRule='@font-face {font-family: Noto Sans Symbols; src: url("/tff/NotoSansSymbols-Regular.woff") format("woff");}';
+var newRule='@font-face {font-family: Noto Sans Symbols; src: url("/tff/NotoSansSymbols-Regular.ttf") format("truetype");}';
 cssImportStyle.insertRule(newRule,cssImportRules.length);
-var newRule='@font-face {font-family: AdobeBlank; src: url("/tff/AdobeBlank.ttf.woff") format("woff");}';
+var newRule='@font-face {font-family: AdobeBlank; src: url("/tff/AdobeBlank.ttf) format("truetype");}';
 cssImportStyle.insertRule(newRule,cssImportRules.length);
-var newRule='@font-face {font-family: Aegyptus; src: url("/tff/Aegyptus0.woff") format("woff");}';
+var newRule='@font-face {font-family: Aegyptus; src: url("/fonts/Aegyptus_0.ttf") format("truetype");}';
 cssImportStyle.insertRule(newRule,cssImportRules.length);
-var newRule='@font-face {font-family: Maya; src: url("/tff/Maya.woff") format("woff");}';
+var newRule='@font-face {font-family: Maya; src: url("/fonts/Maya.ttf") format("truetype");}';
 cssImportStyle.insertRule(newRule,cssImportRules.length);
 
 
