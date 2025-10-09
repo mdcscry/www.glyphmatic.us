@@ -101,6 +101,8 @@ mycolors1=['#FF0000','#00FF00','#0000FF','#FFFF00','#00FFFF','#FF00FF '];
 elem2_bg.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 
 	for (i=1;i<=divCounter;i++){
+		container[i].style.position='fixed';
+		container[i].style.top='-500px';
 		container[i].style.zIndex=1;
 		container[i].style.opacity=.71;
 		container[i].style.color=mycolors[Math.round((mycolors.length-1)*Math.random())];
