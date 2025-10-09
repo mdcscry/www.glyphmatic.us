@@ -25,13 +25,13 @@ var newRule='@-' +  browserPrefix + '-keyframes fadeIn{0%{opacity:0;}100%{opacit
 
 
 if(insertArrayRnd==9){
-var newRule='DIV {position:absolute; top:-30%; width:100%;height:100%; background:#FFFFFF; font-size: 750px; color:  blue; text-align:center; }';
+var newRule='DIV {position:absolute; top:0%; width:100%;height:100%; background:transparent; font-size: 3000px; color:  blue; text-align:center; }';
 cssStyle.insertRule(newRule,cssRules.length);
 }else if (insertArrayRnd==10){
-var newRule='DIV {position:absolute;  top:10%;left:-10%; width:100%;height:100%;overflow:hidden;background:transparent; font-size: 400px; color:  blue; text-align:center; vertical-align: middle; }';
+var newRule='DIV {position:absolute;  top:0%;left:-10%; width:100%;height:100%;overflow:hidden;background:transparent; font-size: 400px; color:  blue; text-align:center; vertical-align: middle; }';
 cssStyle.insertRule(newRule,cssRules.length);
 } else {
-var newRule='DIV {position:absolute;  top:40%;left:-10%; width:100%;height:100%; overflow:visible;background:transparent; font-size: 500px; color:  blue; text-align:center; vertical-align: middle; }';
+var newRule='DIV {position:absolute;  top:0%;left:-10%; width:100%;height:100%; overflow:visible;background:transparent; font-size: 500px; color:  blue; text-align:center; vertical-align: middle; }';
 cssStyle.insertRule(newRule,cssRules.length);
 }
 
