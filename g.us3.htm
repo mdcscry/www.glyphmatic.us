@@ -1,24 +1,64 @@
 
-<html><head>
-<TITLE>glyphmatic.us</TITLE>
-
-
+<html>
+<TITLE>glyphmatic.us</TITLE>	
+<head>
 
 <style type="text/css">
+		@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100..900&family=Noto+Sans+Lao:wght@100..900&family=Noto+Sans+Math&family=Noto+Sans+Thai:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
-	@import url(http://fonts.googleapis.com/css?family=Noto+Sans);
-    @font-face {font-family: 'Noto Sans Symbols'; src: url("/tff/NotoSansSymbols-Regular.woff") format("woff");}
+		.noto-sans-arabic {
+		font-family: "Noto Sans Arabic", sans-serif;
+		font-optical-sizing: auto;
+		font-weight: 400;
+		font-style: normal;
+		font-variation-settings:
+			"wdth" 100;
+		}
 
-body{
+		.noto-sans-math {
+		font-family: "Noto Sans Math", sans-serif;
+		font-weight: 400;
+		font-style: normal;
+		}
+
+		
+		.noto-sans-thai {
+		font-family: "Noto Sans Thai", sans-serif;
+		font-optical-sizing: auto;
+		font-weight: 400;
+		font-style: normal;
+		font-variation-settings:
+			"wdth" 100;
+		}
 
 
-	font-family: 'Noto Sans','Noto Sans Symbols',sans serif;
+		.noto-sans-lao {
+		font-family: "Noto Sans Lao", sans-serif;
+		font-optical-sizing: auto;
+		font-weight: 400;
+		font-style: normal;
+		font-variation-settings:
+			"wdth" 100;
+		}
 
-}
+
+		.noto-sans {
+		font-family: "Noto Sans", sans-serif;
+		font-optical-sizing: auto;
+		font-weight: 400;
+		font-style: normal;
+		font-variation-settings:
+			"wdth" 100;
+		}
+
+		.watermark-font {
+  			font-family: 'Noto Sans Lao','Noto Sans','Noto Sans Math',  'Noto Sans CJK JP', 'Noto Sans Thai', 'Noto Sans Arabic',  sans-serif;
+		}
 
 </style>
-
 </head>
+
+
 
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 
@@ -27,7 +67,7 @@ body{
 
 
 <Script type ="text/JavaScript" src="./css_js/msucd_letters.js"></Script>
-
+<Script type ="text/JavaScript" src="./css_js/watermark.js"></Script>
 
 
 <Script type ="text/JavaScript">
@@ -85,7 +125,6 @@ if (homeDetector.indexOf(compString)>0){
 	else {insertArrayRnd=6;}
  }
 
-//insertArrayRnd=12;
 
 
 ////inserts the glyph set
@@ -99,29 +138,7 @@ document.body.style.height='100%';
 document.body.style.margin='0px';
 
 
-
-////Builds the meta refresh
-//var meta1 = document.createElement('meta');
-//meta1.httpEquiv = "refresh";
-//meta1.content="45,http://glyphmatic.us/g.us3.htm";
-// if ((homeDetector.indexOf("home")>0) && (sRefresh==0)) {
-//meta1.content="180,http://glyphmatic.us/g.us3.htm?home";
-//} else if ((homeDetector.indexOf("home")>0) && (sRefresh==1)){
-//meta1.content="180,http://glyphmatic.us/g.us3.htm?home&i=0"+insertArrayRnd;
-//} else if ((homeDetector.indexOf("home")>0) && (sRefresh==2)){
-//meta1.content="180,http://glyphmatic.us/g.us3.htm?home&i="+insertArrayRnd;
-//}else if (sRefresh==1){
-//meta1.content="180,http://glyphmatic.us/g.us3.htm?i=0"+insertArrayRnd;
-//}else if (sRefresh==2){
-//meta1.content="180,http://glyphmatic.us/g.us3.htm?i="+insertArrayRnd;
-//}else{
-//meta1.content="180,http://glyphmatic.us/g.us3.htm";
-//}
-//document.getElementsByTagName('head')[0].appendChild(meta1);
-
-
-
- function jsWaitLetters() {
+function jsWaitLetters() {
         if (typeof msucdArraySignal =="undefined")
         {
 
@@ -140,9 +157,6 @@ document.body.style.margin='0px';
     }
 
 
-
-
-
 var mycolors=[];
 var colNum=3;
 
@@ -150,40 +164,19 @@ var colNum=3;
 
 function setColor(hue,sat,light,opa){
 
-for (colorCounter=1;colorCounter<=colNum;colorCounter++){
-var toSpliceColor='hsla('
-+  Math.round(40*Math.random()+hue-20) + ','
-+  Math.round(20*Math.random()+sat-20)+ '%,'
-+ (Math.round(Math.random()*20)+light) + '%,'
-+ (Math.random(opa)+.6	)
-+ ')';
-//alert (toSpliceColor);
+	for (colorCounter=1;colorCounter<=colNum;colorCounter++){
+	var toSpliceColor='hsla('
+	+  Math.round(40*Math.random()+hue-20) + ','
+	+  Math.round(20*Math.random()+sat-20)+ '%,'
+	+ (Math.round(Math.random()*20)+light) + '%,'
+	+ (Math.random(opa)+.6	)
+	+ ')';
+	//alert (toSpliceColor);
 
-mycolors.push(toSpliceColor);
+	mycolors.push(toSpliceColor);
+	}
 }
-}
 
-
-function buildGlyphString(){
-
-  var glyphString='&#'+ langArray[103][Math.round((langArray[103].length-2)*Math.random())+1] + ';&#'+combFormsAbove[Math.round((combFormsAbove.length-1)*Math.random())]+';';//g
-  glyphString=glyphString + '&#'+ langArray[108][Math.round((langArray[108].length-2)*Math.random())+1] + ';<span style="position:relative;left:6px;">&#'+combFormsBelow[Math.round((combFormsBelow.length-1)*Math.random())]+';</span>';//l
-  glyphString=glyphString + '&#'+ langArray[121][Math.round((langArray[121].length-2)*Math.random())+1] + ';&#'+combFormsAbove[Math.round((combFormsAbove.length-1)*Math.random())]+';';//y
-  glyphString=glyphString + '&#'+ langArray[112][Math.round((langArray[112].length-2)*Math.random())+1] + ';&#'+combFormsAbove[Math.round((combFormsAbove.length-1)*Math.random())]+';';//p
-  glyphString=glyphString + '&#'+ langArray[104][Math.round((langArray[104].length-2)*Math.random())+1] + ';&#'+combFormsBelow[Math.round((combFormsBelow.length-1)*Math.random())]+';';//h
-  glyphString=glyphString + '&#'+ langArray[109][Math.round((langArray[109].length-2)*Math.random())+1] + ';<span style="position:relative;left:-10px;">&#'+combFormsBelow[Math.round((combFormsBelow.length-1)*Math.random())]+';</span>';//m
-  glyphString=glyphString + '&#'+ langArray[97][Math.round((langArray[97].length-2)*Math.random())+1] + ';&#'+combFormsAbove[Math.round((combFormsAbove.length-1)*Math.random())]+';';//a
-  glyphString=glyphString + '&#'+ langArray[116][Math.round((langArray[116].length-2)*Math.random())+1] + ';&#'+combFormsMiddle[Math.round((combFormsMiddle.length-1)*Math.random())]+';';//t
-  glyphString=glyphString + '&#'+ langArray[105][Math.round((langArray[105].length-2)*Math.random())+1] + ';<span style="position:relative;left:9px;">&#'+combFormsBelow[Math.round((combFormsBelow.length-1)*Math.random())]+';</span>';//i
-  glyphString=glyphString + '&#'+ langArray[99][Math.round((langArray[99].length-2)*Math.random())+1] + ';&#'+combFormsAbove[Math.round((combFormsAbove.length-1)*Math.random())]+';';//c
-  glyphString=glyphString + '&#'+ langArray[46][Math.round((langArray[46].length-2)*Math.random())+1] + ';';//.
-  glyphString=glyphString + '&#'+ langArray[117][Math.round((langArray[117].length-2)*Math.random())+1] + ';&#'+combFormsBelow[Math.round((combFormsBelow.length-1)*Math.random())]+';';//u
-  //glyphString=glyphString + '&#'+ langArray[115][Math.round((langArray[115].length-2)*Math.random())+1] + ';&#'+combFormsAbove[Math.round((combFormsAbove.length-1)*Math.random())]+';';//s
-  glyphString=glyphString + '&#'+ langArray[115][Math.round((langArray[115].length-2)*Math.random())+1]+';';//s
-  glyphString=glyphString +'   ';
-return glyphString
-
-}
 
 function startUpNav(){
 
@@ -265,11 +258,13 @@ for (i=1;i<=glyphCnt;i++){
  elementName='glyphmatic' + i;
 
  navGlyph[i] = document.createElement("div");
+ navGlyph[i].classList.add("watermark-font");
+
 if (i==0) {
-  navGlyph[i].innerHTML= buildGlyphString();
+  navGlyph[i].innerHTML= buildGlyphmaticWatermark();
   //navGlyph[i].title=navGlyph[i].innerHTML;
 
- } else {  navGlyph[i].innerHTML= buildGlyphString();
+ } else {  navGlyph[i].innerHTML= buildGlyphmaticWatermark();
  rndSeed=Math.round((arrowArray[i].length-2)*Math.random())+1;
  //glyphString= '&#'+ arrowArray[i][rndSeed] + ';'; //arrow
  //navGlyph[i].innerHTML=glyphString;
