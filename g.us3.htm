@@ -1,61 +1,7 @@
-
-<html>
-<TITLE>glyphmatic.us</TITLE>	
 <head>
-
-<style type="text/css">
-		@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100..900&family=Noto+Sans+Lao:wght@100..900&family=Noto+Sans+Math&family=Noto+Sans+Thai:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
-
-		.noto-sans-arabic {
-		font-family: "Noto Sans Arabic", sans-serif;
-		font-optical-sizing: auto;
-		font-weight: 400;
-		font-style: normal;
-		font-variation-settings:
-			"wdth" 100;
-		}
-
-		.noto-sans-math {
-		font-family: "Noto Sans Math", sans-serif;
-		font-weight: 400;
-		font-style: normal;
-		}
-
-		
-		.noto-sans-thai {
-		font-family: "Noto Sans Thai", sans-serif;
-		font-optical-sizing: auto;
-		font-weight: 400;
-		font-style: normal;
-		font-variation-settings:
-			"wdth" 100;
-		}
-
-
-		.noto-sans-lao {
-		font-family: "Noto Sans Lao", sans-serif;
-		font-optical-sizing: auto;
-		font-weight: 400;
-		font-style: normal;
-		font-variation-settings:
-			"wdth" 100;
-		}
-
-
-		.noto-sans {
-		font-family: "Noto Sans", sans-serif;
-		font-optical-sizing: auto;
-		font-weight: 400;
-		font-style: normal;
-		font-variation-settings:
-			"wdth" 100;
-		}
-
-		.watermark-font {
-  			font-family: 'Noto Sans Lao','Noto Sans','Noto Sans Math',  'Noto Sans CJK JP', 'Noto Sans Thai', 'Noto Sans Arabic',  sans-serif;
-		}
-
-</style>
+	<title>glyphmatic.us</title>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<link rel="stylesheet" href="./css_js/glyphmatic-fonts.css">
 </head>
 
 
@@ -100,8 +46,8 @@ if (ua.indexOf("AppleWebKit")>0){browserPrefix='webkit';browseWidth=50;} else if
  insertArray[9]=['msucd_mandala.js','flasher34','ElectrickMandala'];
  insertArray[10]=['msucd_mandala.js','flasher34','MandalaExtrudedFillSkewdnRotaterdSmall'];
  insertArray[11]=['nonRsvdUtf.js','flasher1-the beginning-fast'];
-insertArray[12]=['worldsymbols_min_peace.js','flasher1-the beginning-symbols','"Arial Unicode MS","Symbola Regular","Aegyptus Regular","Akkadian Regular",Sun-ExtA,"Aegean Regular","Code2000 Medium"'];
-//insertArray[13]=['msucd_mandala.js','flasher34','ElectrickMandala2'];
+ insertArray[12]=['whirldsymbols.js','flasher1-the beginning-symbols'];
+ insertArray[13]=['whirldsymbols.js','Braids'];
 //insertArray[14]=['worldsymbols_min.js','flasher1-the beginning-symbols','"Arial Unicode MS","Symbola Regular","Aegyptus Regular","Akkadian Regular",Sun-ExtA,"Aegean Regular","Code2000 Medium"'];
 //insertArray[17]=['bism.js','quad type','b i s m u l l uh'];
 
@@ -203,7 +149,7 @@ spanNavColor.style.color=navColor;
 spanNavColor.innerHTML='&#x2206;STYLE ';
 spanNavColor.style.visibility='visible';
 spanNavColor.addEventListener('click', function () { var mycolors=[];var mycolors2=[];initStyle() }, false);
-
+spanNavColor.style.zIndex='100';
 
 
 spanNavHTML= document.createElement("span");
@@ -218,33 +164,80 @@ spanNavHTML.style.visibility='visible';
 spanNavHTML.addEventListener('click', function () { changeHtmlDisplayInline() }, false);
 spanNavHTML.style.color=navColor;
 spanNavHTML.style.textShadow='0px 1px '+ mycolors[Math.round((mycolors.length-1)*Math.random())];
+spanNavHTML.style.zIndex='100';
 
-spanNavUp= document.createElement("span");
-document.body.appendChild(spanNavUp);
-spanNavUp.id='spanNavUp';
-spanNavUp.style.position='absolute';
-spanNavUp.style.left='93%';
-spanNavUp.style.top='51px';
-spanNavUp.style.fontSize='15px';
-spanNavUp.innerHTML='&#x22BC; Move Up ';
-spanNavUp.style.visibility='visible';
-spanNavUp.addEventListener('click', function () { for (i=1;i<=divCounter;i++){doobie=container[i].style.lineHeight; container[i].style.lineHeight='24vw';}}, false);
-spanNavUp.style.color=navColor;
-spanNavUp.style.textShadow='1px 0px '+ mycolors[Math.round((mycolors.length-1)*Math.random())];
+// spanNavUp= document.createElement("span");
+// document.body.appendChild(spanNavUp);
+// spanNavUp.id='spanNavUp';
+// spanNavUp.style.zIndex='100';
+// spanNavUp.style.position='absolute';
+// spanNavUp.style.left='93%';
+// spanNavUp.style.top='51px';
+// spanNavUp.style.fontSize='15px';
+// spanNavUp.innerHTML='&#x22BC; Move Up ';
+// spanNavUp.style.visibility='visible';
+// spanNavUp.addEventListener('click', function () { for (i=1;i<=divCounter;i++){doobie=container[i].style.lineHeight; container[i].style.lineHeight='24vw';}}, false);
+// spanNavUp.style.color=navColor;
+// spanNavUp.style.textShadow='1px 0px '+ mycolors[Math.round((mycolors.length-1)*Math.random())];
+// spanNavUp.style.zIndex='100';
 
-spanNavDown= document.createElement("span");
-document.body.appendChild(spanNavDown);
-spanNavDown.id='spanNavDown';
-spanNavDown.fontWeight='700';
-spanNavDown.style.position='absolute';
-spanNavDown.style.left='93%';
-spanNavDown.style.top='68px';
-spanNavDown.style.fontSize='15px';
-spanNavDown.innerHTML='&#x22BB; Move Down ';
-spanNavDown.style.visibility='visible';
-spanNavDown.addEventListener('click', function () { for (i=1;i<=divCounter;i++){doobie=container[i].style.lineHeight; container[i].style.lineHeight='38vw';}}, false);
-spanNavDown.style.color=navColor;
-spanNavDown.style.textShadow='0px 1px '+ mycolors[Math.round((mycolors.length-1)*Math.random())];
+// spanNavDown= document.createElement("span");
+// document.body.appendChild(spanNavDown);
+// spanNavDown.id='spanNavDown';
+// spanNavDown.fontWeight='700';
+// spanNavDown.style.position='absolute';
+// spanNavDown.style.left='93%';
+// spanNavDown.style.top='68px';
+// spanNavDown.style.fontSize='15px';
+// spanNavDown.innerHTML='&#x22BB; Move Down ';
+// spanNavDown.style.visibility='visible';
+// spanNavDown.addEventListener('click', function () { for (i=1;i<=divCounter;i++){doobie=container[i].style.lineHeight; container[i].style.lineHeight='38vw';}}, false);
+// spanNavDown.style.color=navColor;
+// spanNavDown.style.textShadow='0px 1px '+ mycolors[Math.round((mycolors.length-1)*Math.random())];
+// spanNavDown.style.zIndex='100';
+
+
+spanNavSizeDown = document.createElement("span");
+document.body.appendChild(spanNavSizeDown);
+spanNavSizeDown.id='spanNavSizeDown';
+spanNavSizeDown.style.position='absolute';
+spanNavSizeDown.style.left='93%';
+spanNavSizeDown.style.top='85px';
+spanNavSizeDown.style.fontSize='15px';
+spanNavSizeDown.innerHTML='&#x2212; Size';
+spanNavSizeDown.style.visibility='visible';
+spanNavSizeDown.addEventListener('click', function () { 
+    for (i=1;i<=divCounter;i++){
+        var spans = container[i].getElementsByTagName('span');
+        for (var j=0; j<spans.length; j++){
+            var current = parseFloat(spans[j].style.fontSize);
+            spans[j].style.fontSize = (current * 0.9) + 'vw';
+        }
+    }
+}, false);
+spanNavSizeDown.style.color=navColor;
+
+spanNavSizeUp = document.createElement("span");
+document.body.appendChild(spanNavSizeUp);
+spanNavSizeUp.id='spanNavSizeUp';
+spanNavSizeUp.style.position='absolute';
+spanNavSizeUp.style.left='93%';
+spanNavSizeUp.style.top='102px';
+spanNavSizeUp.style.fontSize='15px';
+spanNavSizeUp.innerHTML='&#x002B; Size';
+spanNavSizeUp.style.visibility='visible';
+spanNavSizeUp.addEventListener('click', function () { 
+    for (i=1;i<=divCounter;i++){
+        var spans = container[i].getElementsByTagName('span');
+        for (var j=0; j<spans.length; j++){
+            var current = parseFloat(spans[j].style.fontSize);
+            spans[j].style.fontSize = (current * 1.1) + 'vw';
+        }
+    }
+}, false);
+spanNavSizeUp.style.color=navColor;
+spanNavSizeUp.style.zIndex='100';
+spanNavSizeDown.style.zIndex='100';
 
 navGlyph=[];
 

@@ -1,0 +1,915 @@
+
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols&family=Noto+Sans+Symbols+2&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@100..900&family=Noto+Serif+SC:wght@200..900&family=ZCOOL+QingKe+HuangYou&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&famiy=Cardo:ital,wght@0,400;0,700;1,400&family=Rubik+Doodle+Shadow&family=Noto+Rashi+Hebrew:wght@100..900&family=Noto+Sans+Hebrew:wght@100..900&family=Noto+Serif+Hebrew:wght@100..900&family=Secular+One&family=Solitreo&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Chathura:wght@100;300;400;700;800&family=Dhurjati&family=Noto+Sans+Telugu:wght@100..900&family=Noto+Serif+Telugu:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@100..900&family=Noto+Serif+Malayalam:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Atma:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@100..900&family=Noto+Serif+Bengali:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil+Supplement&family=Noto+Sans+Tamil:wght@100..900&family=Noto+Serif+Tamil:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=BhuTuka+Expanded+One&family=Braah+One&family=Mukta+Mahee&family=Noto+Sans+Gurmukhi:wght@100..900&family=Noto+Serif+Gurmukhi:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Alkalami&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Kufam:ital,wght@0,400..900;1,400..900&family=Lateef:wght@200;300;400;500;600;700;800&family=Noto+Kufi+Arabic:wght@100..900&family=Noto+Naskh+Arabic:wght@400..700&family=Noto+Nastaliq+Urdu:wght@400..700&family=Noto+Sans+Arabic:wght@100..900&family=Scheherazade+New:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Chiron+GoRound+TC:wght@200..900&family=Nanum+Brush+Script&family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=BhuTuka+Expanded+One&family=Langar&family=Noto+Sans+Gurmukhi:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Sharada&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Cham:wght@100..900&family=Noto+Sans+Sharada&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Emoji:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amita:wght@400;700&family=Noto+Sans+Devanagari:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Teko:wght@300..700&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Jomolhari&family=Noto+Sans+Marchen&family=Noto+Sans+Zanabazar+Square&family=Noto+Serif+Tibetan:wght@100..900&family=Uchen&display=swap');
+
+
+/* symbols,chinese, hebrew, telugu, malayalam, bengali, malayalam, gurmurkhi, gujarati, arabic, korean, Gurmukhi, Sharada
+,Cham, emoji, devanagari
+
+/* Symbols */
+
+.noto-sans-symbols-black {
+  font-family: "Noto Sans Symbols-black", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-symbols {
+  font-family: "Noto Sans Symbols", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-symbols-2 {
+  font-family: "Noto Sans Symbols 2", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Chinese */
+.noto-sans-sc {
+  font-family: "Noto Sans SC", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-serif-sc {
+  font-family: "Noto Serif SC", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.ma-shan-zheng {
+  font-family: "Ma Shan Zheng", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.zcool-xiaowei-regular {
+  font-family: "ZCOOL XiaoWei", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.liu-jian-mao-cao {
+  font-family: "Liu Jian Mao Cao", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Hebrew */
+
+.noto-sans-hebrew {
+  font-family: "Noto Sans Hebrew", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-serif-hebrew {
+  font-family: "Noto Serif Hebrew", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-roshi-hebrew {
+  font-family: "Noto Roshi Hebrew", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.secular-one {
+  font-family: "Secular One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.solitreo {
+  font-family: "Solitreo", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.cardo {
+  font-family: "Cardo", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.rubik-doodle-shadow {
+  font-family: "Rubik Doodle Shadow", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.amatic-sc-regular {
+  font-family: "Amatic SC", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+/* Telugu */
+
+
+.noto-sans-telugu {
+  font-family: "Noto Sans Telugu", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-serif-telugu {
+  font-family: "Noto Serif Telugu", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.chathura {
+  font-family: "Chathura", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.dhurjati {
+  font-family: "Dhurjati", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+/* Malayalam */
+
+.noto-sans-malayalam {
+  font-family: "Noto Sans Malayalam", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-serif-malayalam {
+  font-family: "Noto Serif Malayalam", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Bengali */
+
+.noto-sans-bengali {
+  font-family: "Noto Sans Bengali", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-serif-bengali {
+  font-family: "Noto Serif Bengali", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.atma {
+  font-family: "Atma", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Tamil */
+
+.noto-sans-tamil {
+  font-family: "Noto Sans Tamil", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-serif-tamil {
+  font-family: "Noto Serif Tamil", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-tamil-supplement {
+  font-family: "Noto Sans Tamil Supplement", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Gurmukhi */
+
+.noto-sans-gurmukhi {
+  font-family: "Noto Sans Gurmukhi", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-serif-ggurmukhi {
+  font-family: "Noto Serif Gurmukhi", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.bhutuka-expanded-one {
+  font-family: "BhuTuka Expanded One", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.mukta-mahee {
+  font-family: "Mukta Mahee", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.braah-one {
+  font-family: "Braah One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Gujarati */
+
+.noto-sans-gujarati {
+  font-family: "Noto Sans Gujarati", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-serif-gujarati {
+  font-family: "Noto Serif Gujarati", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Arabic */
+
+.scheherazade-new {
+  font-family: "Scheherazade New", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.amiri {
+  font-family: "Amiri", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.lateef {
+  font-family: "Lateef", serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.noto-nastaliq-urdu {
+  font-family: "Noto Nastaliq Urdu", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.kufam {
+  font-family: "Kufam", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.alkalami {
+  font-family: "Alkalami", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-kufi-arabic {
+  font-family: "Noto Kufi Arabic", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-naskh-arabic {
+  font-family: "Noto Naskh Arabic", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-arabic {
+  font-family: "Noto Sans Arabic", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+/* Korean */
+
+.noto-sans-kr {
+  font-family: "Noto Sans KR", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.black-han-sans {
+  font-family: "Black Han Sans", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.nanum-brush-script {
+  font-family: "Nanum Brush Script", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.chiron-goround-tc {
+  font-family: "Chiron GoRound TC", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.nanum-pen-script {
+  font-family: "Nanum Pen Script", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+/* Gurmuckhi cham Sharada*/
+.langar {
+  font-family: "Langar", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.bhutuka {
+  font-family: "BhuTuka Expanded One", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-gurmukhi {
+  font-family: "Noto Sans Gurmukhi", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.noto-sans-sharada {
+  font-family: "Noto Sans Sharada", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-cham {
+  font-family: "Noto Sans Cham", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* emoji */
+
+.noto-emoji-regular {
+  font-family: "Noto Emoji", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+.noto-emoji-bold {
+  font-family: "Noto Emoji", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Devanagari */
+
+.noto-sans-devanagari {
+  font-family: "Noto Sans Devanagari", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.noto-sans {
+  font-family: "Noto Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.noto-serif {
+  font-family: "Noto Serif", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.amita {
+  font-family: "Amita", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.teko> {
+  font-family: "Teko", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+/* Tibetan */
+@import url('https://fonts.googleapis.com/css2?family=Jomolhari&family=Noto+Sans+Marchen&family=Noto+Sans+Zanabazar+Square&family=Noto+Serif+Tibetan:wght@100..900&family=Uchen&display=swap');
+.jomolhari-regular {
+  font-family: "Jomolhari", serif;
+  font-weight: 400;
+  font-style: normal;
+}  
+
+.noto-serif-tibetan-regular {
+  font-family: "Noto Serif Tibetan", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.uchen-regular {
+  font-family: "Uchen", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-zanabazar-square-regular {
+  font-family: "Noto Sans Zanabazar Square", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Dela Gothic One';
+    src: url('../fonts/DelaGothicOne.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Hachi Maru Pop';
+    src: url('../fonts/HachiMaruPop.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Rampart One';
+    src: url('../fonts/RampartOne.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Reggae One';
+    src: url('../fonts/ReggaeOne.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Stick';
+    src: url('../fonts/Stick.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Yuji Boku';
+    src: url('../fonts/YujiBoku.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Kosugi Maru';
+    src: url('../fonts/KosugiMaru-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'FangSong';
+    src: url('../tff/NotoFangsongKSSRotated-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Keter YG';
+    src: url('../fonts/KeterYG.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'SBL Hebrew';
+    src: url('../fonts/SBL_Hbrw.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Ezra SIL';
+    src: url('../fonts/SILeot.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Lucida Sans Unicode';
+    src: url('../fonts/lucidasansunicode.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Kinza';
+    src: url('../fonts/Kinza.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Geeza Pro';
+    src: url('../fonts/GeezaPro.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Kartik';
+    src: url('../fonts/Kartick.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Vani';
+    src: url('../fonts/Vani.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Pothana2000';
+    src: url('../fonts/Pothana2000.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Gautami';
+    src: url('../fonts/Gautami.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Vrinda';
+    src: url('../fonts/Vrinda.ttf') format('truetype');
+} 
+
+@font-face {
+    font-family: 'Shonar';
+    src: url('../fonts/Shonar.ttf') format('truetype');
+} 
+
+@font-face {
+    font-family: 'Shonarb';
+    src: url('../fonts/Shonarb.ttf') format('truetype');
+} 
+
+@font-face {
+    font-family: 'Latha';
+    src: url('../fonts/Latha.ttf') format('truetype');
+} 
+
+@font-face {
+    font-family: 'Vijaya';
+    src: url('../fonts/Vijaya.ttf') format('truetype');
+} 
+
+@font-face {
+    font-family: 'Raavi';
+    src: url('../fonts/Raavi.ttf') format('truetype');
+} 
+
+@font-face {
+    font-family: 'Shruti';
+    src: url('../fonts/Shruti.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'MPH 2B Damase';
+    src: url('../fonts/damase_v.2.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Qomolangma-Betsu';
+    src: url('../fonts/Qomolangma-Betsu.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Qomolangma-Chuyig';
+    src: url('../fonts/Qomolangma-Chuyig.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Qomolangma-Drutsa';
+    src: url('../fonts/Qomolangma-Drutsa.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Qomolangma-Edict';
+    src: url('../fonts/Qomolangma-Edict.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Qomolangma-Woodblock';
+    src: url('../fonts/Qomolangma-Woodblock.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Qomolangma-Art';
+    src: url('../fonts/Qomolangma-Art.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'BabelStoneTibetan';
+    src: url('../fonts/BabelStoneTibetan.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'YagpoSambhotaUni';
+    src: url('../fonts/YagpoSambhotaUni.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: "BN-TTKailash Normal";
+    src: url("https://db.onlinewebfonts.com/t/7b0638dbee5ad28eb59129f4d835af8c.ttf") format("truetype");
+
+}
+
+@font-face {
+    font-family: 'Dedris-a1';
+    src: url('../fonts/Dedris-a1.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Kailasa';
+    src: url('../fonts/Kailasa.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Microsoft Himalaya';
+    src: url('../fonts/Microsoft Himalaya.otf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Monloam_Uni';
+    src: url('../fonts/Monlam_Uni.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'DDC_Uchen';
+    src: url('../fonts/DDC_Uchen.ttf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Utsaah';
+    src: url('../fonts/Utsaah.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Kokila';
+    src: url('../fonts/kokila.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Mangal';
+    src: url('../fonts/Mangal.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Aharoni';
+    src: url('../fonts/Aharoni.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Akshar Unicode';
+    src: url('../fonts/Akshar.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Annapurna SIL';
+    src: url('../fonts/AnnapurnaSIL.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Aparajita';
+    src: url('../fonts/Aparajita.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Siddhanta';
+    src: url('../fonts/Siddhanta.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Tibetan Machine Uni';
+    src: url('../fonts/TibetanMachineUni.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Arial Unicode MS';
+    src: url('../fonts/ArialUnicodeMS.otf') format('opentype');
+}
+@font-face {
+    font-family: 'Code2000';
+    src: url('../fonts/Code2000.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Code2001';
+    src: url('../fonts/Code2001.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Code2002';
+    src: url('../fonts/Code2002.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'DejaVu Sans';
+    src: url('../fonts/DejaVuSans.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'DejaVu Sans Condensed';
+    src: url('../fonts/DejaVuSansCondensed.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Everson Mono';
+    src: url('../fonts/EversonMono.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Aegean';
+    src: url('../fonts/Aegean.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Anatolian';
+    src: url('../tff/NotoSansAnatolianHieroglyphs-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Anatolian_Douros';
+    src: url('/../fonts/Anatolian.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Meiryo';
+    src: url('../fonts/Meiryo.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Meiryo UI';
+    src: url('../fonts/MeiryoUI.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'MS Mincho';
+    src: url('../fonts/MSMincho.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'MS PGothic';
+    src: url('../fonts/MSPGothic.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Quivira';
+    src: url('../fonts/Quivira.otf') format('opentype');
+}
+@font-face {
+    font-family: 'Segoe UI Symbol';
+    src: url('../fonts/SegoeUISymbol.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Symbola';
+    src: url('../fonts/Symbola.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Paktype Tehreer';
+    src: url('../fonts/PaktypeTehreer.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Amiri';
+    src: url('../fonts/Amiri-Regular.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'PakType Ajrak';
+    src: url('../fonts/PakTypeAjrak.ttf') format('truetype');
+}
+@font-face {
+    font-family: '_PDMS_Saleem_QuranFont';
+    src: url('../fonts/PDMSSaleemQuranFont.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'jameel noori nastaleeq';
+    src: url('../fonts/jameelnoori.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'fajer noori nastalique';
+    src: url('../fonts/fajeernoori.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'AegyptusB';
+    src: url('../fonts/AegyptusB.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'AegyptusR';
+    src: url('../fonts/AegyptusR.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Gardiner';
+    src: url('../fonts/Gardiner.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'NotoEgyptian';
+    src: url('tff/NotoSansEgyptianHeiroglyphs.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Maya';
+    src: url('../fonts/maya.ttf') format('truetype');
+}
+
+
+body {
+    font-family: sans-serif;
+    padding: 20px;
+    background: #1a1a1a;
+    color: #eee;
+}
+
+.font-section {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.font-header {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.glyph-samples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.glyph-sample {
+    text-align: center;
+    padding: 5px;
+    background: #2a2a2a;
+    border-radius: 4px;
+    min-width: 60px;
+}
+
+.glyph-char {
+    font-size: 36px;
+    display: block;
+    margin-bottom: 3px;
+}
+
+.codepoint {
+    font-size: 11px;
+    color: #666;
+}
+
+.glyph-row {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.glyph-header {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #888;
+}
+
+.font-samples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.font-name {
+    font-size: 11px;
+    color: #666;
+    word-break: break-word;
+}
