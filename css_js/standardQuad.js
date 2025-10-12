@@ -13,6 +13,8 @@ cssStyle.insertRule('@keyframes fadeIn{0%{opacity:0;}100%{opacity:.71;}}', cssSt
 // Base div styling
 cssStyle.insertRule('DIV {padding:0%;margin:0%;top:0%;left:0%;width:100%;height:100%;font-size:10px;vertical-align:middle;z-index:21;}', cssStyle.cssRules.length);
 
+
+
 // Quadrant positions
 var quadPosArray = [];
 quadPosArray[1] = [0, 0];
