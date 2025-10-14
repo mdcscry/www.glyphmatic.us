@@ -6,6 +6,7 @@ cssSpiral8.title='cssSpiral10';
 
 //alert (document.styleSheets[0].title);
 var cssAnimation = document.styleSheets[0];
+
 var cssRules=cssAnimation.cssRules;
 //alert (cssRules);
 var newRule='@-' + browserPrefix +'-keyframes fadeOut{0%{opacity:.71;}100%{opacity:0;}}';
@@ -13,14 +14,14 @@ cssAnimation.insertRule(newRule,cssRules.length);
 var newRule='@-' + browserPrefix +'-keyframes fadeIn{0%{opacity:0;}100%{opacity:.71;}}';
 cssAnimation.insertRule(newRule,cssRules.length);
 
-var newRule='DIV { position:absolute; height:100%;width:100%;max-width:100%;max-height:100%;padding:0%; margin:0%; left:-35%;top:-10%; background-color:transparent; font-size: 200px; }';
+var newRule='DIV { position:absolute; height:100%;width:100%;max-width:100%;max-height:100%;padding:0%; margin:0%; left:-35%;top:-10%; background-color:transparent; font-size: 200px; zIndex:20; }';
 cssAnimation.insertRule(newRule,cssRules.length);
 
 var newRule='#myid2_bck{ -' +  browserPrefix +'-transition-property: background-color,color; -' +  browserPrefix +'-transition-duration: 3s,1.5s; position:absolute; padding-top:0%; left:0%;top:0%;width:100%;height:100%; background:#4000FF; font-size: 500px; color:  #4000FF; text-align:center; vertical-align: middle; opacity: 1; }';
 cssAnimation.insertRule(newRule,cssRules.length);
 
 for (i=1;i<=divCounter;i++){
-var newRule='#myid'+i+' { -' +  browserPrefix +'-transition-property: all,background-color,color;-' +  browserPrefix +'-transition-duration: 2s,3s,1.5s; padding:0px; margin:0px; height:1px; width:1px;background: transparent;font-family:Cardo; }';
+var newRule='#myid'+i+' { -' +  browserPrefix +'-transition-property: all,background-color,color;-' +  browserPrefix +'-transition-duration: 2s,3s,1.5s; padding:0px;z-index:100;margin:0px; height:1px; width:1px;background: transparent;font-family:Cardo; }';
 cssAnimation.insertRule(newRule,cssRules.length);
 var newRule='#myid'+i+'.display { -' +  browserPrefix +'-transition-property: all,background-color,color; -' +  browserPrefix +'-transition-duration: 3s,3s,1.5s; -' +  browserPrefix +'-animation-name: fadeIn; -' +  browserPrefix +'-animation-duration: 10s; -' +  browserPrefix +'-animation-timing-function: ease-in-out; -' +  browserPrefix +'-animation-delay: 0s; -' +  browserPrefix +'-animation-iteration-count: 1; -' +  browserPrefix +'-animation-direction: normal; -' +  browserPrefix +'-animation-play-state: running; -' +  browserPrefix +'-animation-fill-mode: both; }';
 cssAnimation.insertRule(newRule,cssRules.length);
@@ -72,7 +73,7 @@ var innerRule=innerRule + animationPercentArr[u] +'% { left:' + x +'%; top:' + y
 var newRule=newRulePrefix + innerRule + newRuleSuffix;
 
 
-cssAnimation.insertRule(newRule,length);
+cssAnimation.insertRule(newRule,cssRules.length);
 
 }
 

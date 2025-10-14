@@ -1,11 +1,11 @@
-console.log('INSERT13 TOP');
+console.log('INSERT15 TOP');
 
-// insert13.js - Braided Marquee
+// insert15.js - Braided Marquee
 var divCounter = 0; // Compatibility with nav
 var GRID_SIZE = Math.floor(Math.random() * 10) + 15;
 var STRIP_SIZE = 100 / GRID_SIZE;
 var BASE_SPEED = 0.01 + Math.random() * 0.02;
-var FONT_SIZE = Math.floor(Math.random() * 3) + 2;
+var FONT_SIZE = Math.floor(Math.random() * 5) + 2;
 
 var mycolors = [];
 var mycolors2 = [];
@@ -47,7 +47,7 @@ function jsWait() {
         typeof msucdArraySignal == "undefined") {
         window.setTimeout(jsWait, 100);
     } else {
-        console.log('SIGNALS READY, STARTING INSERT13');
+        console.log('SIGNALS READY, STARTING INSERT15');
         selectedPattern = zPatterns[Math.floor(Math.random() * zPatterns.length)];
         initStyle();
         initBraid();
@@ -55,9 +55,10 @@ function jsWait() {
     }
 }
 
+
 function initStyle() {
-    mycolors = []; // Clear previous colors (strips)
-    mycolors2 = []; // Clear previous colors (glyphs)
+    mycolors = []; // Clear previous colors
+    mycolors2 = [];
 
     const totalColorsToGenerate = 12; // Still generating 12 colors
 
@@ -89,22 +90,21 @@ function initStyle() {
             break;
     }
 
-    // --- 2. Define ranges for Lightness and Chroma ---
+    // --- 2. Define ranges for Lightness and Chroma to match the provided image's aesthetic ---
 
-    // --- mycolors (the vertical strips): VERY VERY LIGHT (near-white) and SUBTLY TINTED ---
-    const stripLightnessMean = Math.random() * 10 + 95; // Center lightness 85-95% (Extremely light)
-    const stripLightnessJitter = 5; // +/- 5% from the mean for consistency
+    // --- mycolors (the vertical strips): DARK and MUTED ---
+    const stripLightnessMean = Math.random() * 15 + 30; // Center lightness 30-45% (Darker than background)
+    const stripLightnessJitter = 8; // +/- 8% from the mean
 
-    const stripChromaMean = Math.random() * 0.1 + 0.05; // Center chroma 0.05-0.15 (Subtle tint of color)
+    const stripChromaMean = Math.random() * 0.06 + 0.06; // Center chroma 0.06-0.12 (Muted but has color)
     const stripChromaJitter = 0.03; // +/- 0.03 from the mean
 
-    // --- mycolors2 (the glyphs/text): BRIGHT, meaning DARKER than strips and VIBRANTLY saturated ---
-    // These settings are maintained to ensure strong contrast and vivid color against the very light strips.
-    const glyphLightnessMean = Math.random() * 5 + 95; // Center lightness 35-55% (Darker than strips)
-    const glyphLightnessJitter = 0.06; // +/- 10% from the mean
+    // --- mycolors2 (the glyphs/text): LIGHTER and somewhat more VIBRANT to stand out ---
+    const glyphLightnessMean = Math.random() * 20 + 60; // Center lightness 60-80% (Distinctly lighter than strips)
+    const glyphLightnessJitter = 10; // +/- 10% from the mean
 
-    const glyphChromaMean = Math.random() * 0.15 + 0.25; // Center chroma 0.25-0.4 (Very vibrant)
-    const glyphChromaJitter = 0.06; // +/- 0.06 from the mean
+    const glyphChromaMean = Math.random() * 0.1 + 0.12; // Center chroma 0.12-0.22 (More saturated to pop)
+    const glyphChromaJitter = 0.05; // +/- 0.05 from the mean
 
     // --- 3. Build mycolors and mycolors2 arrays ---
     for (let i = 0; i < totalColorsToGenerate; i++) {
@@ -117,33 +117,33 @@ function initStyle() {
         let stripL = stripLightnessMean + (Math.random() * stripLightnessJitter * 2 - stripLightnessJitter);
         let stripC = stripChromaMean + (Math.random() * stripChromaJitter * 2 - stripChromaJitter);
 
-        // Clamp values for mycolors (strips) - ensure they are extremely light and subtly colored
-        stripL = Math.min(99, Math.max(99, stripL)); // Strips are 80-95% lightness (very very light)
-        stripC = Math.min(0.15, Math.max(0.01, stripC)); // Chromaticity is very low for subtle tint
+        // Clamp values for mycolors (strips)
+        stripL = Math.min(50, Math.max(25, stripL)); // Keep strips in a dark-medium range
+        stripC = Math.min(0.20, Math.max(0.03, stripC)); // Muted to slightly-saturated
         hue = (hue + 360) % 360; // Ensure hue is always positive and within 0-360
 
-        // Push primary color to mycolors (strips)
-        mycolors2.push(`oklch(${stripL.toFixed(1)}% ${stripC.toFixed(2)} ${hue.toFixed(1)})`);
+        // Push primary color to mycolors
+        mycolors.push(`oklch(${stripL.toFixed(1)}% ${stripC.toFixed(2)} ${hue.toFixed(1)})`);
 
         // Generate lightness and chroma for mycolors2 (glyphs)
         let glyphL = glyphLightnessMean + (Math.random() * glyphLightnessJitter * 2 - glyphLightnessJitter);
         let glyphC = glyphChromaMean + (Math.random() * glyphChromaJitter * 2 - glyphChromaJitter);
 
-        // Clamp glyph values - ensuring they are darker than strips and highly vibrant
-        const clampedGlyphL = Math.min(60, Math.max(30, glyphL)); // Glyphs are 30-60% lightness (darker than strips)
-        const clampedGlyphC = Math.min(0.5, Math.max(0.2, glyphC)); // High chromaticity for vibrant colors
+        // Clamp glyph values
+        const clampedGlyphL = Math.min(85, Math.max(55, glyphL)); // Glyphs should be light-to-medium bright
+        const clampedGlyphC = Math.min(0.30, Math.max(0.08, glyphC)); // Visible to somewhat vibrant chroma
 
-        mycolors.push(`oklch(${clampedGlyphL.toFixed(1)}% ${clampedGlyphC.toFixed(2)} ${hue.toFixed(1)})`);
+        mycolors2.push(`oklch(${clampedGlyphL.toFixed(1)}% ${clampedGlyphC.toFixed(2)} ${hue.toFixed(1)})`);
     }
 
-    // --- 4. Global page background and text (these settings create overall context, not related to strips/glyphs contrast) ---
-    // The main canvas background should still be a dark, muted color.
-    // The global text for the body should be light for readability on a dark canvas.
-    const bgHue = hues[Math.floor(Math.random() * hues.length)];
+    // --- 4. Generate a very DARK, muted background and a LIGHT text color ---
+    const bgHue = hues[Math.floor(Math.random() * hues.length)]; // Base on one of the predominant palette hues
 
+    // The canvas background should be very dark and muted.
     const canvasBgLightness = Math.random() * 10 + 10; // Very dark background L (10-20%)
     const canvasBgChroma = Math.random() * 0.02 + 0.01; // Very muted (0.01-0.03)
 
+    // The global text color should be very light and desaturated for readability.
     const globalTextColorLightness = Math.random() * 10 + 85; // Very light text L (85-95%)
     const globalTextColorChroma = Math.random() * 0.01;      // Extremely muted, near grayscale
 
@@ -156,10 +156,10 @@ function initStyle() {
 
     // Log for debugging/information
     console.log("Harmony:", harmony);
-    console.log("🎨 Generated mycolors (all 12, strips - VERY VERY LIGHT & SUBTLY TINTED):", mycolors);
-    console.log("🎨 Generated mycolors2 (all 12, glyphs - DARKER & VIBRANTLY BRIGHT):", mycolors2);
-    console.log("🌈 Background Color (canvas - dark):", backgroundColor);
-    console.log("📖 Text Color (global - light):", textColor);
+    console.log("🎨 Generated mycolors (all 12, strips - now DARK):", mycolors);
+    console.log("🎨 Generated mycolors2 (all 12, glyphs - now LIGHT):", mycolors2);
+    console.log("🌈 Background Color (canvas - now DARK):", backgroundColor);
+    console.log("📖 Text Color (global - now LIGHT):", textColor);
 }
 
 function getRandomGlyph() {
@@ -366,5 +366,5 @@ function changeHtmlDisplayInline() {
 
 }
 
-console.log('insert13.js loaded');
+console.log('insert15.js loaded');
 jsWait();

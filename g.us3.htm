@@ -25,15 +25,11 @@ var sRefresh=0;
 var tenHit=0;
 
 var browserPrefix;
-
-
-
-
-
 //alert(ua);
 //alert (ua.indexOf("AppleWebKit"));
 if (ua.indexOf("AppleWebKit")>0){browserPrefix='webkit';browseWidth=50;} else if (ua.indexOf("msie")>0){browserPrefix='msie';} else {browserPrefix='moz';browseWidth=22;}
 //alert(browseWidth);
+
  insertArray[0]=['msucd_hangul.js'];
  insertArray[1]=['msucd_hangul.js'];
  insertArray[2]=['msucd_drop.js'];
@@ -48,8 +44,10 @@ if (ua.indexOf("AppleWebKit")>0){browserPrefix='webkit';browseWidth=50;} else if
  insertArray[11]=['nonRsvdUtf.js','flasher1-the beginning-fast'];
  insertArray[12]=['whirldsymbols.js','flasher1-the beginning-symbols'];
  insertArray[13]=['whirldsymbols.js','Braids'];
-//insertArray[14]=['worldsymbols_min.js','flasher1-the beginning-symbols','"Arial Unicode MS","Symbola Regular","Aegyptus Regular","Akkadian Regular",Sun-ExtA,"Aegean Regular","Code2000 Medium"'];
-//insertArray[17]=['bism.js','quad type','b i s m u l l uh'];
+ insertArray[14]=['whirldsymbols.js','Masked-Dissolve'];
+ insertArray[15]=['whirldsymbols.js','Braids 2'];
+ insertArray[16]=['emoji_versions_data2.js','Emoji Sequence Exploration'];
+ insertArray[17]=['emoji_versions_data2.js','Emoji Sequence Exploration'];
 
 for (hDetect=0;hDetect<=(insertArray.length-1);hDetect++){
 
@@ -60,6 +58,21 @@ var compString='i=' + hDetect.toString();
 tenHit=1;
 }
 
+// refreshInsertArrayRnd=Math.round(Math.random()*(insertArray.length-1));
+
+// case when 
+
+// // Construct the full URL
+// const targetURL = `https://www.glyphmatic.us?i=${refreshInsertArrayRnd}`;
+
+// // Create the meta tag
+// const meta = document.createElement('meta');
+// meta.setAttribute('http-equiv', 'refresh');
+// // Set content to 0 seconds delay, then the dynamic URL
+// meta.setAttribute('content', `0; url=${targetURL}`); 
+
+// // Append it to the head of the document
+// document.head.appendChild(meta);
 
 
 //Detects home and determines which insert to apply.  6 and 11 are weighted.
@@ -98,7 +111,7 @@ function jsWaitLetters() {
 		var src='./insert_js/insert' + insertArrayRnd+ '.js';
 		script1.src = src;
 		document.getElementsByTagName('body')[0].appendChild(script1);
-
+		console.log('Letters have been loaded')
         }
     }
 
@@ -319,16 +332,8 @@ else
 
 }
 
-
-
-jsWaitLetters();
+	jsWaitLetters();
 }
 
-
 </script>
-
-
-
-
-
 </body></html>

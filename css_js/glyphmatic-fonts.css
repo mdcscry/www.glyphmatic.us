@@ -17,10 +17,315 @@
 @import url('https://fonts.googleapis.com/css2?family=Amita:wght@400;700&family=Noto+Sans+Devanagari:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Teko:wght@300..700&display=swap');
 
 @import url('https://fonts.googleapis.com/css2?family=Jomolhari&family=Noto+Sans+Marchen&family=Noto+Sans+Zanabazar+Square&family=Noto+Serif+Tibetan:wght@100..900&family=Uchen&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Emoji&family=Noto+Sans+Symbols&family=Noto+Sans+Symbols+2&family=Noto+Sans+Vai&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Avestan&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Yi&family=Nuosu+SIL&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Lao&family=Noto+Sans+Lao+Looped&family=Noto+Serif+Lao:wght@100..900&family=Phetsarath:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Osmanya&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anek+Kannada&family=Baloo+Tamma+2&family=Benne&family=Hubballi&family=Noto+Sans+Kannada&family=Noto+Serif+Kannada&family=Padyakke+Expanded+One&family=Tiro+Kannada&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro&family=Metal&family=Moul&family=Noto+Sans+Khmer&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Abyssinica+SIL&family=Noto+Sans+Armenian&family=Noto+Sans+Ethiopic&family=Noto+Sans+Georgian&family=Noto+Serif+Armenian&family=Noto+Serif+Ethiopic&family=Noto+Serif+Georgian&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai&family=Noto+Serif+Thai&family=Prompt&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Explora&family=Noto+Sans+Cherokee:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar&family=Noto+Serif+Myanmar&family=Padauk&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jomolhari&family=Noto+Sans+Marchen&family=Noto+Sans+Zanabazar+Square&family=Noto+Serif+Tibetan:wght@100..900&family=Uchen&display=swap');
+
+/* symbols,chinese, hebrew, telugu, malayalam, bengali, malayalam, gurmurkhi, gujarati, arabic, korean, gurmukhi, sharada
+,cham, emoji, devanagari, marchen, vai, avestan, yi, lao, osmanya, kannada, khmer, ethiopic, armenian, georgian, thai
+cherokee, myanmar, tibetan
+
+/* Myanmar */
+
+.noto-sans-myanmar {
+  font-family: "Noto Sans Myanmar", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-serif-myanmar {
+  font-family: "Noto Serif Myanmar", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.padauk {
+  font-family: "Padauk", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
 
 
-/* symbols,chinese, hebrew, telugu, malayalam, bengali, malayalam, gurmurkhi, gujarati, arabic, korean, Gurmukhi, Sharada
-,Cham, emoji, devanagari
+/* Cherokee */
+
+.noto-sans-cherokee {
+  font-family: "Noto Sans Cherokee", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.explora {
+  font-family: "Explora", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+/* Thai */ 
+
+.noto-sans-thai {
+  font-family: "Noto Sans Thai", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.noto-serif-thai {
+  font-family: "Noto Serif Thai", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.prompt {
+  font-family: "Prompt", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Armenian, Georgian, Ethiopic */ 
+
+.noto-sans-armenian {
+  font-family: "Noto Sans Armenian", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.noto-serif-georgian {
+  font-family: "Noto Serif Armenian", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.noto-sans-georgian {
+  font-family: "Noto Sans Georgian", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.noto-serif-georgian {
+  font-family: "Noto Serif Georgian", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.abyssinica-sil {
+  font-family: "Abyssinica SIL", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-ethiopic {
+  font-family: "Noto Sans Ethiopic", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.noto-serif-ethiopic {
+  font-family: "Noto Serif Ethiopic", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+
+/* Khmer */ 
+
+.noto-sans-khmer {
+  font-family: "Noto Sans Khmer", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.moul {
+  font-family: "Moul", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.kantumruy-pro {
+  font-family: "Kantumruy Pro", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.metal {
+  font-family: "Metal", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+/* Kannada */
+
+.baloo-tamma-2 {
+  font-family: "Baloo Tamma 2", system-ui;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.benne {
+  font-family: "Benne", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.noto-sans-kannada {
+  font-family: "Noto Sans Kannada", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.noto-serif-kannada {
+  font-family: "Noto Serif Kannada", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+.hubballi {
+  font-family: "Hubballi", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.anek-kannada{
+  font-family: "Anek Kannada", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.tiro-kannada {
+  font-family: "Tiro Kannada", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.padyakke-expanded-one {
+  font-family: "Padyakke Expanded One", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Osmanya */
+
+.noto-sans-osmanya {
+  font-family: "Noto Sans Osmanya", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+/* Lao */
+
+.noto-serif-lao {
+  font-family: "Noto Serif Lao", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.noto-sans-lao-looped {
+  font-family: "Noto Sans Lao Looped", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.noto-sans-lao {
+  font-family: "Noto Sans Lao", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.phetsarath-regular {
+  font-family: "Phetsarath", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Yi */
+
+.nuosu-sil {
+  font-family: "Nuosu SIL", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-yi {
+  font-family: "Noto Sans Yi", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Avestan */
+
+.noto-sans-avestan {
+  font-family: "Noto Sans Vai", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Vai */
+
+.noto-sans-vai {
+  font-family: "Noto Sans Vai", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
 
 /* Symbols */
 
@@ -448,7 +753,6 @@
 
 
 /* Tibetan */
-@import url('https://fonts.googleapis.com/css2?family=Jomolhari&family=Noto+Sans+Marchen&family=Noto+Sans+Zanabazar+Square&family=Noto+Serif+Tibetan:wght@100..900&family=Uchen&display=swap');
 .jomolhari-regular {
   font-family: "Jomolhari", serif;
   font-weight: 400;
