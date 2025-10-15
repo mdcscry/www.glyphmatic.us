@@ -51,7 +51,7 @@ body {
 }
 .emoji-content {
         display: block; /* Allows block-level styling and transforms */
-        font-size: min(8vh, 6rem); /* Emoji font size, scales with viewport. '5rem' cap prevents it from becoming too huge on extra-large screens. */
+        font-size: min(3rem,7vh, 10rem); /* Emoji font size, scales with viewport. '5rem' cap prevents it from becoming too huge on extra-large screens. */
         opacity: 1;
         transform: rotateY(0deg) scale(1); /* Initial state */
         transform-style: preserve-3d; /* Allows for 3D transforms */
@@ -124,7 +124,7 @@ function flipCell(span) {
       span.classList.remove('is-fading-in');
       span.style.removeProperty('transform');
       span.style.removeProperty('opacity');
-      setTimeout(() => flipCell(span), Math.random() * (750000 - 20000) + 20000);
+      setTimeout(() => flipCell(span), Math.random() * (45000) + 5000);
     };
     span.addEventListener('animationend', handleIn);
   };
@@ -184,7 +184,7 @@ if (allEmojis.length === 0) {
 
         // Schedule the first animation for each cell with a staggered initial delay
         // Random initial delay between 0 to 10 seconds
-        const initialAnimationDelay = Math.random() * 750000;
+        const initialAnimationDelay = (Math.random() * 80000) + 5000;
         setTimeout(() => flipCell(emojiContentSpan), initialAnimationDelay);
     }
 }

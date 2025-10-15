@@ -124,7 +124,7 @@ function flipCell(span) {
       span.classList.remove('is-fading-in');
       span.style.removeProperty('transform');
       span.style.removeProperty('opacity');
-      setTimeout(() => flipCell(span), Math.random() * 100000);
+      setTimeout(() => flipCell(span), Math.random() * 40000 + 8000);
     };
     span.addEventListener('animationend', handleIn);
   };
@@ -184,7 +184,7 @@ if (allEmojis.length === 0) {
 
         // Schedule the first animation for each cell with a staggered initial delay
         // Random initial delay between 0 to 10 seconds
-        const initialAnimationDelay = Math.random() * 100000+5000;
+        const initialAnimationDelay = Math.random() * 30000+7000;
         setTimeout(() => flipCell(emojiContentSpan), initialAnimationDelay);
     }
 }
