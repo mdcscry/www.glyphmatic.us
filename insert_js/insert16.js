@@ -46,12 +46,12 @@ body {
 .grid-cell {
   width: 10%; height: 10%;
   display: flex; justify-content: center; align-items: center;
-  line-height: 1.5; border: 3px solid;
+  line-height: 1.75; border: 3px solid;
   background-color: transparent; perspective: 1000px; border-radius: 8px;
 }
 .emoji-content {
         display: block; /* Allows block-level styling and transforms */
-        font-size: min(3rem,7vh, 10rem); /* Emoji font size, scales with viewport. '5rem' cap prevents it from becoming too huge on extra-large screens. */
+        font-size: min(10rem,8vh,5rem); /* Emoji font size, scales with viewport. '5rem' cap prevents it from becoming too huge on extra-large screens. */
         opacity: 1;
         transform: rotateY(0deg) scale(1); /* Initial state */
         transform-style: preserve-3d; /* Allows for 3D transforms */

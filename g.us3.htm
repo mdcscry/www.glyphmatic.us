@@ -156,7 +156,7 @@ if (currentIndexNum !== null && currentIndexNum >= 0 && currentIndexNum < insert
 	const scriptToLoad = insertArray[defaultIndex][0];
 	console.log(`Script to load: ${scriptToLoad}`);
 	const script = document.createElement('script');
-	script.src = scriptToLoad;
+	script.src ='./css_js/' +  scriptToLoad;
 	document.head.appendChild(script);
 	console.log(`✓ Loaded default script: ${scriptToLoad} (index ${defaultIndex})`);
 }
