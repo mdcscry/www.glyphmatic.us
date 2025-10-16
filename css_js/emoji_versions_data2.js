@@ -11,7 +11,48 @@ const emoji_zwj_v2_0 = [
 
 // Unicode Emoji Version 3.0 (0 sequences)
 const emoji_zwj_v3_0 = [
+    // Person with skullcap (1F472)
+    '👲', '👲🏻', '👲🏼', '👲🏽', '👲🏾', '👲🏿',
+    
+    // Princess (1F478) 
+    '👸', '👸🏻', '👸🏼', '👸🏽', '👸🏾', '👸🏿',
+    
+    // Man dancing (1F57A)
+    '🕺', '🕺🏻', '🕺🏼', '🕺🏽', '🕺🏾', '🕺🏿',
+    
+    // Person in suit levitating (1F574)
+    '🕴️', '🕴🏻', '🕴🏼', '🕴🏽', '🕴🏾', '🕴🏿',
+    
+    // Person in bathtub (1F6C0)
+    '🛀', '🛀🏻', '🛀🏼', '🛀🏽', '🛀🏾', '🛀🏿',
+    
+    // Person in bed (1F6CC)
+    '🛌', '🛌🏻', '🛌🏼', '🛌🏽', '🛌🏾', '🛌🏿',
+    
+    // Pregnant woman (1F930)
+    '🤰', '🤰🏻', '🤰🏼', '🤰🏽', '🤰🏾', '🤰🏿',
+    
+    // Breast-feeding (1F931)
+    '🤱', '🤱🏻', '🤱🏼', '🤱🏽', '🤱🏾', '🤱🏿',
+
+       // Prince (1F934) - inherently gendered like princess
+    '🤴', '🤴🏻', '🤴🏼', '🤴🏽', '🤴🏾', '🤴🏿',
+    
+        // Woman dancing (1F483) - counterpart to man dancing
+    '💃', '💃🏻', '💃🏼', '💃🏽', '💃🏾', '💃🏿',
+
+      // Baby (1F476) - age-specific, no gender variants
+    '👶', '👶🏻', '👶🏼', '👶🏽', '👶🏾', '👶🏿',
+
+     // Baby angel (1F47C) - cherub/cupid figure
+    '👼', '👼🏻', '👼🏼', '👼🏽', '👼🏾', '👼🏿',
+
+        // Selfie (1F933) - added late in Unicode 9.0
+    '🤳', '🤳🏻', '🤳🏼', '🤳🏽', '🤳🏾', '🤳🏿',
+    
+    
 ];
+
 
 // Unicode Emoji Version 4.0 (579 sequences)
 const emoji_zwj_v4_0 = [
