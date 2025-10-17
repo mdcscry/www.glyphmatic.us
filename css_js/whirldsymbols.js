@@ -299,6 +299,50 @@ myFontSet[104]=['x2E18','Code2000','Quivira','Symbola','Segoe UI Symbol','Everso
 // myFontSet[186]=['x058E','Arial Unicode MS','Code2000','Symbola']; // Armenian eternity sign
 // myFontSet[187]=['x1F480','Arial Unicode MS','Code2000','Symbola']; // Skull
 
+
+// //Astronomical Symbols
+// myFontSet[188]=['2BD3','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Pluto Form Two
+// myFontSet[189]=['2BD4','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Pluto Form Three
+// myFontSet[190]=['2BD5','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Pluto Form Four
+// myFontSet[191]=['2BD6','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Pluto Form Five
+// myFontSet[192]=['2BD7','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Transpluto
+// myFontSet[193]=['2BD8','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Proserpina
+// myFontSet[194]=['2BD9','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Astraea
+// myFontSet[195]=['2BDA','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Hygiea
+// myFontSet[196]=['2BDB','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Pholus
+// myFontSet[197]=['2BDC','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Nessus
+// myFontSet[198]=['2BDD','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // White Moon Selena
+// myFontSet[199]=['2BDE','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // True Black Moon Lilith
+// myFontSet[200]=['2BDF','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // True Light Moon Arta
+// myFontSet[201]=['2BE0','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Cupido
+// myFontSet[202]=['2BE1','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Hades
+// myFontSet[203]=['2BE2','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Zeus
+// myFontSet[204]=['2BE3','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Kronos
+// myFontSet[205]=['2BE4','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Apollon
+// myFontSet[206]=['2BE5','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Admetos
+// myFontSet[207]=['2BE6','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Vulcanus
+// myFontSet[208]=['2BE7','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Poseidon
+// myFontSet[209]=['2BE8','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Left Half Black Star
+// myFontSet[210]=['2BE9','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Right Half Black Star
+// myFontSet[211]=['2BEA','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Star with Left Half Black
+// myFontSet[212]=['2BEB','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Star with Right Half Black
+// myFontSet[213]=['2BEC','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Leftwards Two-Headed Arrow with Triangle Arrowheads
+// myFontSet[214]=['2BED','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Upwards Two-Headed Arrow with Triangle Arrowheads
+// myFontSet[215]=['2BEE','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Rightwards Two-Headed Arrow with Triangle Arrowheads
+// myFontSet[216]=['2BEF','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Downwards Two-Headed Arrow with Triangle Arrowheads
+// myFontSet[217]=['2BF0','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Eris Form One
+// myFontSet[218]=['2BF1','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Eris Form Two
+// myFontSet[219]=['2BF2','Arial Unicode MS','Code2000','Symbola','Sans Symbols 2']; // Sedna
+
+// //Russian Astronomical Symbols
+// myFontSet[220]=['2BF3','Arial Unicode MS','Code2000','Symbola']; // Russian Astrological Symbol Vigintile
+// myFontSet[221]=['2BF4','Arial Unicode MS','Code2000','Symbola']; // Russian Astrological Symbol Novile
+// myFontSet[222]=['2BF5','Arial Unicode MS','Code2000','Symbola']; // Russian Astrological Symbol Quintile
+// myFontSet[223]=['2BF6','Arial Unicode MS','Code2000','Symbola']; // Russian Astrological Symbol Binovile
+// myFontSet[224]=['2BF7','Arial Unicode MS','Code2000','Symbola']; // Russian Astrological Symbol Sentagon
+// myFontSet[225]=['2BF8','Arial Unicode MS','Code2000','Symbola']; // Russian Astrological Symbol Tredecile
+
+// glyphDescriptions[187] = 'Skull';
 var glyphDescriptions = [];
 
 // Original entries 0-104
@@ -493,6 +537,44 @@ glyphDescriptions[104] = 'Inverted interrobang';
 // glyphDescriptions[186] = 'Armenian eternity sign';
 // glyphDescriptions[187] = 'Skull';
 
+// glyphDescriptions[188] = 'Pluto Form Two';
+// glyphDescriptions[189] = 'Pluto Form Three';
+// glyphDescriptions[190] = 'Pluto Form Four';
+// glyphDescriptions[191] = 'Pluto Form Five';
+// glyphDescriptions[192] = 'Transpluto';
+// glyphDescriptions[193] = 'Proserpina';
+// glyphDescriptions[194] = 'Astraea';
+// glyphDescriptions[195] = 'Hygiea';
+// glyphDescriptions[196] = 'Pholus';
+// glyphDescriptions[197] = 'Nessus';
+// glyphDescriptions[198] = 'White Moon Selena';
+// glyphDescriptions[199] = 'True Black Moon Lilith';
+// glyphDescriptions[200] = 'True Light Moon Arta';
+// glyphDescriptions[201] = 'Cupido';
+// glyphDescriptions[202] = 'Hades';
+// glyphDescriptions[203] = 'Zeus';
+// glyphDescriptions[204] = 'Kronos';
+// glyphDescriptions[205] = 'Apollon';
+// glyphDescriptions[206] = 'Admetos';
+// glyphDescriptions[207] = 'Vulcanus';
+// glyphDescriptions[208] = 'Poseidon';
+// glyphDescriptions[209] = 'Left Half Black Star';
+// glyphDescriptions[210] = 'Right Half Black Star';
+// glyphDescriptions[211] = 'Star with Left Half Black';
+// glyphDescriptions[212] = 'Star with Right Half Black';
+// glyphDescriptions[213] = 'Leftwards Two-Headed Arrow with Triangle Arrowheads';
+// glyphDescriptions[214] = 'Upwards Two-Headed Arrow with Triangle Arrowheads';
+// glyphDescriptions[215] = 'Rightwards Two-Headed Arrow with Triangle Arrowheads';
+// glyphDescriptions[216] = 'Downwards Two-Headed Arrow with Triangle Arrowheads';
+// glyphDescriptions[217] = 'Eris Form One';
+// glyphDescriptions[218] = 'Eris Form Two';
+// glyphDescriptions[219] = 'Sedna';
+// glyphDescriptions[220] = 'Russian Astrological Symbol Vigintile';
+// glyphDescriptions[221] = 'Russian Astrological Symbol Novile';
+// glyphDescriptions[222] = 'Russian Astrological Symbol Quintile';
+// glyphDescriptions[223] = 'Russian Astrological Symbol Binovile';
+// glyphDescriptions[224] = 'Russian Astrological Symbol Sentagon';
+// glyphDescriptions[225] = 'Russian Astrological Symbol Tredecile';
 
 
 var whirldArraySignal = [];

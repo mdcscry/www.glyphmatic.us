@@ -1,13 +1,19 @@
 // insert17.js
 // Waits for emojiSequenceArraySignal && msucdArraySignal before initializing emoji grid
-var allEmojis=[]
+var allEmojis = []
+var remainingEmojis = []; // Pool of unused emojis
+
 // ---- Create emoji grid ----
 function initContent() {
 
   // ✅ Explicitly reference the named emoji arrays here:
   const emojiArrays = [
     emoji_zwj_v2_0,
+<<<<<<< Updated upstream
     emoji_zwj_v3_0,
+=======
+    emoji_zwj_v3_0,    
+>>>>>>> Stashed changes
     emoji_zwj_v4_0,
     emoji_zwj_v5_0, 
     emoji_zwj_v12_0,
@@ -17,7 +23,7 @@ function initContent() {
     emoji_zwj_v15_0,
     emoji_zwj_v15_1,
     emoji_zwj_v16_0,
-   // emoji_zwj_v17_0
+   emoji_zwj_v17_0
   ];
 
   emojiArrays.forEach(arr => {
@@ -28,6 +34,9 @@ function initContent() {
     grid.textContent = "No emoji data found.";
     return;
   }
+  
+  // Initialize the pool
+  remainingEmojis = [...allEmojis];
 }
 
 // ---- Embedded CSS ----
@@ -109,10 +118,16 @@ function flipCell(span) {
     span.removeEventListener('animationend', handleOut);
     span.classList.remove('is-fading-out');
 
-    if (allEmojis.length > 0) {
-      const newEmoji = allEmojis[Math.floor(Math.random() * allEmojis.length)];
-      span.textContent = newEmoji;
+    // Check if pool is empty, reset if needed
+    if (remainingEmojis.length === 0) {
+      remainingEmojis = [...allEmojis];
+      console.log("🔄 Pool exhausted - resetting with all emojis");
     }
+
+    // Pick random index from remaining pool and REMOVE it
+    const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
+    const newEmoji = remainingEmojis.splice(poolIndex, 1)[0];
+    span.textContent = newEmoji;
 
     span.style.transform = 'rotateY(180deg) scale(0.7)';
     span.style.opacity = '0';
@@ -131,6 +146,7 @@ function flipCell(span) {
   };
   span.addEventListener('animationend', handleOut);
 }
+
 function initGrid() {
 
     const grid = document.createElement('div');
@@ -159,7 +175,7 @@ if (allEmojis.length === 0) {
     emojiGrid.style.borderColor = getRandomMainColor();
     emojiGrid.style.zIndex = 100;
     emojiGrid.style.position = 'absolute';
-    const gridSize = 5; // For a 10x10 grid
+    const gridSize = 5; // For a 5x5 grid
     const totalCells = gridSize * gridSize;
 
     for (let i = 0; i < totalCells; i++) {
@@ -170,9 +186,12 @@ if (allEmojis.length === 0) {
         const emojiContentSpan = document.createElement('span');
         emojiContentSpan.classList.add('emoji-content');
 
-        // Pick an initial random emoji
-        const randomIndex = Math.floor(Math.random() * allEmojis.length);
-        emojiContentSpan.textContent = allEmojis[randomIndex];
+        // Pick an initial random emoji from the pool and remove it
+        if (remainingEmojis.length === 0) {
+          remainingEmojis = [...allEmojis];
+        }
+        const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
+        emojiContentSpan.textContent = remainingEmojis.splice(poolIndex, 1)[0];
 
         // Assign a random pastel background color to the cell
         cell.style.backgroundColor = getRandomPastelColor();
