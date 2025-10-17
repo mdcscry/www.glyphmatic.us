@@ -10,7 +10,11 @@ function initContent() {
   const emojiArrays = [
     emoji_zwj_v2_0,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     emoji_zwj_v3_0,
+=======
+    emoji_zwj_v3_0,    
+>>>>>>> Stashed changes
 =======
     emoji_zwj_v3_0,    
 >>>>>>> Stashed changes
