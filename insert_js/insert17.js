@@ -9,15 +9,7 @@ function initContent() {
   // ✅ Explicitly reference the named emoji arrays here:
   const emojiArrays = [
     emoji_zwj_v2_0,
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
     emoji_zwj_v3_0,
-=======
-    emoji_zwj_v3_0,    
->>>>>>> Stashed changes
-=======
-    emoji_zwj_v3_0,    
->>>>>>> Stashed changes
     emoji_zwj_v4_0,
     emoji_zwj_v5_0, 
     emoji_zwj_v12_0,
