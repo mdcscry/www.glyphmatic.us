@@ -1,312 +1,316 @@
-var block_lang['Adlam'] = ['adlam'];
-var block_lang['Aegean_Numbers'] = ['sanslinearb'];
-var block_lang['Ahom'] = ['ahom'];
-var block_lang['Alchemical_Symbols'] = ['symbols'];
-//var block_lang['Alphabetic_Presentation_Forms'] = ['']; //armenian/latin/hebrew requires special processing
-var block_lang['Anatolian_Hieroglyphs'] = ['anatolianheiroglyphics'];
-var block_lang['Ancient_Greek_Musical_Notation'] = ['music'];
-var block_lang['Ancient_Greek_Numbers'] = ['symbols2'];
-var block_lang['Ancient_Symbols'] = ['symbols2'];
-var block_lang['Arabic'] = ['arabic'];
-var block_lang['Arabic_Extended_A'] = ['arabic'];
-var block_lang['Arabic_Mathematical_Alphabetic_Symbols'] = ['arabic'];
-var block_lang['Arabic_Presentation_Forms_A'] = ['arabic-ext'];
-var block_lang['Arabic_Presentation_Forms_B'] = ['arabic-ext'];
-var block_lang['Arabic_Supplement'] = ['arabic-ext'];
-var block_lang['Armenian'] = ['armenian'];
-var block_lang['Arrows'] = ['symbols'];
-var block_lang['Avestan'] = ['avestan'];
-var block_lang['Balinese'] = ['balinese'];
-var block_lang['Bamum'] = ['bamum'];
-var block_lang['Bamum_Supplement'] = ['bamum'];
-var block_lang['Basic_Latin'] = ['latin'];
-var block_lang['Bassa_Vah'] = ['bassa-vah'];
-var block_lang['Batak'] = ['batak'];
-var block_lang['Bengali'] = ['bengali'];
-var block_lang['Bhaiksuki'] = ['bhaiksuki'];
-var block_lang['Block_Elements'] = ['noto-mono'];
-var block_lang['Bopomofo'] = ['noto-simple-chinese','noto-trad-chinese','noto-hongkong','noto-korean','noto-japanese']; 
-var block_lang['Bopomofo_Extended'] = ['noto-simple-chinese','noto-trad-chinese','noto-hongkong','noto-korean','noto-japanese']; 
-var block_lang['Box_Drawing'] = ['symbols'];
-var block_lang['Brahmi'] = ['brahmi'];
-var block_lang['Braille_Patterns'] = ['symbols'];
-var block_lang['Buginese'] = ['buginese'];
-var block_lang['Buhid'] = ['buhid'];
-var block_lang['Byzantine_Musical_Symbols'] = ['music'];
-var block_lang['Carian'] = ['carion'];
-var block_lang['Caucasian_Albanian'] = ['caucasian-albanian'];
-var block_lang['Chakma'] = ['chakma'];
-var block_lang['Cham'] = ['cham'];
-var block_lang['Cherokee'] = ['cherokee'];
-var block_lang['Cherokee_Supplement'] = ['cherokee'];
-var block_lang['Chess_Symbols'] = ['symbols'];
-//var block_lang['CJK_Compatibility'] = ['chinese-simplified'];
-//var block_lang['CJK_Compatibility_Forms'] = ['chinese-simplified','chinese-traditional','chinese-hongkong'];
-//var block_lang['CJK_Compatibility_Ideographs'] = ['chinese-simplified','chinese-traditional','chinese-hongkong'];
-var block_lang['CJK_Radicals_Supplement'] = ['chinese-simplified','chinese-traditional','chinese-hongkong'];
-var block_lang['CJK_Strokes'] = ['chinese-simplified','chinese-traditional','chinese-hongkong'];
-var block_lang['CJK_Symbols_And_Punctuation'] = ['chinese-simplified','chinese-traditional','chinese-hongkong'];
-//var block_lang['CJK_Unified_Ideographs'] = ['chinese-simplified','chinese-traditional','chinese-hongkong'];
-//var block_lang['CJK_Unified_Ideographs_Extension_A'] = ['chinese-simplified','chinese-traditional','chinese-hongkong'];
-//var block_lang['Combining_Diacritical_Marks_Extended'] = ['latin','latin-ext'];
-//var block_lang['Combining_Diacritical_Marks_For_Symbols'] = ['latin','latin-ext'];
-var block_lang['Common_Indic_Number_Forms'] = ['noto-devanagari'];
-//var block_lang['Control_Pictures'] = ['symbols2'];
-var block_lang['Coptic'] = ['coptic'];
-var block_lang['Coptic_Epact_Numbers'] = ['coptic','symbols2'];
-var block_lang['Counting_Rod_Numerals'] = ['symbols'];
-var block_lang['Cuneiform'] = ['cuneiform'];
-var block_lang['Cuneiform_Numbers_And_Punctuation'] = ['cuneiform'];
-var block_lang['Currency_Symbols'] = ['symbols'];
-var block_lang['Cypriot_Syllabary'] = ['cypriot'];
-var block_lang['Cyrillic'] = ['cyrillic'];
-var block_lang['Cyrillic_Extended_B'] = ['cyrillic-ext'];
-var block_lang['Cyrillic_Extended_C'] = ['cyrillic-ext'];
-var block_lang['Cyrillic_Supplement'] = ['cyrillic-ext'];
-var block_lang['Deseret'] = ['deseret'];
-var block_lang['Devanagari'] = ['devanagari'];
-var block_lang['Devanagari_Extended'] = ['devanagari'];
-var block_lang['Dingbats'] = ['symbols'];
-var block_lang['Dogra'] = ['dogra'];
-var block_lang['Domino_Tiles'] = ['symbols'];
-var block_lang['Duployan'] = ['duployan'];
-var block_lang['Early_Dynastic_Cuneiform'] = ['cuneiform'];
-var block_lang['Egyptian_Hieroglyphs'] = ['egyptianheiroglyphics'];
-var block_lang['Elbasan'] = ['elbasan'];
-var block_lang['Elymaic'] = ['elymaic'];
-var block_lang['Emoticons'] = ['symbols'];
-var block_lang['Enclosed_Alphanumeric_Supplement'] = ['symbols'];
-var block_lang['Enclosed_Alphanumerics'] = ['symbols'];
-//var block_lang['Enclosed_CJK_Letters_And_Months'] = [''];
-//var block_lang['Enclosed_Ideographic_Supplement'] = [''];
-var block_lang['Ethiopic'] = ['ethiopic'];
-var block_lang['Ethiopic_Extended'] = ['ethiopic'];
-var block_lang['Ethiopic_Extended_A'] = ['ethiopic'];
-var block_lang['Ethiopic_Supplement'] = ['ethiopic'];
-var block_lang['General_Punctuation'] = ['symbols'];
-var block_lang['Geometric_Shapes'] = ['symbols'];
-var block_lang['Geometric_Shapes_Extended'] = ['symbols'];
-var block_lang['Georgian'] = ['georgian'];
-var block_lang['Georgian_Extended'] = ['georgian'];
-var block_lang['Georgian_Supplement'] = ['georgian'];
-var block_lang['Glagolitic'] = ['glagolitic'];
-var block_lang['Gothic'] = ['gothic'];
-var block_lang['Grantha'] = ['grantha'];
-var block_lang['Greek_And_Coptic'] = ['coptic','latin-ext'];
-var block_lang['Greek_Extended'] = ['latin-ext'];
-var block_lang['Gujarati'] = ['gujarati'];
-var block_lang['Gunjala_Gondi'] = ['gunjala-gondi'];
-var block_lang['Gurmukhi'] = ['gurmukhi'];
-//var block_lang['Halfwidth_And_Fullwidth_Forms'] = [''];
-var block_lang['Hangul_Compatibility_Jamo'] = ['korean'];
-var block_lang['Hangul_Jamo'] = ['korean'];
-var block_lang['Hangul_Jamo_Extended_A'] = ['korean'];
-var block_lang['Hangul_Jamo_Extended_B'] = ['korean'];
-var block_lang['Hangul_Syllables'] = ['korean'];
-var block_lang['Hanifi_Rohingya'] = ['hanifi-rohingya'];
-var block_lang['Hanunoo'] = ['hunanoo'];
-var block_lang['Hatran'] = ['hatron'];
-var block_lang['Hebrew'] = ['hebrew'];
-var block_lang['Hentaigana'] = ['hentaigana']
-var block_lang['Hiragana'] = ['japanese'];
-//var block_lang['Ideographic_Description_Characters'] = [''];
-//var block_lang['Ideographic_Symbols_And_Punctuation'] = [''];
-var block_lang['Imperial_Aramaic'] = ['imperial_aramaic'];
-var block_lang['Indic_Siyaq_Numbers'] = ['indic-siyaq-numbers'];
-var block_lang['Inscriptional_Pahlavi'] = ['inscriptionalpahlavi'];
-var block_lang['Inscriptional_Parthian'] = ['inscriptionalparthian'];
-var block_lang['IPA_Extensions'] = ['noto-regular'];
-var block_lang['Javanese'] = ['javanese'];
-var block_lang['Kaithi'] = ['kaithi'];
-var block_lang['Kannada'] = ['kannada'];
-var block_lang['Katakana'] = ['japanese'];
-var block_lang['Katakana_Phonetic_Extensions'] = ['japanese'];
-var block_lang['Kayah_Li'] = ['kayahli'];
-var block_lang['Kharoshthi'] = ['kharoshthi'];
-var block_lang['Khmer'] = ['khmer'];
-var block_lang['Khmer_Symbols'] = ['khmer'];
-var block_lang['Khojki'] = ['khojki'];
-var block_lang['Khudawadi'] = ['khudawadi'];
-var block_lang['Lao'] = ['lao'];
-var block_lang['Latin_1_Supplement'] = [''];
-var block_lang['Latin_Extended_A'] = [''];
-var block_lang['Latin_Extended_Additional'] = [''];
-var block_lang['Latin_Extended_B'] = ['latin_extended_b'];
-var block_lang['Latin_Extended_C'] = ['latin_extended_c'];
-var block_lang['Latin_Extended_D'] = ['latin_extended_d'];
-var block_lang['Latin_Extended_E'] = ['latin_extended_e'];
-var block_lang['Latin_Extended_F'] = ['latin_extended_f']; //unicode 14
-var block_lang['Latin_Extended_G'] = ['latin_extended_g']; //unicode 14
-var block_lang['Lepcha'] = ['lepcha'];
-var block_lang['Letterlike_Symbols'] = ['noto-regular'];
-var block_lang['Limbu'] = ['limbu'];
-var block_lang['Linear_A'] = ['lineara'];
-var block_lang['Linear_B_Ideograms'] = ['linearb'];
-var block_lang['Linear_B_Syllabary'] = ['linearb'];
-var block_lang['Lisu'] = ['lisu'];
-var block_lang['Lisu_Supplement'] = ['lisu'];
-var block_lang['Lycian'] = ['lycian'];
-var block_lang['Lydian'] = ['lydian'];
-var block_lang['Mahajani'] = ['mahajani'];
-var block_lang['Mahjong_Tiles'] = ['symbols'];
-var block_lang['Makasar'] = ['makasar'];
-var block_lang['Malayalam'] = ['malayalam'];
-var block_lang['Mandaic'] = ['mandaic'];
-var block_lang['Manichaean'] = ['manichaean'];
-var block_lang['Marchen'] = ['marchen'];
-var block_lang['Masaram_Gondi'] = ['masaram-gondi'];
-var block_lang['Mathematical_Alphanumeric_Symbols'] = ['symbols'];
-var block_lang['Mathematical_Operators'] = ['symbols'];
-var block_lang['Mayan_Numerals'] = ['mayan-numerals'];
-var block_lang['Medefaidrin'] = ['medefaidrin'];
-var block_lang['Meetei_Mayek'] = ['meeteimayek'];
-var block_lang['Meetei_Mayek_Extensions'] = ['meeteimayek'];
-var block_lang['Mende_Kikakui'] = ['mende_kikakui'];
-var block_lang['Meroitic_Cursive'] = ['meroitic'];
-var block_lang['Meroitic_Hieroglyphs'] = ['meroitic'];
-var block_lang['Miao'] = ['miao'];
-var block_lang['Miscellaneous_Mathematical_Symbols_A'] = ['symbols'];
-var block_lang['Miscellaneous_Mathematical_Symbols_B'] = ['symbols'];
-var block_lang['Miscellaneous_Symbols'] = ['symbols'];
-var block_lang['Miscellaneous_Symbols_And_Arrows'] = ['symbols'];
-var block_lang['Miscellaneous_Symbols_And_Pictographs'] = ['symbols'];
-var block_lang['Miscellaneous_Technical'] = ['symbols'];
-var block_lang['Modi'] = ['modi'];
-var block_lang['Modifier_Tone_Letters'] = ['noto-regular'];
-var block_lang['Mongolian'] = ['mongolian'];
-var block_lang['Mongolian_Supplement'] = ['mongolian'];
-var block_lang['Mro'] = ['mro'];
-var block_lang['Multani'] = ['multani'];
-var block_lang['Musical_Symbols'] = ['symbols'];
-var block_lang['Myanmar'] = ['myanmar'];
-var block_lang['Myanmar_Extended_A'] = ['myanmar'];
-var block_lang['Myanmar_Extended_B'] = ['myanmar'];
-var block_lang['Nabataean'] = ['nabataean'];
-var block_lang['Nandinagari'] = ['nandinagari'];
-var block_lang['New_Tai_Lue'] = ['newthailue'];
-var block_lang['Newa'] = ['newa'];
-var block_lang['NKo'] = ['nko'];
-var block_lang['Number_Forms'] = ['symbols'];
-var block_lang['Nushu'] = ['nushu'];
-var block_lang['Nyiakeng_Puachue_Hmong'] = ['nyiakeng-puachue-hmong'];
-var block_lang['Ogham'] = ['ogham'];
-var block_lang['Ol_Chiki'] = ['olchiki'];
-var block_lang['Old_Hungarian'] = ['old-hungarian'];
-var block_lang['Old_Italic'] = ['olditalic'];
-var block_lang['Old_North_Arabian'] = ['old-north-arabian'];
-var block_lang['Old_Permic'] = ['old-permic'];
-var block_lang['Old_Persian'] = ['oldpersian'];
-var block_lang['Old_South_Arabian'] = ['oldsoutharabian'];
-var block_lang['Old_Turkic'] = ['oldturkic'];
-var block_lang['Optical_Character_Recognition'] = ['symbols'];
-var block_lang['Oriya'] = ['oriya'];
-var block_lang['Ornamental_Dingbats'] = ['symbols'];
-var block_lang['Osage'] = ['osage'];
-var block_lang['Osmanya'] = ['osmanya'];
-var block_lang['Ottoman_Siyaq_Numbers'] = ['ottoman-siyaq-numbers'];
-var block_lang['Pahawh_Hmong'] = ['pahawh-hmong'];
-var block_lang['Palmyrene'] = ['palmyrene'];
-var block_lang['Pau_Cin_Hau'] = ['pau-cin-hau'];
-var block_lang['Phags_Pa'] = ['phagspa'];
-var block_lang['Phaistos_Disc'] = ['symbols2'];
-var block_lang['Phoenician'] = ['phoenician'];
-var block_lang['Phonetic_Extensions'] = ['noto-regular'];
-var block_lang['Phonetic_Extensions_Supplement'] = ['noto-regular'];
-var block_lang['Playing_Cards'] = ['symbols'];
-var block_lang['Psalter_Pahlavi'] = ['psalter-pahlavi'];
-var block_lang['Rejang'] = ['rejang'];
-var block_lang['Rumi_Numeral_Symbols'] = ['symbols2'];
-var block_lang['Runic'] = ['symbols'];
-var block_lang['Samaritan'] = ['samaritan'];
-var block_lang['Saurashtra'] = ['saurashtra'];
-var block_lang['Sharada'] = ['sharada'];
-var block_lang['Shavian'] = ['shavian'];
-var block_lang['Siddham'] = ['siddham'];
-var block_lang['Sinhala'] = ['sinhala'];
-var block_lang['Sinhala_Archaic_Numbers'] = ['sinhala'];
-//var block_lang['Small_Form_Variants'] = ['small-kana'];  //redundant lots of cjk fonts including japanese
-//var block_lang['Small_Kana_Extension'] = ['small-kana']; //review maybe japanese
-//var block_lang['Kana_Extended_B'] = ['small-kana']; //review maybe japanese
-var block_lang['Kana_Extended_A'] = ['hentaigana'];
-var block_lang['Kana_Supplement'] = ['hentaigana'];
-var block_lang['Kanbun'] = ['japanese'];
-var block_lang['Kangxi_Radicals'] = ['japanese'];
-var block_lang['Sogdian'] = ['sogdian'];
-var block_lang['Old_Sogdian'] = ['old-sogdian'];
-var block_lang['Sora_Sompeng'] = ['sora-sompeng'];
-var block_lang['Soyombo'] = ['soyombo'];
-var block_lang['Spacing_Modifier_Letters'] = ['symbols'];
-var block_lang['Sundanese'] = ['sudanese'];
-var block_lang['Sundanese_Supplement'] = ['sudanese'];
-var block_lang['Superscripts_And_Subscripts'] = ['symbols'];
-var block_lang['Supplemental_Arrows_A'] = ['symbols'];
-var block_lang['Supplemental_Arrows_B'] = ['symbols'];
-var block_lang['Supplemental_Arrows_C'] = ['symbols'];
-var block_lang['Supplemental_Mathematical_Operators'] = ['symbols'];
-var block_lang['Supplemental_Punctuation'] = ['symbols'];
-var block_lang['Supplemental_Symbols_And_Pictographs'] = ['symbols'];
-var block_lang['Sutton_SignWriting'] = ['signwriting'];
-var block_lang['Syloti_Nagri'] = ['sylotinagri'];
-var block_lang['Symbols_And_Pictographs_Extended_A'] = ['symbols'];
-var block_lang['Syriac'] = ['syriaceastern','syriacestrangela','syriacwestern'];
-var block_lang['Syriac_Supplement'] = ['syriaceastern','syriacestrangela','syriacwestern'];
-var block_lang['Tagalog'] = ['tagalog'];
-var block_lang['Tagbanwa'] = ['tagbanwa'];
-var block_lang['Tai_Le'] = ['taile'];
-var block_lang['Tai_Tham'] = ['thaitham'];
-var block_lang['Tai_Viet'] = ['thaiviet'];
-var block_lang['Tai_Xuan_Jing_Symbols'] = ['symbols'];
-var block_lang['Takri'] = ['takri'];
-var block_lang['Tamil'] = ['tamil'];
-var block_lang['Tamil_Supplement'] = ['tamil'];
-var block_lang['Tangut'] = ['tangut'];
-var block_lang['Tangut_Components'] = ['tangut'];
-var block_lang['Telugu'] = ['telegu'];
-var block_lang['Thaana'] = ['thaana'];
-var block_lang['Thai'] = ['thai'];
-var block_lang['Tibetan'] = ['tibetan'];
-var block_lang['Tifinagh'] = ['tifinagh'];
-var block_lang['Tirhuta'] = ['tirhuta'];
-var block_lang['Transport_And_Map_Symbols'] = ['symbols'];
-var block_lang['Ugaritic'] = ['ugaritic'];
-var block_lang['Unified_Canadian_Aboriginal_Syllabics'] = ['canadianaboriginal'];
-var block_lang['Unified_Canadian_Aboriginal_Syllabics_Extended'] = ['canadianaboriginal'];
-var block_lang['Vai'] = ['vai'];
-var block_lang['Vedic_Extensions'] = ['noto-devanagari'];
-var block_lang['Vertical_Forms'] = ['symbols'];
-var block_lang['Wancho'] = ['wancho'];
-var block_lang['Warang_Citi'] = ['warangciti'];
-var block_lang['Yi_Radicals'] = ['yi'];
-var block_lang['Yi_Syllables'] = ['yi'];
-var block_lang['Yijing_Hexagram_Symbols'] = ['symbols'];
-var block_lang['Zanabazar_Square'] = ['zanabazar-square'];
+block_lang =[{}]
+lang_font =[{}]
+
+ block_lang['Adlam'] = ['adlam'];
+ block_lang['Aegean Numbers'] = ['linearb'];
+ block_lang['Ahom'] = ['ahom'];
+ block_lang['Alchemical Symbols'] = ['symbols'];
+// block_lang['Alphabetic Presentation Forms'] = ['']; //armenian/latin/hebrew requires special processing
+ block_lang['Anatolian Hieroglyphs'] = ['anatolianheiroglyphics'];
+ block_lang['Ancient Greek Musical Notation'] = ['music'];
+ block_lang['Ancient Greek Numbers'] = ['symbols2'];
+ block_lang['Ancient Symbols'] = ['symbols2'];
+ block_lang['Arabic'] = ['arabic'];
+ block_lang['Arabic Extended-A'] = ['arabic'];
+ block_lang['Arabic Mathematical Alphabetic Symbols'] = ['arabic'];
+ block_lang['Arabic Presentation Forms-A'] = ['noto-arabic'];
+ block_lang['Arabic Presentation Forms-B'] = ['noto-arabic'];
+ block_lang['Arabic Supplement'] = ['noto-arabic'];
+ block_lang['Armenian'] = ['armenian'];
+ block_lang['Arrows'] = ['symbols'];
+ block_lang['Avestan'] = ['avestan'];
+ block_lang['Balinese'] = ['balinese'];
+ block_lang['Bamum'] = ['bamum'];
+ block_lang['Bamum Supplement'] = ['bamum'];
+ block_lang['Basic Latin'] = ['latin'];
+ block_lang['Bassa Vah'] = ['bassa-vah'];
+ block_lang['Batak'] = ['batak'];
+ block_lang['Bengali'] = ['bengali'];
+ block_lang['Bhaiksuki'] = ['bhaiksuki'];
+ block_lang['Block Elements'] = ['noto-mono'];
+ block_lang['Bopomofo'] = ['noto-simple-chinese','noto-trad-chinese','noto-hongkong','noto-korean','noto-japanese']; 
+ block_lang['Bopomofo Extended'] = ['noto-simple-chinese','noto-trad-chinese','noto-hongkong','noto-korean','noto-japanese']; 
+ block_lang['Box Drawing'] = ['symbols'];
+ block_lang['Brahmi'] = ['brahmi'];
+ block_lang['Braille Patterns'] = ['symbols'];
+ block_lang['Buginese'] = ['buginese'];
+ block_lang['Buhid'] = ['buhid'];
+ block_lang['Byzantine Musical Symbols'] = ['music'];
+ block_lang['Carian'] = ['carion'];
+ block_lang['Caucasian Albanian'] = ['caucasian-albanian'];
+ block_lang['Chakma'] = ['chakma'];
+ block_lang['Cham'] = ['cham'];
+ block_lang['Cherokee'] = ['cherokee'];
+ block_lang['Cherokee Supplement'] = ['cherokee'];
+ block_lang['Chess Symbols'] = ['symbols'];
+// block_lang['CJK_Compatibility'] = ['chinese-simplified'];
+// block_lang['CJK_Compatibility_Forms'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
+// block_lang['CJK_Compatibility_Ideographs'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
+ block_lang['CJK Radicals Supplement'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
+ block_lang['CJK Strokes'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
+ block_lang['CJK Symbols and Punctuation'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
+// block_lang['CJK_Unified_Ideographs'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
+// block_lang['CJK_Unified_Ideographs_Extension_A'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
+// block_lang['Combining_Diacritical_Marks_Extended'] = ['latin','latin-ext'];
+// block_lang['Combining_Diacritical_Marks_For_Symbols'] = ['latin','latin-ext'];
+ block_lang['Common Indic Number Forms'] = ['noto-devanagari'];
+// block_lang['Control_Pictures'] = ['symbols2'];
+ block_lang['Coptic'] = ['coptic'];
+ block_lang['Coptic Epact Numbers'] = ['coptic','symbols2'];
+ block_lang['Counting Rod Numerals'] = ['symbols'];
+ block_lang['Cuneiform'] = ['cuneiform'];
+ block_lang['Cuneiform Numbers and Punctuation'] = ['cuneiform'];
+ block_lang['Currency Symbols'] = ['symbols'];
+ block_lang['Cypriot Syllabary'] = ['cypriot'];
+ block_lang['Cyrillic'] = ['cyrillic'];
+ block_lang['Cyrillic Extended-B'] = ['cyrillic-ext'];
+ block_lang['Cyrillic Extended-C'] = ['cyrillic-ext'];
+ block_lang['Cyrillic Supplement'] = ['cyrillic-ext'];
+ block_lang['Deseret'] = ['deseret'];
+ block_lang['Devanagari'] = ['devanagari'];
+ block_lang['Devanagari Extended'] = ['devanagari'];
+ block_lang['Dingbats'] = ['symbols'];
+ block_lang['Dogra'] = ['dogra'];
+ block_lang['Domino Tiles'] = ['symbols'];
+ block_lang['Duployan'] = ['duployan'];
+ block_lang['Early Dynastic Cuneiform'] = ['cuneiform'];
+ block_lang['Egyptian Hieroglyphs'] = ['egyptianheiroglyphics'];
+ block_lang['Elbasan'] = ['elbasan'];
+ block_lang['Elymaic'] = ['elymaic'];
+ block_lang['Emoticons'] = ['symbols'];
+ block_lang['Enclosed Alphanumeric Supplement'] = ['symbols'];
+ block_lang['Enclosed Alphanumerics'] = ['symbols'];
+block_lang['Enclosed CJK Letters and Months'] = ['noto-simple-chinese','noto-trad-chinese','noto-hongkong','noto-korean','noto-japanese'];
+// block_lang['Enclosed Ideographic Supplement'] = [''];
+ block_lang['Ethiopic'] = ['ethiopic'];
+ block_lang['Ethiopic Extended'] = ['ethiopic'];
+ block_lang['Ethiopic Extended-A'] = ['ethiopic'];
+ block_lang['Ethiopic Supplement'] = ['ethiopic'];
+ block_lang['General Punctuation'] = ['symbols'];
+ block_lang['Geometric Shapes'] = ['symbols'];
+ block_lang['Geometric Shapes Extended'] = ['symbols'];
+ block_lang['Georgian'] = ['georgian'];
+ block_lang['Georgian Extended'] = ['georgian'];
+ block_lang['Georgian Supplement'] = ['georgian'];
+ block_lang['Glagolitic'] = ['glagolitic'];
+ block_lang['Gothic'] = ['gothic'];
+ block_lang['Grantha'] = ['grantha'];
+ block_lang['Greek and Coptic'] = ['coptic','latin-ext'];
+ block_lang['Greek Extended'] = ['latin-ext'];
+ block_lang['Gujarati'] = ['gujarati'];
+ block_lang['Gunjala Gondi'] = ['gunjala-gondi'];
+ block_lang['Gurmukhi'] = ['gurmukhi'];
+// block_lang['Halfwidth and Fullwidth_Forms'] = [''];
+ block_lang['Hangul Compatibility Jamo'] = ['korean'];
+ block_lang['Hangul Jamo'] = ['korean'];
+ block_lang['Hangul Jamo Extended-A'] = ['korean'];
+ block_lang['Hangul Jamo Extended-B'] = ['korean'];
+ block_lang['Hangul Syllables'] = ['korean'];
+ block_lang['Hanifi Rohingya'] = ['hanifi-rohingya'];
+ block_lang['Hanunoo'] = ['hanunoo'];
+ block_lang['Hatran'] = ['hatron'];
+ block_lang['Hebrew'] = ['hebrew'];
+ block_lang['Hentaigana'] = ['hentaigana']
+ block_lang['Hiragana'] = ['japanese'];
+// block_lang['Ideographic_Description_Characters'] = [''];
+ block_lang['Ideographic Symbols and Punctuation'] = ['noto-simple-chinese','noto-trad-chinese','noto-hongkong','noto-korean','noto-japanese'];
+ block_lang['Imperial Aramaic'] = ['imperial_aramaic'];
+ block_lang['Indic Siyaq Numbers'] = ['indic-siyaq-numbers'];
+ block_lang['Inscriptional Pahlavi'] = ['inscriptionalpahlavi'];
+ block_lang['Inscriptional Parthian'] = ['inscriptionalparthian'];
+ block_lang['IPA Extensions'] = ['noto-regular'];
+ block_lang['Javanese'] = ['javanese'];
+ block_lang['Kaithi'] = ['kaithi'];
+ block_lang['Kannada'] = ['kannada'];
+ block_lang['Katakana'] = ['japanese'];
+ block_lang['Katakana Phonetic Extensions'] = ['japanese'];
+ block_lang['Kayah Li'] = ['kayahli'];
+ block_lang['Kharoshthi'] = ['kharoshthi'];
+ block_lang['Khmer'] = ['khmer'];
+ block_lang['Khmer Symbols'] = ['khmer'];
+ block_lang['Khojki'] = ['khojki'];
+ block_lang['Khudawadi'] = ['khudawadi'];
+ block_lang['Lao'] = ['lao'];
+ block_lang['Latin-1 Supplement'] = ['latin-ext'];
+ block_lang['Latin Extended-A'] = ['latin-ext'];
+ block_lang['Latin Extended Additional'] = ['latin-ext'];
+ block_lang['Latin Extended-B'] = ['latin-ext'];
+ block_lang['Latin Extended-C'] = ['latin-ext'];
+ block_lang['Latin Extended-D'] = ['latin-ext'];
+ block_lang['Latin Extended-E'] = ['latin-ext'];
+ block_lang['Latin Extended-F'] = ['latin-ext']; //unicode 14
+ block_lang['Latin Extended-G'] = ['latin-ext']; //unicode 14
+ block_lang['Lepcha'] = ['lepcha'];
+ block_lang['Letterlike Symbols'] = ['noto-regular'];
+ block_lang['Limbu'] = ['limbu'];
+ block_lang['Linear A'] = ['lineara'];
+ block_lang['Linear B Ideograms'] = ['linearb'];
+ block_lang['Linear B Syllabary'] = ['linearb'];
+ block_lang['Lisu'] = ['lisu'];
+ block_lang['Lisu Supplement'] = ['lisu'];
+ block_lang['Lycian'] = ['lycian'];
+ block_lang['Lydian'] = ['lydian'];
+ block_lang['Mahajani'] = ['mahajani'];
+ block_lang['Mahjong Tiles'] = ['symbols'];
+ block_lang['Makasar'] = ['makasar'];
+ block_lang['Malayalam'] = ['malayalam'];
+ block_lang['Mandaic'] = ['mandaic'];
+ block_lang['Manichaean'] = ['manichaean'];
+ block_lang['Marchen'] = ['marchen'];
+ block_lang['Masaram Gondi'] = ['masaram-gondi'];
+ block_lang['Mathematical Alphanumeric Symbols'] = ['math'];
+ block_lang['Mathematical Operators'] = ['math'];
+ block_lang['Mayan Numerals'] = ['mayan-numerals'];
+ block_lang['Medefaidrin'] = ['medefaidrin'];
+ block_lang['Meetei Mayek'] = ['meeteimayek'];
+ block_lang['Meetei Mayek Extensions'] = ['meeteimayek'];
+ block_lang['Mende Kikakui'] = ['mende-kikakui'];
+ block_lang['Meroitic Cursive'] = ['meroitic'];
+ block_lang['Meroitic Hieroglyphs'] = ['meroitic'];
+ block_lang['Miao'] = ['miao'];
+ block_lang['Miscellaneous Mathematical Symbols-A'] = ['symbols'];
+ block_lang['Miscellaneous Mathematical Symbols-B'] = ['symbols'];
+ block_lang['Miscellaneous Symbols'] = ['symbols'];
+ block_lang['Miscellaneous Symbols and Arrows'] = ['symbols'];
+ block_lang['Miscellaneous Symbols and Pictographs'] = ['symbols'];
+ block_lang['Miscellaneous Technical'] = ['symbols'];
+ block_lang['Modi'] = ['modi'];
+ block_lang['Modifier Tone Letters'] = ['noto-regular'];
+ block_lang['Mongolian'] = ['mongolian'];
+ block_lang['Mongolian Supplement'] = ['mongolian'];
+ block_lang['Mro'] = ['mro'];
+ block_lang['Multani'] = ['multani'];
+ block_lang['Musical Symbols'] = ['music'];
+ block_lang['Myanmar'] = ['myanmar'];
+ block_lang['Myanmar Extended-A'] = ['myanmar'];
+ block_lang['Myanmar Extended-B'] = ['myanmar'];
+ block_lang['Nabataean'] = ['nabataean'];
+ block_lang['Nandinagari'] = ['nandinagari'];
+ block_lang['New Tai Lue'] = ['newtailue'];
+ block_lang['Newa'] = ['newa'];
+ block_lang['NKo'] = ['nko'];
+ block_lang['Number Forms'] = ['symbols'];
+ block_lang['Nushu'] = ['nushu'];
+ block_lang['Nyiakeng Puachue Hmong'] = ['nyiakeng-puachue-hmong'];
+ block_lang['Ogham'] = ['ogham'];
+ block_lang['Ol Chiki'] = ['olchiki'];
+ block_lang['Old Hungarian'] = ['old-hungarian'];
+ block_lang['Old Italic'] = ['olditalic'];
+ block_lang['Old North Arabian'] = ['old-north-arabian'];
+ block_lang['Old Permic'] = ['old-permic'];
+ block_lang['Old Persian'] = ['oldpersian'];
+ block_lang['Old South Arabian'] = ['oldsoutharabian'];
+ block_lang['Old Turkic'] = ['oldturkic'];
+ block_lang['Optical Character Recognition'] = ['symbols'];
+ block_lang['Oriya'] = ['oriya'];
+ block_lang['Ornamental Dingbats'] = ['symbols'];
+ block_lang['Osage'] = ['osage'];
+ block_lang['Osmanya'] = ['osmanya'];
+ block_lang['Ottoman Siyaq Numbers'] = ['ottoman-siyaq-numbers'];
+ block_lang['Pahawh Hmong'] = ['pahawh-hmong'];
+ block_lang['Palmyrene'] = ['palmyrene'];
+ block_lang['Pau Cin Hau'] = ['pau-cin-hau'];
+ block_lang['Phags-pa'] = ['phagspa'];
+ block_lang['Phaistos Disc'] = ['symbols2'];
+ block_lang['Phoenician'] = ['phoenician'];
+ block_lang['Phonetic Extensions'] = ['noto-regular'];
+ block_lang['Phonetic Extensions Supplement'] = ['noto-regular'];
+ block_lang['Playing Cards'] = ['symbols'];
+ block_lang['Psalter Pahlavi'] = ['psalter-pahlavi'];
+ block_lang['Rejang'] = ['rejang'];
+ block_lang['Rumi Numeral Symbols'] = ['symbols2'];
+ block_lang['Runic'] = ['symbols'];
+ block_lang['Samaritan'] = ['samaritan'];
+ block_lang['Saurashtra'] = ['saurashtra'];
+ block_lang['Sharada'] = ['sharada'];
+ block_lang['Shavian'] = ['shavian'];
+ block_lang['Siddham'] = ['siddham'];
+ block_lang['Sinhala'] = ['sinhala'];
+ block_lang['Sinhala Archaic Numbers'] = ['sinhala'];
+// block_lang['Small Form Variants'] = ['small-kana'];  //redundant lots of cjk fonts including japanese
+// block_lang['Small Kana Extension'] = ['small-kana']; //review maybe japanese
+// block_lang['Kana Extended-B'] = ['kana-extended-b'];
+ block_lang['Kana Extended-A'] = ['hentaigana'];
+ block_lang['Kana Supplement'] = ['hentaigana'];
+ block_lang['Kanbun'] = ['japanese'];
+ block_lang['Kangxi Radicals'] = ['japanese'];
+ block_lang['Sogdian'] = ['sogdian'];
+ block_lang['Old Sogdian'] = ['old-sogdian'];
+ block_lang['Sora Sompeng'] = ['sora-sompeng'];
+ block_lang['Soyombo'] = ['soyombo'];
+ block_lang['Spacing Modifier Letters'] = ['noto-regular'];
+ block_lang['Sundanese'] = ['sudanese'];
+ block_lang['Sundanese Supplement'] = ['sudanese'];
+ block_lang['Superscripts and Subscripts'] = ['symbols'];
+ block_lang['Supplemental Arrows-A'] = ['symbols'];
+ block_lang['Supplemental Arrows-B'] = ['symbols'];
+ block_lang['Supplemental Arrows-C'] = ['symbols'];
+ block_lang['Mathematical Operators'] = ['math']; 
+ block_lang['Supplemental Mathematical Operators'] = ['symbols'];
+ block_lang['Supplemental Punctuation'] = ['noto-regular'];
+ block_lang['Supplemental Symbols and Pictographs'] = ['symbols'];
+ block_lang['Sutton SignWriting'] = ['signwriting'];
+ block_lang['Syloti Nagri'] = ['sylotinagri'];
+ block_lang['Symbols and Pictographs Extended-A'] = ['symbols'];
+ block_lang['Syriac'] = ['syriaceastern','syriacestrangela','syriacwestern'];
+ block_lang['Syriac Supplement'] = ['syriaceastern','syriacestrangela','syriacwestern'];
+ block_lang['Tagalog'] = ['tagalog'];
+ block_lang['Tagbanwa'] = ['tagbanwa'];
+ block_lang['Tai Le'] = ['taile'];
+ block_lang['Tai Tham'] = ['taitham'];
+ block_lang['Tai Viet'] = ['taiviet'];
+ block_lang['Tai Xuan Jing Symbols'] = ['symbols'];
+ block_lang['Takri'] = ['takri'];
+ block_lang['Tamil'] = ['tamil'];
+ block_lang['Tamil Supplement'] = ['tamil'];
+ block_lang['Tangut'] = ['tangut'];
+ block_lang['Tangut Components'] = ['tangut'];
+ block_lang['Telugu'] = ['telugu'];
+ block_lang['Thaana'] = ['thaana'];
+ block_lang['Thai'] = ['thai'];
+ block_lang['Tibetan'] = ['tibetan'];
+ block_lang['Tifinagh'] = ['tifinagh'];
+ block_lang['Tirhuta'] = ['tirhuta'];
+ block_lang['Transport and Map Symbols'] = ['symbols'];
+ block_lang['Ugaritic'] = ['ugaritic'];
+ block_lang['Unified Canadian Aboriginal Syllabics'] = ['canadianaboriginal'];
+  block_lang['Unified Canadian Aboriginal Syllabics Extended'] = ['canadianaboriginal'];
+ block_lang['Unified Canadian Aboriginal Syllabics Extended-A'] = ['canadianaboriginal'];
+ block_lang['Vai'] = ['vai'];
+ block_lang['Vedic Extensions'] = ['noto-devanagari'];
+ block_lang['Vertical Forms'] = ['symbols'];
+ block_lang['Wancho'] = ['wancho'];
+ block_lang['Warang Citi'] = ['warangciti'];
+ block_lang['Yi Radicals'] = ['yi'];
+ block_lang['Yi Syllables'] = ['yi'];
+ block_lang['Yijing Hexagram Symbols'] = ['symbols'];
+ block_lang['Zanabazar Square'] = ['zanabazar-square'];
 //unicode 13
-var block_lang['Yezidi'] = ['yezidi'];
-var block_lang['Chorasmian'] = ['chorasmian'];
-var block_lang['Dives_Akiru'] = ['dives-akiru'];
-var block_lang['Khitan_Small_Script'] = ['khitan-small-script'];
-var block_lang['Symbols_For_Legacy_Computing'] = ['symbols2'];
-var block_lang['Lisu_Supplement'] = ['lisu'];
-var block_lang['Tangut_Supplement'] = ['tangut'];
+ block_lang['Yezidi'] = ['yezidi'];
+ block_lang['Chorasmian'] = ['chorasmian'];
+ block_lang['Dives Akuru'] = ['dives-akuru'];
+ block_lang['Khitan Small Script'] = ['khitan-small-script'];
+ block_lang['Symbols for Legacy Computing'] = ['symbols2'];
+ block_lang['Lisu Supplement'] = ['lisu'];
+ block_lang['Tangut Supplement'] = ['tangut'];
 
 //unicode 14
-var block_lang['Arabic_Extended_B'] = ['noto-arabic'];
-var block_lang['Vithkuqi'] = ['vithkuqi'];
-var block_lang['Old_Uyghur'] = ['old-uyghur'];
-var block_lang['Unified_Canadian_Aboriginal_Syllabics_Extended_A'] = ['canadianaboriginal'];
-var block_lang['Cypro-Minoan'] = ['cyprominoan'];
-var block_lang['Tangsa'] = ['tangsa'];
-var block_lang['Kana_Extended_B'] = ['kana-extended-b'];
-var block_lang['Znamenny_Musical_Notation'] = ['znamenny-musical-notation'];
-var block_lang['Toto'] = ['toto'];
-var block_lang['Ethiopic_Extended_B'] = ['noto-ethiopic'];
+ block_lang['Arabic Extended-B'] = ['noto-arabic'];
+ block_lang['Vithkuqi'] = ['vithkuqi'];
+ block_lang['Old Uyghur'] = ['old-uyghur'];
+ block_lang['Unified_Canadian_Aboriginal_Syllabics_Extended_A'] = ['canadianaboriginal'];
+ block_lang['Cypro-Minoan'] = ['cyprominoan'];
+ block_lang['Tangsa'] = ['tangsa'];
+ block_lang['Znamenny Musical Notation'] = ['znamenny-musical-notation'];
+ block_lang['Toto'] = ['toto'];
+ block_lang['Ethiopic Extended-B'] = ['noto-ethiopic'];
 //unicode 15
-var block_lang['Arabic_Extended_C'] = ['noto-arabic'];
-var block_lang['Devanagari_Extended_A'] = ['noto-devanagari'];
-var block_lang['Kawi'] = ['kawi']; //Noto Sans Kawi
-var block_lang['Kaktovik Numerals'] = ['symbols2'];
-//var block_lang['Cyrillic_Extended_D'] = ['noto-cyrillic']; No coverage
-var block_lang['Nag_Mundari'] = ['nag-mundari']; 
+ block_lang['Arabic Extended-C'] = ['noto-arabic'];
+ block_lang['Devanagari Extended-A'] = ['noto-devanagari'];
+ block_lang['Kawi'] = ['kawi']; //Noto Sans Kawi
+ block_lang['Kaktovik Numerals'] = ['symbols2'];
+// block_lang['Cyrillic_Extended_D'] = ['noto-cyrillic']; No coverage
+ block_lang['Nag Mundari'] = ['nag-mundari']; 
 
 
 //Unicode 16
@@ -314,11 +318,11 @@ block_lang['Todhri'] = [ "todhri" ]
 //block_lang['Garay'] = [ "garay" ]
 //block_lang['Tulu_Tigalari'] = [ "tulu-tigalari" ]
 //block_lang['Myanmar_Extended_C'] = [ "noto-myanmar" ]
-block_lang['Sunuwar'] = [ "sunawar" ]
+block_lang['Sunuwar'] = [ "sunuwar" ]
 //block_lang['Egyptian_Hieroglyphs_Extended_A'] = [ "egyptianheiroglyphics" ]
 //block_lang['Gurung_Khema'] = [ "gurung-khema" ]
 //block_lang['Kirat_Rai'] = [ "kirat-rai" ]
-block_lang['Symbols_for_Legacy_Computing_Supplement'] = [ "symbols2" ]
+block_lang['Symbols for Legacy Computing Supplement'] = [ "symbols2" ]
 //block_lang['Ol_Onal'] = [ "ol-onal" ]
 
 //Unicode 17
@@ -338,12 +342,12 @@ lang_font['khitan-small-script'] = [
 ]
 lang_font['yezidi'] = [	"Noto Serif Yezidi" ]
 lang_font['chorasmian'] = [ "Noto Sans Chorasmian" ]
-lang_font['dives_akiru'] = [ "Noto Serif Dives Akiru" ]
+lang_font['dives-akuru'] = [ "Noto Serif Dives Akuru" ]
 
 
 //Unicode 14
 lang_font['vithkuqi'] = [ "Noto Sans Vithkuqi" ]
-lang_font['old_uyghur'] = [ "Noto Serif Old Uyghur" ]
+lang_font['old-uyghur'] = [ "Noto Serif Old Uyghur" ]
 lang_font['cyprominoan'] = [ "Noto Sans Cypro Minoan" ]
 lang_font['tangsa'] = [ "Noto Sans Tangsa" ]
 //lang_font['kana-extended-b'] = [ "" ] //no coverage
@@ -353,6 +357,7 @@ lang_font['toto'] = [ "Noto Serif Toto" ]
 //Unicode 15
 lang_font['kawi'] = [ "Noto Sans Kawi" ]
 lang_font['nag-mundari'] = [ "Noto Sans Nag Mundari" ]
+
 
 //Unicode 16
 lang_font['todhri'] = [ "Noto Serif Todhri" ]
@@ -429,6 +434,7 @@ lang_font['lycian'] = [ "Noto Sans Lycian" ]
 lang_font['imperial_aramaic'] = [ "Noto Sans Imperial Aramaic" ]
 lang_font['indic-siyaq-numbers'] = [ "Noto Sans Indic Siyaq Numbers" ]
 lang_font['hatron'] = [ "Noto Sans Hatran" ]
+lang_font['hanunoo'] = [ "Noto Sans Hanunoo" ]
 lang_font['hanifi-rohingya'] = [ "Noto Sans Hanifi Rohingya" ]
 lang_font['gunjala-gondi'] = [ "Noto Sans Gunjala Gondi" ]
 lang_font['grantha'] = [ "Noto Sans Grantha" ]
@@ -443,12 +449,12 @@ lang_font['bhaiksuki'] = [ "Noto Sans Bhaiksuki" ]
 lang_font['bassa-vah'] = [ "Noto Sans Bassa Vah" ]
 lang_font['music'] = [ "Noto Music" ]
 lang_font['adlam'] = [
-  "ADLaM Display"
-  "Google Sans Code"
-  "Noto Sans Adlam"
+  "ADLaM Display",
+  "Noto Sans Adlam",
   "Noto Sans Adlam Unjoined"
 ]
 lang_font['ahom'] = [ "Noto Serif Ahom"]
+lang_font['math'] = [ "Noto Sans Math"]
 lang_font['linearb'] = [ "Noto Sans Linear B" ]
 lang_font['lineara'] = [ "Noto Sans Linear A" ]
 
@@ -458,14 +464,15 @@ lang_font['noto-ethiopic'] = [
   "Noto Serif Ethiopic",            
 	"Noto Sans Ethiopic"
  ]
-lang_fong['ethiopic'] = [
+lang_font['ethiopic'] = [
   "Abyssinica SIL",
   "Agbalumo",
   "Menbere",
   "Noto Sans Ethiopic",
   "Noto Serif Ethiopic"
  ] 
- lang_font['carian'] = [ "Noto Sans Carian" ]
+ 
+lang_font['carion'] = [ "Noto Sans Carion" ]
 lang_font['inscriptionalpahlavi'] = [ "Noto Sans Inscriptional Pahlavi" ]
 lang_font['javanese'] = [ "Noto Sans Javanese" ]
 lang_font['batak'] = ["Noto Sans Batak"]
@@ -475,6 +482,7 @@ lang_font['rejang'] = ["Noto Sans Rejang"]
 lang_font['lepcha'] = ["Noto Sans Lepcha"]
 lang_font['thaana'] = ["Noto Sans Thaana"] 
 lang_font['gothic'] = ["Noto Sans Gothic"] 
+lang_font['cuneiform'] = ["Noto Sans Cuneiform"] 
 lang_font['sudanese'] = ["Noto Sans Sundanese" ]           
 lang_font['samaritan'] = ["Noto Sans Samaritan"]
 lang_font['brahmi'] = ["Noto Sans Brahmi"] 
@@ -513,11 +521,12 @@ lang_font['ogham'] = [ "Noto Sans Ogham" ]
 lang_font['mandaic'] = [ "Noto Sans Mandaic" ]	
 lang_font['oldpersian'] = [ "Noto Sans Old Persian" ]
 lang_font['oldsoutharabian'] = [ "Noto Sans Old South Arabian" ]	
-lang_font['hanunoo'] = [ "Noto Sans Hanunoo" ]	
 lang_font['kharoshthi'] = [ "Noto Sans Kharoshthi" ]	
 lang_font['ugaritic'] = [ "Noto Sans Ugaritic" ]
 lang_font['imperialaramaic'] = [ "Noto Sans Imperial Aramaic" ]
 lang_font['inscriptionalparthian'] = [ "Noto Sans Inscriptional Parthian" ]
+lang_font['anatolianheiroglyphics'] = [ "Noto Sans Anatolian Heiroglyphs"]
+lang_font['egyptianheiroglyphics'] = [ "Noto Sans Egyptian Hieroglyphs","AegyptusR-local","AegyptusB-local"]
 lang_font['georgian'] = [ 
 	"Noto Sans Georgian",
 	"Noto Serif Georgian"       
@@ -526,6 +535,10 @@ lang_font['meeteimayek'] = [ "Noto Sans Meetei Mayek" ]
 lang_font['balinese'] = [
 	"Noto Sans Balinese",
 	"Noto Serif Balinese"
+]
+lang_font['kannada'] = [
+	"Noto Sans Kannada",
+	"Noto Serif Kannada"
 ]
 lang_font['cham'] = ["Noto Sans Cham"]
 lang_font['vai'] = ["Noto Sans Vai"]
@@ -635,9 +648,9 @@ lang_font['telugu'] = [
   "Ramaraja",
   "Ravi Prakash",
   "Sirivennela",
-  "Sree Krushnadevaraya",
+  "Sree Krushnadeaya",
   "Suranna",
-  "Suravaram",
+  "Suraam",
   "Tenali Ramakrishna",
   "Timmana",
   "Tiro Telugu"
@@ -663,7 +676,7 @@ lang_font['malayalam'] = [
   "Noto Sans Malayalam",
   "Noto Serif Malayalam"
 ]                                         
-lang_fong['bengali'] = [
+lang_font['bengali'] = [
   "Alkatra",
   "Anek Bangla",
   "Atma",
@@ -731,7 +744,7 @@ lang_font['arabic'] = [
   "Noto Naskh Arabic UI-local",
   "Noto Nastaliq Urdu",
   "Noto Sans Arabic",
-  "Noto Sans Arabic UI-local"
+  "Noto Sans Arabic UI-local",
   "Oi",
   "Playpen Sans Arabic",
   "Qahiri",
@@ -904,7 +917,7 @@ lang_font['hebrew'] = [
   "Solitreo",
   "Suez One",
   "Tinos",
-  "Varela Round"
+  "ela Round"
 ]
 lang_font['oriya'] = [
   "Alkatra",
@@ -961,7 +974,7 @@ lang_font['chinese-simplified'] = [
 lang_font['devanagari'] = [
 	"Lohit Devanagari",
  	"Noto Sans Devanagari UI",                   
-	"Noto Sans Devanagari"   
+	"Noto Sans Devanagari",   
 	"Amiko",
 	"Amita",
 	"Arya",
@@ -976,12 +989,12 @@ lang_font['devanagari'] = [
 	"Hind",
 	"Inknut Antiqua",
 	"Jaldi",
-	"Kadwa"
+	"Kadwa",
 	"Kalam",
 	"Karma",
 	"Khand",
 	"Khula",
-	"Kurale"
+	"Kurale",
 	"Laila",
 	"Martel",
 	"Martel Sans",
@@ -995,7 +1008,7 @@ lang_font['devanagari'] = [
 	"Ranga",
 	"Rhodium Libre",
 	"Rozha One",
-	"Sahitya"
+	"Sahitya",
 	"Sarala",
 	"Sarpanch",
 	"Sumana",
@@ -2540,7 +2553,7 @@ lang_font['latin'] = [
   "Spline Sans Mono",
   "Squada One",
   "Square Peg",
-  "Sree Krushnadevaraya",
+  "Sree Krushnadeaya",
   "Sriracha",
   "Srisakdi",
   "Staatliches",
@@ -2563,7 +2576,7 @@ lang_font['latin'] = [
   "Supermercado One",
   "Sura",
   "Suranna",
-  "Suravaram",
+  "Suraam",
   "Suwannaphum",
   "Swanky and Moo Moo",
   "Syncopate",
@@ -2642,9 +2655,9 @@ lang_font['latin'] = [
   "Urbanist",
   "VT323",
   "Vampiro One",
-  "Varela",
-  "Varela Round",
-  "Varta",
+  "ela",
+  "ela Round",
+  "ta",
   "Vast Shadow",
   "Vazirmatn",
   "Vend Sans",
@@ -2725,7 +2738,9 @@ lang_font['latin'] = [
   "Zilla Slab",
   "Zilla Slab Highlight"
 ]
-lang_fong['latin-ext'] = [
+lang_font['latin-noto'] = ['Noto Serif','Noto Sans Mono','Noto Sans']
+
+lang_font['latin-ext'] = [
   "ADLaM Display",
   "AR One Sans",
   "Abhaya Libre",
@@ -3917,9 +3932,9 @@ lang_fong['latin-ext'] = [
   "Urbanist",
   "VT323",
   "Vampiro One",
-  "Varela",
-  "Varela Round",
-  "Varta",
+  "ela",
+  "ela Round",
+  "ta",
   "Vazirmatn",
   "Vend Sans",
   "Vesper Libre",
@@ -3979,11 +3994,13 @@ lang_fong['latin-ext'] = [
   "Zen Kaku Gothic Antique",
   "Zen Kaku Gothic New",
   "Zen Kurenaido",
-  "Zen Loop",
   "Zen Maru Gothic",
   "Zen Old Mincho",
   "Zen Tokyo Zoo",
   "Zeyada",
   "Zilla Slab",
   "Zilla Slab Highlight"
-]
+];
+
+console.log('Block Hex  Skeleton 17 is loaded')
+var blockHexSkeletonWait = [];
