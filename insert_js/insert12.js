@@ -68,8 +68,8 @@ function initStyle() {
         container[i].style.backgroundColor = mycolors2[Math.floor(Math.random() * mycolors2.length)];
         container[i].style.color = mycolors[Math.floor(Math.random() * mycolors.length)];
         container[i].style.textShadow = 
-            Math.round(Math.random() * 10 - 1) + 'px ' +
-            Math.round(Math.random() * 10 - 1) + 'px ' +
+            Math.round(Math.random() * 2 - 1) + 'px ' +
+            Math.round(Math.random() * 3 - 1) + 'px ' +
             mycolors2[Math.floor(Math.random() * mycolors2.length)];
         container[i].style.webkitTextFillColor = mycolors2[Math.floor(Math.random() * mycolors2.length)];
         container[i].style.webkitTextStrokeWidth = (Math.random() * 2) + "px";
@@ -97,11 +97,10 @@ function setRandomGlyph(spanElement) {
     if (testGlyphIndex !== null) {
         glyphIndex = testGlyphIndex;
     } else {
-        glyphIndex = Math.floor(Math.random() * myFontSet.length);
-    }
-    
-    if (!myFontSet[glyphIndex]) {
-        glyphIndex = Math.floor(Math.random() * myFontSet.length);
+        // Keep trying until we find a valid glyph
+        do {
+            glyphIndex = Math.floor(Math.random() * myFontSet.length);
+        } while (!myFontSet[glyphIndex]);
     }
     
     var codepoint = myFontSet[glyphIndex][0];

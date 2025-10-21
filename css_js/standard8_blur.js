@@ -5,9 +5,9 @@ document.getElementsByTagName('head')[0].appendChild(cssStandard8);
 var cssStyle = document.styleSheets[0];
 var cssRules=cssStyle.cssRules;
 
-var newRule='@-' +  browserPrefix +'-keyframes blurState1{0%{-' +  browserPrefix +'-filter:blur(80px);}50%{-' +  browserPrefix +'-filter:blur(100px);}100%{-' +  browserPrefix +'-filter:blur(80px);}} ';
+var newRule='@-' +  browserPrefix +'-keyframes blurState1{0%{-' +  browserPrefix +'-filter:blur(120px);}50%{-' +  browserPrefix +'-filter:blur(100px);}100%{-' +  browserPrefix +'-filter:blur(80px);}} ';
 cssStyle.insertRule(newRule,cssRules.length);
-var newRule='@-' +  browserPrefix +'-keyframes blurState2{0%{-' +  browserPrefix +'-filter:blur(90px);}50%{-' +  browserPrefix +'-filter:blur(110px);}100%{-' +  browserPrefix +'-filter:blur(90px);}} ';
+var newRule='@-' +  browserPrefix +'-keyframes blurState2{0%{-' +  browserPrefix +'-filter:blur(130px);}50%{-' +  browserPrefix +'-filter:blur(110px);}100%{-' +  browserPrefix +'-filter:blur(90px);}} ';
 cssStyle.insertRule(newRule,cssRules.length);
 
 var newRule='DIV {padding:0%;margin:0%;top:-70%;left:-12.5%;width:100%;height:100%;word-spacing:-0em;font-size:1400px;text-align:center;vertical-align:middle;z-index:-1;background:transparent;}';

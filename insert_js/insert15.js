@@ -5,7 +5,8 @@ var divCounter = 0; // Compatibility with nav
 var GRID_SIZE = Math.floor(Math.random() * 10) + 15;
 var STRIP_SIZE = 100 / GRID_SIZE;
 var BASE_SPEED = 0.01 + Math.random() * 0.02;
-var FONT_SIZE = Math.floor(Math.random() * 5) + 2;
+var FONT_SIZE = Math.floor(Math.random() * 2) + 4;
+console.log('font size: ' + FONT_SIZE)
 
 var mycolors = [];
 var mycolors2 = [];

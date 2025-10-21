@@ -1,9 +1,38 @@
 // insert17.js
 // Waits for emojiSequenceArraySignal && msucdArraySignal before initializing emoji grid
-var allEmojis = []
+var allEmojis = [];
 var remainingEmojis = []; // Pool of unused emojis
 
-// ---- NEW: Convert emoji string to hex sequence ----
+// ---- Font switcher utilities ----
+const emojiFonts = [
+  '"Apple Color Emoji"',
+  //'"Noto Color Emoji"',
+  '"Noto Color Emoji Latest"',
+  '"Noto Emoji","Noto Color Emoji"',
+  '"Open Moji 0"',
+  //'"Open Moji 1"',
+  '"Segoe Emoji"'
+];
+
+function getRandomFont() {
+  return emojiFonts[Math.floor(Math.random() * emojiFonts.length)];
+}
+
+function setEmojiFont(fontName) {
+  const allEmojiSpans = document.querySelectorAll('.emoji-content');
+  allEmojiSpans.forEach(span => {
+    span.style.fontFamily = fontName;
+  });
+}
+
+function setRandomFonts() {
+  const allEmojiSpans = document.querySelectorAll('.emoji-content');
+  allEmojiSpans.forEach(span => {
+    span.style.fontFamily = getRandomFont();
+  });
+}
+
+// ---- Convert emoji string to hex sequence ----
 function emojiToHex(emoji) {
   const codePoints = [];
   for (const char of emoji) {
@@ -62,15 +91,15 @@ body {
   border: 25px solid; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 .grid-cell {
-  width: 20%; height: 20%;
+  width: 10%; height: 10%;
   display: flex; justify-content: center; align-items: center;
-  line-height: 1.5; border: 3px solid;
+  line-height: 1.75; border: 3px solid;
   background-color: transparent; perspective: 1000px; border-radius: 8px;
   position: relative;
 }
 .emoji-content {
   display: block;
-  font-size: min(16vh, 10rem);
+  font-size: min(19rem,7vh,5rem);
   opacity: 1;
   transform: rotateY(0deg) scale(1);
   transform-style: preserve-3d;
@@ -124,8 +153,8 @@ function injectStyle(css) {
 // ---- Utility ----
 function getRandomPastelColor() {
   const hue = Math.floor(Math.random() * 360);
-  const saturation = Math.floor(Math.random() * 50) + 50;
-  const lightness = Math.floor(Math.random() * 10) + 90;
+  const saturation = Math.floor(Math.random() * 10) + 90;
+  const lightness = Math.floor(Math.random() * 10) + 50;
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 function getRandomMainColor() {
@@ -161,8 +190,10 @@ function flipCell(span) {
     const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
     const newEmoji = remainingEmojis.splice(poolIndex, 1)[0];
     span.textContent = newEmoji;
-    // ✅ UPDATE: Set the hex sequence as a data attribute
     span.setAttribute('data-hex', emojiToHex(newEmoji));
+    
+    // ✅ Apply random font on each emoji flip
+    span.style.fontFamily = getRandomFont();
 
     span.style.transform = 'rotateY(180deg) scale(0.7)';
     span.style.opacity = '0';
@@ -175,7 +206,7 @@ function flipCell(span) {
       span.classList.remove('is-fading-in');
       span.style.removeProperty('transform');
       span.style.removeProperty('opacity');
-      setTimeout(() => flipCell(span), Math.random() * 40000 + 8000);
+      setTimeout(() => flipCell(span), Math.random() * (45000) + 5000);
     };
     span.addEventListener('animationend', handleIn);
   };
@@ -210,7 +241,7 @@ if (allEmojis.length === 0) {
     emojiGrid.style.borderColor = getRandomMainColor();
     emojiGrid.style.zIndex = 100;
     emojiGrid.style.position = 'absolute';
-    const gridSize = 5; // For a 5x5 grid
+    const gridSize = 10; // For a 10x10 grid
     const totalCells = gridSize * gridSize;
 
     for (let i = 0; i < totalCells; i++) {
@@ -228,8 +259,10 @@ if (allEmojis.length === 0) {
         const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
         const initialEmoji = remainingEmojis.splice(poolIndex, 1)[0];
         emojiContentSpan.textContent = initialEmoji;
-        // ✅ NEW: Set initial hex sequence
         emojiContentSpan.setAttribute('data-hex', emojiToHex(initialEmoji));
+        
+        // ✅ Set initial random font
+        emojiContentSpan.style.fontFamily = getRandomFont();
 
         // Assign a random pastel background color to the cell
         cell.style.backgroundColor = getRandomPastelColor();
@@ -241,14 +274,20 @@ if (allEmojis.length === 0) {
         emojiGrid.appendChild(cell);
 
         // Schedule the first animation for each cell with a staggered initial delay
-        // Random initial delay between 0 to 10 seconds
-        const initialAnimationDelay = Math.random() * 30000+7000;
+        const initialAnimationDelay = (Math.random() * 80000) + 5000;
         setTimeout(() => flipCell(emojiContentSpan), initialAnimationDelay);
     }
 }
 }
 
-
+// ---- Keyboard shortcuts to switch fonts ----
+window.addEventListener('keydown', (e) => {
+  if (e.key === '1') setEmojiFont('"Apple Color Emoji"');
+  if (e.key === '2') setEmojiFont('"Noto Color Emoji"');
+  if (e.key === '3') setEmojiFont('"OpenMoji"');
+  if (e.key === '4') setEmojiFont('"Segoe UI Emoji"');
+  if (e.key === 'r' || e.key === 'R') setRandomFonts();
+});
 
 // ---- Wait for signal variables ----
 function jsWait() {
@@ -260,6 +299,7 @@ function jsWait() {
     setTimeout(jsWait, 100);
   } else {
     console.log("✅ Signals ready → initializing emoji grid");
+    console.log("🎨 Font controls: Press 1-4 to switch fonts, R for random");
     injectStyle(embeddedCss);
     initContent();
     initGrid()

@@ -67,6 +67,20 @@ body {
     box-shadow: 0 0 40px #ffcc00, 0 0 80px #ff9900;
     z-index: 10;
     animation: pulse 8s ease-in-out infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 70px;
+    line-height: 1;
+    color: rgba(255, 140, 0, 0.5);
+}
+
+.sun::before {
+    content: '☉';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, calc(-50% + 2px));
 }
 
 @keyframes pulse {
@@ -94,6 +108,9 @@ body {
     position: absolute;
     font-size: 28px;
     color: #ffffff;
+    font-family: 'Noto Sans Symbols 2', 'Symbola', 'Arial Unicode MS', 'Apple Symbols', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
     animation-timing-function: linear;
     animation-iteration-count: infinite;
@@ -159,6 +176,29 @@ body {
 .pos-5 { transform: translate(-63.6px, 63.6px); }
 .pos-6 { transform: translate(-90px, 0); }
 .pos-7 { transform: translate(-63.6px, -63.6px); }
+
+.moon-orbit-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    transform-origin: center;
+}
+
+.moon {
+    position: absolute;
+    font-size: 12px;
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+    transform: translate(0, -12px);
+}
+
+@keyframes moon-orbit {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
 
 .pos2-0 { transform: translate(0, -140px); }
 .pos2-1 { transform: translate(99px, -99px); }
@@ -245,13 +285,18 @@ function initContent() {
     solarSystem.appendChild(orbit);
   }
 
-  // Orbit 1: Classical planets
+  // Orbit 1: Classical planets with moon around Earth
   const orbit1 = document.createElement('div');
   orbit1.className = 'orbit-container orbit-1-container';
   orbit1.innerHTML = `
     <div class="symbol pos-0" data-name="Mercury"><div class="symbol-inner">☿</div></div>
     <div class="symbol pos-2" data-name="Venus"><div class="symbol-inner">♀</div></div>
-    <div class="symbol pos-4" data-name="Earth"><div class="symbol-inner">♁</div></div>
+    <div class="symbol pos-4" data-name="Earth" id="earth-symbol">
+      <div class="symbol-inner">♁</div>
+      <div class="moon-orbit-container">
+        <div class="moon">☽</div>
+      </div>
+    </div>
     <div class="symbol pos-6" data-name="Mars"><div class="symbol-inner">♂</div></div>
   `;
   solarSystem.appendChild(orbit1);
@@ -354,6 +399,13 @@ function initAnimations() {
     const direction = directions[Math.floor(Math.random() * 2)];
     container.style.animation = `orbit ${newSpeed}s linear infinite ${direction}`;
   });
+
+  // Animate the moon orbit
+  const moonOrbit = document.querySelector('.moon-orbit-container');
+  if (moonOrbit) {
+    const moonSpeed = 8 + Math.random() * 4; // 8-12 seconds
+    moonOrbit.style.animation = `moon-orbit ${moonSpeed}s linear infinite`;
+  }
 
   // Tooltip handling
   const symbols = document.querySelectorAll('.symbol');

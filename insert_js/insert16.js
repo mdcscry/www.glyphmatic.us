@@ -1,23 +1,37 @@
 // insert17.js
 // Waits for emojiSequenceArraySignal && msucdArraySignal before initializing emoji grid
-var allEmojis=[]
+var allEmojis = [];
+var remainingEmojis = []; // Pool of unused emojis
+
+// ---- NEW: Convert emoji string to hex sequence ----
+function emojiToHex(emoji) {
+  const codePoints = [];
+  for (const char of emoji) {
+    codePoints.push(char.codePointAt(0).toString(16).toUpperCase().padStart(4, '0'));
+  }
+  return codePoints.map(cp => `U+${cp}`).join(' ');
+}
+
 // ---- Create emoji grid ----
 function initContent() {
 
   // ✅ Explicitly reference the named emoji arrays here:
   const emojiArrays = [
+    emoji_zwj_v1_0,
     emoji_zwj_v2_0,
     emoji_zwj_v3_0,
     emoji_zwj_v4_0,
     emoji_zwj_v5_0, 
+    emoji_zwj_v11_0,
     emoji_zwj_v12_0,
     emoji_zwj_v12_1,
     emoji_zwj_v13_0,
     emoji_zwj_v13_1,
+    emoji_zwj_v14_0,    
     emoji_zwj_v15_0,
     emoji_zwj_v15_1,
     emoji_zwj_v16_0,
-   // emoji_zwj_v17_0
+    //emoji_zwj_v17_0
   ];
 
   emojiArrays.forEach(arr => {
@@ -28,6 +42,9 @@ function initContent() {
     grid.textContent = "No emoji data found.";
     return;
   }
+  
+  // Initialize the pool
+  remainingEmojis = [...allEmojis];
 }
 
 // ---- Embedded CSS ----
@@ -49,16 +66,41 @@ body {
   display: flex; justify-content: center; align-items: center;
   line-height: 1.75; border: 3px solid;
   background-color: transparent; perspective: 1000px; border-radius: 8px;
+  position: relative;
 }
 .emoji-content {
-        display: block; /* Allows block-level styling and transforms */
-        font-size: min(10rem,8vh,5rem); /* Emoji font size, scales with viewport. '5rem' cap prevents it from becoming too huge on extra-large screens. */
-        opacity: 1;
-        transform: rotateY(0deg) scale(1); /* Initial state */
-        transform-style: preserve-3d; /* Allows for 3D transforms */
-        backface-visibility: hidden; /* Prevents backface issues during rotation */
-        transition: none; /* No default transitions, animations will handle state changes */
-    
+  display: block;
+  font-size: min(10rem,8vh,5rem);
+  opacity: 1;
+  transform: rotateY(0deg) scale(1);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transition: none;
+  cursor: pointer;
+  position: relative;
+}
+/* Tooltip styling */
+.emoji-content::after {
+  content: attr(data-hex);
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.95);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  z-index: 10000;
+  font-family: monospace;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+.emoji-content:hover::after {
+  opacity: 1;
 }
 @keyframes fade-out-twist {
   0% { opacity: 1; transform: rotateY(0deg) scale(1); }
@@ -109,10 +151,18 @@ function flipCell(span) {
     span.removeEventListener('animationend', handleOut);
     span.classList.remove('is-fading-out');
 
-    if (allEmojis.length > 0) {
-      const newEmoji = allEmojis[Math.floor(Math.random() * allEmojis.length)];
-      span.textContent = newEmoji;
+    // Check if pool is empty, reset if needed
+    if (remainingEmojis.length === 0) {
+      remainingEmojis = [...allEmojis];
+      console.log("🔄 Pool exhausted - resetting with all emojis");
     }
+
+    // Pick random index from remaining pool and REMOVE it
+    const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
+    const newEmoji = remainingEmojis.splice(poolIndex, 1)[0];
+    span.textContent = newEmoji;
+    // ✅ UPDATE: Set the hex sequence as a data attribute
+    span.setAttribute('data-hex', emojiToHex(newEmoji));
 
     span.style.transform = 'rotateY(180deg) scale(0.7)';
     span.style.opacity = '0';
@@ -131,6 +181,7 @@ function flipCell(span) {
   };
   span.addEventListener('animationend', handleOut);
 }
+
 function initGrid() {
 
     const grid = document.createElement('div');
@@ -170,9 +221,15 @@ if (allEmojis.length === 0) {
         const emojiContentSpan = document.createElement('span');
         emojiContentSpan.classList.add('emoji-content');
 
-        // Pick an initial random emoji
-        const randomIndex = Math.floor(Math.random() * allEmojis.length);
-        emojiContentSpan.textContent = allEmojis[randomIndex];
+        // Pick an initial random emoji from the pool and remove it
+        if (remainingEmojis.length === 0) {
+          remainingEmojis = [...allEmojis];
+        }
+        const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
+        const initialEmoji = remainingEmojis.splice(poolIndex, 1)[0];
+        emojiContentSpan.textContent = initialEmoji;
+        // ✅ NEW: Set initial hex sequence
+        emojiContentSpan.setAttribute('data-hex', emojiToHex(initialEmoji));
 
         // Assign a random pastel background color to the cell
         cell.style.backgroundColor = getRandomPastelColor();

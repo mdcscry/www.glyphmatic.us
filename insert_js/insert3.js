@@ -36,6 +36,13 @@ dropShadowCountB=Math.round(Math.random()*(divCounter-1)+1);
 dropShadowCountH=Math.round(Math.random()*(divCounter-1)+1);
 dropShadowCountV=Math.round(Math.random()*(divCounter-1)+1);
 
+// Fix mobile viewport shifting
+document.body.style.overflow = 'hidden';
+document.body.style.position = 'fixed';
+document.body.style.width = '100%';
+document.body.style.height = '100%';
+document.body.style.margin = '0';
+document.body.style.padding = '0';
 
 for (i=1;i<=divCounter;i++){
 container[i]= document.createElement("div");
