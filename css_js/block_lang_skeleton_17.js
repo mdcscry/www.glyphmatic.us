@@ -77,7 +77,7 @@ lang_font =[{}]
  block_lang['Egyptian Hieroglyphs'] = ['egyptianheiroglyphics'];
  block_lang['Elbasan'] = ['elbasan'];
  block_lang['Elymaic'] = ['elymaic'];
- block_lang['Emoticons'] = ['symbols'];
+ block_lang['Emoticons'] = ['emoji-bw'];
  block_lang['Enclosed Alphanumeric Supplement'] = ['symbols'];
  block_lang['Enclosed Alphanumerics'] = ['symbols'];
 block_lang['Enclosed CJK Letters and Months'] = ['noto-simple-chinese','noto-trad-chinese','noto-hongkong','noto-korean','noto-japanese'];
@@ -248,7 +248,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-simple-chinese','noto-tra
  block_lang['Mathematical Operators'] = ['math']; 
  block_lang['Supplemental Mathematical Operators'] = ['symbols'];
  block_lang['Supplemental Punctuation'] = ['noto-regular'];
- block_lang['Supplemental Symbols and Pictographs'] = ['symbols'];
+ block_lang['Supplemental Symbols and Pictographs'] = ['emoji-bw'];
  block_lang['Sutton SignWriting'] = ['signwriting'];
  block_lang['Syloti Nagri'] = ['sylotinagri'];
  block_lang['Symbols and Pictographs Extended-A'] = ['symbols'];
@@ -271,7 +271,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-simple-chinese','noto-tra
  block_lang['Tibetan'] = ['tibetan'];
  block_lang['Tifinagh'] = ['tifinagh'];
  block_lang['Tirhuta'] = ['tirhuta'];
- block_lang['Transport and Map Symbols'] = ['symbols'];
+ block_lang['Transport and Map Symbols'] = ['emoji-bw'];
  block_lang['Ugaritic'] = ['ugaritic'];
  block_lang['Unified Canadian Aboriginal Syllabics'] = ['canadianaboriginal'];
   block_lang['Unified Canadian Aboriginal Syllabics Extended'] = ['canadianaboriginal'];
@@ -505,6 +505,7 @@ lang_font['kaithi'] = [ "Noto Sans Kaithi" ]
 lang_font['tibetan'] = [ "Noto Sans Tibetan" ]
 lang_font['saurashtra'] = [ "Noto Sans Saurashtra"]
 lang_font['lisu'] = ["Noto Sans Lisu"]
+lang_font['symbols'] = ["Noto Sans Symbols","Symbola-local"]
 lang_font['symbols'] = ["Noto Sans Symbols","Symbola-local"]
 lang_font['symbols2'] = ["Noto Sans Symbols 2"]
 lang_font['emoji-bw'] = ["Noto Emoji"]
@@ -927,22 +928,27 @@ lang_font['oriya'] = [
   "Noto Serif Oriya"
 ]
 lang_font['korean'] = [
-	"kopubbatang",
+	"Gowun Batang",
 	"Hanna",
 	"Jejuhallasan",   
 	"Jejugothic",              
   "Jejumyeongjo", 
 	"Black And White Picture",
 	"Black Han Sans",
+  "Chiron Sung HK",
+  "Chiron GoRound TC",
 	"Cute Font",
 	"Do Hyeon",
 	"Dokdo",
+  "Dongle",
 	"East Sea Dokdo",
 	"Gaegu",
 	"Gamja Flower",
 	"Gothic A1",
 	"Gugi",
 	"Hi Melody",
+  "Hahmlet",
+  "IBM Plex Sans KR",
 	"Jua",
 	"Kirang Haerang",
 	"Nanum Brush Script",
