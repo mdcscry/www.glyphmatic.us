@@ -31,11 +31,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Jomolhari&family=Noto+Sans+Marchen&family=Noto+Sans+Zanabazar+Square&family=Noto+Serif+Tibetan:wght@100..900&family=Uchen&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Music&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bamum:wght@400..700&display=swap');
 
 /* symbols,chinese, hebrew, telugu, malayalam, bengali, malayalam, gurmurkhi, gujarati, arabic, korean, gurmukhi, sharada
 ,cham, emoji, devanagari, marchen, vai, avestan, yi, lao, osmanya, kannada, khmer, ethiopic, armenian, georgian, thai
-cherokee, myanmar, tibetan, color emoji, music
+cherokee, myanmar, tibetan, color emoji, music, bamum
  
+/* Bamum */
+
+.noto-sans-bamum {
+  font-family: "Noto Sans Bamum", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
 
 /* Music */
 

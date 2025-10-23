@@ -80,7 +80,7 @@ lang_font =[{}]
  block_lang['Emoticons'] = ['emoji-bw'];
  block_lang['Enclosed Alphanumeric Supplement'] = ['symbols'];
  block_lang['Enclosed Alphanumerics'] = ['symbols'];
-block_lang['Enclosed CJK Letters and Months'] = ['noto-korean','noto-japanese'];
+block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
 // block_lang['Enclosed Ideographic Supplement'] = [''];
  block_lang['Ethiopic'] = ['ethiopic'];
  block_lang['Ethiopic Extended'] = ['ethiopic'];
@@ -252,8 +252,8 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-korean','noto-japanese'];
  block_lang['Sutton SignWriting'] = ['signwriting'];
  block_lang['Syloti Nagri'] = ['sylotinagri'];
  block_lang['Symbols and Pictographs Extended-A'] = ['emoji-bw'];
- block_lang['Syriac'] = ['syriaceastern','syriacestrangela','syriacwestern'];
- block_lang['Syriac Supplement'] = ['syriaceastern','syriacestrangela','syriacwestern'];
+ block_lang['Syriac'] = ['syriac'];
+ block_lang['Syriac Supplement'] = ['syriac'];
  block_lang['Tagalog'] = ['tagalog'];
  block_lang['Tagbanwa'] = ['tagbanwa'];
  block_lang['Tai Le'] = ['taile'];
@@ -397,9 +397,9 @@ lang_font['batak'] = [ "Noto Sans Batak" ]
 lang_font['siddham'] = [ "Noto Sans Siddham" ]
 lang_font['sharada'] = [ "Noto Sans Sharada" ]
 lang_font['psalter-pahlavi'] = [ "Noto Sans Psalter Pahlavi" ]
-lang_font['noto-regular'] = [ "Noto Sans","Noto Mono","Noto Serif", "Noto Serif Display" ]
-lang_font['noto-regular-no-display'] = [ "Noto Sans","Noto Mono","Noto Serif" ]
-lang_font['noto-mono'] = [ "Noto Mono" ]
+lang_font['noto-regular'] = [ "Noto Sans","Noto Sans Mono","Noto Serif", "Noto Serif Display" ]
+lang_font['noto-regular-no-display'] = [ "Noto Sans","Noto Sans Mono","Noto Serif" ]
+lang_font['noto-mono'] = [ "Noto Sans Mono" ]
 lang_font['noto-serif'] = [ "Noto Serif" ]
 lang_font['ottoman-siyaq-numbers'] = [ "Noto Serif Ottoman Siyaq"]
 lang_font['pahawh-hmong'] = [ "Noto Sans Pahawh Hmong"  ]
@@ -479,7 +479,7 @@ lang_font['inscriptionalpahlavi'] = [ "Noto Sans Inscriptional Pahlavi" ]
 lang_font['javanese'] = [ "Noto Sans Javanese" ]
 lang_font['batak'] = ["Noto Sans Batak"]
 lang_font['phoenician'] = ["Noto Sans Phoenician"]
-lang_font['kayahli'] = ["Noto Sans Kayahli"]
+lang_font['kayahli'] = ["Noto Sans Kayah Li"]
 lang_font['rejang'] = ["Noto Sans Rejang"]  
 lang_font['lepcha'] = ["Noto Sans Lepcha"]
 lang_font['thaana'] = ["Noto Sans Thaana"] 
@@ -488,10 +488,10 @@ lang_font['cuneiform'] = ["Noto Sans Cuneiform","Akkadian-local"]
 lang_font['sudanese'] = ["Noto Sans Sundanese" ]           
 lang_font['samaritan'] = ["Noto Sans Samaritan"]
 lang_font['brahmi'] = ["Noto Sans Brahmi"] 
-lang_font['olchiki'] = ["Noto Sans Olchiki"] 
+lang_font['olchiki'] = ["Noto Sans Ol Chiki"] 
 lang_font['shavian'] = ["Noto Sans Shavian"]         
 lang_font['tagbanwa'] = ["Noto Sans Tagbanwa"]           
-lang_font['oldturkic'] = ["Noto Sans Oldturkic"]                    
+lang_font['oldturkic'] = ["Noto Sans Old Turkic"]                    
 lang_font['tifinagh'] = ["Noto Sans Tifinagh"]             
 lang_font['deseret'] = ["Noto Sans Deseret"]           
 lang_font['cypriot'] = ["Noto Sans Cypriot"]
@@ -500,11 +500,11 @@ lang_font['avestan'] = ["Noto Sans Avestan"]
 lang_font['bamum'] = ["Noto Sans Bamum"]
 lang_font['ilycian'] = ["Noto Sans lLycian"]
 lang_font['sylotinagri'] = ["Noto Sans Syloti Nagri"]
-lang_font['phagspa'] = ["Noto Sans Phagspa"]
+lang_font['phagspa'] = ["Noto Sans PhagsPa"]
 lang_font['canadianaboriginal'] = ["Noto Sans Canadian Aboriginal"]
 lang_font['mongolian'] = ["Noto Sans Mongolian"]
 lang_font['kaithi'] = [ "Noto Sans Kaithi" ]
-lang_font['tibetan'] = [ "Noto Sans Tibetan" ]
+lang_font['tibetan'] = [ "Noto Serif Tibetan" ]
 lang_font['saurashtra'] = [ "Noto Sans Saurashtra"]
 lang_font['lisu'] = ["Noto Sans Lisu"]
 lang_font['symbols'] = ["Noto Sans Symbols","Symbola-local"]
@@ -515,14 +515,12 @@ lang_font['symbols2-currency'] = ["Noto Sans","Noto Sans Mono","Noto Serif","Hel
 lang_font['symbols-special'] = ["Noto Emoji","Symbola-local"]
 lang_font['emoji-bw'] = ["Noto Emoji"]
 lang_font['emoji-color'] = ["Noto Color Emoji"]
-lang_font['syriaceastern'] = ["Noto Sans Syriac Eastern"]
+lang_font['syriac'] = ["Noto Sans Syriac Eastern","Noto Sans Syriac"]
 lang_font['buhid'] = ["Noto Sans Buhid"]
 lang_font['buginese'] = ["Noto Sans Buginese"]
 lang_font['coptic'] = ["Noto Sans Coptic"]
-lang_font['syriacwestern'] = ["Noto Sans Syriac Western"]
 lang_font['lydian'] = [ "Noto Sans Lydian" ]
 lang_font['limbu'] = [ "Noto Sans Limbu" ]
-lang_font['syriacestrangela'] = [ "Noto Sans Syriac Estrangela" ]
 lang_font['ogham'] = [ "Noto Sans Ogham" ]
 lang_font['mandaic'] = [ "Noto Sans Mandaic" ]	
 lang_font['oldpersian'] = [ "Noto Sans Old Persian" ]
@@ -532,7 +530,7 @@ lang_font['ugaritic'] = [ "Noto Sans Ugaritic" ]
 lang_font['runic'] = ['Noto Sans Runic']
 lang_font['imperialaramaic'] = [ "Noto Sans Imperial Aramaic" ]
 lang_font['inscriptionalparthian'] = [ "Noto Sans Inscriptional Parthian" ]
-lang_font['anatolianheiroglyphics'] = [ "Noto Sans Anatolian Heiroglyphs"]
+lang_font['anatolianheiroglyphics'] = [ "Noto Sans Anatolian Hieroglyphs"]
 lang_font['egyptianheiroglyphics'] = [ "Noto Sans Egyptian Hieroglyphs","AegyptusR-local","AegyptusB-local"]
 lang_font['georgian'] = [ 
 	"Noto Sans Georgian",
@@ -655,9 +653,8 @@ lang_font['telugu'] = [
   "Ramaraja",
   "Ravi Prakash",
   "Sirivennela",
-  "Sree Krushnadeaya",
+  "Sree Krushnadevaraya",
   "Suranna",
-  "Suraam",
   "Tenali Ramakrishna",
   "Timmana",
   "Tiro Telugu"
@@ -914,8 +911,7 @@ lang_font['hebrew'] = [
   "Secular One",
   "Solitreo",
   "Suez One",
-  "Tinos",
-  "ela Round"
+  "Tinos"
 ]
 lang_font['oriya'] = [
   "Alkatra",
@@ -926,10 +922,6 @@ lang_font['oriya'] = [
 ]
 lang_font['korean'] = [
 	"Gowun Batang",
-	"Hanna",
-	"Jejuhallasan",   
-	"Jejugothic",              
-  "Jejumyeongjo", 
 	"Black And White Picture",
 	"Black Han Sans",
   "Chiron Sung HK",
@@ -959,7 +951,6 @@ lang_font['korean'] = [
 	"Single Day",
 	"Song Myung",
 	"Stylish",
-	"Sunflower",
 	"Yeon Sung"
 ]
 lang_font['chinese-simplified'] = [
@@ -1068,7 +1059,6 @@ lang_font['cyrillic-ext'] = [
 	"Nunito",
 	"Old Standard TT",
 	"Open Sans",
-	"Open Sans Condensed",
 	"Oranienbaum",
 	"Oswald",
 	"PT Mono",
@@ -1414,17 +1404,6 @@ lang_font['latin'] = [
   "Birthstone Bounce",
   "Biryani",
   "Bitcount",
-  "Bitcount Grid Double",
-  "Bitcount Grid Double Ink",
-  "Bitcount Grid Single",
-  "Bitcount Grid Single Ink",
-  "Bitcount Ink",
-  "Bitcount Prop Double",
-  "Bitcount Prop Double Ink",
-  "Bitcount Prop Single",
-  "Bitcount Prop Single Ink",
-  "Bitcount Single",
-  "Bitcount Single Ink",
   "Bitter",
   "Black And White Picture",
   "Black Han Sans",
@@ -1462,7 +1441,6 @@ lang_font['latin'] = [
   "Bungee Outline",
   "Bungee Shade",
   "Bungee Spice",
-  "Bungee Tint",
   "Butcherman",
   "Butterfly Kids",
   "Bytesized",
@@ -2510,7 +2488,6 @@ lang_font['latin'] = [
   "Sirivennela",
   "Six Caps",
   "Sixtyfour",
-  "Sixtyfour Convergence",
   "Skranji",
   "Slabo 13px",
   "Slabo 27px",
@@ -2556,7 +2533,7 @@ lang_font['latin'] = [
   "Spline Sans Mono",
   "Squada One",
   "Square Peg",
-  "Sree Krushnadeaya",
+  "Sree Krushnadevaraya",
   "Sriracha",
   "Srisakdi",
   "Staatliches",
@@ -2658,9 +2635,6 @@ lang_font['latin'] = [
   "Urbanist",
   "VT323",
   "Vampiro One",
-  "ela",
-  "ela Round",
-  "ta",
   "Vast Shadow",
   "Vazirmatn",
   "Vend Sans",
@@ -2917,17 +2891,6 @@ lang_font['latin-ext'] = [
   "Birthstone Bounce",
   "Biryani",
   "Bitcount",
-  "Bitcount Grid Double",
-  "Bitcount Grid Double Ink",
-  "Bitcount Grid Single",
-  "Bitcount Grid Single Ink",
-  "Bitcount Ink",
-  "Bitcount Prop Double",
-  "Bitcount Prop Double Ink",
-  "Bitcount Prop Single",
-  "Bitcount Prop Single Ink",
-  "Bitcount Single",
-  "Bitcount Single Ink",
   "Bitter",
   "Black Ops One",
   "Blaka",
@@ -3935,9 +3898,6 @@ lang_font['latin-ext'] = [
   "Urbanist",
   "VT323",
   "Vampiro One",
-  "ela",
-  "ela Round",
-  "ta",
   "Vazirmatn",
   "Vend Sans",
   "Vesper Libre",

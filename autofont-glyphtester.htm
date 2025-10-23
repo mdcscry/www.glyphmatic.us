@@ -185,15 +185,6 @@
             document.head.appendChild(link);
         }
 
-        function attach_an_early_access_font(font){
-            font = font.split("-")[0];
-            const ea_prefix = '//fonts.googleapis.com/earlyaccess/';
-            const font_formatted = font.replace(/ /g,"").toLowerCase();
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'https:' + ea_prefix + font_formatted + '.css';
-            document.head.appendChild(link);
-        }
 
         function attach_local_font(font){
             console.log('in attach local font')

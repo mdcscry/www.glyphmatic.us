@@ -42,7 +42,7 @@ function initDiv() {
         container[i].style.overflow = 'visible';
         
         // Create SVG container - oversized to allow bleeding
-        svgContainer[i] = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svgContainer[i] = document.createElementNS("https://www.w3.org/2000/svg", "svg");
         svgContainer[i].style.width = '200%';
         svgContainer[i].style.height = '200%';
         svgContainer[i].style.position = 'absolute';
@@ -88,23 +88,23 @@ function createMask(quadIndex) {
     var svg = svgContainer[quadIndex];
     
     // Create defs
-    var defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+    var defs = document.createElementNS("https://www.w3.org/2000/svg", "defs");
     svg.appendChild(defs);
     
     // Create blur filter
-    var filter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
+    var filter = document.createElementNS("https://www.w3.org/2000/svg", "filter");
     filter.setAttribute('id', 'blur_' + quadIndex);
-    var blur = document.createElementNS("http://www.w3.org/2000/svg", "feGaussianBlur");
+    var blur = document.createElementNS("https://www.w3.org/2000/svg", "feGaussianBlur");
     blur.setAttribute('in', 'SourceGraphic');
     blur.setAttribute('stdDeviation', '15');
     filter.appendChild(blur);
     defs.appendChild(filter);
     
     // Create clip path
-    var clipPath = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
+    var clipPath = document.createElementNS("https://www.w3.org/2000/svg", "clipPath");
     clipPath.setAttribute('id', 'clip_' + quadIndex);
     
-    var maskText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    var maskText = document.createElementNS("https://www.w3.org/2000/svg", "text");
     maskText.setAttribute('x', '50%');
     maskText.setAttribute('y', '50%');
     maskText.setAttribute('text-anchor', 'middle');
@@ -116,7 +116,7 @@ function createMask(quadIndex) {
     defs.appendChild(clipPath);
     
     // Create wrapper for fade animation
-    var maskWrapper = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    var maskWrapper = document.createElementNS("https://www.w3.org/2000/svg", "g");
     maskWrapper.setAttribute('class', 'mask-wrapper');
     maskWrapper.setAttribute('id', 'wrapper_' + quadIndex);
     maskWrapper.style.opacity = '0';
@@ -143,7 +143,7 @@ function createGlyphLayer(quadIndex) {
     var randomFont = fontList[Math.floor(Math.random() * fontList.length)];
     
     // Create group with clip and blur
-    var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    var group = document.createElementNS("https://www.w3.org/2000/svg", "g");
     group.setAttribute('clip-path', 'url(#clip_' + quadIndex + ')');
     group.setAttribute('filter', 'url(#blur_' + quadIndex + ')');
     group.setAttribute('class', 'glyph-layer');
@@ -154,7 +154,7 @@ function createGlyphLayer(quadIndex) {
     var y = Math.random() * 100;
     
     // Create text WITH FONT
-    var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    var text = document.createElementNS("https://www.w3.org/2000/svg", "text");
     text.setAttribute('x', x + '%');
     text.setAttribute('y', y + '%');
     text.setAttribute('text-anchor', 'middle');

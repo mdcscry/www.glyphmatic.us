@@ -111,7 +111,7 @@
 			gf_prefix = '//fonts.googleapis.com/css?family='
             font_formatted = font.replace(/ /g,"+")
             	//console.log("font_formatted: ",font_formatted)
-			newRule='@import url(http:'+ gf_prefix + font_formatted+');';
+			newRule='@import url(https:'+ gf_prefix + font_formatted+');';
 				//console.log("import: " + newRule)
 			cssImportStyle.insertRule(newRule,cssImportRules.length);	
 		}
@@ -122,7 +122,7 @@
             ea_prefix = '//fonts.googleapis.com/earlyaccess/'
             font_formatted = font.replace(/ /g,"").toLowerCase()
             	//console.log("font_formatted: ",font_formatted)
-			newRule = '@import url(http:'+ ea_prefix + font_formatted + '.css);';
+			newRule = '@import url(https:'+ ea_prefix + font_formatted + '.css);';
 			cssImportStyle.insertRule(newRule,cssImportRules.length);
 	 	}
 
