@@ -74,11 +74,11 @@
 				</TD>
 			</tr>
 			<tr >
-				<td style='text-align:right;'>
-					<div style="font-size:.35em;font-family:'Noto Sans Mono';color:red"> &nbsp;&nbsp; Unicode &numero;</div>
+				<td style='text-align:left;'>
+					<div style="font-size:.35em;font-family:'Noto Sans Mono';color:red">Unicode</div>
 				</td>
 				<td style="text-align:right;">
-					<div style="font-size:.25em;font-family:'Noto Sans Mono';"> glyphmatic.us</div>
+					<div style="font-size:.35em;font-family:'Noto Sans Mono';"> glyphmatic.us</div>
 				</td>
 			</tr>
 		</table>	
@@ -127,11 +127,22 @@
         }
 
 
-		function attach_font_family(font,spid){
-			var newRule = "font-family: '"+ font +"';";
-			//console.log("font-face: " + newRule)	
-			sid = "span#sid"+i
-			cssFontFamilyStyle.addRule(sid,newRule,0);
+		function attach_font_family(font, spid){
+			let fontStack;
+			
+			// Determine generic fallback based on font name
+			const genericFallback = font.includes('Serif') ? 'serif' : 'sans-serif';
+			
+			// If it's a Noto Symbols font, prepend Noto Emoji for BW emoji handling
+			if (font.includes('Noto Sans Symbols') || font.includes('Symbola')) {
+				fontStack = `'Noto Emoji', '${font}', ${genericFallback}`;
+			} else {
+				fontStack = `'${font}', ${genericFallback}`;
+			}
+			
+			var newRule = `font-family: ${fontStack};`;
+			sid = `span#sid${spid}`;
+			cssFontFamilyStyle.insertRule(`${sid} { ${newRule} }`, cssFontFamilyRules.length);
 		}
 
 

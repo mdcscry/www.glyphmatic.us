@@ -32,11 +32,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Music&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bamum:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tai+Tham&display=swap');
 
 /* symbols,chinese, hebrew, telugu, malayalam, bengali, malayalam, gurmurkhi, gujarati, arabic, korean, gurmukhi, sharada
 ,cham, emoji, devanagari, marchen, vai, avestan, yi, lao, osmanya, kannada, khmer, ethiopic, armenian, georgian, thai
-cherokee, myanmar, tibetan, color emoji, music, bamum
+cherokee, myanmar, tibetan, color emoji, music, bamum, Tai Tham
  
+
+/* Bamum */
+
+.noto-sans-tai-tham {
+  font-family: "Noto Sans Tai Tham", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
 /* Bamum */
 
 .noto-sans-bamum {
@@ -805,24 +816,66 @@ cherokee, myanmar, tibetan, color emoji, music, bamum
   font-style: normal;
 }
 
+/* EMOJI FONTS */
+
+@font-face {
+    font-family: 'WhatsApp Emoji';
+    src: url('../fonts/WhatsAppEmoji.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'TossfaceOTF';
+    src: url('../fonts/TossFaceFontWeb.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Blobmoji';
+    src: url('../fonts/Blobmoji.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Emoji Two';
+    src: url('../fonts/EmojiTwo.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Fluent Emoji Color';
+    src: url('../fonts/FluentEmojiColor.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Fluent Emoji Flat';
+    src: url('../fonts/FluentEmojiFlat.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Fluent Emoji HC';
+    src: url('../fonts/FluentEmojiHighContrast.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Fluent Emoji INV HC';
+    src: url('../fonts/FluentEmojiHighContrastInverted.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Twitter Color Emoji';
+    src: url('../fonts/TwitterColorEmoji.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Open Moji Black';
+    src: url('../fonts/openmojiblack.ttf') format('truetype');
+}
+
 @font-face {
     font-family: 'Segoe Emoji';
     src: url('../fonts/segoe-ui-emoji_0.ttf') format('truetype');
 }
 
 @font-face {
-    font-family: 'Noto Color Emoji Latest';
-    src: url('../fonts/NotoColorEmoji-latest.ttf') format('truetype');
-}
-
-@font-face {
     font-family: 'Open Moji 0';
     src: url('../fonts/OpenMoji-color-colr0_svg.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'Open Moji 1';
-    src: url('../fonts/OpenMoji-color-colr1_svg.ttf') format('truetype');
 }
 
 @font-face {

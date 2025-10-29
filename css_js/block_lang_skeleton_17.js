@@ -69,7 +69,7 @@ lang_font =[{}]
  block_lang['Deseret'] = ['deseret'];
  block_lang['Devanagari'] = ['devanagari'];
  block_lang['Devanagari Extended'] = ['noto-devanagari'];
- block_lang['Dingbats'] = ['symbols-special'];
+ block_lang['Dingbats'] = ['symbols2-symbola'];
  block_lang['Dogra'] = ['dogra'];
  block_lang['Domino Tiles'] = ['symbols2'];
  block_lang['Duployan'] = ['duployan'];
@@ -151,7 +151,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Lycian'] = ['lycian'];
  block_lang['Lydian'] = ['lydian'];
  block_lang['Mahajani'] = ['mahajani'];
- block_lang['Mahjong Tiles'] = ['symbols'];
+ block_lang['Mahjong Tiles'] = ['symbols2'];
  block_lang['Makasar'] = ['makasar'];
  block_lang['Malayalam'] = ['malayalam'];
  block_lang['Mandaic'] = ['mandaic'];
@@ -172,7 +172,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Miscellaneous Mathematical Symbols-B'] = ['math-symbola'];
  block_lang['Miscellaneous Symbols'] = ['symbols'];
  block_lang['Miscellaneous Symbols and Arrows'] = ['symbols2-symbola'];
- block_lang['Miscellaneous Symbols and Pictographs'] = ['symbols-special'];
+ block_lang['Miscellaneous Symbols and Pictographs'] = ['symbols2-symbola'];
  block_lang['Miscellaneous Technical'] = ['symbols'];
  block_lang['Modi'] = ['modi'];
  block_lang['Modifier Tone Letters'] = ['noto-regular'];
@@ -1451,7 +1451,6 @@ lang_font['latin'] = [
   "Caesar Dressing",
   "Cagliostro",
   "Cairo",
-  "Cairo Play",
   "Cal Sans",
   "Caladea",
   "Calistoga",
@@ -2920,7 +2919,6 @@ lang_font['latin-ext'] = [
   "Bungee Outline",
   "Bungee Shade",
   "Bungee Spice",
-  "Bungee Tint",
   "Butcherman",
   "Butterfly Kids",
   "Bytesized",
@@ -2928,7 +2926,6 @@ lang_font['latin-ext'] = [
   "Cabin Condensed",
   "Cactus Classical Serif",
   "Cairo",
-  "Cairo Play",
   "Cal Sans",
   "Caladea",
   "Calistoga",

@@ -347,6 +347,8 @@ myFontSet[226]=['x1F300','Noto Emoji','Quivira','Symbola']; // Spiral (cham)
 myFontSet[227]=['x1F300','Noto Emoji','Quivira','Symbola','Segoe UI Symbol']; // Cyclone 
 myFontSet[228]=['x267E','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','Quivira','Symbola']; // Permanent Paper Sign for spinners
 myFontSet[229]=['x168D0','Noto Sans Bamum']; // Bamum Spiral for Spinners
+//myFontSet[230]=['x1AA4','Noto Sans Tai Tham']; // Thai Tham Spiral for Spinners
+
 
 var glyphDescriptions = [];
 
@@ -584,5 +586,7 @@ glyphDescriptions[226] = 'Spiral (Cham)'; //for spinners
 glyphDescriptions[227] = 'Cyclone'; // for spinners
 glyphDescriptions[228] = 'Permanent Paper Sign';//for spinners
 glyphDescriptions[229]=  'Bamum Letter'; // Bamum Spiral for Spinners
+//glyphDescriptions[230]='Thai Tham Letter'; // Thai Tham Spiral for Spinners
+
 
 var whirldArraySignal = [];
