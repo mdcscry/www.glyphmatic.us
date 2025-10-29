@@ -165,7 +165,8 @@ body {
 }
 .emoji-content {
   display: block;
-  font-size: min(19rem,7vh,3rem);
+  font-size: min(7vh, 5rem);
+  line-height: 1 !important
   opacity: 1;
   transform: rotateY(0deg) scale(1);
   transform-style: preserve-3d;
@@ -185,7 +186,7 @@ body {
   color: white;
   padding: 12px 16px;
   border-radius: 8px;
-  font-size: 8px;  /* ✅ Slightly bigger since it's shorter */
+  font-size: 12px;  /* ✅ Slightly bigger since it's shorter */
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
