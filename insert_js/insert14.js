@@ -3,13 +3,29 @@ var divCounter = 3;
 var glyphsPerDiv = 200;
 var baseFontSize = '30vw';
 
+var sharedMaskGlyph = null;
+var sharedMaskFont = null; // ✅ Add this global variable
+
+// ✅ NEW: Grid configurations
+var gridConfigs = [
+    // 3 glyphs
+    { count: 3, layouts: [[1,2], [2,1]] },
+    // 5 glyphs
+    { count: 5, layouts: [[2,3], [3,2]] },
+    // 7 glyphs
+    { count: 7, layouts: [[3,4], [4,3]] },
+    // 9 glyphs
+    { count: 9, layouts: [[4,5], [5,4]] }
+];
+
 var container = [];
 var svgContainer = [];
 var mycolors = [];
 var sharedMaskGlyph = null;
+var currentGridConfig = null; // ✅ Track current layout
 
 // Wait for signals
-function jsWait() {
+function jsWait() { 
     if (typeof whirldArraySignal == "undefined" || 
         typeof msucdArraySignal == "undefined") {
         window.setTimeout(jsWait, 100);
@@ -21,14 +37,42 @@ function jsWait() {
     }
 }
 
-
 function initDiv() {
-    // Triangle arrangement: 1 top center, 2 bottom
-    var positions = [
-        { top: '5%', left: '25%', width: '50%', height: '45%' },  // top center
-        { top: '52%', left: '0%', width: '50%', height: '45%' },  // bottom left
-        { top: '52%', left: '50%', width: '50%', height: '45%' }  // bottom right
-    ];
+
+    console.log('initDiv starting...');
+    
+    currentGridConfig = gridConfigs[Math.floor(Math.random() * gridConfigs.length)];
+    console.log('Selected config:', currentGridConfig);
+    
+    var layout = currentGridConfig.layouts[Math.floor(Math.random() * currentGridConfig.layouts.length)];
+    console.log('Selected layout:', layout);
+    
+    var positions = calculateGridPositions(layout, currentGridConfig.count);
+    console.log('Calculated positions:', positions);
+
+
+    // ✅ Pick random grid configuration
+    currentGridConfig = gridConfigs[Math.floor(Math.random() * gridConfigs.length)];
+    var layout = currentGridConfig.layouts[Math.floor(Math.random() * currentGridConfig.layouts.length)];
+    
+    console.log(`Grid: ${currentGridConfig.count} glyphs in ${layout[0]}x${layout[1]} layout`);
+    
+
+    // ✅ Scale font size based on grid count
+    if (currentGridConfig.count === 3) baseFontSize = '30vw';
+    else if (currentGridConfig.count === 5) baseFontSize = '22vw';
+    else if (currentGridConfig.count === 7) baseFontSize = '18vw';
+    else if (currentGridConfig.count === 9) baseFontSize = '15vw';
+    
+    // Calculate positions based on layout
+    var positions = calculateGridPositions(layout, currentGridConfig.count);
+    
+    divCounter = currentGridConfig.count;
+
+    // Calculate positions based on layout
+    var positions = calculateGridPositions(layout, currentGridConfig.count);
+    
+    divCounter = currentGridConfig.count; // ✅ Update div counter
     
     for (var i = 1; i <= divCounter; i++) {
         container[i] = document.createElement("div");
@@ -50,6 +94,45 @@ function initDiv() {
         svgContainer[i].style.left = '-50%';
         container[i].appendChild(svgContainer[i]);
     }
+}
+
+function calculateGridPositions(layout, totalGlyphs) {
+    var rows = layout.length === 2 ? 2 : 1;
+    var topRowCount = layout[0];
+    var bottomRowCount = layout[1];
+    
+    var cellWidth = 100 / Math.max(topRowCount, bottomRowCount);
+    var cellHeight = 100 / rows;
+    var gap = 2; // percentage gap between cells
+    
+    var positions = [];
+    var glyphIndex = 0;
+    
+    // Top row
+    var topStartX = (100 - (topRowCount * cellWidth)) / 2;
+    for (var i = 0; i < topRowCount; i++) {
+        positions.push({
+            top: gap + '%',
+            left: (topStartX + i * cellWidth + gap) + '%',
+            width: (cellWidth - gap * 2) + '%',
+            height: (cellHeight - gap * 2) + '%'
+        });
+        glyphIndex++;
+    }
+    
+    // Bottom row
+    var bottomStartX = (100 - (bottomRowCount * cellWidth)) / 2;
+    for (var j = 0; j < bottomRowCount; j++) {
+        positions.push({
+            top: (cellHeight + gap) + '%',
+            left: (bottomStartX + j * cellWidth + gap) + '%',
+            width: (cellWidth - gap * 2) + '%',
+            height: (cellHeight - gap * 2) + '%'
+        });
+        glyphIndex++;
+    }
+    
+    return positions;
 }
 
 function initStyle() {
@@ -74,18 +157,27 @@ function initContent() {
     var maskGlyphIndex = Math.floor(Math.random() * myFontSet.length);
     sharedMaskGlyph = parseCodepoint(myFontSet[maskGlyphIndex][0]);
     
+    // ✅ Pick ONE font for the shared mask
+    var fontList = myFontSet[maskGlyphIndex].slice(1);
+    sharedMaskFont = fontList[Math.floor(Math.random() * fontList.length)];
+    
+    console.log(`Shared mask: "${sharedMaskGlyph}" (${myFontSet[maskGlyphIndex][0]}) in ${sharedMaskFont}`);
+    
     for (var i = 1; i <= divCounter; i++) {
         createMask(i);
         
-        // Create many glyphs underneath
         for (var layer = 0; layer < glyphsPerDiv; layer++) {
             createGlyphLayer(i);
         }
     }
-}
+}   
 
 function createMask(quadIndex) {
     var svg = svgContainer[quadIndex];
+
+    // ✅ Log the mask glyph being used
+    console.log(`Mask ${quadIndex}: using glyph "${sharedMaskGlyph}" from myFontSet index`);
+        
     
     // Create defs
     var defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
@@ -110,21 +202,36 @@ function createMask(quadIndex) {
     maskText.setAttribute('text-anchor', 'middle');
     maskText.setAttribute('dominant-baseline', 'middle');
     maskText.setAttribute('font-size', baseFontSize);
+    maskText.setAttribute('font-family', sharedMaskFont); // ✅ Use shared font    
     maskText.innerHTML = sharedMaskGlyph;
     
     clipPath.appendChild(maskText);
     defs.appendChild(clipPath);
     
+// ✅ ADD BACKGROUND RECTANGLE with fade-in
+    var bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    bgRect.setAttribute('x', '0');
+    bgRect.setAttribute('y', '0');
+    bgRect.setAttribute('width', '100%');
+    bgRect.setAttribute('height', '100%');
+    bgRect.setAttribute('fill', mycolors[Math.floor(Math.random() * mycolors.length)]);
+    bgRect.setAttribute('clip-path', 'url(#clip_' + quadIndex + ')');
+    bgRect.style.opacity = '0'; // ✅ Start invisible
+    svg.appendChild(bgRect);
+
     // Create wrapper for fade animation
     var maskWrapper = document.createElementNS("http://www.w3.org/2000/svg", "g");
     maskWrapper.setAttribute('class', 'mask-wrapper');
     maskWrapper.setAttribute('id', 'wrapper_' + quadIndex);
     maskWrapper.style.opacity = '0';
     svg.appendChild(maskWrapper);
-    
-    // Fade in
+
+    // Fade in BOTH background and glyphs
     setTimeout(function() {
-        maskWrapper.style.transition = 'opacity 6s ease-in-out';
+        bgRect.style.transition = 'opacity 6s ease-in-out'; // ✅ Fade background
+        bgRect.style.opacity = '1';
+        
+        maskWrapper.style.transition = 'opacity 6s ease-in-out'; // Fade glyphs
         maskWrapper.style.opacity = '1';
     }, 100);
 }
@@ -201,10 +308,17 @@ function startTimers() {
         // Regenerate color palette
         initStyle();
         
-        // Pick new shared mask glyph
+        // ✅ Pick new shared mask glyph AND font
         var maskGlyphIndex = Math.floor(Math.random() * myFontSet.length);
         sharedMaskGlyph = parseCodepoint(myFontSet[maskGlyphIndex][0]);
         
+        var fontList = myFontSet[maskGlyphIndex].slice(1);
+        sharedMaskFont = fontList[Math.floor(Math.random() * fontList.length)];
+        
+        console.log(`New shared mask: "${sharedMaskGlyph}" (${myFontSet[maskGlyphIndex][0]}) in ${sharedMaskFont}`);
+                
+
+
         for (var q = 1; q <= divCounter; q++) {
             (function(quadIndex) {
                 var wrapper = document.getElementById('wrapper_' + quadIndex);

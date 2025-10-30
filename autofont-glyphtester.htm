@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block/Font Glyph Tester</title>
+    
+    <!-- Load your real data files here -->
+    <script src="css_js/block_hex_17.js"></script>
+    <script src="css_js/block_hex_desc_17.js"></script>
+    <script src="css_js/block_lang_skeleton_17.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #2a2a2a;
+            border-radius: 5px;
+        }
+        
+        select {
+            padding: 8px;
+            margin-right: 15px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            border: 1px solid #555;
+            border-radius: 3px;
+            min-width: 200px;
+        }
+        
+        label {
+            margin-right: 10px;
+            font-weight: bold;
+            display: inline-block;
+            min-width: 80px;
+        }
+        
+        .control-row {
+            margin-bottom: 10px;
+        }
+        
+        #output {
+            margin-top: 20px;
+        }
+        
+        .glyph-row {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #2a2a2a;
+            border-radius: 5px;
+        }
+        
+        .glyph-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4a9eff;
+            font-size: 14px;
+        }
+        
+        .font-samples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .glyph-sample {
+            text-align: center;
+            padding: 10px;
+            background-color: #3a3a3a;
+            border-radius: 3px;
+            min-width: 100px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border: 2px solid transparent;
+        }
+        
+        .glyph-sample:hover {
+            background-color: #4a4a4a;
+        }
+        
+        .glyph-sample.clicked {
+            background-color: #5a2a2a;
+            border: 2px solid #ff4444;
+        }
+        
+        .glyph-char {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .font-name {
+            font-size: 11px;
+            color: #999;
+        }
+        
+        .exclusion-area {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #2a2a2a;
+            border-radius: 5px;
+        }
+        
+        .exclusion-area h3 {
+            margin-top: 0;
+            color: #ff6b6b;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 10px;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            border: 1px solid #555;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        
+        .info {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Block/Font Glyph Tester</h1>
+    
+    <div class="controls">
+        <div class="control-row">
+            <label for="blockSelect">Block:</label>
+            <select id="blockSelect">
+                <option value="">Select a block...</option>
+            </select>
+        </div>
+        
+        <div class="control-row">
+            <label for="fontPageSelect">Font Page:</label>
+            <select id="fontPageSelect" disabled>
+                <option value="">Select block first...</option>
+            </select>
+        </div>
+    </div>
+    
+    <div id="output"></div>
+    
+    <div class="exclusion-area">
+        <h3>Excluded Glyphs (Click tofu to add)</h3>
+        <textarea id="exclusionList" name="exclusionList" placeholder="Clicked glyphs will appear here in R format: ,'251B','2599'"></textarea>
+        <div class="info">Copy this into your exclude_glyph.R file</div>
+    </div>
+
+    <script>
+        // Wait for data files to load
+        function jsWait() {
+            if (typeof blocks === "undefined" || 
+                typeof block_hex === "undefined" ||
+                typeof block_hex_desc === "undefined" ||
+                typeof block_lang === "undefined" ||
+                typeof lang_font === "undefined") {
+                window.setTimeout(jsWait, 100);
+            } else {
+                initializeTester();
+            }
+        }
+
+        function attach_goog_font(font){
+            const gf_prefix = '//fonts.googleapis.com/css?family=';
+            const font_formatted = font.replace(/ /g,"+");
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https:' + gf_prefix + font_formatted;
+            document.head.appendChild(link);
+        }
+
+
+        function attach_local_font(font){
+            console.log('in attach local font')
+            font = font.split("-")[0];
+            const font_formatted = font.replace(/ /g,"");
+            const style = document.createElement('style');
+            style.textContent = `@font-face {font-family: "${font}"; src: url('/tff/${font_formatted}-Regular.ttf');}`;
+            console.log(style.textContent)
+            document.head.appendChild(style);
+        }
+
+        function initializeTester() {
+            const blockSelect = document.getElementById('blockSelect');
+            const fontPageSelect = document.getElementById('fontPageSelect');
+            const output = document.getElementById('output');
+            const exclusionList = document.getElementById('exclusionList');
+            
+            const excludedGlyphs = new Set();
+            const FONTS_PER_PAGE = 10;
+
+            // Populate block dropdown
+            blocks.forEach(block => {
+                const option = document.createElement('option');
+                option.value = block;
+                option.textContent = block.replace(/_/g, ' ');
+                blockSelect.appendChild(option);
+            });
+
+            blockSelect.addEventListener('change', function() {
+                const selectedBlock = this.value;
+                fontPageSelect.innerHTML = '<option value="">Select font page...</option>';
+                output.innerHTML = '';
+                
+                // Clear exclusions when block changes
+                excludedGlyphs.clear();
+                exclusionList.value = '';
+                
+                if (!selectedBlock) {
+                    fontPageSelect.disabled = true;
+                    return;
+                }
+                
+                const fontCategories = block_lang[selectedBlock] || [];
+                let allFonts = [];
+                fontCategories.forEach(category => {
+                    if (lang_font[category]) {
+                        allFonts = allFonts.concat(lang_font[category]);
+                    }
+                });
+                
+                allFonts = [...new Set(allFonts)];
+                
+                const pageCount = Math.ceil(allFonts.length / FONTS_PER_PAGE);
+                for (let i = 0; i < pageCount; i++) {
+                    const start = i * FONTS_PER_PAGE + 1;
+                    const end = Math.min((i + 1) * FONTS_PER_PAGE, allFonts.length);
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `Fonts ${start}-${end} (of ${allFonts.length})`;
+                    fontPageSelect.appendChild(option);
+                }
+                
+                fontPageSelect.disabled = false;
+            });
+
+            fontPageSelect.addEventListener('change', function() {
+                const selectedBlock = blockSelect.value;
+                const pageIndex = parseInt(this.value);
+                
+                if (!selectedBlock || isNaN(pageIndex)) {
+                    output.innerHTML = '';
+                    return;
+                }
+                
+                renderGlyphs(selectedBlock, pageIndex);
+            });
+
+            function renderGlyphs(block, pageIndex) {
+                output.innerHTML = '';
+                
+                const glyphs = block_hex[block] || [];
+                const descriptions = block_hex_desc[block] || [];
+                
+                const fontCategories = block_lang[block] || [];
+                let allFonts = [];
+                fontCategories.forEach(category => {
+                    if (lang_font[category]) {
+                        allFonts = allFonts.concat(lang_font[category]);
+                    }
+                });
+                allFonts = [...new Set(allFonts)];
+                
+                const startIdx = pageIndex * FONTS_PER_PAGE;
+                const pageFonts = allFonts.slice(startIdx, startIdx + FONTS_PER_PAGE);
+                
+                glyphs.forEach((codePoint, idx) => {
+                    const char = String.fromCodePoint(parseInt(codePoint, 16));
+                    const description = descriptions[idx] || '';
+                    
+                    const row = document.createElement('div');
+                    row.className = 'glyph-row';
+                    
+                    const header = document.createElement('div');
+                    header.className = 'glyph-header';
+                    header.textContent = `U+${codePoint} - ${description}`;
+                    row.appendChild(header);
+                    
+                    const samples = document.createElement('div');
+                    samples.className = 'font-samples';
+  
+                    pageFonts.forEach(font => {
+                        console.log('in the font loader')
+                        const fontName = font.split("-")[0];
+                        if (font.includes("-EA")) {
+                            attach_an_early_access_font(font);
+                        } else if (font.includes("-local")) {
+                            attach_local_font(font);
+                        } else {
+                            attach_goog_font(font);
+                        }
+                    });
+
+                    pageFonts.forEach(font => {
+                        const sample = document.createElement('div');
+                        sample.className = 'glyph-sample';
+                        sample.dataset.codepoint = codePoint;
+                        
+                        if (excludedGlyphs.has(codePoint)) {
+                            sample.classList.add('clicked');
+                        }
+                        
+                        sample.addEventListener('click', function() {
+                            toggleExclusion(codePoint, this);
+                        });
+                        
+                        const charSpan = document.createElement('span');
+                        charSpan.className = 'glyph-char';
+                        const fontName = font.split("-")[0];
+                        charSpan.style.fontFamily = `'${fontName}', sans-serif`;
+                        charSpan.textContent = char;
+                        
+                        const fontLabel = document.createElement('div');
+                        fontLabel.className = 'font-name';
+                        fontLabel.textContent = font;
+                        
+                        sample.appendChild(charSpan);
+                        sample.appendChild(fontLabel);
+                        samples.appendChild(sample);
+                    });
+                    
+                    row.appendChild(samples);
+                    output.appendChild(row);
+                });
+            }
+
+            function toggleExclusion(codePoint, element) {
+                if (excludedGlyphs.has(codePoint)) {
+                    excludedGlyphs.delete(codePoint);
+                    document.querySelectorAll(`[data-codepoint="${codePoint}"]`).forEach(el => {
+                        el.classList.remove('clicked');
+                    });
+                } else {
+                    excludedGlyphs.add(codePoint);
+                    document.querySelectorAll(`[data-codepoint="${codePoint}"]`).forEach(el => {
+                        el.classList.add('clicked');
+                    });
+                }
+                updateExclusionList();
+            }
+
+            function updateExclusionList() {
+                const glyphArray = Array.from(excludedGlyphs).sort();
+                if (glyphArray.length === 0) {
+                    exclusionList.value = '';
+                } else {
+                    exclusionList.value = glyphArray.map(g => `,'${g}'`).join('');
+                }
+            }
+        }
+
+        // Start waiting for data files to load
+        jsWait();
+    </script>
+</html>

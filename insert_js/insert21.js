@@ -23,14 +23,41 @@ function initGrid() {
     
     const [rows, cols] = gridOptions[Math.floor(Math.random() * gridOptions.length)];
     
-    // Pick one spiral glyph for entire rendering
-    const spiralIndices = [73,159,226,186]; // Cham spiral or Cyclone
+    // Spiral indices with their preferred directions
+    const spiralConfig = {
+        73: 'counter',
+        159: 'either',
+        226: 'counter',
+        186: 'clock',
+        229: 'clock'
+    };
+    
+    const spiralIndices = Object.keys(spiralConfig).map(Number);
     const selectedIndex = spiralIndices[Math.floor(Math.random() * spiralIndices.length)];
+    
+    // Determine spin direction based on spiral's preference
+    const direction = spiralConfig[selectedIndex];
+    let isClockwise;
+    
+    if (direction === 'counter') {
+        isClockwise = false;
+    } else if (direction === 'clock') {
+        isClockwise = true;
+    } else { // 'either'
+        isClockwise = Math.random() > 0.5;
+    }
+    
+    console.log('Selected spiral:', selectedIndex, 'Direction:', direction, 'Clockwise:', isClockwise);
+    
     const glyphCode = parseInt(myFontSet[selectedIndex][0].replace('x', ''), 16);
     
     // Pick one random font from that glyph's font set
     const fontSet = myFontSet[selectedIndex].slice(1);
     const selectedFont = fontSet[Math.floor(Math.random() * fontSet.length)];
+    
+    // Random spin duration
+    const spinDuration = Math.floor(Math.random() * 3) + 3; // 3-5 seconds
+    const animationName = isClockwise ? 'spinCW' : 'spinCCW';
     
     // Generate OKLCH color palette
     function generateOklchPalette(colNum) {
@@ -51,11 +78,6 @@ function initGrid() {
     const colors = generateOklchPalette(20);
     const backgroundColor = colors[Math.floor(Math.random() * colors.length)];
     const gridLineColor = backgroundColor;
-    
-    // Random spin direction and duration
-    const isClockwise = Math.random() > 0.5;
-    const spinDuration = Math.floor(Math.random() * 3) + 3; // 3-5 seconds
-    const animationName = isClockwise ? 'spinCW' : 'spinCCW';
     
     // Ensure spiral color has enough contrast with background
     let spiralColor;
@@ -145,7 +167,7 @@ function initGrid() {
     style.textContent = `
         @keyframes spinCW {
             from { transform: rotate(0deg); }
-            to { transform: rotate(-360deg); }
+            to { transform: rotate(360deg); }
         }
         @keyframes spinCCW {
             from { transform: rotate(0deg); }

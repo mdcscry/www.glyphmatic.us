@@ -1,4 +1,4 @@
-// insert17.js
+// insert19.js
 // Waits for emojiSequenceArraySignal && msucdArraySignal before initializing emoji grid
 var allEmojis = [];
 var remainingEmojis = []; // Pool of unused emojis
@@ -6,13 +6,81 @@ var remainingEmojis = []; // Pool of unused emojis
 // ---- Font switcher utilities ----
 const emojiFonts = [
   '"Apple Color Emoji"',
-  //'"Noto Color Emoji"',
-  '"Noto Color Emoji Latest"',
-  '"Noto Emoji","Noto Color Emoji"',
+  '"Noto Color Emoji"',
+  '"Noto Emoji"',
   '"Open Moji 0"',
-  //'"Open Moji 1"',
-  '"Segoe Emoji"'
+  '"Segoe Emoji"',
+  '"Twitter Color Emoji"', //b%w except on firefox and some other funky browsers
+  '"Open Moji Black"',
+  '"Emoji Two"',
+  '"Fluent Emoji Color"',
+  '"Fluent Emoji Flat"',
+  '"Fluent Emoji HC"',
+  '"Fluent Emoji INV HC"',
+  '"Blobmoji"',
+  '"TossfaceOTF"',  
+  '"WhatsApp Emoji"'  
+  //'"Pixel"','"Facebook"','"OneUI"'
 ];
+
+// ---- Convert emoji to hex sequence (for exclusion matching) ----
+function emojiToHexSequence(emoji) {
+  const codePoints = [];
+  for (const char of emoji) {
+    const cp = char.codePointAt(0);
+    if (cp !== undefined) {
+      codePoints.push(cp.toString(16).toUpperCase());
+    }
+  }
+  return codePoints.join('-');
+}
+
+// ---- Check if emoji is excluded for a given font ----
+function isEmojiExcluded(emoji, fontName, version) {
+  const cleanFont = fontName.replace(/['"]/g, '');
+  const exclusions = exclude_emoji_font[cleanFont];
+  
+  if (!exclusions) return false;
+  
+  // Check block exclusion
+  if (exclusions.blocks?.includes(version)) {
+    console.log(`🚫 BLOCK excluded: ${emoji} [${version}] from ${cleanFont}`);
+    return true;
+  }
+  
+  // Check sequence exclusion
+  const emojiHex = emojiToHexSequence(emoji);
+  if (exclusions.sequences?.includes(emojiHex)) {
+    console.log(`🚫 SEQUENCE excluded: ${emoji} (${emojiHex}) from ${cleanFont}`);
+    return true;
+  }
+  
+  return false;
+}
+
+// ---- Pick a valid random emoji-font combination ----
+function getRandomValidCombo() {
+  let attempts = 0;
+  const maxAttempts = 50000;
+  
+  while (attempts < maxAttempts) {
+    const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
+    const emojiObj = remainingEmojis[poolIndex]; // {emoji: '👰', version: 'v14_0'}
+    const font = emojiFonts[Math.floor(Math.random() * emojiFonts.length)];
+    
+  if (!isEmojiExcluded(emojiObj.emoji, font, emojiObj.version)) {
+      remainingEmojis.splice(poolIndex, 1);
+      console.log(`✅ ${emojiObj.emoji} (${emojiToHexSequence(emojiObj.emoji)}) [${emojiObj.version}] in ${font}`);
+      return {emoji: emojiObj.emoji, font, version: emojiObj.version};
+    }
+    
+    console.log(`❌ Rejected: ${emojiObj.emoji} (${emojiToHexSequence(emojiObj.emoji)}) [${emojiObj.version}] in ${font}`);
+    attempts++;
+  }
+  
+  const emojiObj = remainingEmojis.splice(0, 1)[0] || {emoji: '❓', version: 'unknown'};
+  return {emoji: emojiObj.emoji, font: '"Apple Color Emoji"', version: emojiObj.version};
+}
 
 function getRandomFont() {
   return emojiFonts[Math.floor(Math.random() * emojiFonts.length)];
@@ -32,7 +100,7 @@ function setRandomFonts() {
   });
 }
 
-// ---- Convert emoji string to hex sequence ----
+// ---- Convert emoji string to hex sequence (for tooltip display) ----
 function emojiToHex(emoji) {
   const codePoints = [];
   for (const char of emoji) {
@@ -41,38 +109,36 @@ function emojiToHex(emoji) {
   return codePoints.map(cp => `U+${cp}`).join(' ');
 }
 
-// ---- Create emoji grid ----
+// ---- Create emoji pool with simple flattening ----
+var allEmojis = []; // Now stores {emoji: '👰🏾‍♀️', version: 'v14_0'}
+
 function initContent() {
+  const emojiVersions = {
+    'v1_0': emoji_zwj_v1_0,
+    'v2_0': emoji_zwj_v2_0,
+    'v3_0': emoji_zwj_v3_0,
+    'v4_0': emoji_zwj_v4_0,
+    'v5_0': emoji_zwj_v5_0, 
+    'v11_0': emoji_zwj_v11_0,
+    'v12_0': emoji_zwj_v12_0,
+    'v12_1': emoji_zwj_v12_1,
+    'v13_0': emoji_zwj_v13_0,
+    'v13_1': emoji_zwj_v13_1,
+    'v14_0': emoji_zwj_v14_0,    
+    'v15_0': emoji_zwj_v15_0,
+    'v15_1': emoji_zwj_v15_1,
+    'v16_0': emoji_zwj_v16_0,
+  };
 
-  // ✅ Explicitly reference the named emoji arrays here:
-  const emojiArrays = [
-    emoji_zwj_v1_0,
-    emoji_zwj_v2_0,
-    emoji_zwj_v3_0,
-    emoji_zwj_v4_0,
-    emoji_zwj_v5_0, 
-    emoji_zwj_v11_0,
-    emoji_zwj_v12_0,
-    emoji_zwj_v12_1,
-    emoji_zwj_v13_0,
-    emoji_zwj_v13_1,
-    emoji_zwj_v14_0,    
-    emoji_zwj_v15_0,
-    emoji_zwj_v15_1,
-    emoji_zwj_v16_0,
-    //emoji_zwj_v17_0
-  ];
-
-  emojiArrays.forEach(arr => {
-    if (Array.isArray(arr)) allEmojis = allEmojis.concat(arr);
-  });
-  console.log(allEmojis)
-  if (allEmojis.length === 0) {
-    grid.textContent = "No emoji data found.";
-    return;
+  for (const [version, emojiArray] of Object.entries(emojiVersions)) {
+    if (Array.isArray(emojiArray)) {
+      emojiArray.forEach(emoji => {
+        allEmojis.push({emoji, version});
+      });
+    }
   }
   
-  // Initialize the pool
+  console.log(`✅ Loaded ${allEmojis.length} total emojis with version tags`);
   remainingEmojis = [...allEmojis];
 }
 
@@ -99,7 +165,8 @@ body {
 }
 .emoji-content {
   display: block;
-  font-size: min(19rem,7vh,5rem);
+  font-size: min(7vh, 5rem);
+  line-height: 1 !important
   opacity: 1;
   transform: rotateY(0deg) scale(1);
   transform-style: preserve-3d;
@@ -108,29 +175,36 @@ body {
   cursor: pointer;
   position: relative;
 }
-/* Tooltip styling */
+
 .emoji-content::after {
-  content: attr(data-hex);
+  content: attr(data-tooltip);  /* ✅ Use data-tooltip instead of data-hex */
   position: fixed;
-  top: 10px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   background: rgba(0, 0, 0, 0.95);
   color: white;
   padding: 12px 16px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 12px;  /* ✅ Slightly bigger since it's shorter */
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s;
-  z-index: 10000;
-  font-family: monospace;
+  z-index: 8;
+  font-family: Noto Sans, sans-serif;  /* ✅ Regular font, not monospace */
   box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  text-align: center;
 }
+
 .emoji-content:hover::after {
   opacity: 1;
 }
+
+.emoji-content:hover {
+  z-index: 9;  /* ✅ Make the hovered emoji itself highest */
+}
+  
 @keyframes fade-out-twist {
   0% { opacity: 1; transform: rotateY(0deg) scale(1); }
   100% { opacity: 0; transform: rotateY(180deg) scale(0.7); }
@@ -164,11 +238,11 @@ function getRandomMainColor() {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
-
 let globalBodyBgColor = '';
 
 // ---- Flip animation ----
 function flipCell(span) {
+  console.log("We're flipping");
   span.classList.remove('is-fading-in', 'is-fading-out');
   span.style.removeProperty('transform');
   span.style.removeProperty('opacity');
@@ -186,14 +260,14 @@ function flipCell(span) {
       console.log("🔄 Pool exhausted - resetting with all emojis");
     }
 
-    // Pick random index from remaining pool and REMOVE it
-    const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
-    const newEmoji = remainingEmojis.splice(poolIndex, 1)[0];
-    span.textContent = newEmoji;
-    span.setAttribute('data-hex', emojiToHex(newEmoji));
-    
-    // ✅ Apply random font on each emoji flip
-    span.style.fontFamily = getRandomFont();
+    // ✅ Get random valid emoji-font combo
+    // In both flipCell and initGrid, change how you set the data attributes:
+    const combo = getRandomValidCombo();
+    span.textContent = combo.emoji;
+    span.setAttribute('data-tooltip', `${combo.font.replace(/['"]/g, '')} [${combo.version}]`); // ✅ New simple tooltip
+    span.setAttribute('data-hex', emojiToHex(combo.emoji)); // ✅ Keep for console logging
+    span.style.fontFamily = combo.font;
+
 
     span.style.transform = 'rotateY(180deg) scale(0.7)';
     span.style.opacity = '0';
@@ -214,70 +288,58 @@ function flipCell(span) {
 }
 
 function initGrid() {
+  const grid = document.createElement('div');
+  grid.id = 'emojiGrid';
+  document.body.appendChild(grid);
+  const emojiGrid = document.getElementById('emojiGrid');
+  const bodyElement = document.body;
 
-    const grid = document.createElement('div');
-    grid.id = 'emojiGrid';
-    document.body.appendChild(grid);
- // Select the grid container
-    const emojiGrid = document.getElementById('emojiGrid');
-    const bodyElement = document.body; // Reference to the body for background color
-   
+  console.log(`Total emojis in pool: ${allEmojis.length}`);
 
-    console.log(allEmojis.length)
-
-if (allEmojis.length === 0) {
+  if (allEmojis.length === 0) {
     emojiGrid.textContent = "No ZWJ emojis found in the provided data for the target versions.";
     emojiGrid.style.justifyContent = 'center';
     emojiGrid.style.alignItems = 'center';
     emojiGrid.style.fontSize = '1.5em';
-} else {
-
-
-    // 1. Set the random background color for the <body>
-    globalBodyBgColor = getRandomMainColor(); // Store it globally
+  } else {
+    globalBodyBgColor = getRandomMainColor();
     bodyElement.style.backgroundColor = globalBodyBgColor;
 
-    // 2. Set the random border color for the overall #emojiGrid container
     emojiGrid.style.borderColor = getRandomMainColor();
     emojiGrid.style.zIndex = 100;
     emojiGrid.style.position = 'absolute';
-    const gridSize = 10; // For a 10x10 grid
+    const gridSize = 10;
     const totalCells = gridSize * gridSize;
 
     for (let i = 0; i < totalCells; i++) {
+      const cell = document.createElement('div');
+      cell.classList.add('grid-cell');
 
-        const cell = document.createElement('div');
-        cell.classList.add('grid-cell');
+      const emojiContentSpan = document.createElement('span');
+      emojiContentSpan.classList.add('emoji-content');
 
-        const emojiContentSpan = document.createElement('span');
-        emojiContentSpan.classList.add('emoji-content');
+      // Check if pool is empty, reset if needed
+      if (remainingEmojis.length === 0) {
+        remainingEmojis = [...allEmojis];
+      }
 
-        // Pick an initial random emoji from the pool and remove it
-        if (remainingEmojis.length === 0) {
-          remainingEmojis = [...allEmojis];
-        }
-        const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
-        const initialEmoji = remainingEmojis.splice(poolIndex, 1)[0];
-        emojiContentSpan.textContent = initialEmoji;
-        emojiContentSpan.setAttribute('data-hex', emojiToHex(initialEmoji));
-        
-        // ✅ Set initial random font
-        emojiContentSpan.style.fontFamily = getRandomFont();
+      // ✅ Get random valid emoji-font combo
+      const combo = getRandomValidCombo();
+      emojiContentSpan.textContent = combo.emoji;
+      emojiContentSpan.setAttribute('data-tooltip', `${combo.font.replace(/['"]/g, '')} [${combo.version}]`);      
+      emojiContentSpan.setAttribute('data-hex', `${emojiToHex(combo.emoji)} [${combo.version}]`);
+      emojiContentSpan.style.fontFamily = combo.font;
 
-        // Assign a random pastel background color to the cell
-        cell.style.backgroundColor = getRandomPastelColor();
-        
-        // Assign the cell's border color to match the body's background color
-        cell.style.borderColor = globalBodyBgColor;
+      cell.style.backgroundColor = getRandomPastelColor();
+      cell.style.borderColor = globalBodyBgColor;
 
-        cell.appendChild(emojiContentSpan); // Add the span to the cell
-        emojiGrid.appendChild(cell);
+      cell.appendChild(emojiContentSpan);
+      emojiGrid.appendChild(cell);
 
-        // Schedule the first animation for each cell with a staggered initial delay
-        const initialAnimationDelay = (Math.random() * 80000) + 5000;
-        setTimeout(() => flipCell(emojiContentSpan), initialAnimationDelay);
+      const initialAnimationDelay = (Math.random() * 80000) + 5000;
+      setTimeout(() => flipCell(emojiContentSpan), initialAnimationDelay);
     }
-}
+  }
 }
 
 // ---- Keyboard shortcuts to switch fonts ----
@@ -302,9 +364,9 @@ function jsWait() {
     console.log("🎨 Font controls: Press 1-4 to switch fonts, R for random");
     injectStyle(embeddedCss);
     initContent();
-    initGrid()
+    initGrid();
   }
 }
 
-console.log("insert17.js loaded — waiting for emojiSequenceArraySignal + msucdArraySignal");
+console.log("insert19.js loaded — waiting for emojiSequenceArraySignal + msucdArraySignal");
 jsWait();
