@@ -862,6 +862,16 @@ cherokee, myanmar, tibetan, color emoji, music, bamum, Tai Tham
 }
 
 @font-face {
+    font-family: 'Noto Sans Math Full';
+    src: url('../tff/NotoSansMath-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Two STIX Math';
+    src: url('../fonts/STIXTwoMath-Regular.ttf') format('truetype');
+}
+
+@font-face {
     font-family: 'WhatsApp Emoji';
     src: url('../fonts/WhatsAppEmoji.ttf') format('truetype');
 }
@@ -1292,9 +1302,8 @@ cherokee, myanmar, tibetan, color emoji, music, bamum, Tai Tham
 
 
 .watermark-font {
-    font-family: 'Noto Sans Full', 'Noto Sans', 'Noto Sans Mono', 'Noto Serif', 
-                 'Noto Sans Thai', 'Noto Sans Lao', 'Noto Sans Arabic',
-                 'Noto Sans Symbols', 'Noto Sans Symbols 2','Noto Sans Math', sans-serif;
+    font-family: 'Two STIX Math','Noto Sans Math Full','Noto Sans Full', 
+                 'Noto Sans Thai', 'Noto Sans Lao', 'Noto Sans Arabic','Noto Sans CJK JP';
     /* any other styling you want for your watermarks */
 }
 
@@ -1366,3 +1375,4 @@ body {
     color: #666;
     word-break: break-word;
 }
+
