@@ -1,6 +1,6 @@
 
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols&family=Noto+Sans+Symbols+2&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans&family=Noto+Sans+Math&family=Noto+Sans+Mono&family=Noto+Serif&display=swap');@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols&family=Noto+Sans+Symbols+2&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@100..900&family=Noto+Serif+SC:wght@200..900&family=ZCOOL+QingKe+HuangYou&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Amatic+SC&famiy=Cardo:ital,wght@0,400;0,700;1,400&family=Rubik+Doodle+Shadow&family=Noto+Rashi+Hebrew:wght@100..900&family=Noto+Sans+Hebrew:wght@100..900&family=Noto+Serif+Hebrew:wght@100..900&family=Secular+One&family=Solitreo&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Chathura:wght@100;300;400;700;800&family=Dhurjati&family=Noto+Sans+Telugu:wght@100..900&family=Noto+Serif+Telugu:wght@100..900&display=swap');
@@ -796,6 +796,51 @@ cherokee, myanmar, tibetan, color emoji, music
   font-style: normal;
 }
 
+/* base NOTO */
+
+.noto-sans-math {
+  font-family: "Noto Sans Math", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.noto-sans {
+  font-family: "Noto Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.noto-serif {
+  font-family: "Noto Serif", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.noto-sans-mono {
+  font-family: "Noto Sans Mono", monospace;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+
+
+@font-face {
+    font-family: 'Noto Sans Full';
+    src: url('../tff/NotoSans-Regular.ttf') format('truetype');
+}
+
 @font-face {
     font-family: 'Segoe Emoji';
     src: url('../fonts/segoe-ui-emoji_0.ttf') format('truetype');
@@ -1185,6 +1230,13 @@ cherokee, myanmar, tibetan, color emoji, music
     src: url('../fonts/maya.ttf') format('truetype');
 }
 
+
+.watermark-font {
+    font-family: 'Noto Sans Full', 'Noto Sans', 'Noto Sans Mono', 'Noto Serif', 
+                 'Noto Sans Thai', 'Noto Sans Lao', 'Noto Sans Arabic',
+                 'Noto Sans Symbols', 'Noto Sans Symbols 2','Noto Sans Math', sans-serif;
+    /* any other styling you want for your watermarks */
+}
 
 body {
     font-family: sans-serif;
