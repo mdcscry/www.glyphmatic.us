@@ -151,11 +151,14 @@
 			
 			// Determine generic fallback based on font name
 			const genericFallback = font.includes('Serif') ? 'serif' : 'sans-serif';
-			
+			console.log("Font: " + font)
 			// If it's a Noto Symbols font, prepend Noto Emoji for BW emoji handling
 			if (font.includes('Noto Sans Symbols') //|| font.includes('Symbola')
 				|| font.includes('Noto Sans Symbols 2')) {
-				fontStack = `'Noto Emoji', '${font}', ${genericFallback}`;
+				fontStack = `'Noto Emoji', 'c', ${genericFallback}`;
+			} else if ( font.includes('Symbola-local')) {
+				console.log('in symbola logic')
+				fontStack = `'${font}','Noto Sans Symbols','Noto Sans Symbols 2','Noto Emoji', ${genericFallback}`;				
 			} else {
 				fontStack = `'${font}', ${genericFallback}`;
 			}

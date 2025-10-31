@@ -357,6 +357,9 @@
                         if (font.includes('Noto Sans Symbols') || //font.includes('Symbola') || 
                             font.includes('Noto Sans Symbols 2')) {
                             fontStack = `'Noto Emoji', '${fontName}', ${genericFallback}`;
+                        } else if ( font.includes('Symbola')) {
+				            console.log('in symbola logic')
+				            fontStack = `'Symbola','Noto Sans Symbols','Noto Sans Symbols 2','Noto Emoji', ${genericFallback}`;				
                         } else {
                             fontStack = `'${fontName}', ${genericFallback}`;
                         }
