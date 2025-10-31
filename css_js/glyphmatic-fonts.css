@@ -734,12 +734,12 @@ cherokee, myanmar, tibetan, color emoji, music, bamum, Tai Tham
 
 /* emoji */
 
-.noto-emoji-regular {
+/* .noto-emoji-regular {
   font-family: "Noto Emoji", sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
-}
+} */
 .noto-emoji-bold {
   font-family: "Noto Emoji Bold", sans-serif;
   font-optical-sizing: auto;

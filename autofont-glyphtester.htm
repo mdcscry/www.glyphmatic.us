@@ -354,7 +354,7 @@
                         let fontStack;
                         const genericFallback = font.includes('Serif') ? 'serif' : 'sans-serif';
                         
-                        if (font.includes('Noto Sans Symbols') || font.includes('Symbola') || 
+                        if (font.includes('Noto Sans Symbols') || //font.includes('Symbola') || 
                             font.includes('Noto Sans Symbols 2')) {
                             fontStack = `'Noto Emoji', '${fontName}', ${genericFallback}`;
                         } else {
