@@ -11,7 +11,7 @@ lang_font =[{}]
  block_lang['Ancient Greek Numbers'] = ['symbols2'];
  block_lang['Ancient Symbols'] = ['symbols2'];
  block_lang['Arabic'] = ['arabic'];
- block_lang['Arabic Extended-A'] = ['arabic'];
+ block_lang['Arabic Extended-A'] = ['arabic-reduced'];
  block_lang['Arabic Mathematical Alphabetic Symbols'] = ['math'];
  block_lang['Arabic Presentation Forms-A'] = ['noto-arabic'];
  block_lang['Arabic Presentation Forms-B'] = ['noto-arabic'];
@@ -42,7 +42,7 @@ lang_font =[{}]
  block_lang['Cham'] = ['cham'];
  block_lang['Cherokee'] = ['cherokee'];
  block_lang['Cherokee Supplement'] = ['cherokee'];
- block_lang['Chess Symbols'] = ['symbols'];
+ block_lang['Chess Symbols'] = ['symbols2'];
 // block_lang['CJK_Compatibility'] = ['chinese-simplified'];
 // block_lang['CJK_Compatibility_Forms'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
 // block_lang['CJK_Compatibility_Ideographs'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
@@ -88,7 +88,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Ethiopic Supplement'] = ['ethiopic'];
  block_lang['General Punctuation'] = ['symbols'];
  block_lang['Geometric Shapes'] = ['symbols2-symbola'];
- block_lang['Geometric Shapes Extended'] = ['math-symbola'];
+ block_lang['Geometric Shapes Extended'] = ['symbols2-symbola'];
  block_lang['Georgian'] = ['georgian'];
  block_lang['Georgian Extended'] = ['georgian'];
  block_lang['Georgian Supplement'] = ['georgian'];
@@ -262,7 +262,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Tai Xuan Jing Symbols'] = ['symbols2-symbola'];
  block_lang['Takri'] = ['takri'];
  block_lang['Tamil'] = ['tamil'];
- block_lang['Tamil Supplement'] = ['tamil'];
+ block_lang['Tamil Supplement'] = ['tamil-supplement'];
  block_lang['Tangut'] = ['tangut'];
  block_lang['Tangut Components'] = ['tangut'];
  block_lang['Telugu'] = ['telugu'];
@@ -271,7 +271,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Tibetan'] = ['tibetan'];
  block_lang['Tifinagh'] = ['tifinagh'];
  block_lang['Tirhuta'] = ['tirhuta'];
- block_lang['Transport and Map Symbols'] = ['emoji-bw'];
+ block_lang['Transport and Map Symbols'] = ['symbols2-symbola'];
  block_lang['Ugaritic'] = ['ugaritic'];
  block_lang['Unified Canadian Aboriginal Syllabics'] = ['canadianaboriginal'];
   block_lang['Unified Canadian Aboriginal Syllabics Extended'] = ['canadianaboriginal'];
@@ -694,6 +694,11 @@ lang_font['bengali'] = [
   "Noto Serif Bengali",
   "Tiro Bangla"
 ]
+
+lang_font['tamil-supplement'] = [
+  "Noto Sans Tamil Supplement"
+]
+
 lang_font['tamil'] = [
   "Anek Tamil",
   "Arima",
@@ -717,6 +722,18 @@ lang_font['noto-arabic'] = [
   "Noto Naskh Arabic",
   "Noto Sans Arabic",
 ]
+
+lang_font['arabic-reduced'] = [
+  ".SF Arabic",
+  "Harmattan",
+  "Lateef",
+  "Noto Kufi Arabic",
+  "Noto Naskh Arabic",
+  "Noto Nastaliq Urdu",
+  "Noto Sans Arabic",
+  "Scheherazade New"   
+]
+
 lang_font['arabic'] = [
   "Baloo Bhaijaan 2",
   "Beiruti",

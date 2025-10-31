@@ -138,7 +138,8 @@
 			const genericFallback = font.includes('Serif') ? 'serif' : 'sans-serif';
 			
 			// If it's a Noto Symbols font, prepend Noto Emoji for BW emoji handling
-			if (font.includes('Noto Sans Symbols') || font.includes('Symbola')) {
+			if (font.includes('Noto Sans Symbols') || font.includes('Symbola')
+				|| font.includes('Noto Sans Symbols 2')) {
 				fontStack = `'Noto Emoji', '${font}', ${genericFallback}`;
 			} else {
 				fontStack = `'${font}', ${genericFallback}`;

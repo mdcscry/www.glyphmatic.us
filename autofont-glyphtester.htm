@@ -187,15 +187,29 @@
             document.head.appendChild(link);
         }
 
-
         function attach_local_font(font){
-            console.log('in attach local font')
             font = font.split("-")[0];
             const font_formatted = font.replace(/ /g,"");
             const style = document.createElement('style');
             style.textContent = `@font-face {font-family: "${font}"; src: url('/tff/${font_formatted}-Regular.ttf');}`;
-            console.log(style.textContent)
             document.head.appendChild(style);
+        }
+
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                block: params.get('block'),
+                page: params.get('page')
+            };
+        }
+
+        function setUrlParams(block, page) {
+            const params = new URLSearchParams();
+            if (block) params.set('block', block);
+            if (page !== null && page !== '') params.set('page', page);
+            
+            const newUrl = `${window.location.pathname}?${params.toString()}`;
+            window.history.replaceState({}, '', newUrl);
         }
 
         function initializeTester() {
@@ -206,6 +220,9 @@
             
             const excludedGlyphs = new Set();
             const FONTS_PER_PAGE = 10;
+
+            // Get URL parameters
+            const urlParams = getUrlParams();
 
             // Populate block dropdown
             blocks.forEach(block => {
@@ -223,6 +240,9 @@
                 // Clear exclusions when block changes
                 excludedGlyphs.clear();
                 exclusionList.value = '';
+                
+                // Update URL (clear page when block changes)
+                setUrlParams(selectedBlock, '');
                 
                 if (!selectedBlock) {
                     fontPageSelect.disabled = true;
@@ -256,6 +276,9 @@
                 const selectedBlock = blockSelect.value;
                 const pageIndex = parseInt(this.value);
                 
+                // Update URL with both block and page
+                setUrlParams(selectedBlock, pageIndex);
+                
                 if (!selectedBlock || isNaN(pageIndex)) {
                     output.innerHTML = '';
                     return;
@@ -282,6 +305,19 @@
                 const startIdx = pageIndex * FONTS_PER_PAGE;
                 const pageFonts = allFonts.slice(startIdx, startIdx + FONTS_PER_PAGE);
                 
+                // Load all fonts for this page once
+                pageFonts.forEach(font => {
+                    const fontName = font.split("-")[0];
+                    if (font.includes("-EA")) {
+                        // attach_an_early_access_font(font); // Not defined yet
+                        console.warn('Early access font not implemented:', font);
+                    } else if (font.includes("-local")) {
+                        attach_local_font(font);
+                    } else {
+                        attach_goog_font(font);
+                    }
+                });
+                
                 glyphs.forEach((codePoint, idx) => {
                     const char = String.fromCodePoint(parseInt(codePoint, 16));
                     const description = descriptions[idx] || '';
@@ -296,18 +332,6 @@
                     
                     const samples = document.createElement('div');
                     samples.className = 'font-samples';
-  
-                    pageFonts.forEach(font => {
-                        console.log('in the font loader')
-                        const fontName = font.split("-")[0];
-                        if (font.includes("-EA")) {
-                            attach_an_early_access_font(font);
-                        } else if (font.includes("-local")) {
-                            attach_local_font(font);
-                        } else {
-                            attach_goog_font(font);
-                        }
-                    });
 
                     pageFonts.forEach(font => {
                         const sample = document.createElement('div');
@@ -324,8 +348,20 @@
                         
                         const charSpan = document.createElement('span');
                         charSpan.className = 'glyph-char';
+                        
+                        // Build font stack with Noto Emoji prefix for symbol fonts
                         const fontName = font.split("-")[0];
-                        charSpan.style.fontFamily = `'${fontName}', sans-serif`;
+                        let fontStack;
+                        const genericFallback = font.includes('Serif') ? 'serif' : 'sans-serif';
+                        
+                        if (font.includes('Noto Sans Symbols') || font.includes('Symbola') || 
+                            font.includes('Noto Sans Symbols 2')) {
+                            fontStack = `'Noto Emoji', '${fontName}', ${genericFallback}`;
+                        } else {
+                            fontStack = `'${fontName}', ${genericFallback}`;
+                        }
+                        
+                        charSpan.style.fontFamily = fontStack;
                         charSpan.textContent = char;
                         
                         const fontLabel = document.createElement('div');
@@ -363,6 +399,43 @@
                     exclusionList.value = '';
                 } else {
                     exclusionList.value = glyphArray.map(g => `,'${g}'`).join('');
+                }
+            }
+
+            // Restore selections from URL after event handlers are set up
+            if (urlParams.block && blocks.includes(urlParams.block)) {
+                blockSelect.value = urlParams.block;
+                
+                // Manually trigger the block change logic
+                const selectedBlock = urlParams.block;
+                const fontCategories = block_lang[selectedBlock] || [];
+                let allFonts = [];
+                fontCategories.forEach(category => {
+                    if (lang_font[category]) {
+                        allFonts = allFonts.concat(lang_font[category]);
+                    }
+                });
+                allFonts = [...new Set(allFonts)];
+                
+                const pageCount = Math.ceil(allFonts.length / FONTS_PER_PAGE);
+                fontPageSelect.innerHTML = '<option value="">Select font page...</option>';
+                for (let i = 0; i < pageCount; i++) {
+                    const start = i * FONTS_PER_PAGE + 1;
+                    const end = Math.min((i + 1) * FONTS_PER_PAGE, allFonts.length);
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `Fonts ${start}-${end} (of ${allFonts.length})`;
+                    fontPageSelect.appendChild(option);
+                }
+                fontPageSelect.disabled = false;
+                
+                // Now select and render the page if specified
+                if (urlParams.page !== null) {
+                    const pageIndex = parseInt(urlParams.page);
+                    if (!isNaN(pageIndex) && pageIndex >= 0 && pageIndex < pageCount) {
+                        fontPageSelect.value = pageIndex;
+                        renderGlyphs(selectedBlock, pageIndex);
+                    }
                 }
             }
         }
