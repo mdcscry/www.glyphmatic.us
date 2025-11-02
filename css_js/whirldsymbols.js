@@ -83,7 +83,7 @@ myFontSet[23]=['x0AD0','Arial Unicode MS','Code2000','Shruti','Noto Sans Gujarat
 myFontSet[24]=['x006F;&#x030A;&#x006D','Akshar Unicode','Siddhanta']; // Latin Om (composite)
 myFontSet[25]=['x0A74','Arial Unicode MS','Code2000','Raavi','Noto Sans Gurmukhi','Noto Serif Gurmukhi']; // Ik Onkar (Gurmukhi)
 myFontSet[26]=['x1F549','Symbola','Noto Sans Symbols']; // Om symbol
-myFontSet[27]=['x0950','Akshar Unicode','Annapurna SIL','Aparajita','Arial Unicode MS','Code2000','Kokila','Mangal','Siddhanta','Utsaah']; // Devanagari Om
+myFontSet[27]=['x0950','Akshar Unicode','Annapurna SIL','Aparajita','Arial Unicode MS','Code2000','Kokila','Mangal','Siddhanta','Utsaah','Jaini','Jaini Purva']; // Devanagari Om
 
 // Tibetan sacred symbols
 myFontSet[28]=['x0FD5','Siddhanta','Tibetan Machine Uni','DDC_Uchen','Kailasa','Qomolangma-Woodblock','Qomolangma-Art','Qomolangma-Edict','BabelStoneTibetan']; // Tibetan right-facing swastika
@@ -347,8 +347,11 @@ myFontSet[226]=['x1F300','Noto Emoji','Quivira','Symbola']; // Spiral (cham)
 myFontSet[227]=['x1F300','Noto Emoji','Quivira','Symbola','Segoe UI Symbol']; // Cyclone 
 myFontSet[228]=['x267E','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','Quivira','Symbola']; // Permanent Paper Sign for spinners
 myFontSet[229]=['x168D0','Noto Sans Bamum']; // Bamum Spiral for Spinners
-//myFontSet[230]=['x1AA4','Noto Sans Tai Tham']; // Thai Tham Spiral for Spinners
-
+//myFontSet[230]=['x1B7F','Noto Sans Balinese','Noto Serif Balinese'] // Balinese OM
+//myFontSet[231]=['x1AA4','Noto Sans Tai Tham']; // Thai Tham Spiral for Spinners
+//myFontSet[232]=['x11A9E','Noto Sans Soyombo']; //SOYOMBO HEAD MARK WITH MOON AND SUN AND TRIPLE FLAME
+//myFontSet[233]=['x11A9F','Noto Sans Soyombo']; //SOYOMBO HEAD MARK WITH MOON AND SUN AND FLAME
+//myFontSet[234]=['x11AA0','Noto Sans Soyombo']; //SOYOMBO HEAD MARK WITH MOON AND SUN
 
 var glyphDescriptions = [];
 
@@ -586,7 +589,49 @@ glyphDescriptions[226] = 'Spiral (Cham)'; //for spinners
 glyphDescriptions[227] = 'Cyclone'; // for spinners
 glyphDescriptions[228] = 'Permanent Paper Sign';//for spinners
 glyphDescriptions[229]=  'Bamum Letter'; // Bamum Spiral for Spinners
-//glyphDescriptions[230]='Thai Tham Letter'; // Thai Tham Spiral for Spinners
+glyphDescriptions[230]=  'Balinese OM' // Balinese OM
+glyphDescriptions[231]=  'Thai Tham Letter'; // Thai Tham Spiral for Spinners
+//glyphDescriptions[232]='HEAD MARK WITH MOON AND SUN AND TRIPLE FLAME'; //Soyombo
+//glyphDescriptions[233]='SOYOMBO HEAD MARK WITH MOON AND SUN AND FLAME'; //Soyombo
+//glyphDescriptions[234]='SOYOMBO HEAD MARK WITH MOON AND SUN'; //Soyombo
+// MENORAH WITH NINE BRANCHES 1F54E
+// Place of Worship 1F6D0
+
+//'xaa05;&#xaa4c' //cham om
+
+//'xaa00;&#xaa2f;&#xaa31;&#xaa4c; //cham om 2
+//'x1025;&#x0x102F;&#x1036; //Myanmar om
+//x11103 + 0x1110E + 0x11100 //chakma om
+//x11350; //Grantha Om 𑍐
+//xA600;&#xA62F;&#xA631;&#xA98C; //Cham Om ꨀꨯꨱꩌ
+//x1A52;&#x1A74; //Tai Lanna Om ᩒᩴ
+//x11F10;&#x11F00; //Kawi Om 𑼐𑼀
+//x1C23;&#x1C28;&#x1C35; //Lepcha Om ᰣᰨᰵ
+//x1900;&#x1925;&#x1931; //Limbu Om ᤀᤥᤱ
+//xAAF2; //Meitei Mayek Om ꫲ
+//x1160C;&#x1163D; //Modi Om 𑘌𑘽
+//x0B13;&#x200D;&#x0B01; //Odia Om ଓ‍ଁ
+//xA85D;&#xA861;&#xA84F; //Phags-pa Om ꡝꡡꡏ
+//x11449; //Pracalit Om 𑑉 Newa
+//x11688;&#x116AB; //Takri Om 𑚈𑚫
+//x1158C;&#x115BC; //Siddham Om 𑖌𑖼
+//x111C4; //Sharada Om 𑇄
+//x114C7; //Tirhuta Om 𑓇
+//x11A00;&#x11A06;&#x11A35; //Zanabazar Square Om 𑨀𑨆𑨵
+//x17A2;&#x17C6; //Khmer Om ឱំ
+//x17DA; //Khmer Sign Avakrahasanya ៚
+//x1B87;&#x1B80; //Sundanese Om ᮇᮀ
+//xE42;&#xE2D;&#xE4D; //Thai Om โอํ
+//xE5B; //Thai Character Khomut ๛
+//x5535; //Chinese/Japanese Om 唵
+//xC634; //Korean Om 옴
+//x963F;&#x5443; //Japanese A-Un 阿吽
+//x30AA;&#x30FC;&#x30E0; //Japanese Om オーム
+//x1880;&#x1823; //Manchu Om ᢀᠣ (mongolian)
+//x1880;&#x1823;&#x1838;&#x1820; //Mongolian Om ᢀᠣᠸᠠ
+//x787;&#x7AE;&#x789; //Thaana Om އޮމް
+//x118FF; //Warang Citi Om 𑣿
+//&#xA98E;&#xA9B4;&#xA980; //Javanese Om ꦎꦴꦀ
 
 
 var whirldArraySignal = [];

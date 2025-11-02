@@ -53,7 +53,7 @@
 				z-index: 1;
 			}
 
-			body { background-color: black;color: lightgray }
+			body { background-color: black;color: orange }
 
 			/* google fonts @import version doesn't have complete coverage */
 			@font-face {
@@ -105,7 +105,7 @@
 
 		// SINGLE GLYPH TEST MODE
 		var TEST_MODE = false;
-		var TEST_GLYPH = "1f53b";  // Change this to the hex code you want to test
+		var TEST_GLYPH = "1F383";  // Change this to the hex code you want to test
 		var TEST_BLOCK = "Miscellaneous Symbols and Pictographs";  // Change this to the block name
 
 		var cssImportRule = document.createElement('style');
@@ -135,16 +135,15 @@
 			cssImportStyle.insertRule(newRule,cssImportRules.length);	
 		}
 
-        function attach_local_font(font){
-            console.log('in attach local font')
-            font = font.split("-")[0];
-            const font_formatted = font.replace(/ /g,"");
-            const style = document.createElement('style');
-            style.textContent = `@font-face {font-family: "${font}"; src: url('/tff/${font_formatted}-Regular.ttf');}`;
-            console.log(style.textContent)
-            document.head.appendChild(style);
-        }
-
+		function attach_local_font(font, directory = 'tff') {
+			console.log('in attach local font');
+			const font_formatted = font.replace(/ /g, "");
+			const style = document.createElement('style');
+			const filename = directory === 'tff' ? `${font_formatted}-Regular.ttf` : `${font_formatted}.ttf`;
+			style.textContent = `@font-face {font-family: "${font}"; src: url('/${directory}/${filename}');}`;
+			console.log(style.textContent);
+			document.head.appendChild(style);
+		}
 
 		function attach_font_family(font, spid){
 			let fontStack;
@@ -205,11 +204,11 @@
 
 				font_du_jour = get_more_spectacular(block)
 				
-				if (font_du_jour.split("-")[1]=='EA'){
-					attach_an_early_access_font(font_du_jour)
-				} else if (font_du_jour.split("-")[1]=='local'){
-					//console.log("in")
-					attach_local_font(font_du_jour.split("-")[0])	
+				if (font_du_jour.split("-")[1]=='local'){
+					const parts = font_du_jour.split("-");
+					const fontName = parts[0];
+					const directory = parts[2] || 'tff'; // defaults to 'tff' if not specified
+					attach_local_font(fontName, directory);
 				} else {
 					attach_goog_font(font_du_jour)	
 				}	
@@ -239,10 +238,15 @@
 	 			return(font)	
 	 	}	 		
 
-
-
 	 	function attach_a_local_file_font(font){
-
+			if (font_du_jour.split("-")[1] == 'local') {
+				const parts = font_du_jour.split("-");
+				const fontName = parts[0];
+				const directory = parts[2] || 'tff'; // defaults to 'tff' if not specified
+				attach_local_font(fontName, directory);
+			} else {
+				attach_goog_font(font_du_jour);
+			}
 	 	}
 
 

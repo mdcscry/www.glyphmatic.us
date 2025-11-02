@@ -93,9 +93,9 @@ function initGrid() {
     // Random 3D effects (uniform for all spirals)
     const strokeWidth = Math.floor(Math.random() * 5) + 2; // 2-6px
     const strokeColor = colors[Math.floor(Math.random() * colors.length)];
-    const shadowOffsetX = Math.floor(Math.random() * 10) - 5; // -5 to 5px
-    const shadowOffsetY = Math.floor(Math.random() * 10) - 5;
-    const shadowBlur = Math.floor(Math.random() * 8) + 3; // 3-10px
+    const shadowOffsetX = Math.floor(Math.random() * 5) - 1; // -5 to 5px
+    const shadowOffsetY = Math.floor(Math.random() * 5) - 1;
+    const shadowBlur = Math.floor(Math.random() * 0) + 1; // 3-10px
     const shadowColor = colors[Math.floor(Math.random() * colors.length)];
     const textShadow = `${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px ${shadowColor}, ${shadowOffsetX*2}px ${shadowOffsetY*2}px ${shadowBlur*2}px ${shadowColor}`;
     

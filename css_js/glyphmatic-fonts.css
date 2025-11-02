@@ -25,7 +25,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Anek+Kannada&family=Baloo+Tamma+2&family=Benne&family=Hubballi&family=Noto+Sans+Kannada&family=Noto+Serif+Kannada&family=Padyakke+Expanded+One&family=Tiro+Kannada&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro&family=Metal&family=Moul&family=Noto+Sans+Khmer&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Abyssinica+SIL&family=Noto+Sans+Armenian&family=Noto+Sans+Ethiopic&family=Noto+Sans+Georgian&family=Noto+Serif+Armenian&family=Noto+Serif+Ethiopic&family=Noto+Serif+Georgian&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai&family=Noto+Serif+Thai&family=Prompt&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Explora&family=Noto+Sans+Cherokee:wght@100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar&family=Noto+Serif+Myanmar&family=Padauk&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Jomolhari&family=Noto+Sans+Marchen&family=Noto+Sans+Zanabazar+Square&family=Noto+Serif+Tibetan:wght@100..900&family=Uchen&display=swap');
@@ -33,11 +32,400 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Music&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bamum:wght@400..700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tai+Tham&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Balinese&family=Noto+Serif+Balinese&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tai+Tham&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jaini&family=Jaini+Purva&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kings&family=Puppies+Play&family=Quintessential&family=Tangerine&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Grantha&family=Noto+Serif+Grantha&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mingzat&family=Namdhinggo&family=Noto+Sans+Kawi&family=Noto+Sans+Lepcha&family=Noto+Sans+Limbu&family=Noto+Sans+Meetei+Mayek&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Modi&family=Noto+Sans+Newa&family=Noto+Sans+PhagsPa&family=Noto+Sans+Siddham&family=Noto+Sans+Takri&family=Noto+Sans+Tirhuta&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anek+Odia&family=Baloo+Bhaina+2&family=Noto+Sans+Oriya&family=Noto+Serif+Oriya&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Zanabazar+Square&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fasthand&family=Moulpali&family=Nokora&family=Noto+Sans+Khmer&family=Noto+Serif+Khmer:wght@100..900&family=Taprom&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Sundanese&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Athiti:wght@200;300;400;500;600;700&family=Charm&family=Fahkwang:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&family=Kodchasan:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Sans+Thai&family=Noto+Serif+Thai&family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&family=Noto+Sans+KR&family=Noto+Sans+SC&family=Noto+Serif+JP&family=Noto+Serif+KR&family=Noto+Serif+SC&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Javanese&family=Noto+Sans+Mongolian&family=Noto+Sans+Soyombo&family=Noto+Sans+Thaana&family=Noto+Sans+Warang+Citi&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&family=Kaisei+Opti&family=Shippori+Mincho+B1&family=Yuji+Boku&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala&display=swap');
 
 /* symbols,chinese, hebrew, telugu, malayalam, bengali, malayalam, gurmurkhi, gujarati, arabic, korean, gurmukhi, sharada
 ,cham, emoji, devanagari, marchen, vai, avestan, yi, lao, osmanya, kannada, khmer, ethiopic, armenian, georgian, thai
-cherokee, myanmar, tibetan, color emoji, music, bamum, Tai Tham
- 
+cherokee, myanmar, tibetan, color emoji, music, bamum, balinse, tai tham, jain, fancy latin 
+grantha lepcha kawi limbu Meitei-Mayek modi newa phagpa siddham takri tirhuta oriya zanabazar khmer sundanese
+thai chinese korean japanese mongolian thaana warangciti javanese soyombo japanese(special) sinhala
+
+/* Sinhala */
+
+.noto-sans-sinhala {
+  font-family: "Noto Sans Sinhala", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Manchu Mongolian Thaana Warangciti Javanese Soyombo */
+
+.noto-sans-mongolian {
+  font-family: "Noto Sans Mongolian", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  transform: scale(0.6);
+  transform-origin: bottom center;
+  writing-mode: vertical-rl;  
+}
+
+.noto-sans-soyombo {
+  font-family: "Noto Sans Soyombo", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-thaana {
+  font-family: "Noto Sans Thaana", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-warang-citi {
+  font-family: "Noto Sans Warang Citi", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-javanese {
+  font-family: "Noto Sans Javanese", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+/* Chinese Korean Japanese */
+
+.yuji-boku {
+  font-family: "Yuji Boku", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.shippori-mincho-b1 {
+  font-family: "Shippori Mincho B1", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.hachi-maru-pop {
+  font-family: "Hachi Maru Pop", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+.kaisei-opti {
+  font-family: "Kaisei Opti", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Thai */
+
+.noto-serif-thai {
+  font-family: "Noto Serif Thai", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-thai {
+  font-family: "Noto Sans Thai", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.prompt {
+  font-family: "Prompt", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.charm {
+  font-family: "Charm", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.fahkwang {
+  font-family: "Fahkwang", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.athiti {
+  font-family: "Athiti", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.kodchasan {
+  font-family: "Kodchasan", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* sundanese */
+
+.noto-sans-sundanese {
+  font-family: "Noto Sans Sundanese", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* khmer */
+
+.taprom {
+  font-family: "Taprom", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.moulpali {
+  font-family: "Moulpali", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.fasthand {
+  font-family: "Fasthand", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.nokora {
+  font-family: "Nokora", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-serif-khmer {
+  font-family: "Noto Serif Khmer", serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.noto-sans-khmer {
+  font-family: "Noto Sans Khmer", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+/* Zanabazar */
+
+.noto-sans-zanabazar-square-regular {
+  font-family: "Noto Sans Zanabazar Square", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Oriya (odia) */
+
+.anek-odia {
+  font-family: "Anek Odia", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+
+}
+
+.baloo-bhaina-2 {
+  font-family: "Baloo Bhaina 2", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-serif-oriya {
+  font-family: "Noto Serif Oriya", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-oriya {
+  font-family: "Noto Sans Oriya", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* modi newa PhagPa siddham takri tirhuta */
+.noto-sans-phagspa {
+  font-family: "Noto Sans PhagsPa", sans-serif;
+  font-weight: 400;
+  transform: scale(0.7);
+  transform-origin:  bottom center;
+  font-style: normal;
+  writing-mode: vertical-rl;
+}
+
+.noto-sans-newa {
+  font-family: "Noto Sans Newa", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-modi {
+  font-family: "Noto Sans Modi", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-takri {
+  font-family: "Noto Sans Takri", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-siddham {
+  font-family: "Noto Sans Siddham", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-tirhuta {
+  font-family: "Noto Sans Tirhuta", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/*  Meitei Mayek */
+
+.noto-sans-meetei {
+  font-family: "Noto Sans Meetei Mayek", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Limbu */
+
+.noto-sans-limbu {
+  font-family: "Noto Sans Limbu", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.namdhinggo {
+  font-family: "Namdhinggo", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Kawi */
+
+.noto-sans-kawi {
+  font-family: "Noto Sans Kawi", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Lepcha */
+
+.mingzat {
+  font-family: "Mingzat", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-lepcha {
+  font-family: "Noto Sans Lepcha", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Grantha */
+
+.noto-serif-grantha {
+  font-family: "Noto Serif Grantha", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-grantha {
+  font-family: "Noto Sans Grantha", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Fancy Latin */
+
+.puppies-play {
+  font-family: "Puppies Play", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.tangerine {
+  font-family: "Tangerine", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.quintessential {
+  font-family: "Quintessential", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.kings {
+  font-family: "Kings", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+/* Jain - Devanagari */
+.jaini-purva {
+  font-family: "Jaini Purva", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.jaini {
+  font-family: "Jaini", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Tai Tham */
+
+.noto-sans-tai-tham {
+  font-family: "Noto Sans Tai Tham", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Balinese */
+ .noto-serif-balinese {
+  font-family: "Noto Serif Balinese", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-balinese {
+  font-family: "Noto Sans Balinese", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
 
 /* Bamum */
 
@@ -59,14 +447,14 @@ cherokee, myanmar, tibetan, color emoji, music, bamum, Tai Tham
 
 /* Music */
 
-.noto-music-regular {
+.noto-music {
   font-family: "Noto Music", sans-serif;
   font-weight: 400;
   font-style: normal;
 }
 
 /* Emoji */
-.noto-color-emoji-regular {
+.noto-color-emoji {
   font-family: "Noto Color Emoji", sans-serif;
   font-weight: 400;
   font-style: normal;
@@ -734,12 +1122,12 @@ cherokee, myanmar, tibetan, color emoji, music, bamum, Tai Tham
 
 /* emoji */
 
-/* .noto-emoji-regular {
+.noto-emoji-regular {
   font-family: "Noto Emoji", sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
-} */
+}
 .noto-emoji-bold {
   font-family: "Noto Emoji Bold", sans-serif;
   font-optical-sizing: auto;
@@ -854,6 +1242,26 @@ cherokee, myanmar, tibetan, color emoji, music, bamum, Tai Tham
     "wdth" 100;
 }
 
+
+@font-face {
+    font-family: 'Myanmar Taungyi';
+    src: url('../fonts/MyanmarTaungyi.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans Tai Lam Full';
+    src: url('../tff/NotoSansTaiTham-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Serif Gujarati Full';
+    src: url('../tff/NotoSerifGujarati-Regular.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Noto Sans Gujarati Full';
+    src: url('../tff/NotoSansGujarati-Regular.ttf') format('truetype');
+}
+
 @font-face {
     font-family: 'Noto Sans Full';
     src: url('../tff/NotoSans-Regular.ttf') format('truetype');
@@ -901,12 +1309,12 @@ cherokee, myanmar, tibetan, color emoji, music, bamum, Tai Tham
 
 @font-face {
     font-family: 'Fluent Emoji HC';
-    src: url('../fonts/FluentEmojiHighContrast.ttf') format('truetype');
+    src: url('../fonts/FluenEmojiHC.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'Fluent Emoji INV HC';
-    src: url('../fonts/FluentEmojiHighContrastInverted.ttf') format('truetype');
+    src: url('../fonts/FluentEmojiINVHC.ttf') format('truetype');
 }
 
 @font-face {
@@ -1299,6 +1707,7 @@ cherokee, myanmar, tibetan, color emoji, music, bamum, Tai Tham
 }
 
 
+
 .watermark-font {
     font-family: 'Two STIX Math','Noto Sans Math Full','Noto Sans Full', 
                  'Noto Sans Thai', 'Noto Sans Lao', 'Noto Sans Arabic','Noto Sans CJK JP';
@@ -1337,10 +1746,18 @@ body {
     background: #2a2a2a;
     border-radius: 4px;
     min-width: 60px;
+    font-size: 5vw !important; 
+}
+
+.glyph-sample .glyph-char {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
 }
 
 .glyph-char {
-    font-size: 36px;
+    font-size: 48px;
     display: block;
     margin-bottom: 3px;
 }
@@ -1373,4 +1790,29 @@ body {
     color: #666;
     word-break: break-word;
 }
+
+.ue5b {
+  transform: rotate(-90deg);
+  display: inline-block;  
+  transform-origin: 35% 40%;
+}
+
+.u17da {
+  transform: rotate(-90deg)  scale(0.8);
+  display: inline-block;
+  transform-origin: 35% 40%;
+}
+
+.u30aa {
+  letter-spacing: -0.2em;
+  white-space: nowrap !important;
+  display: inline-block;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+.u0d95, .u787, .u006f, .u963f, .ue42{
+  letter-spacing: -.1rem;
+}
+
 
