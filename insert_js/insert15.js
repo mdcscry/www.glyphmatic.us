@@ -250,7 +250,6 @@ function initBraid() {
             
             var glyph = getRandomGlyph();
             cell.style.fontFamily = glyph.font;
-            cell.style.fontVariantEmoji = 'text';
             cell.innerHTML = glyph.char;
             
             strip.appendChild(cell);

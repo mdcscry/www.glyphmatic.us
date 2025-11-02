@@ -108,7 +108,6 @@ function setRandomGlyph(spanElement) {
     var randomFont = fontList[Math.floor(Math.random() * fontList.length)];
     
     spanElement.style.fontFamily = randomFont;
-    spanElement.style.fontVariantEmoji = 'text';
     spanElement.innerHTML = parseCodepoint(codepoint);
     
     // Tooltip

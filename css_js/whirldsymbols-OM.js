@@ -168,7 +168,7 @@ glyphDescriptions[43] = 'Thaana Om (އޮމް)';
 glyphDescriptions[44] = 'Warang Citi Om (𑣿)';
 glyphDescriptions[45] = 'Javanese Om (ꦎꦴꦀ)';
 glyphDescriptions[46] = 'Sinhala Om (ඕම්)';
-glyphDescriptions[46] = 'Sinhala Om (ඕම්)';
+glyphDescriptions[47] = 'Sinhala Om (ඕම්)';
 glyphDescriptions[48] = 'Tamil Om (special size';
 
 const defaultMaskStyle = {
@@ -290,7 +290,7 @@ const outlierDefinitions = [
         id: 'LowCenter-Standard-55vw', // Ex. Standard size, dropped down
         maskSize: '55vw',
         maskYPosition: '71%',
-        Xposition: '50%',
+        maskXposition: '50%',
         appliesToGlyphIndices: [1, 22, 25, 27, 28, 30]
     },
     {
