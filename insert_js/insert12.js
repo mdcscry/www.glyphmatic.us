@@ -19,17 +19,30 @@ document.getElementsByTagName('body')[0].appendChild(scriptCSS);
 
 // Wait for all required signals
 function jsWait() {
-    if (typeof whirldArraySignal == "undefined" || 
-        typeof msucdArraySignal == "undefined" || 
+    if (typeof whirldArraySignal == "undefined" ||
+        typeof msucdArraySignal == "undefined" ||
         typeof signalArray == "undefined") {
         window.setTimeout(jsWait, 100);
     } else {
-        initDiv();
-        initStyle();
-        initContent();
-        startTimers();
+        console.log("1. All custom JS signals are ready. Waiting for web fonts...");
+        document.fonts.ready.then(function () {
+            console.log("2. SUCCESS: document.fonts.ready resolved. All web fonts should now be loaded.");
+            initDiv();
+            initStyle();
+            initContent(); // This will call setRandomGlyph
+            startTimers();
+            console.log("3. initContent and timers started.");
+        }).catch(function (error) {
+            console.error("ERROR: document.fonts.ready rejected:", error);
+            console.warn("Proceeding anyway, but web fonts might not be available.");
+            initDiv();
+            initStyle();
+            initContent();
+            startTimers();
+        });
     }
 }
+
 
 function initDiv() {
     for (var i = 1; i <= divCounter; i++) {
@@ -106,8 +119,37 @@ function setRandomGlyph(spanElement) {
     var codepoint = myFontSet[glyphIndex][0];
     var fontList = myFontSet[glyphIndex].slice(1);
     var randomFont = fontList[Math.floor(Math.random() * fontList.length)];
-    
-    spanElement.style.fontFamily = randomFont;
+
+    // --- CRITICAL INSPECTION BLOCK ---
+    if (randomFont.includes('Noto Sans Symbols 2')) { // Use includes to catch subtle variants if any
+        console.groupCollapsed(">>> DEBUG: Inspecting problematic font string: '" + randomFont + "' <<<");
+        console.log("Actual string length:", randomFont.length);
+        console.log("Does it exactly match 'Noto Sans Symbols 2'?", randomFont === 'Noto Sans Symbols 2');
+
+        let charCodeString = '';
+        for (let i = 0; i < randomFont.length; i++) {
+            charCodeString += `${randomFont[i]}:${randomFont.charCodeAt(i)} `;
+        }
+        console.log("Char codes (char:code):", charCodeString);
+        console.groupEnd();
+    }
+
+
+
+
+    let veryCleanedFontName = randomFont.replace(/[^\w\s-]/g, '').replace(/\s+/g, ' ').trim();
+    console.log('this should have Noto Sans Symbols 2 in it: '+randomFont)
+
+
+            // Check if the problematic font is selected
+    if (randomFont === "Noto Sans Symbols 2") {
+        spanElement.classList.add('noto-sans-symbols-2'); // Apply the CSS class
+        spanElement.style.fontFamily = ''; // Ensure no conflicting inline style
+    } else {
+        spanElement.style.fontFamily = randomFont; // For all other fonts, use inline style
+    }
+    //spanElement.style.fontFamily = veryCleanedFontName;
+    console.log('This is the value of spanElement.style.fontFamily: ' + spanElement.style.fontFamily)
     spanElement.innerHTML = parseCodepoint(codepoint);
     
     // Tooltip

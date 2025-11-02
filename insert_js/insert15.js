@@ -249,7 +249,13 @@ function initBraid() {
             cell.style.color = mycolors[colorIdx];
             
             var glyph = getRandomGlyph();
-            cell.style.fontFamily = glyph.font;
+            if (glyph.font === "Noto Sans Symbols 2") {
+                console.log('in the symbols loop;' + glyph.font)
+                cell.classList.add('noto-sans-symbols-2'); // Apply the CSS class
+                cell.style.fontFamily = ''; // Ensure no conflicting inline style
+            } else {
+                cell.style.fontFamily = glyph.font; // For all other fonts, use inline style
+            }
             cell.innerHTML = glyph.char;
             
             strip.appendChild(cell);
@@ -286,7 +292,13 @@ function initBraid() {
             cell.style.color = mycolors[colorIdx];
             
             var glyph = getRandomGlyph();
-            cell.style.fontFamily = glyph.font;
+            if (glyph.font === "Noto Sans Symbols 2") {
+                console.log('in the symbols loop;' + glyph.font)
+                cell.classList.add('noto-sans-symbols-2'); // Apply the CSS class
+                cell.style.fontFamily = ''; // Ensure no conflicting inline style
+            } else {
+                cell.style.fontFamily = glyph.font; // For all other fonts, use inline style
+            }
             cell.innerHTML = glyph.char;
             
             strip.appendChild(cell);
@@ -319,7 +331,13 @@ function animateHorizontal(strip) {
             offset = -STRIP_SIZE;
             var lastCell = strip.children[strip.children.length - 1];
             var glyph = getRandomGlyph();
-            lastCell.style.fontFamily = glyph.font;
+            if (glyph.font === "Noto Sans Symbols 2") {
+                console.log('in the symbols loop;' + glyph.font)
+                lastCell.classList.add('noto-sans-symbols-2'); // Apply the CSS class
+                lastCell.style.fontFamily = ''; // Ensure no conflicting inline style
+            } else {
+                lastCell.style.fontFamily = glyph.font; // For all other fonts, use inline style
+            }
             lastCell.innerHTML = glyph.char;
             strip.insertBefore(lastCell, strip.children[0]);
         }
