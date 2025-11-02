@@ -285,8 +285,7 @@ function initBraid() {
             cell.style.color = mycolors[colorIdx];
             
             var glyph = getRandomGlyph();
-            cell.style.fontFamily = glyph.font;
-            cell.style.fontVariantEmoji = 'text';
+            cell.style.fontFamily = glyph.font
             cell.innerHTML = glyph.char;
             
             strip.appendChild(cell);
