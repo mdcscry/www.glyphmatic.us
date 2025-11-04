@@ -343,16 +343,16 @@ myFontSet[222]=['x2BF5','Noto Sans Symbols 2']; // Russian Astrological Symbol Q
 myFontSet[223]=['x2BF6','Noto Sans Symbols 2']; // Russian Astrological Symbol Binovile
 myFontSet[224]=['x2BF7','Noto Sans Symbols 2']; // Russian Astrological Symbol Sentagon
 myFontSet[225]=['x2BF8','Noto Sans Symbols 2']; // Russian Astrological Symbol Tredecile
-myFontSet[226]=['x1F300','Noto Emoji','Quivira','Symbola']; // Spiral (cham)
+myFontSet[226]=['x1F300','Noto Emoji','Quivira','Symbola']; // Spiral
 myFontSet[227]=['x1F300','Noto Emoji','Quivira','Symbola','Segoe UI Symbol']; // Cyclone 
 myFontSet[228]=['x267E','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','Quivira','Symbola']; // Permanent Paper Sign for spinners
 myFontSet[229]=['x168D0','Noto Sans Bamum']; // Bamum Spiral for Spinners
-//myFontSet[230]=['x1B7F','Noto Sans Balinese','Noto Serif Balinese'] // Balinese OM
-//myFontSet[231]=['x1AA4','Noto Sans Tai Tham']; // Thai Tham Spiral for Spinners
-//myFontSet[232]=['x11A9E','Noto Sans Soyombo']; //SOYOMBO HEAD MARK WITH MOON AND SUN AND TRIPLE FLAME
-//myFontSet[233]=['x11A9F','Noto Sans Soyombo']; //SOYOMBO HEAD MARK WITH MOON AND SUN AND FLAME
-//myFontSet[234]=['x11AA0','Noto Sans Soyombo']; //SOYOMBO HEAD MARK WITH MOON AND SUN
-
+myFontSet[230]=['x1B12;&#x1B01','Noto Sans Balinese','Noto Serif Balinese'] // Balinese OM
+myFontSet[231]=['x1AA4','Noto Sans Tai Tham']; // Thai Tham Spiral for Spinners
+myFontSet[232]=['x11A9E','Noto Sans Soyombo']; //SOYOMBO HEAD MARK WITH MOON AND SUN AND TRIPLE FLAME
+myFontSet[233]=['x11A9F','Noto Sans Soyombo']; //SOYOMBO HEAD MARK WITH MOON AND SUN AND FLAME
+myFontSet[234]=['x11AA0','Noto Sans Soyombo']; //SOYOMBO HEAD MARK WITH MOON AND SUN
+myFontSet[235]=['x1F54E','Noto Emoji','Symbola','Noto Sans Symbols 2']; //9 branch Menorah
 var glyphDescriptions = [];
 
 // Original entries 0-104
@@ -591,11 +591,11 @@ glyphDescriptions[228] = 'Permanent Paper Sign';//for spinners
 glyphDescriptions[229]=  'Bamum Letter'; // Bamum Spiral for Spinners
 glyphDescriptions[230]=  'Balinese OM' // Balinese OM
 glyphDescriptions[231]=  'Thai Tham Letter'; // Thai Tham Spiral for Spinners
-//glyphDescriptions[232]='HEAD MARK WITH MOON AND SUN AND TRIPLE FLAME'; //Soyombo
-//glyphDescriptions[233]='SOYOMBO HEAD MARK WITH MOON AND SUN AND FLAME'; //Soyombo
-//glyphDescriptions[234]='SOYOMBO HEAD MARK WITH MOON AND SUN'; //Soyombo
-// MENORAH WITH NINE BRANCHES 1F54E
-// Place of Worship 1F6D0
+glyphDescriptions[232]='HEAD MARK WITH MOON AND SUN AND TRIPLE FLAME'; //Soyombo
+glyphDescriptions[233]='SOYOMBO HEAD MARK WITH MOON AND SUN AND FLAME'; //Soyombo
+glyphDescriptions[234]='SOYOMBO HEAD MARK WITH MOON AND SUN'; //Soyombo
+glyphDescriptions[235]= 'MENORAH WITH NINE BRANCHES' 
+// Place of Worship 
 
 //'xaa05;&#xaa4c' //cham om
 

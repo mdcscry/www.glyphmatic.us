@@ -335,6 +335,8 @@ function animateHorizontal(strip) {
             offset = -STRIP_SIZE;
             var lastCell = strip.children[strip.children.length - 1];
             var glyph = getRandomGlyph();
+            //console.log(glyph.char)
+            //glyph.char = '&#x1B7F;'
             if (glyph.font === "Noto Sans Symbols 2") {
                 console.log('in the symbols loop;' + glyph.font)
                 lastCell.classList.add('noto-sans-symbols-2'); // Apply the CSS class

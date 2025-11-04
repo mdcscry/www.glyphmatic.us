@@ -175,31 +175,31 @@
 		}		
 
 	 	function spectacular(start,number_of_glyphs) {
-	 		spans_string = ''
+			spans_string = ''
 
-	 		for (i=start ; i <= start+number_of_glyphs ;i++){	
+			for (i=start ; i <= start+number_of_glyphs ;i++){	
 
-	 			if (TEST_MODE) {
-	 				// Use the test glyph and block
+				if (TEST_MODE) {
+					// Use the test glyph and block
 					console.log("in TEST_MODE")
-	 				block = TEST_BLOCK;
-	 				glyph = TEST_GLYPH;
-	 				glyph_val = block_hex[block].indexOf(glyph);
-	 				if (glyph_val === -1) {
-	 					console.error("Test glyph not found in block!");
-	 					glyph_val = 0;
-	 				}
-	 			} else {
-	 				// Original random behavior
-	 				random_number = Math.round((blocks.length-1)*Math.random())
-	 				block = blocks[random_number] 
+					block = TEST_BLOCK;
+					glyph = TEST_GLYPH;
+					glyph_val = block_hex[block].indexOf(glyph);
+					if (glyph_val === -1) {
+						console.error("Test glyph not found in block!");
+						glyph_val = 0;
+					}
+				} else {
+					// Original random behavior
+					random_number = Math.round((blocks.length-1)*Math.random())
+					block = blocks[random_number] 
 
-		 				//console.log(random_number)
-		 				//console.log(block)
-		 			glyph_val = git_the_random(block,block_hex)				
+					//console.log(random_number)
+					//console.log(block)
+					glyph_val = git_the_random(block,block_hex)				
 					glyph = block_hex[block][glyph_val]
-	 			}
-					//console.log(glyph)
+				}
+				//console.log(glyph)
 				glyph_desc = block_hex_desc[block][glyph_val].replace(/ /g,"_")
 
 				font_du_jour = get_more_spectacular(block)
@@ -212,15 +212,26 @@
 				} else {
 					attach_goog_font(font_du_jour)	
 				}	
-	
 
-				attach_font_family(font_du_jour.split("-")[0],i)
-
-		 		spans_string = spans_string + "<td><span id='sid"+ i + "' title='" + glyph + "-" + glyph_desc + "'>&#x" + glyph + ";</span></td>";
+				// Build font-family stack
+				const fontFamily = font_du_jour.split("-")[0];
+				const genericFallback = fontFamily.includes('Serif') ? 'serif' : 'sans-serif';
+				let fontStack;
+				
+				if (fontFamily.includes('Noto Sans Symbols') || fontFamily.includes('Noto Sans Symbols 2')) {
+					fontStack = `'Noto Emoji', '${fontFamily}', ${genericFallback}`;
+				} else if (fontFamily.includes('Symbola')) {
+					fontStack = `'${fontFamily}','Noto Sans Symbols','Noto Sans Symbols 2','Noto Emoji', ${genericFallback}`;
+										fontStack = `'${fontFamily}','Noto Sans Symbols','Noto Sans Symbols 2','Noto Emoji','Noto Sans Math'`;
+				} else {
+					fontStack = `'${fontFamily}', ${genericFallback}`;
+					fontStack = `'${fontFamily}'`;
 				}
-			return(spans_string)
-	 	}
 
+				spans_string = spans_string + '<td><span id="sid'+ i + '" style="font-family: ' + fontStack + ';" title="' + glyph + '-' + glyph_desc + '">&#x' + glyph + ';</span></td>';
+			}
+			return(spans_string)
+		}
 
 	 	function get_more_spectacular(block){
 				console.log('block: ' + block)

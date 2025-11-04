@@ -1,0 +1,65 @@
+
+        @font-face {
+            font-family: 'Symbols2';
+            src: url('./../tff/NotoSansSymbols2-Regular.ttf');
+        }
+
+        body {
+            font-family: 'Symbols2';
+            margin: 0;
+            overflow: hidden; /* Hide scrollbars */
+            width: 100vw;
+            height: 100vh;
+            display: flex; /* Use flexbox to arrange the two main blocks side-by-side */
+            background-color: #000; /* Default body background, will be randomized by JS */
+        }
+
+        .main-block {
+            position: relative; /* Establishes a positioning context for absolute layers */
+            width: 50vw;        /* Each block takes half the viewport width */
+            height: 100vh;      /* Each block takes full viewport height */
+            overflow: hidden;   /* Clip content if layers go outside its bounds */
+            /* isolation: isolate; */
+        }
+
+        /* Styles for the dynamically generated layers within each main-block */
+        .layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            background-color: rgba(0,0,0,0);
+            mix-blend-mode: normal;
+            opacity: 1;
+
+            transition: background-color 8s ease-out, mix-blend-mode 7s ease-out,
+                        opacity 4s ease-out;
+        }
+
+        .layer > span { /* The character element itself within a layer */
+            font-size: 40vw;
+            line-height: 1;
+            position: absolute;
+            pointer-events: none; /* Allows clicks to pass through */
+            
+            display: inline-block; /* Essential for border and padding to apply correctly */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+
+            /* Default and transition properties for new effects */
+            border: 0px solid transparent; /* default */
+            -webkit-text-stroke: 0px transparent; /* For Safari/Chrome text stroke */
+            text-shadow: none; /* default */
+            color: #fff; /* Default character color */
+            mix-blend-mode: normal; /* Default blend mode for char */
+
+            transition: color 5s ease-out, mix-blend-mode 6s ease-out,
+                        border-color 6s ease-out, border-width 4s ease-out,
+                        -webkit-text-stroke-color 3s ease-out, -webkit-text-stroke-width 10s ease-out,
+                        text-shadow 7s ease-out;
+        }
+ 

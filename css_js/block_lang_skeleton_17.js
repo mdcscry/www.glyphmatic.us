@@ -28,9 +28,9 @@ lang_font =[{}]
  block_lang['Bengali'] = ['bengali'];
  block_lang['Bhaiksuki'] = ['bhaiksuki'];
  block_lang['Block Elements'] = ['noto-mono'];
- block_lang['Bopomofo'] = ['noto-simple-chinese','noto-trad-chinese','noto-hongkong','noto-korean','noto-japanese']; 
- block_lang['Bopomofo Extended'] = ['noto-simple-chinese','noto-trad-chinese','noto-hongkong','noto-korean','noto-japanese']; 
- block_lang['Box Drawing'] = ['noto-hongkong'];
+ block_lang['Bopomofo'] = ['noto-simple-chinese','noto-trad-chinese','noto-hongkong','noto-japanese']; 
+ block_lang['Bopomofo Extended'] = ['noto-japanese']; 
+ block_lang['Box Drawing'] = ['noto-japanese','noto-mono'];
  block_lang['Brahmi'] = ['brahmi'];
  block_lang['Braille Patterns'] = ['symbols2'];
  block_lang['Buginese'] = ['buginese'];
@@ -47,8 +47,8 @@ lang_font =[{}]
 // block_lang['CJK_Compatibility_Forms'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
 // block_lang['CJK_Compatibility_Ideographs'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
  block_lang['CJK Radicals Supplement'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
- block_lang['CJK Strokes'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
- block_lang['CJK Symbols and Punctuation'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
+ block_lang['CJK Strokes'] = ['noto-japanese'];
+ block_lang['CJK Symbols and Punctuation'] = ['noto-japanese'];
 // block_lang['CJK_Unified_Ideographs'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
 // block_lang['CJK_Unified_Ideographs_Extension_A'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
 // block_lang['Combining_Diacritical_Marks_Extended'] = ['latin','latin-ext'];
@@ -63,7 +63,7 @@ lang_font =[{}]
  block_lang['Currency Symbols'] = ['symbols2-currency'];
  block_lang['Cypriot Syllabary'] = ['cypriot'];
  block_lang['Cyrillic'] = ['cyrillic'];
- block_lang['Cyrillic Extended-B'] = ['cyrillic-ext'];
+ block_lang['Cyrillic Extended-B'] = ['noto-regular','Arimo'];
  block_lang['Cyrillic Extended-C'] = ['noto-regular','Arimo'];
  block_lang['Cyrillic Supplement'] = ['cyrillic-ext'];
  block_lang['Deseret'] = ['deseret'];
@@ -95,17 +95,17 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Glagolitic'] = ['glagolitic'];
  block_lang['Gothic'] = ['gothic'];
  block_lang['Grantha'] = ['grantha'];
- block_lang['Greek and Coptic'] = ['coptic','latin-ext'];
+ block_lang['Greek and Coptic'] = ['coptic','greek-and-coptic'];
  block_lang['Greek Extended'] = ['latin-ext'];
  block_lang['Gujarati'] = ['gujarati'];
  block_lang['Gunjala Gondi'] = ['gunjala-gondi'];
  block_lang['Gurmukhi'] = ['gurmukhi'];
 // block_lang['Halfwidth and Fullwidth_Forms'] = [''];
  block_lang['Hangul Compatibility Jamo'] = ['korean'];
- block_lang['Hangul Jamo'] = ['korean'];
- block_lang['Hangul Jamo Extended-A'] = ['korean'];
- block_lang['Hangul Jamo Extended-B'] = ['korean'];
- block_lang['Hangul Syllables'] = ['korean'];
+ block_lang['Hangul Jamo'] = ['korean-complete-jamo'];
+ //block_lang['Hangul Jamo Extended-A'] = ['korean'];
+ //block_lang['Hangul Jamo Extended-B'] = ['korean'];
+ //block_lang['Hangul Syllables'] = ['korean'];
  block_lang['Hanifi Rohingya'] = ['hanifi-rohingya'];
  block_lang['Hanunoo'] = ['hanunoo'];
  block_lang['Hatran'] = ['hatron'];
@@ -127,21 +127,21 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Kayah Li'] = ['kayahli'];
  block_lang['Kharoshthi'] = ['kharoshthi'];
  block_lang['Khmer'] = ['khmer'];
- block_lang['Khmer Symbols'] = ['khmer'];
+ block_lang['Khmer Symbols'] = ['khmer-noto'];
  block_lang['Khojki'] = ['khojki'];
  block_lang['Khudawadi'] = ['khudawadi'];
  block_lang['Lao'] = ['lao'];
- block_lang['Latin-1 Supplement'] = ['latin-ext'];
+ block_lang['Latin-1 Supplement'] = ['latin-ext-b','noto-regular-no-display'];
  block_lang['Latin Extended-A'] = ['latin-ext'];
- block_lang['Latin Extended Additional'] = ['latin-ext'];
- block_lang['Latin Extended-B'] = ['latin-ext'];
- block_lang['Latin Extended-C'] = ['latin-ext'];
- block_lang['Latin Extended-D'] = ['noto-regular-no-display'];
+ block_lang['Latin Extended Additional'] = ['latin-ext-additional','noto-regular-no-display'];
+ block_lang['Latin Extended-B'] = ['latin-ext-b','noto-regular-no-display'];
+ block_lang['Latin Extended-C'] = ['latin-ext-c','noto-regular-no-display'];
+ block_lang['Latin Extended-D'] = ['noto-full'];
  block_lang['Latin Extended-E'] = ['noto-full'];
  block_lang['Latin Extended-F'] = ['noto-full']; //unicode 14
  block_lang['Latin Extended-G'] = ['noto-full']; //unicode 14
  block_lang['Lepcha'] = ['lepcha'];
- block_lang['Letterlike Symbols'] = ['noto-regular'];
+ block_lang['Letterlike Symbols'] = ['noto-full'];
  block_lang['Limbu'] = ['limbu'];
  block_lang['Linear A'] = ['lineara'];
  block_lang['Linear B Ideograms'] = ['linearb'];
@@ -232,8 +232,8 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
 // block_lang['Kana Extended-B'] = ['kana-extended-b'];
  block_lang['Kana Extended-A'] = ['hentaigana'];
  block_lang['Kana Supplement'] = ['hentaigana'];
- block_lang['Kanbun'] = ['japanese'];
- block_lang['Kangxi Radicals'] = ['japanese'];
+ block_lang['Kanbun'] = ['noto-japanese'];
+ block_lang['Kangxi Radicals'] = ['japanese-kangxi'];
  block_lang['Sogdian'] = ['sogdian'];
  block_lang['Old Sogdian'] = ['old-sogdian'];
  block_lang['Sora Sompeng'] = ['sora-sompeng'];
@@ -274,11 +274,11 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Transport and Map Symbols'] = ['symbols2-symbola'];
  block_lang['Ugaritic'] = ['ugaritic'];
  block_lang['Unified Canadian Aboriginal Syllabics'] = ['canadianaboriginal'];
-  block_lang['Unified Canadian Aboriginal Syllabics Extended'] = ['canadianaboriginal'];
+block_lang['Unified Canadian Aboriginal Syllabics Extended'] = ['canadianaboriginal'];
  block_lang['Unified Canadian Aboriginal Syllabics Extended-A'] = ['canadianaboriginal'];
  block_lang['Vai'] = ['vai'];
  block_lang['Vedic Extensions'] = ['noto-devanagari'];
- block_lang['Vertical Forms'] = ['noto-korean'];
+ block_lang['Vertical Forms'] = ['noto-japanese'];
  block_lang['Wancho'] = ['wancho'];
  block_lang['Warang Citi'] = ['warangciti'];
  block_lang['Yi Radicals'] = ['yi'];
@@ -571,13 +571,17 @@ lang_font['myanmar'] = [
   "Noto Serif Myanmar",
   "Padauk"
  ]           
+
+lang_font['khmer-noto'] = [
+  "Noto Sans Khmer",
+  "Noto Serif Khmer",
+  ];
+
  lang_font['khmer'] = [    
   "Angkor",
   "Battambang",
   "Bayon",
   "Bokor",
-  "Chenla",
-  "Content",
   "Dangrek",
   "Fasthand",
   "Freehand",
@@ -597,7 +601,6 @@ lang_font['myanmar'] = [
   "Odor Mean Chey",
   "Preahvihear",
   "Siemreap",
-  "Suwannaphum",
   "Taprom"
 ]	
 lang_font['thai'] = [
@@ -768,7 +771,6 @@ lang_font['arabic'] = [
   "Playpen Sans Arabic",
   "Qahiri",
   "Rakkas",
-  "Readex Pro",
   "Reem Kufi",
   "Rubik",
   "Ruwudu",
@@ -783,6 +785,26 @@ lang_font['noto-simple-chinese'] = ["Noto Sans SC"]
 lang_font['noto-hongkong'] = ["Noto Sans HK"]
 lang_font['noto-korean'] = ["Noto Sans KR"]
 lang_font['noto-japanese'] = ["Noto Sans JP"]
+lang_font['japanese-kangxi'] = [
+  "DotGothic16",
+  "IBM Plex Sans JP",
+  "Kiwi Maru",
+  "M PLUS 1",
+  "M PLUS 1 Code",
+  "M PLUS 1p",
+  "M PLUS 2",
+  "M PLUS Rounded 1c",
+  "Murecho",
+  "Noto Sans JP",
+  "Noto Serif JP",
+  "Potta One",
+  "Rampart One",
+  "Reggae One",
+  "RocknRoll One",
+  "Sawarabi Gothic",
+  "Stick",
+  "Train One",
+]
 lang_font['japanese'] = [
   "Aoboshi One",
   "BIZ UDGothic",
@@ -839,7 +861,6 @@ lang_font['japanese'] = [
   "Yomogi",
   "Yuji Boku",
   "Yuji Hentaigana Akari",
-  "Yuji Hentaigana Akebono",
   "Yuji Mai",
   "Yuji Syuku",
   "Yusei Magic",
@@ -928,7 +949,6 @@ lang_font['hebrew'] = [
   "Rubik Storm",
   "Rubik Vinyl",
   "Rubik Wet Paint",
-  "Secular One",
   "Solitreo",
   "Suez One",
   "Tinos"
@@ -940,6 +960,11 @@ lang_font['oriya'] = [
   "Noto Sans Oriya",
   "Noto Serif Oriya"
 ]
+lang_font['korean-complete-jamo'] = [
+ "Chiron Sung HK",
+ "Arial Unicode MS"
+]
+
 lang_font['korean'] = [
 	"Gowun Batang",
 	"Black And White Picture",
@@ -1034,80 +1059,16 @@ lang_font['devanagari'] = [
 	"Yatra One",
 ]
 lang_font['cyrillic-ext'] = [
-	"Alegreya",
-	"Alegreya SC",
-	"Alegreya Sans",
-	"Alegreya Sans SC",
-	"Alice",
-	"Andika",
 	"Arimo",
-	"Arsenal",
-	"Caveat",
-	"Comfortaa",
-	"Cormorant",
-	"Cormorant Garamond",
-	"Cormorant Infant",
-	"Cormorant SC",
-	"Cormorant Unicase",
-	"Cousine",
-	"Cuprum",
-	"Didact Gothic",
-	"EB Garamond",
-	"Exo 2",
-	"Fira Code",
-	"Fira Mono",
-	"Fira Sans",
-	"Fira Sans Condensed",
-	"Fira Sans Extra Condensed",
-	"Forum",
-	"Gabriela",
-	"IBM Plex Mono",
-	"IBM Plex Sans",
-	"IBM Plex Serif",
-	"Istok Web",
-	"Jura",
-	"Kurale",
-	"Lobster",
-	"Lora",
-	"M PLUS 1p",
-	"M PLUS Rounded 1c",
-	"Merriweather",
-	"Montserrat",
-	"Montserrat Alternates",
 	"Noto Sans",
 	"Noto Serif",
-	"Nunito",
-	"Old Standard TT",
-	"Open Sans",
-	"Oranienbaum",
-	"Oswald",
-	"PT Mono",
-	"PT Sans",
-	"PT Sans Caption",
-	"PT Sans Narrow",
-	"PT Serif",
-	"PT Serif Caption",
-	"Pacifico",
-	"Pangolin",
-	"Philosopher",
-	"Play",
-	"Podkova",
-	"Prata",
-	"Press Start 2P",
-	"Roboto",
-	"Roboto Condensed",
-	"Roboto Mono",
-	"Roboto Slab",
-	"Scada",
-	"Source Code Pro",
-	"Source Sans Pro",
-	"Tinos",
-	"Ubuntu",
-	"Ubuntu Condensed",
-	"Ubuntu Mono",
-	"Vollkorn",
-	"Vollkorn SC",
-	"Yeseva One"
+  "Noto Serif",
+  "Noto Serif Display",
+  "Roboto Slab",
+  "Roboto Mono",
+  "Roboto",
+  "Roboto Condensed", 
+  "Tinos" 
 ]	
 lang_font['cyrillic'] = [
 	"Alegreya",
@@ -1117,7 +1078,6 @@ lang_font['cyrillic'] = [
 	"Alice",
 	"Amatic SC",
 	"Andika",
-	"Anonymous Pro",
 	"Arimo",
 	"Arsenal",
 	"Bad Script",
@@ -1125,63 +1085,41 @@ lang_font['cyrillic'] = [
 	"Comfortaa",
 	"Cormorant",
 	"Cormorant Garamond",
-	"Cormorant Infant",
 	"Cormorant SC",
 	"Cormorant Unicase",
 	"Cousine",
 	"Cuprum",
 	"Didact Gothic",
 	"EB Garamond",
-	"El Messiri",
 	"Exo 2",
 	"Fira Code",
 	"Fira Mono",
 	"Fira Sans",
 	"Fira Sans Condensed",
 	"Fira Sans Extra Condensed",
-	"Forum",
 	"Gabriela",
 	"IBM Plex Mono",
 	"IBM Plex Sans",
 	"IBM Plex Serif",
 	"Istok Web",
 	"Jura",
-	"Kelly Slab",
-	"Kosugi",
-	"Kosugi Maru",
 	"Kurale",
-	"Ledger",
-	"Literata",
 	"Lobster",
 	"Lora",
 	"M PLUS 1p",
 	"M PLUS Rounded 1c",
-	"Marck Script",
 	"Marmelad",
 	"Merriweather",
 	"Montserrat",
 	"Montserrat Alternates",
-	"Neucha",
 	"Noto Sans",
-	"Noto Sans SC",
 	"Noto Serif",
-	"Noto Serif SC",
-	"Noto Serif TC",
 	"Nunito",
 	"Old Standard TT",
-	"Open Sans",
-	"Open Sans Condensed",
-	"Oranienbaum",
+	"Open Sans",,
 	"Oswald",
-	"PT Mono",
-	"PT Sans",
-	"PT Sans Caption",
-	"PT Sans Narrow",
-	"PT Serif",
-	"PT Serif Caption",
 	"Pacifico",
 	"Pangolin",
-	"Pattaya",
 	"Philosopher",
 	"Play",
 	"Playfair Display",
@@ -1190,20 +1128,16 @@ lang_font['cyrillic'] = [
 	"Poiret One",
 	"Prata",
 	"Press Start 2P",
-	"Roboto Slab",
-	"Rubik",
-	"Rubik Mono One",
-	"Ruslan Display",
+  "Roboto Slab",
+  "Roboto Mono",
+  "Roboto",
+  "Roboto Condensed",  
 	"Russo One",
 	"Sawarabi Gothic",
 	"Scada",
 	"Seymour One",
 	"Source Code Pro",
 	"Source Sans Pro",
-	"Spectral",
-	"Spectral SC",
-	"Stalinist One",
-	"Tenor Sans",
 	"Tinos",
 	"Ubuntu",
 	"Ubuntu Condensed",
@@ -1554,7 +1488,6 @@ lang_font['latin'] = [
   "Corinthia",
   "Cormorant",
   "Cormorant Garamond",
-  "Cormorant Infant",
   "Cormorant SC",
   "Cormorant Unicase",
   "Cormorant Upright",
@@ -1871,14 +1804,6 @@ lang_font['latin'] = [
   "Jaini Purva",
   "Jaldi",
   "Jaro",
-  "Jersey 10",
-  "Jersey 10 Charted",
-  "Jersey 15",
-  "Jersey 15 Charted",
-  "Jersey 20",
-  "Jersey 20 Charted",
-  "Jersey 25",
-  "Jersey 25 Charted",
   "JetBrains Mono",
   "Jim Nightshade",
   "Joan",
@@ -2736,6 +2661,94 @@ lang_font['latin'] = [
 ]
 lang_font['latin-noto'] = ['Noto Serif','Noto Sans Mono','Noto Sans']
 
+lang_font['greek-and-coptic'] = [
+  'Noto Serif','Noto Sans Mono','Noto Sans','Tinos','Arimo','Aegean-local-fonts'
+]; 
+
+lang_font['latin-ext-additional'] = [
+  "Agbalumo",
+  "Agu Display",
+  "Alatsi",
+  "Alata",
+  "Anton",
+  "Anton SC", 
+  "Beiruti",
+  "Calistoga",
+  "Danfo",
+  "EB Garamond",
+  "Edu QLD Hand",
+  "Freeman",
+  "Great Vibes",
+  "Jaro",
+  "LXGW WenKai TC",
+  "LXGW WenKai Mono TC",
+  "M PLUS Rounded 1c",
+  "Merriweather",
+  "Oi",
+  "Ojuju",
+  "Patrick Hand SC",
+  "Pinyon Script",
+  "Playfair",
+  "PT Serif Caption",
+  "Roboto",
+  "Roboto Condensed",
+  "Roboto Mono",
+  "Roboto Slab",
+  "Sankofa Display",
+  "Tac One",
+  "Tiny5",
+  "Unbounded",
+  "Voltaire"
+] 
+
+lang_font['latin-ext-b'] = [
+  "Agbalumo",
+  "Agu Display",
+  "Alatsi",
+  "Aleo",
+  "Anton",
+  "Anton SC", 
+  "Danfo",
+  'Denk One',
+  "EB Garamond",
+  "Ga Maamli",
+  "Great Vibes",
+  'Jomhuria',
+  "LXGW WenKai TC",
+  "LXGW WenKai Mono TC",
+  "Merriweather",
+  "Monda",
+  "Montserrat",
+  "Montserrat Alternates",
+  "Montserrat Underline",
+  "Oi",
+  "Ojuju",
+  "PT Serif Caption",
+  "Sankofa Display",
+  "Tac One",
+  "Ubuntu",
+  "Ubuntu Condensed",
+  "Ubuntu Mono",
+  "Ubuntu Sans",
+  "Ubuntu Sans Mono",
+  "Unbounded"
+] 
+
+lang_font['latin-ext-c'] = [
+  "Agbalumo",
+  "Agu Display",
+  "Anton",
+  "Anton SC", 
+  "Danfo",
+  "EB Garamond",
+  "Great Vibes",
+  "Merriweather",
+  "Oi",
+  "Ojuju",
+  "PT Serif Caption",
+  "Sankofa Display",
+] 
+
 lang_font['latin-ext'] = [
   "ADLaM Display",
   "AR One Sans",
@@ -2932,13 +2945,7 @@ lang_font['latin-ext'] = [
   "Brygada 1918",
   "Bubblegum Sans",
   "Bubbler One",
-  "Buenard",
-  "Bungee",
-  "Bungee Hairline",
-  "Bungee Inline",
-  "Bungee Outline",
-  "Bungee Shade",
-  "Bungee Spice",
+  "Buenard",,
   "Butcherman",
   "Butterfly Kids",
   "Bytesized",
@@ -2990,7 +2997,6 @@ lang_font['latin-ext'] = [
   "Chivo Mono",
   "Chocolate Classical Sans",
   "Chokokutai",
-  "Chonburi",
   "Cinzel",
   "Cinzel Decorative",
   "Clicker Script",
@@ -3013,7 +3019,6 @@ lang_font['latin-ext'] = [
   "Corinthia",
   "Cormorant",
   "Cormorant Garamond",
-  "Cormorant Infant",
   "Cormorant SC",
   "Cormorant Unicase",
   "Cormorant Upright",
@@ -3097,7 +3102,6 @@ lang_font['latin-ext'] = [
   "Epunda Sans",
   "Epunda Slab",
   "Erica One",
-  "Esteban",
   "Estonia",
   "Euphoria Script",
   "Ewert",
@@ -3278,14 +3282,6 @@ lang_font['latin-ext'] = [
   "Jaini Purva",
   "Jaldi",
   "Jaro",
-  "Jersey 10",
-  "Jersey 10 Charted",
-  "Jersey 15",
-  "Jersey 15 Charted",
-  "Jersey 20",
-  "Jersey 20 Charted",
-  "Jersey 25",
-  "Jersey 25 Charted",
   "JetBrains Mono",
   "Jim Nightshade",
   "Joan",
@@ -3344,7 +3340,6 @@ lang_font['latin-ext'] = [
   "Krona One",
   "Krub",
   "Kufam",
-  "Kulim Park",
   "Kumar One",
   "Kumar One Outline",
   "Kumbh Sans",

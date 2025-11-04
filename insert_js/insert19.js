@@ -19,7 +19,8 @@ const emojiFonts = [
   '"Fluent Emoji INV HC"',
   '"Blobmoji"',
   '"TossfaceOTF"',  
-  '"WhatsApp Emoji"'  
+  '"WhatsApp Emoji"'//,
+  //'Symbola'  
   //'"Pixel"','"Facebook"','"OneUI"'
 ];
 

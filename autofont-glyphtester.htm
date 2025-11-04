@@ -219,7 +219,7 @@
             const exclusionList = document.getElementById('exclusionList');
             
             const excludedGlyphs = new Set();
-            const FONTS_PER_PAGE = 10;
+            const FONTS_PER_PAGE = 50;
 
             // Get URL parameters
             const urlParams = getUrlParams();
@@ -362,6 +362,7 @@
 				            fontStack = `'Symbola','Noto Sans Symbols','Noto Sans Symbols 2','Noto Emoji', ${genericFallback}`;				
                         } else {
                             fontStack = `'${fontName}', ${genericFallback}`;
+                            fontStack = `'${fontName}'`;
                         }
                         
                         charSpan.style.fontFamily = fontStack;

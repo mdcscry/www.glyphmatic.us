@@ -764,14 +764,14 @@ thai chinese korean japanese mongolian thaana warangciti javanese soyombo japane
 }
 
 .noto-sans-symbols {
-  font-family: "Noto Sans Symbols", sans-serif;
+  font-family: "Noto Sans Symbols";
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
 }
 
 .noto-sans-symbols-2 {
-  font-family: "Noto Sans Symbols 2", sans-serif;
+  font-family: "Noto Sans Symbols 2",sans-serif;
   font-weight: 400;
   font-style: normal;
 }
@@ -1707,7 +1707,373 @@ thai chinese korean japanese mongolian thaana warangciti javanese soyombo japane
     src: url('../fonts/maya.ttf') format('truetype');
 }
 
+.myanmar-taungyi {
+    font-family: 'Myanmar Taungyi', sans-serif;
+}
 
+.noto-sans-tai-lam-full {
+    font-family: 'Noto Sans Tai Lam Full', sans-serif;
+}
+
+.noto-serif-gujarati-full {
+    font-family: 'Noto Serif Gujarati Full', serif;
+}
+
+.noto-sans-gujarati-full {
+    font-family: 'Noto Sans Gujarati Full', sans-serif;
+}
+
+.noto-sans-full {
+    font-family: 'Noto Sans Full', sans-serif;
+}
+
+.noto-sans-math-full {
+    font-family: 'Noto Sans Math Full', sans-serif;
+    /* Math fonts often benefit from specific fallback, but sans-serif is a general safe bet */
+}
+
+.two-stix-math {
+    font-family: 'Two STIX Math', serif;
+}
+
+.whatsapp-emoji {
+    font-family: 'WhatsApp Emoji', sans-serif;
+}
+
+.tossfaceotf {
+    font-family: 'TossfaceOTF', sans-serif;
+}
+
+.blobmoji {
+    font-family: 'Blobmoji', sans-serif;
+}
+
+.emoji-two {
+    font-family: 'Emoji Two', sans-serif;
+}
+
+.fluent-emoji-color {
+    font-family: 'Fluent Emoji Color', sans-serif;
+}
+
+.fluent-emoji-flat {
+    font-family: 'Fluent Emoji Flat', sans-serif;
+}
+
+.fluent-emoji-hc {
+    font-family: 'Fluent Emoji HC', sans-serif;
+}
+
+.fluent-emoji-inv-hc {
+    font-family: 'Fluent Emoji INV HC', sans-serif;
+}
+
+.twitter-color-emoji {
+    font-family: 'Twitter Color Emoji', sans-serif;
+}
+
+.open-moji-black {
+    font-family: 'Open Moji Black', sans-serif;
+}
+
+.segoe-emoji {
+    font-family: 'Segoe Emoji', sans-serif;
+}
+
+.open-moji-0 {
+    font-family: 'Open Moji 0', sans-serif;
+}
+
+.dela-gothic-one {
+    font-family: 'Dela Gothic One', sans-serif;
+}
+
+.hachi-maru-pop {
+    font-family: 'Hachi Maru Pop', cursive;
+}
+
+.rampart-one {
+    font-family: 'Rampart One', sans-serif;
+}
+
+.reggae-one {
+    font-family: 'Reggae One', cursive;
+}
+
+.stick {
+    font-family: 'Stick', sans-serif;
+}
+
+.yuji-boku {
+    font-family: 'Yuji Boku', serif;
+}
+
+.kosugi-maru {
+    font-family: 'Kosugi Maru', sans-serif;
+}
+
+.fangsong {
+    font-family: 'FangSong', serif;
+}
+
+.keter-yg {
+    font-family: 'Keter YG', serif;
+}
+
+.sbl-hebrew {
+    font-family: 'SBL Hebrew', serif;
+}
+
+.ezra-sil {
+    font-family: 'Ezra SIL', serif;
+}
+
+.lucida-sans-unicode {
+    font-family: 'Lucida Sans Unicode', sans-serif;
+}
+
+.kinza {
+    font-family: 'Kinza', sans-serif;
+}
+
+.geeza-pro {
+    font-family: 'Geeza Pro', sans-serif;
+}
+
+.kartik {
+    font-family: 'Kartik', sans-serif;
+}
+
+.vani {
+    font-family: 'Vani', sans-serif;
+}
+
+.pothana2000 {
+    font-family: 'Pothana2000', serif;
+}
+
+.gautami {
+    font-family: 'Gautami', sans-serif;
+}
+
+.vrinda {
+    font-family: 'Vrinda', sans-serif;
+} 
+
+.shonar {
+    font-family: 'Shonar', sans-serif;
+} 
+
+.shonarb {
+    font-family: 'Shonarb', sans-serif;
+} 
+
+.latha {
+    font-family: 'Latha', sans-serif;
+} 
+
+.vijaya {
+    font-family: 'Vijaya', sans-serif;
+} 
+
+.raavi {
+    font-family: 'Raavi', sans-serif;
+} 
+
+.shruti {
+    font-family: 'Shruti', sans-serif;
+}
+
+.mph-2b-damase {
+    font-family: 'MPH 2B Damase', sans-serif;
+}
+
+.qomolangma-betsu {
+    font-family: 'Qomolangma-Betsu', serif;
+}
+
+.qomolangma-chuyig {
+    font-family: 'Qomolangma-Chuyig', serif;
+}
+
+.qomolangma-drutsa {
+    font-family: 'Qomolangma-Drutsa', serif;
+}
+
+.qomolangma-edict {
+    font-family: 'Qomolangma-Edict', serif;
+}
+
+.qomolangma-woodblock {
+    font-family: 'Qomolangma-Woodblock', serif;
+}
+
+.qomolangma-art {
+    font-family: 'Qomolangma-Art', serif;
+}
+
+.babelstonetibetan {
+    font-family: 'BabelStoneTibetan', serif;
+}
+
+.yagposambhotauni {
+    font-family: 'YagpoSambhotaUni', serif;
+}
+
+.bn-ttkailash-normal {
+    font-family: "BN-TTKailash Normal", sans-serif;
+}
+
+.dedris-a1 {
+    font-family: 'Dedris-a1', serif;
+}
+
+.kailasa {
+    font-family: 'Kailasa', serif;
+}
+
+.microsoft-himalaya {
+    font-family: 'Microsoft Himalaya', serif;
+}
+
+.monloam-uni {
+    font-family: 'Monloam_Uni', serif;
+}
+
+.ddc-uchen {
+    font-family: 'DDC_Uchen', serif;
+}
+
+.utsaah {
+    font-family: 'Utsaah', sans-serif;
+}
+
+.kokila {
+    font-family: 'Kokila', sans-serif;
+}
+
+.mangal {
+    font-family: 'Mangal', sans-serif;
+}
+
+.aharoni {
+    font-family: 'Aharoni', sans-serif;
+}
+
+.akshar-unicode {
+    font-family: 'Akshar Unicode', sans-serif;
+}
+
+.annapurna-sil {
+    font-family: 'Annapurna SIL', serif;
+}
+
+.aparajita {
+    font-family: 'Aparajita', sans-serif;
+}
+
+.siddhanta {
+    font-family: 'Siddhanta', serif;
+}
+
+.tibetan-machine-uni {
+    font-family: 'Tibetan Machine Uni', serif;
+}
+
+.arial-unicode-ms {
+    font-family: 'Arial Unicode MS', sans-serif;
+}
+.code2000 {
+    font-family: 'Code2000', monospace;
+}
+
+.code2001 {
+    font-family: 'Code2001', monospace;
+}
+
+.code2002 {
+    font-family: 'Code2002', monospace;
+}
+
+.dejavu-sans {
+    font-family: 'DejaVu Sans', sans-serif;
+}
+.dejavu-sans-condensed {
+    font-family: 'DejaVu Sans Condensed', sans-serif;
+}
+.everson-mono {
+    font-family: 'Everson Mono', monospace;
+}
+.aegean {
+    font-family: 'Aegean', serif;
+}
+
+.anatolian {
+    font-family: 'Anatolian', serif;
+}
+
+.anatolian-douros {
+    font-family: 'Anatolian_Douros', serif;
+}
+
+.meiryo {
+    font-family: 'Meiryo', sans-serif;
+}
+.meiryo-ui {
+    font-family: 'Meiryo UI', sans-serif;
+}
+.ms-mincho {
+    font-family: 'MS Mincho', serif;
+}
+.ms-pgothic {
+    font-family: 'MS PGothic', sans-serif;
+}
+
+.quivira {
+    font-family: 'Quivira', sans-serif;
+}
+.segoe-ui-symbol {
+    font-family: 'Segoe UI Symbol', sans-serif;
+}
+.symbola {
+    font-family: 'Symbola', sans-serif;
+}
+.paktype-tehreer {
+    font-family: 'Paktype Tehreer', sans-serif;
+}
+.amiri {
+    font-family: 'Amiri', serif;
+}
+.paktype-ajrak {
+    font-family: 'PakType Ajrak', sans-serif;
+}
+.pdms-saleem-quranfont {
+    font-family: '_PDMS_Saleem_QuranFont', serif; /* Note: class name removed leading underscore */
+}
+.jameel-noori-nastaleeq {
+    font-family: 'jameel noori nastaleeq', serif;
+}
+.fajer-noori-nastalique {
+    font-family: 'fajer noori nastalique', serif;
+}
+.aegyptusb {
+    font-family: 'AegyptusB', serif;
+}
+
+.aegyptusr {
+    font-family: 'AegyptusR', serif;
+}
+.gardiner {
+    font-family: 'Gardiner', sans-serif;
+}
+
+.notoegyptian {
+    font-family: 'NotoEgyptian', serif;
+}
+
+.maya {
+    font-family: 'Maya', sans-serif;
+}
 
 .watermark-font {
     font-family: 'Two STIX Math','Noto Sans Math Full','Noto Sans Full', 
