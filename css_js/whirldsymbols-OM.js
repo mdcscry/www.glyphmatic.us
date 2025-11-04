@@ -172,7 +172,7 @@ glyphDescriptions[47] = 'Sinhala Om (ඕම්)';
 glyphDescriptions[48] = 'Tamil Om (special size';
 
 const defaultMaskStyle = {
-    maskSize: '45vw',
+    maskSize: '40vw',
     maskYPosition: '58%', 
     maskXPosition: '50%'
 };
@@ -186,56 +186,56 @@ const outlierDefinitions = [
     // --- HIGH Placement (Low Y-Position: 30% - 50%) ---
     {
         id: 'HighCenter-Large-VeryTop-55vw', // Ex. Glyph 7, very high
-        maskSize: '55vw',
+        maskSize: '50vw',
         maskYPosition: '30%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [6]
     },
     {
         id: 'HighCenter-MediumLarge-Up-50vw', // Ex. Glyph 22, shifted up
-        maskSize: '50vw',
+        maskSize: '45vw',
         maskYPosition: '44%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [21]
     },
     {
         id: 'HighCenter-Medium-Up-46vw',      // Ex. Glyphs 37, 49, standard-medium moved up
-        maskSize: '46vw',
+        maskSize: '41vw',
         maskYPosition: '48%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [36, 48] // Restored index 48
     },
     {
         id: 'MidCenter-PhagsPa-Standard-34vw', // Ex. Phags-Pa glyphs, mid-center, compact
-        maskSize: '34vw',
+        maskSize: '29vw',
         maskYPosition: '50%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [26, 33, 40, 42]
     },
     {
         id: 'MidCenter-Javanese-Compact-30vw', // Ex. Javanese glyph
-        maskSize: '30vw',
+        maskSize: '25vw',
         maskYPosition: '32%', // Closer to top
         maskXPosition: '50%',
         appliesToGlyphIndices: [45]
     },
     {
         id: 'HighCenter-TallGlyph-Compact-35vw', // Ex. Tall glyphs, compact
-        maskSize: '35vw',
+        maskSize: '30vw',
         maskYPosition: '42%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [15, 20]
     },
     {
         id: 'HighCenter-TallGlyph-Small-30vw', // Ex. Tall glyphs, smaller
-        maskSize: '30vw',
+        maskSize: '25vw',
         maskYPosition: '42%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [12, 19]
     },
     {
         id: 'MidCenter-Small-40vw', // Ex. Single small-medium glyph
-        maskSize: '40vw',
+        maskSize: '35vw',
         maskYPosition: '50%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [17]
@@ -244,14 +244,14 @@ const outlierDefinitions = [
     // --- STANDARD / MID Placement (Mid Y-Position: 57% - 60%) ---
     {
         id: 'MidCenter-SlightlyLarge-57vw', // Ex. Standard placement, a bit bigger
-        maskSize: '57vw',
+        maskSize: '47vw',
         maskYPosition: '57%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [4, 8, 9, 44]
     },
     {
         id: 'MidCenter-Standard-55vw', // Ex. Standard general size and placement
-        maskSize: '55vw',
+        maskSize: '50vw',
         maskYPosition: '60%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [0, 13, 24, 37, 38, 41]
@@ -260,70 +260,70 @@ const outlierDefinitions = [
     // --- LOW Placement (High Y-Position: 65% - 78%) ---
     {
         id: 'LowCenter-VeryLarge-70vw', // Ex. Very large glyph, dropped down
-        maskSize: '70vw',
+        maskSize: '65vw',
         maskYPosition: '65%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [23]
     },
     {
         id: 'LowCenter-Medium-65vw', // Ex. Medium size, dropped (16,29)
-        maskSize: '50vw',
+        maskSize: '45vw',
         maskYPosition: '65%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [16, 29]
     },
     {
         id: 'LowCenter-Large-60vw', // Ex. Large glyph, dropped down
-        maskSize: '60vw',
+        maskSize: '55vw',
         maskYPosition: '70%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [7, 11]
     },
     {
         id: 'LowLeft-MediumLarge-70vw', // Ex. Medium-large, dropped, slightly left
-        maskSize: '54vw',
+        maskSize: '49vw',
         maskYPosition: '70%',
         maskXPosition: '47%',
         appliesToGlyphIndices: [34]
     },
     {
         id: 'LowCenter-Standard-55vw', // Ex. Standard size, dropped down
-        maskSize: '55vw',
+        maskSize: '50vw',
         maskYPosition: '71%',
-        maskXposition: '50%',
+        maskXPosition: '50%',
         appliesToGlyphIndices: [1, 22, 25, 27, 28, 30]
     },
     {
         id: 'LowLeft-Medium-71p-50vw', // Ex. Medium size, dropped, shifted left
-        maskSize: '50vw',
+        maskSize: '45vw',
         maskYPosition: '71%',
         maskXPosition: '45%',
         appliesToGlyphIndices: [14]
     },
     {
         id: 'LowCenter-Medium-71p-46vw', // Ex. Medium size, dropped down
-        maskSize: '46vw',
+        maskSize: '41vw',
         maskYPosition: '71%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [5, 10, 46, 47] // Restored indices 46, 47
     },
     {
         id: 'LowCenter-Medium-73p-46vw', // Ex. Medium size, deeper drop
-        maskSize: '46vw',
+        maskSize: '41vw',
         maskYPosition: '73%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [18, 35]
     },
     {
         id: 'LowCenter-MediumSmall-73p-44vw', // Ex. Medium-small, deeper drop
-        maskSize: '44vw',
+        maskSize: '39vw',
         maskYPosition: '73%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [32]
     },
     {
         id: 'LowCenter-Zanabazar-VeryLow-37vw', // Ex. Zanabazar glyph, very low
-        maskSize: '37vw',
+        maskSize: '32vw',
         maskYPosition: '78%',
         maskXPosition: '50%',
         appliesToGlyphIndices: [31]
@@ -332,7 +332,7 @@ const outlierDefinitions = [
     // --- UNIQUE / EXTREME Styles ---
     {
         id: 'LowLeft-ExtremeLarge-75vw', // Ex. Very large, low, and shifted left
-        maskSize: '75vw',
+        maskSize: '70vw',
         maskYPosition: '68%',
         maskXPosition: '45%',
         appliesToGlyphIndices: [43]

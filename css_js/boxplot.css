@@ -4,14 +4,34 @@
             src: url('./../tff/NotoSansSymbols2-Regular.ttf');
         }
 
+        @media (max-width: 768px) {
+            .layer > span {
+                font-size: 60vw; /* Larger on mobile for better visibility */
+            }
+        }
+
+        @media (orientation: portrait) {
+            .main-block {
+                width: 100vw; /* Stack vertically in portrait */
+                height: 50vh; /* Each block takes half height */
+            }
+            
+            body {
+                flex-direction: column;
+            }
+        }
+
+
         body {
             font-family: 'Symbols2';
             margin: 0;
-            overflow: hidden; /* Hide scrollbars */
+            overflow: hidden;
             width: 100vw;
             height: 100vh;
-            display: flex; /* Use flexbox to arrange the two main blocks side-by-side */
-            background-color: #000; /* Default body background, will be randomized by JS */
+            display: flex;
+            background-color: #000;
+            /*padding-top: 5vh;  Push everything down 10% */
+            box-sizing: border-box;
         }
 
         .main-block {
@@ -50,6 +70,8 @@
             display: inline-block; /* Essential for border and padding to apply correctly */
             box-sizing: border-box; /* Include padding and border in the element's total width and height */
 
+             transform: translateY(10%); /* Push glyphs down 10% */
+
             /* Default and transition properties for new effects */
             border: 0px solid transparent; /* default */
             -webkit-text-stroke: 0px transparent; /* For Safari/Chrome text stroke */
@@ -61,5 +83,64 @@
                         border-color 6s ease-out, border-width 4s ease-out,
                         -webkit-text-stroke-color 3s ease-out, -webkit-text-stroke-width 10s ease-out,
                         text-shadow 7s ease-out;
+            z-index: 1; /* Keep glyph above the noise */            
         }
- 
+        @keyframes noise-anim {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-5%, -5%); }
+            20% { transform: translate(-10%, 5%); }
+            30% { transform: translate(5%, -10%); }
+            40% { transform: translate(-5%, 15%); }
+            50% { transform: translate(-10%, 5%); }
+            60% { transform: translate(15%, 0); }
+            70% { transform: translate(0, 10%); }
+            80% { transform: translate(-15%, 0); }
+            90% { transform: translate(10%, 5%); }
+        }
+
+        /* .layer.noise-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            width: 200%;
+            height: 200%;
+            background: var(--noise-gradient, repeating-conic-gradient(from 0deg, 
+                rgba(255, 255, 255, 0) 0deg 0.0001deg, 
+                rgba(255, 255, 255, 0.05) 0.0001deg 0.0002deg));
+            background-size: 1px 1px;
+            animation: noise-anim 0.8s steps(10) infinite;
+            pointer-events: none;
+            z-index: 0;
+        } */
+
+        @keyframes noise-position {
+            0% { background-position: 0 0; }
+            10% { background-position: -5% -5%; }
+            20% { background-position: -10% 5%; }
+            30% { background-position: 5% -10%; }
+            40% { background-position: -5% 15%; }
+            50% { background-position: -10% 5%; }
+            60% { background-position: 15% 0; }
+            70% { background-position: 0 10%; }
+            80% { background-position: -15% 0; }
+            90% { background-position: 10% 5%; }
+            100% { background-position: 0 0; }
+        }
+
+        .layer > span.noise-glyph {
+            background: var(--glyph-noise-gradient);
+            background-size: 200% 200%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: noise-position 0.4s steps(10) infinite;
+        }
+
+       /* .layer {
+
+            align-items: flex-end; 
+            padding-bottom: 10%; 
+        } 
+        

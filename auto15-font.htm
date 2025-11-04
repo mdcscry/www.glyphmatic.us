@@ -53,7 +53,7 @@
 				z-index: 1;
 			}
 
-			body { background-color: black;color: orange }
+			body { background-color: black;color: white }
 
 			/* google fonts @import version doesn't have complete coverage */
 			@font-face {
@@ -143,10 +143,10 @@
 				if (directory === 'otf') {
 					filename = `${font_formatted}-Regular.otf`;
 				} else if (directory === 'tff') {
-					filename = `${font_formatted}.ttf`;
+					filename = `${font_formatted}-Regular.ttf`;
 				} else {
 					// Any other directory (like 'fonts')
-					filename = `${font_formatted}-Regular.ttf`;
+					filename = `${font_formatted}.ttf`;
 				}
 			style.textContent = `@font-face {font-family: "${font}"; src: url('/${directory}/${filename}');}`;
 			console.log(style.textContent);
@@ -261,6 +261,7 @@
 				const parts = font_du_jour.split("-");
 				const fontName = parts[0];
 				const directory = parts[2] || 'tff'; // defaults to 'tff' if not specified
+				console.log('fontName:' + fontName + ',' + 'directory' + directory)
 				attach_local_font(fontName, directory);
 			} else {
 				attach_goog_font(font_du_jour);

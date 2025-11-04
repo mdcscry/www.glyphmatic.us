@@ -2,10 +2,10 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF.8">
-    <TITLE>8.DeGenerator-EnhancedGlyphs</TITLE>
+    <TITLE>9.DeGenerator-EnhancedGlyphs</TITLE>
     <script src="./css_js/boxplot.js"></script>
     <link rel="stylesheet" href="./css_js/boxplot.css">    
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
 <body>
 
@@ -49,6 +49,27 @@
         const b = Math.floor(Math.random() * 256);
         const a = (Math.random() * (maxAlpha - minAlpha)) + minAlpha; // Random alpha between minAlpha and maxAlpha
         return `rgba(${r},${g},${b},${a.toFixed(2)})`; // .toFixed(2) for cleaner output
+    }
+
+    function getRandomNoiseGradient() {
+        const fromAngle = Math.floor(Math.random() * 360);
+        const opacity1 = (Math.random() * 0.2 + 0.15).toFixed(4); // 0.15 to 0.35 - much stronger
+        const opacity2 = (Math.random() * 0.3 + 0.2).toFixed(4); // 0.2 to 0.5
+        const stopAngle = (Math.random() * 0.001 + 0.0005).toFixed(6);
+        
+        return `repeating-conic-gradient(from ${fromAngle}deg, 
+            rgba(255, 255, 255, 0) 0deg ${stopAngle}deg, 
+            rgba(255, 255, 255, ${opacity1}) ${stopAngle}deg ${(stopAngle * 2).toFixed(6)}deg)`;
+    }
+
+    function getRandomRadialGradient() {
+        const centerX = Math.floor(Math.random() * 100);
+        const centerY = Math.floor(Math.random() * 100);
+        const color1 = getRandomRGBAColor(0.3, 0.6); // Much more visible
+        const color2 = getRandomRGBAColor(0.2, 0.5);
+        const color3 = getRandomRGBAColor(0.1, 0.4);
+        
+        return `radial-gradient(circle at ${centerX}% ${centerY}%, ${color1}, ${color2}, ${color3})`;
     }
 
     function getRandomBlendMode() {
@@ -116,7 +137,25 @@
      */
     function updateLayer(layerElement) {
         // --- Layer Div Styling ---
-        layerElement.style.backgroundColor = getRandomRGBAColor();
+        
+        // 40% chance for radial gradient instead of solid color
+        if (Math.random() < 0.4) {
+            layerElement.style.background = getRandomRadialGradient();
+            console.log('Applied radial gradient:', layerElement.style.background);
+            // if (Math.random() < 0.5) {
+            //     layerElement.classList.add('noise-animation');
+            //     const noiseGrad = getRandomNoiseGradient();
+            //     layerElement.style.setProperty('--noise-gradient', noiseGrad);
+            //     console.log('Applied noise gradient:', noiseGrad);
+            // } else {
+            //     layerElement.classList.remove('noise-animation');
+            // }
+        } else {
+            layerElement.style.backgroundColor = getRandomRGBAColor();
+            layerElement.style.background = '';
+            layerElement.classList.remove('noise-animation');
+        }
+        
         layerElement.style.mixBlendMode = getRandomBlendMode();
         layerElement.style.opacity = .95;
         layerElement.style.border = 'none'; 
@@ -141,13 +180,22 @@
 
             // MODIFIED: Separating webkitTextStrokeWidth and webkitTextStrokeColor
             if (Math.random() < 0.1) { // 25% chance for no text stroke
-              charSpan.style.webkitTextStrokeWidth = '0px';
-              charSpan.style.webkitTextStrokeColor = 'transparent';
+            charSpan.style.webkitTextStrokeWidth = '0px';
+            charSpan.style.webkitTextStrokeColor = 'transparent';
             } else {
-              // Applying your specific stroke width logic (1px to ~3.99px)
-              charSpan.style.webkitTextFillColor=getRandomColor3();
-              charSpan.style.webkitTextStrokeWidth = (Math.random() * 10 + 5) + "px"; 
-              charSpan.style.webkitTextStrokeColor = getRandomColor2(); // Use themeColor for stroke color
+            // Applying your specific stroke width logic (1px to ~3.99px)
+            charSpan.style.webkitTextFillColor=getRandomColor3();
+            charSpan.style.webkitTextStrokeWidth = (Math.random() * 10 + 5) + "px"; 
+            charSpan.style.webkitTextStrokeColor = getRandomColor2(); // Use themeColor for stroke color
+            }
+
+            // 30% chance for noise on the glyph (AFTER stroke logic)
+            if (Math.random() < 0.20) {
+                charSpan.classList.add('noise-glyph');
+                charSpan.style.setProperty('--glyph-noise-gradient', getRandomNoiseGradient());
+                charSpan.style.webkitTextFillColor = 'transparent'; // Override fill to show noise
+            } else {
+                charSpan.classList.remove('noise-glyph');
             }
 
             // Text shadow for the charSpan

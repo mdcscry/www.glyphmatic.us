@@ -269,10 +269,10 @@ thai chinese korean japanese mongolian thaana warangciti javanese soyombo japane
 .noto-sans-phagspa {
   font-family: "Noto Sans PhagsPa", sans-serif;
   font-weight: 400;
-  transform: scale(0.7);
+  transform: rotate(-90deg) scale(0.7);
   transform-origin:  bottom center;
   font-style: normal;
-  writing-mode: vertical-rl;
+  /*writing-mode: vertical-rl;*/
 }
 
 .noto-sans-newa {
@@ -2181,5 +2181,4 @@ body {
 .u0d95, .u787, .u006f, .u963f, .ue42{
   letter-spacing: -.1rem;
 }
-
 

@@ -195,10 +195,10 @@
 				if (directory === 'otf') {
 					filename = `${font_formatted}-Regular.otf`;
 				} else if (directory === 'tff') {
-					filename = `${font_formatted}.ttf`;
+					filename = `${font_formatted}-Regular.ttf`;
 				} else {
 					// Any other directory (like 'fonts')
-					filename = `${font_formatted}-Regular.ttf`;
+					filename = `${font_formatted}.ttf`;
 				}
 			style.textContent = `@font-face {font-family: "${font}"; src: url('/${directory}/${filename}');}`;
 			console.log(style.textContent);

@@ -1,10 +1,10 @@
 // Configuration
 //var maskSize = '45vw';
 //var maskYPosition = '58%'; // vertical position of mask (50% = center)
-var backgroundGlyphSize = '1.5vw';
-var backgroundGlyphCount = 2000;
-var gridSpacingX = 1.65; // horizontal multiplier for glyph size
-var gridSpacingY = 2.1 // vertical multiplier for glyph size
+var backgroundGlyphSize = '1.1vw';
+var backgroundGlyphCount = 3000;
+var gridSpacingX = 1.75; // horizontal multiplier for glyph size
+var gridSpacingY = 3 // vertical multiplier for glyph size
 var maskDissolveDuration = 5000; // milliseconds
 var glyphColorChangeDuration = 3000; // how often background glyphs change color
 
@@ -247,18 +247,28 @@ function createBackgroundGlyph(parent, x, y) {
         color = `hsl(${hue}, ${schemeColors.saturation}%, ${schemeColors.brightness}%)`;
     }
     
-    var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    text.setAttribute('x', x + '%');
-    text.setAttribute('y', y + '%');
-    text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('dominant-baseline', 'middle');
-    text.setAttribute('font-size', backgroundGlyphSize);
-    text.setAttribute('font-family', font);
-    text.setAttribute('fill', color);
-    text.setAttribute('class', 'bg-glyph');
-    text.innerHTML = glyph;
-    
-    parent.appendChild(text);
+// Generate the .u#### class from the codepoint
+var codepointClass = codepoint.split(';')[0].replace(/^x/, '').toLowerCase();
+codepointClass = 'u' + codepointClass;
+
+var fontClassName = font.toLowerCase().replace(/\s+/g, '-');
+
+console.log('Codepoint:', codepoint, '-> Class:', codepointClass);
+
+var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+text.setAttribute('x', x + '%');
+text.setAttribute('y', y + '%');
+text.setAttribute('text-anchor', 'middle');
+text.setAttribute('dominant-baseline', 'middle');
+text.setAttribute('font-size', backgroundGlyphSize);
+text.setAttribute('font-family', font);
+text.setAttribute('fill', color);
+text.setAttribute('class', 'bg-glyph ' + codepointClass + ' ' + fontClassName);
+text.innerHTML = glyph;
+
+console.log('Applied classes:', text.getAttribute('class'));
+
+parent.appendChild(text);
     
     // Start color animation
     if (currentScheme === 'A') {
