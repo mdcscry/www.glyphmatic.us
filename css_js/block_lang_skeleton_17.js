@@ -725,10 +725,10 @@ lang_font['noto-arabic'] = [
   "Noto Kufi Arabic",
   "Noto Naskh Arabic",
   "Noto Sans Arabic",
+ "Noto Nastaliq Urdu"  
 ]
 
 lang_font['arabic-reduced'] = [
-  ".SF Arabic",
   "Harmattan",
   "Lateef",
   "Noto Kufi Arabic",
