@@ -187,13 +187,23 @@
             document.head.appendChild(link);
         }
 
-        function attach_local_font(font){
-            font = font.split("-")[0];
-            const font_formatted = font.replace(/ /g,"");
-            const style = document.createElement('style');
-            style.textContent = `@font-face {font-family: "${font}"; src: url('/tff/${font_formatted}-Regular.ttf');}`;
-            document.head.appendChild(style);
-        }
+        function attach_local_font(font, directory = 'tff') {
+			console.log('in attach local font');
+			const font_formatted = font.replace(/ /g, "");
+			const style = document.createElement('style');
+			let filename;
+				if (directory === 'otf') {
+					filename = `${font_formatted}-Regular.otf`;
+				} else if (directory === 'tff') {
+					filename = `${font_formatted}.ttf`;
+				} else {
+					// Any other directory (like 'fonts')
+					filename = `${font_formatted}-Regular.ttf`;
+				}
+			style.textContent = `@font-face {font-family: "${font}"; src: url('/${directory}/${filename}');}`;
+			console.log(style.textContent);
+			document.head.appendChild(style);
+		}
 
         function getUrlParams() {
             const params = new URLSearchParams(window.location.search);
@@ -312,7 +322,10 @@
                         // attach_an_early_access_font(font); // Not defined yet
                         console.warn('Early access font not implemented:', font);
                     } else if (font.includes("-local")) {
-                        attach_local_font(font);
+                            const parts = font.split("-");
+                            const fontName = parts[0];
+                            const directory = parts[2] || 'tff'; // defaults to 'tff' if not specified
+                            attach_local_font(fontName, directory);
                     } else {
                         attach_goog_font(font);
                     }

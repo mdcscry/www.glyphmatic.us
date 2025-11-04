@@ -961,8 +961,11 @@ lang_font['oriya'] = [
   "Noto Serif Oriya"
 ]
 lang_font['korean-complete-jamo'] = [
- "Chiron Sung HK",
- "Arial Unicode MS"
+ //"Chiron Sung HK",
+ //"Arial Unicode MS"
+ "NotoSansCJKkr-local-otf",
+ "NotoSansMonoCJKkr-local-otf",
+ "NotoSerifCJKkr-local-otf"
 ]
 
 lang_font['korean'] = [

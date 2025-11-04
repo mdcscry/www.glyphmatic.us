@@ -139,7 +139,15 @@
 			console.log('in attach local font');
 			const font_formatted = font.replace(/ /g, "");
 			const style = document.createElement('style');
-			const filename = directory === 'tff' ? `${font_formatted}-Regular.ttf` : `${font_formatted}.ttf`;
+			let filename;
+				if (directory === 'otf') {
+					filename = `${font_formatted}-Regular.otf`;
+				} else if (directory === 'tff') {
+					filename = `${font_formatted}.ttf`;
+				} else {
+					// Any other directory (like 'fonts')
+					filename = `${font_formatted}-Regular.ttf`;
+				}
 			style.textContent = `@font-face {font-family: "${font}"; src: url('/${directory}/${filename}');}`;
 			console.log(style.textContent);
 			document.head.appendChild(style);
@@ -221,11 +229,10 @@
 				if (fontFamily.includes('Noto Sans Symbols') || fontFamily.includes('Noto Sans Symbols 2')) {
 					fontStack = `'Noto Emoji', '${fontFamily}', ${genericFallback}`;
 				} else if (fontFamily.includes('Symbola')) {
-					fontStack = `'${fontFamily}','Noto Sans Symbols','Noto Sans Symbols 2','Noto Emoji', ${genericFallback}`;
-										fontStack = `'${fontFamily}','Noto Sans Symbols','Noto Sans Symbols 2','Noto Emoji','Noto Sans Math'`;
+					//fontStack = `'${fontFamily}','Noto Sans Symbols','Noto Sans Symbols 2','Noto Emoji', ${genericFallback}`;
+					fontStack = `'${fontFamily}','Noto Sans Symbols','Noto Sans Symbols 2','Noto Emoji','Noto Sans Math', ${genericFallback}`;
 				} else {
 					fontStack = `'${fontFamily}', ${genericFallback}`;
-					fontStack = `'${fontFamily}'`;
 				}
 
 				spans_string = spans_string + '<td><span id="sid'+ i + '" style="font-family: ' + fontStack + ';" title="' + glyph + '-' + glyph_desc + '">&#x' + glyph + ';</span></td>';
