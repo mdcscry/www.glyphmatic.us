@@ -33,10 +33,23 @@
         </div>
         
         <div style="margin: 10px 0; font-size: 12px;">
-            <input type="checkbox" id="sysadminCheck"> <label for="sysadminCheck">S Y S A D M I N</label><br>
-            <input type="checkbox" id="sqlCheck"> <label for="sqlCheck">S Q L</label><br>
-            <input type="checkbox" id="borderCheck"> <label for="borderCheck">Add a Border</label><br>
-            <input type="checkbox" id="breakCheck"> <label for="breakCheck">Add Break</label><br>
+            <label for="commandSelect">Command Type:</label><br>
+            <select id="commandSelect" style="width: 100%; font-size: 14px; margin-bottom: 10px;">
+                <option value="all">All</option>
+                <option value="html">HTML</option>
+                <option value="css">CSS</option>
+                <option value="javascript">JavaScript</option>
+                <option value="crypto">Crypto</option>
+                <option value="sql">SQL</option>
+                <option value="sysadmin">Unix/Sysadmin</option>
+                <option value="git">Git</option>
+                <option value="python">Python</option>
+                <option value="ml">Machine Learning</option>				
+            </select>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div><input type="checkbox" id="borderCheck"> <label for="borderCheck">Add a Border</label></div>
+                <div><input type="checkbox" id="breakCheck"> <label for="breakCheck">Add Break</label></div>
+            </div>
         </div>
         
         <div style="font-size: 12px;">
@@ -61,11 +74,24 @@ var json_fonts;
 var current_glyph_index = 1;
 
 // Command arrays
-var all_commands = ['##','#!','/dev/null','rm -rf','kill -9','cat','man','cd','pwd','find/-','grep','||','&&','awk','chmod 777','tail -f','uptime','head','mount','sftp','scp','cron','whoami','history','.*','[a-zA-Z]',"perl -pe 's/perl/perl/g'",'!-1','~/','touch','touch touch','more','ping','less','clear','alias','sleep','who','chown','curl','shutdown','reboot','halt','ctrl-z','ctrl-c','* * * * *','UNION ALL','OUTER JOIN','COALESCE','CONCAT','REPLACE','MIN','MAX','DROP TABLE','MERGE','ALTER TABLE','INSERT','UNION','|','`whoami`'];
+const html = ['&lt;style&gt;','&lt;b&gt;', '&lt;a&gt;', '&lt;strong&gt;', '&lt;em&gt;', '&lt;br&gt;', '&lt;head&gt;', '&lt;h1&gt;', '&lt;body&gt;', '&lt;select&gt;', '&lt;details&gt;', '&lt;search&gt;', '&lt;main&gt;'];
+const css = ['rotate()', 'scale()', 'position', 'float', 'z-index', 'transform', 'animate', 'overflow', 'justify', 'right', 'center', 'static', 'relative', 'absolute', 'fixed', 'sticky', 'flex', 'cell', 'grid', 'color', 'align-self', 'gap', 'isolation', '!important', 'justify-self', 'mask', 'clip', 'offset', 'order', 'overscroll-behavior', 'place-self', 'rotate', 'scroll-behavior', 'white-space', '&amp;nbsp;', 'zoom'];
+const javascript = ['===', '!=', 'return', 'hello world!', 'setTimeout', 'await', 'while', 'switch', 'try', 'if', 'get', 'random()', 'onClick', 'onChange', 'break', 'promise', 'pending', 'rejected', 'fulfilled', 'await promise', 'dom'];
+const crypto = ['sha-256', 'sha-128', 'sha-512', 'md5', 'sha-256-gen', 'sha-128-gen', 'sha-512-gen'];
+const sql_commands = ['TRUNCATE','DELETE ALL','UNION','UNION ALL','OUTER JOIN','COALESCE','CONCAT','REPLACE','MIN','MAX','DROP TABLE','MERGE','ALTER TABLE','INSERT','UNION'];
+const sysadmin_commands = ['#!',
+'#!', '/dev/null', 'rm -rf', 'kill -9', 'cat', 'man', 'cd', 'pwd', 'find/-', 'grep', '||', '&&',
+'awk', 'chmod 777', 'tail -f', 'uptime', 'head', 'mount', 'sftp', 'scp', 'cron', 'whoami', 'history',
+'.*', '[a-zA-Z]', "perl -pe 's/perl/perl/g'", '!-1', '~/','touch','touch touch','more','ping','less',
+'clear','alias','sleep','who','chown','curl','shutdown','reboot','halt','ctrl-z','ctrl-c','* * * * *','|', '`whoami`'
+];
+const git = ["rebase","commit","push","pull -u","add","init","clone","status","diff","restore","reset","checkout","merge","stash","fetch","remote","apply","cherry-pick","blame"];
+const python = ['unique','factorize','get dummies','cut','pivot','melt','class','yield', 'await', 'self', 'none', 'true', 'false', 'pass', 'global', 'async', 'return', 'try', 'except', 'raise', 'del'];
+const ml = ['Random Forest','Nearest Neighbors','Perceptron','P(A|B)','Decision Tree',
+	'Semi-Supervised','Unsupervised','Supervised','Bagging','Lasso','Ensemble','Kernal'];
 
-var sysadmin_commands = ['#!','/dev/null','rm -rf','kill -9','cat','man','cd','pwd','find/-','grep','||','&&','awk','chmod 777','tail -f','uptime','head','mount','sftp','scp','cron','whoami','history','.*','[a-zA-Z]',"perl -pe 's/perl/perl/g'",'!-1','~/','touch','touch touch','more','ping','less','clear','alias','sleep','who','chown','curl','shutdown','reboot','halt','ctrl-z','ctrl-c','* * * * *','|','`whoami`'];
 
-var sql_commands = ['UNION ALL','OUTER JOIN','COALESCE','CONCAT','REPLACE','MIN','MAX','DROP TABLE','MERGE','ALTER TABLE','INSERT','UNION'];
+const all_commands = html.concat(css, javascript, crypto, python, git, sysadmin_commands, sql_commands, ml);
 
 $(function(){
 	loadGenerator();
@@ -113,6 +139,7 @@ function loadGenerator() {
 		createGlyph();
 		styleControls();
 		bindEvents();
+		loadStateFromURL();
 	});
 }
 
@@ -153,8 +180,25 @@ function createGlyph() {
 	
 	var command_text = command_array[Math.round((command_array.length-1)*Math.random())];
 	
+	// Check if it's a crypto hash generation command
+	if (command_text.endsWith('-gen')) {
+		// Use async/await to generate hash
+		(async function() {
+			var hash = await generateHash(command_text);
+			
+			if (document.getElementById('breakCheck').checked) {
+				hash = hash.replace(' ', '<br>');
+			}
+			
+			navGlyph[current_glyph_index].innerHTML = hash;
+		})();
+		
+		// Set a placeholder temporarily
+		command_text = 'generating...';
+	}
+	
 	// Add break if checkbox is checked
-	if (document.getElementById('breakCheck').checked) {
+	if (document.getElementById('breakCheck').checked && !command_text.endsWith('-gen')) {
 		command_text = command_text.replace(' ', '<br>');
 	}
 	
@@ -211,24 +255,37 @@ function createGlyph() {
 }
 
 function getActiveCommandArray() {
-	var sysadmin_checked = document.getElementById('sysadminCheck').checked;
-	var sql_checked = document.getElementById('sqlCheck').checked;
+	var command_type = document.getElementById('commandSelect').value;
 	
-	if (sysadmin_checked && sql_checked) {
-		return all_commands;
-	} else if (sysadmin_checked) {
-		return sysadmin_commands;
-	} else if (sql_checked) {
-		return sql_commands;
-	} else {
-		return all_commands;
+	switch(command_type) {
+		case 'html':
+			return html;
+		case 'css':
+			return css;
+		case 'javascript':
+			return javascript;
+		case 'crypto':
+			return crypto;
+		case 'sql':
+			return sql_commands;
+		case 'sysadmin':
+			return sysadmin_commands;
+		case 'git':
+			return git;
+		case 'python':
+			return python;
+		case 'ml':
+			return ml;	
+		case 'all':
+		default:
+			return all_commands;
 	}
 }
 
 function addRandomBorder() {
 	var border_styles = ['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset'];
 	var border_style = border_styles[Math.floor(Math.random() * border_styles.length)];
-	var border_width = Math.floor(Math.random() * 10) + 1;
+	var border_width = Math.floor(Math.random() * 50) + 1;
 	
 	// Get contrasting border color based on background
 	var border_color = getContrastingBorderColor();
@@ -279,20 +336,83 @@ function setBackground() {
 	}
 }
 
-function changeCommand() {
+async function changeCommand() {
 	var command_array = getActiveCommandArray();
 	var command_text = command_array[Math.round((command_array.length-1)*Math.random())];
+	
+	// Check if it's a crypto hash generation command
+	if (command_text.endsWith('-gen')) {
+		command_text = await generateHash(command_text);
+	}
 	
 	if (document.getElementById('breakCheck').checked) {
 		command_text = command_text.replace(' ', '<br>');
 	}
 	
 	navGlyph[current_glyph_index].innerHTML = command_text;
+	saveStateToURL()
+}
+
+async function generateHash(hashType) {
+	// Remove the -gen suffix to get the algorithm
+	var algorithm = hashType.replace('-gen', '');
+	
+	// Generate random data to hash
+	var randomData = Math.random().toString() + Date.now().toString();
+	
+	// Simple hash function (since Web Crypto API requires HTTPS)
+	var hash = 0;
+	for (var i = 0; i < randomData.length; i++) {
+		var char = randomData.charCodeAt(i);
+		hash = ((hash << 5) - hash) + char;
+		hash = hash & hash; // Convert to 32bit integer
+	}
+	
+	// Convert to hex and pad based on algorithm
+	var hashHex = Math.abs(hash).toString(16);
+	
+	// Pad to appropriate length based on algorithm
+	var targetLength;
+	switch(algorithm) {
+		case 'sha-256':
+			targetLength = 64; // 256 bits = 64 hex chars
+			break;
+		case 'sha-512':
+			targetLength = 128; // 512 bits = 128 hex chars
+			break;
+		case 'sha-128':
+		case 'md5':
+			targetLength = 32; // 128 bits = 32 hex chars
+			break;
+		default:
+			targetLength = 64;
+	}
+	
+	// Repeat and pad the hash to reach target length
+	while (hashHex.length < targetLength) {
+		hashHex += Math.random().toString(16).substring(2);
+	}
+	
+	hashHex = hashHex.substring(0, targetLength);
+	
+	// Format with algorithm name and line breaks
+	var formattedHash = algorithm + ':<br>';
+	
+	// Add line breaks every 64 characters for readability
+	for (var i = 0; i < hashHex.length; i += 64) {
+		formattedHash += hashHex.substring(i, i + 64);
+		if (i + 64 < hashHex.length) {
+			formattedHash += '<br>';
+		}
+	}
+	
+	return formattedHash;
 }
 
 function changeFont() {
 	var font = JSON.stringify(json_fonts.items[Math.round((json_fonts.items.length-1)*Math.random())].family);
 	navGlyph[current_glyph_index].style.fontFamily = font;
+	saveStateToURL()
 }
 
 function changeFontStyle() {
@@ -323,6 +443,7 @@ function changeFontStyle() {
 	
 	// Apply shadow
 	navGlyph[current_glyph_index].style.textShadow = offset_x + 'px ' + offset_y + 'px ' + blur + 'px ' + shadow_color;
+	saveStateToURL()
 }
 
 function changeFontRender() {
@@ -334,6 +455,7 @@ function changeFontRender() {
 	navGlyph[current_glyph_index].style.fontWeight = weights[Math.floor(Math.random() * weights.length)];
 	navGlyph[current_glyph_index].style.fontStyle = styles[Math.floor(Math.random() * styles.length)];
 	navGlyph[current_glyph_index].style.textTransform = transforms[Math.floor(Math.random() * transforms.length)];
+	saveStateToURL()
 }
 
 function changeStyle() {
@@ -357,6 +479,7 @@ function changeStyle() {
 	navGlyph[current_glyph_index].style.webkitTextFillColor = mycolors[Math.round((mycolors.length-1)*Math.random())];
 	navGlyph[current_glyph_index].style.webkitTextStrokeWidth = Math.round(Math.random()*5) + "px";
 	navGlyph[current_glyph_index].style.webkitTextStrokeColor = mycolors[Math.round((mycolors.length-1)*Math.random())];
+    saveStateToURL()
 }
 
 function changeBorderColor() {
@@ -373,6 +496,7 @@ function changeBorderColor() {
 		
 		navGlyph[current_glyph_index].style.border = width + ' ' + style + ' ' + border_color;
 	}
+    saveStateToURL()
 }
 
 function changeBorderStyle() {
@@ -381,13 +505,14 @@ function changeBorderStyle() {
 		var new_style = border_styles[Math.floor(Math.random() * border_styles.length)];
 		
 		// New random width
-		var new_width = (Math.floor(Math.random() * 10) + 1) + 'px';
+		var new_width = (Math.floor(Math.random() * 50) + 1) + 'px';
 		
 		// New contrasting color
 		var new_color = getContrastingBorderColor();
 		
 		navGlyph[current_glyph_index].style.border = new_width + ' ' + new_style + ' ' + new_color;
 	}
+    saveStateToURL()
 }
 
 function biggerBorder() {
@@ -396,6 +521,7 @@ function biggerBorder() {
 		var new_padding = Math.min(current_padding + 10, 100);
 		navGlyph[current_glyph_index].style.padding = new_padding + 'px';
 	}
+    saveStateToURL()
 }
 
 function smallerBorder() {
@@ -404,18 +530,21 @@ function smallerBorder() {
 		var new_padding = Math.max(current_padding - 10, 0);
 		navGlyph[current_glyph_index].style.padding = new_padding + 'px';
 	}
+    saveStateToURL()
 }
 
 function biggerFont() {
 	var current_size = parseInt(navGlyph[current_glyph_index].style.fontSize) || 200;
-	var new_size = Math.min(current_size + 20, 400);
+	var new_size = Math.min(current_size + 20, 1200);
 	navGlyph[current_glyph_index].style.fontSize = new_size + 'px';
+    saveStateToURL()
 }
 
 function smallerFont() {
 	var current_size = parseInt(navGlyph[current_glyph_index].style.fontSize) || 200;
-	var new_size = Math.max(current_size - 20, 60);
+	var new_size = Math.max(current_size - 20, 20);
 	navGlyph[current_glyph_index].style.fontSize = new_size + 'px';
+    saveStateToURL()
 }
 
 function styleControls() {
@@ -424,10 +553,24 @@ function styleControls() {
 	var checkboxes = controls.querySelectorAll('input[type="checkbox"]');
 	var select = controls.querySelector('select');
 	var labels = controls.querySelectorAll('label');
+// Style BOTH select elements
+	var commandSelect = document.getElementById('commandSelect');
+	var bgSelect = document.getElementById('bgSelect');	
 	
+	// Filter for monospace fonts only
+	var mono_fonts = json_fonts.items.filter(function(font) {
+		return font.category === 'monospace';
+	});
+
 	// Apply random Google font to controls (ONE font for everything)
-	var menu_font = JSON.stringify(json_fonts.items[Math.round((json_fonts.items.length-1)*Math.random())].family);
-	
+	var menu_font;
+	if (mono_fonts.length > 0) {
+		menu_font = JSON.stringify(mono_fonts[Math.round((mono_fonts.length-1)*Math.random())].family);
+	} else {
+		menu_font = JSON.stringify(json_fonts.items[Math.round((json_fonts.items.length-1)*Math.random())].family);
+	}
+
+
 	// Get background color to determine color scheme
 	var bg_color = getComputedStyle(document.body).backgroundColor;
 	var main_color, background_color, text_color;
@@ -487,16 +630,18 @@ function styleControls() {
 		checkbox.style.marginRight = '12px';
 	});
 	
-	// Select gets consistent styling
-	select.style.backgroundColor = 'transparent';
-	select.style.color = text_color;
-	select.style.border = '3px solid ' + main_color;
-	select.style.borderRadius = '5px';
-	select.style.padding = '12px';
-	select.style.fontSize = '18px';
-	select.style.width = '250px';
-	select.style.fontFamily = menu_font;
-	select.style.fontWeight = 'bold';
+	// Apply same styling to both
+	[commandSelect, bgSelect].forEach(function(select) {
+		select.style.backgroundColor = 'transparent';
+		select.style.color = text_color;
+		select.style.border = '2px solid ' + main_color;
+		select.style.borderRadius = '8px';
+		select.style.padding = '8px 10px';
+		select.style.fontSize = '14px';
+		select.style.width = '100%';
+		select.style.fontFamily = menu_font;
+		select.style.fontWeight = 'bold';
+	});
 	
 	// ALL labels get identical styling
 	labels.forEach(function(label) {
@@ -607,20 +752,8 @@ function bindEvents() {
 		}
 	});
 	
-	document.getElementById('sysadminCheck').addEventListener('change', function() {
-		// Uncheck SQL if sysadmin is checked
-		if (this.checked) {
-			document.getElementById('sqlCheck').checked = false;
-		}
-		// Don't auto-change command - let user click Change Command button
-	});
-	
-	document.getElementById('sqlCheck').addEventListener('change', function() {
-		// Uncheck sysadmin if SQL is checked
-		if (this.checked) {
-			document.getElementById('sysadminCheck').checked = false;
-		}
-		// Don't auto-change command - let user click Change Command button
+	document.getElementById('commandSelect').addEventListener('change', function() {
+		changeCommand();
 	});
 	
 	document.getElementById('breakCheck').addEventListener('change', function() {
@@ -646,6 +779,65 @@ function bindEvents() {
 		navGlyph[current_glyph_index].innerHTML = current_text;
 	});
 }
+
+function saveStateToURL() {
+	var state = {
+		f: navGlyph[current_glyph_index].style.fontFamily.replace(/"/g, ''),
+		fs: navGlyph[current_glyph_index].style.fontSize,
+		c: navGlyph[current_glyph_index].innerHTML,
+		ct: document.getElementById('commandSelect').value,
+		bg: getComputedStyle(document.body).backgroundColor,
+		col: navGlyph[current_glyph_index].style.color,
+		ts: navGlyph[current_glyph_index].style.textShadow,
+		sw: navGlyph[current_glyph_index].style.webkitTextStrokeWidth,
+		sc: navGlyph[current_glyph_index].style.webkitTextStrokeColor,
+		fc: navGlyph[current_glyph_index].style.webkitTextFillColor,
+		b: navGlyph[current_glyph_index].style.border,
+		p: navGlyph[current_glyph_index].style.padding,
+		bc: document.getElementById('borderCheck').checked ? 1 : 0,
+		br: document.getElementById('breakCheck').checked ? 1 : 0,
+		fw: navGlyph[current_glyph_index].style.fontWeight,
+		fst: navGlyph[current_glyph_index].style.fontStyle,
+		tt: navGlyph[current_glyph_index].style.textTransform,
+		lh: navGlyph[current_glyph_index].style.lineHeight
+	};
+	
+	window.location.hash = btoa(JSON.stringify(state)).replace(/=/g, '');
+}
+
+function loadStateFromURL() {
+	if (window.location.hash) {
+		try {
+			var hash = window.location.hash.substring(1);
+			var state = JSON.parse(atob(hash));
+			
+			navGlyph[current_glyph_index].style.fontFamily = '"' + state.f + '"';
+			navGlyph[current_glyph_index].style.fontSize = state.fs;
+			navGlyph[current_glyph_index].innerHTML = state.c;
+			document.getElementById('commandSelect').value = state.ct;
+			document.body.style.backgroundColor = state.bg;
+			navGlyph[current_glyph_index].style.color = state.col;
+			navGlyph[current_glyph_index].style.textShadow = state.ts;
+			navGlyph[current_glyph_index].style.webkitTextStrokeWidth = state.sw;
+			navGlyph[current_glyph_index].style.webkitTextStrokeColor = state.sc;
+			navGlyph[current_glyph_index].style.webkitTextFillColor = state.fc;
+			navGlyph[current_glyph_index].style.border = state.b;
+			navGlyph[current_glyph_index].style.padding = state.p;
+			document.getElementById('borderCheck').checked = state.bc === 1;
+			document.getElementById('breakCheck').checked = state.br === 1;
+			navGlyph[current_glyph_index].style.fontWeight = state.fw;
+			navGlyph[current_glyph_index].style.fontStyle = state.fst;
+			navGlyph[current_glyph_index].style.textTransform = state.tt;
+			navGlyph[current_glyph_index].style.lineHeight = state.lh;
+		} catch (e) {
+			console.error('Failed to load state:', e);
+		}
+	}
+}
+
+
+
+
 
 </script>
 </body>
