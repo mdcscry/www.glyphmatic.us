@@ -486,7 +486,7 @@ lang_font['rejang'] = ["Noto Sans Rejang"]
 lang_font['lepcha'] = ["Noto Sans Lepcha"]
 lang_font['thaana'] = ["Noto Sans Thaana"] 
 lang_font['gothic'] = ["Noto Sans Gothic"] 
-lang_font['cuneiform'] = ["Noto Sans Cuneiform","Akkadian-local-fonts"] 
+lang_font['cuneiform'] = ["Noto Sans Cuneiform","Akkadian-local"] 
 lang_font['sudanese'] = ["Noto Sans Sundanese" ]           
 lang_font['samaritan'] = ["Noto Sans Samaritan"]
 lang_font['brahmi'] = ["Noto Sans Brahmi"] 
@@ -509,12 +509,12 @@ lang_font['kaithi'] = [ "Noto Sans Kaithi" ]
 lang_font['tibetan'] = [ "Noto Serif Tibetan" ]
 lang_font['saurashtra'] = [ "Noto Sans Saurashtra"]
 lang_font['lisu'] = ["Noto Sans Lisu"]
-lang_font['symbols'] = ["Noto Sans Symbols","Symbola-local-fonts"]
-lang_font['symbols'] = ["Noto Sans Symbols","Symbola-local-fonts"]
+lang_font['symbols'] = ["Noto Sans Symbols","Symbola-local"]
+lang_font['symbols'] = ["Noto Sans Symbols","Symbola-local"]
 lang_font['symbols2'] = ["Noto Sans Symbols 2"]
-lang_font['symbols2-symbola'] = ["Noto Sans Symbols 2","Symbola-local-fonts"]
-lang_font['symbols2-currency'] = ["Noto Sans","Noto Sans Mono","Noto Serif","Helvetica","Symbola-local-fonts"]
-lang_font['symbols-special'] = ["Noto Emoji","Symbola-local-fonts"]
+lang_font['symbols2-symbola'] = ["Noto Sans Symbols 2","Symbola-local"]
+lang_font['symbols2-currency'] = ["Noto Sans","Noto Sans Mono","Noto Serif","Helvetica","Symbola-local"]
+lang_font['symbols-special'] = ["Noto Emoji","Symbola-local"]
 lang_font['emoji-bw'] = ["Noto Emoji-local"]
 lang_font['bw-emoji-extra'] = ["Open Moji Black-local-fonts","Fluent Emoji INV HC-local-fonts",'Twitter Color Emoji-local-fonts']
 lang_font['emoji-color'] = ["Noto Color Emoji"]
@@ -961,31 +961,32 @@ lang_font['oriya'] = [
   "Noto Serif Oriya"
 ]
 lang_font['korean-complete-jamo'] = [
-  "Arial Unicode MS-local-fonts",
-  "NotoSansCJKkr-local-otf",
-  "NotoSansMonoCJKkr-local-otf",
-  "NotoSerifCJKkr-local-otf",
+ //"Chiron Sung HK",
+ //"Arial Unicode MS"
+ "NotoSansCJKkr-local-otf",
+ "NotoSansMonoCJKkr-local-otf",
+ "NotoSerifCJKkr-local-otf"
 ]
 
 lang_font['korean'] = [
 	"Gowun Batang",
 	"Black And White Picture",
-	//"Black Han Sans",
-  //"Chiron Sung HK",
-  //"Chiron GoRound TC",
-	//"Cute Font",
+	"Black Han Sans",
+  "Chiron Sung HK",
+  "Chiron GoRound TC",
+	"Cute Font",
 	"Do Hyeon",
-	//"Dokdo",
+	"Dokdo",
   "Dongle",
 	"East Sea Dokdo",
-	//"Gaegu",
+	"Gaegu",
 	"Gamja Flower",
 	"Gothic A1",
-	//"Gugi",
+	"Gugi",
 	"Hi Melody",
   "Hahmlet",
   "IBM Plex Sans KR",
-	//"Jua",
+	"Jua",
 	"Kirang Haerang",
 	"Nanum Brush Script",
 	"Nanum Gothic",
