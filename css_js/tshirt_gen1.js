@@ -1,9 +1,4 @@
-// ===================================
-// THE GENERATOR - Refactored JavaScript
-// All styling moved to CSS file
-// ===================================
 
-//eliminate Sixtyfour
 
 var linkFont=[];
 var outString='';
@@ -64,13 +59,26 @@ function loadGenerator() {
         const excludeKeywords = ['barcode', 
             'material icons', 'material symbols', 
             'jacqard', 'wavefont',
-            'flow','yarndings','guides','redacted','charted'];
+            'flow','yarndings','guides','redacted','charted'
+        ];
+        
+        // Filter out bad mono fonts
+        const excludeSpecificFonts = [
+            'Sixtyfour', 'Workbench', 'Monofett', 'Martian Mono SemiExpanded'
+        ];    
         
         var filtered_items = json.items.filter(function(font) {
             var fontName = font.family.toLowerCase();
-            return !excludeKeywords.some(function(keyword) {
+            
+            // Check keyword exclusions
+            var isKeywordExcluded = excludeKeywords.some(function(keyword) {
                 return fontName.includes(keyword);
             });
+            
+            // NEW: Check specific font name exclusions
+            var isSpecificFontExcluded = excludeSpecificFonts.includes(font.family);
+            
+            return !isKeywordExcluded && !isSpecificFontExcluded; // Only return fonts that are NOT excluded
         });
         
         // Replace original items with filtered list
