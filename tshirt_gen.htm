@@ -84,12 +84,25 @@ var json_fonts;
 var current_glyph_index = 1;
 var main_color, background_color, text_color;
 
+// Tagline array
+const taglines = [
+    ' for nerds who nerds think are nerds',
+    ' for geeks who geeks think are geeks',
+	" for geeks who think nerds don't market well",
+	" for nerds who think like geeks",
+	" for geeks who wish they were nerds",
+	" for nerds who want to be geeks",
+	" for nerds who geeks think are nerds",
+	" for geeks who nerds think are geeks",
+	" for nerds who need better marking"
+];
+
 // Command arrays
 const html = ['&lt;style&gt;','&lt;b&gt;', '&lt;a&gt;', '&lt;strong&gt;', '&lt;em&gt;', '&lt;br&gt;', '&lt;head&gt;', '&lt;h1&gt;', '&lt;body&gt;', '&lt;select&gt;', '&lt;details&gt;', '&lt;search&gt;', '&lt;main&gt;'];
 const css = ['rotate()', 'scale()', 'position', 'float', 'z-index', 'transform', 'animate', 'overflow', 'justify', 'right', 'center', 'static', 'relative', 'absolute', 'fixed', 'sticky', 'flex', 'cell', 'grid', 'color', 'align-self', 'gap', 'isolation', '!important', 'justify-self', 'mask', 'clip', 'offset', 'order', 'overscroll-behavior', 'place-self', 'rotate', 'scroll-behavior', 'white-space', '&amp;nbsp;', 'zoom'];
 const javascript = ['===', '!=', 'return', 'hello world!', 'setTimeout', 'await', 'while', 'switch', 'try', 'if', 'get', 'random()', 'onClick', 'onChange', 'break', 'promise', 'pending', 'rejected', 'fulfilled', 'await promise', 'dom'];
 const crypto = ['sha-1', 'sha-256', 'sha-384', 'sha-512', 'md5', 'sha-1-gen', 'sha-256-gen', 'sha-384-gen', 'sha-512-gen', 'md5-gen'];
-const sql_commands = ['TRUNCATE','DELETE ALL','UNION','UNION ALL','OUTER JOIN','COALESCE','CONCAT','REPLACE','MIN','MAX','DROP TABLE','MERGE','ALTER TABLE','INSERT','UNION'];
+const sql_commands = ['TRUNCATE','DELETE ALL','UNION','UNION ALL','OUTER JOIN','COALESCE','CONCAT','REPLACE','MIN','MAX','DROP TABLE','MERGE','ALTER TABLE','INSERT','UNION','FULL OUTER JOIN'];
 const sysadmin_commands = ['#!','finger',
 '#!', '/dev/null', 'rm -rf', 'kill -9', 'cat', 'man', 'cd', 'pwd', 'find/-', 'grep', '||', '&&',
 'awk', 'chmod 777', 'tail -f', 'uptime', 'head', 'mount', 'sftp', 'scp', 'cron', 'whoami', 'history',
@@ -155,7 +168,13 @@ function loadGenerator() {
 		styleControls();
 		bindEvents();
 		loadStateFromURL();
-	});
+
+		// Set random tagline (only once per session)
+		var taglineText = document.getElementById('taglineText');
+			if (taglineText) {
+				taglineText.textContent = taglines[Math.floor(Math.random() * taglines.length)];
+			}
+		});
 }
 
 function createGlyph() {
@@ -656,10 +675,37 @@ function styleControls() {
 	if (tagline) {
 		tagline.style.fontFamily = menu_font;
 		tagline.style.background = background_color;
-		tagline.style.border = '3px solid ' + main_color;
 		tagline.style.color = text_color;
 		tagline.style.fontWeight = 'bold';
 	}
+
+	// Style the man page
+		var manPage = document.getElementById('manPage');
+		var closeMan = document.getElementById('closeMan');
+		var manPre = manPage.querySelector('pre');
+
+		if (manPage) {
+			manPage.style.fontFamily = menu_font;
+			manPage.style.background = background_color;
+			manPage.style.border = '3px solid ' + main_color;
+			manPage.style.color = text_color;
+			
+			closeMan.style.fontFamily = menu_font;
+			closeMan.style.backgroundColor = 'transparent';
+			closeMan.style.color = text_color;
+			closeMan.style.border = '2px solid ' + main_color;
+			
+			manPre.style.fontFamily = menu_font;
+			manPre.style.color = text_color;
+		}
+
+		// Style the man page link
+		var manLink = document.getElementById('manLink');
+		if (manLink) {
+			manLink.style.color = text_color;
+			manLink.style.fontFamily = menu_font;
+		}
+
 }
 
 function getContrastColor(bg_color) {
@@ -861,6 +907,16 @@ function bindEvents() {
 			}, 1000);
 		});
 	});
+
+	document.getElementById('manLink').addEventListener('click', function(e) {
+		e.preventDefault();
+		document.getElementById('manPage').style.display = 'block';
+	});
+
+	document.getElementById('closeMan').addEventListener('click', function() {
+		document.getElementById('manPage').style.display = 'none';
+	});
+
 	}
 
 function saveStateToURL() {
@@ -920,8 +976,126 @@ function loadStateFromURL() {
 
 </script>
 
-<div id="tagline" style="position: fixed; top: 20px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.9); padding: 15px; border-radius: 10px; max-width: 400px; font-size: 13px;">
+<!-- <div id="tagline" style="position: fixed; top: 20px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.9); padding: 15px; border-radius: 10px; max-width: 400px; font-size: 13px;">
     T H E &nbsp; G E N E R A T O R <br><br>T-shirt design for nerds who nerds think are nerds.
+</div> -->
+
+<!-- <div id="tagline" style="...">
+    T H E  G E N E R A T O R<br><br>
+    Fashion design for nerds who nerds think are nerds.<br>
+    <a id="manLink" href="#" style="text-decoration: underline; cursor: pointer;">man the_generator</a>
+</div> -->
+
+<div id="tagline">
+    T H E &nbsp; G E N E R A T O R<br><br>
+    Fashion design <span id="taglineText"></span>.<br>
+    <a id="manLink" href="#" style="text-decoration: underline; cursor: pointer;"><br>man the_generator</a>
+</div>
+
+<div id="manPage" style="display: none; position: fixed; top: 50px; left: 50px; right: 50px; bottom: 50px; padding: 30px; overflow-y: auto; z-index: 10000; border-radius: 10px;">
+    <button id="closeMan" style="position: absolute; top: 10px; right: 10px; padding: 8px 15px; cursor: pointer; border-radius: 8px; font-weight: bold;">CLOSE</button>
+    <pre style="white-space: pre-wrap; margin: 0;">
+NAME
+     the_generator - cryptographically valid command typography generator
+
+SYNOPSIS
+     the_generator [--command-type TYPE] [--border] [--break] [--backgroundColor]
+
+DESCRIPTION
+     the_generator produces unique typographic renderings of technical commands,
+     SQL statements, cryptographic hashes, and corporate admonitions using random
+     Google Fonts with randomized webkit styling properties.
+
+     All generated SHA hashes (256, 384, 512) and MD5 hashes are cryptographically
+     valid outputs of their respective algorithms applied to pseudorandom input data.
+     
+     Git commit hashes display the first 7 hexadecimal characters of SHA-256 output,
+     conforming to standard Git short hash format.
+
+OPTIONS
+     --command-type TYPE
+             Select command category: all, html, css, javascript, crypto, sql,
+             sysadmin, git, python, ml, adm
+             
+     --border
+             Apply random border (width: 1-50px, style: varies, color: contrasting)
+             
+     --break
+             Insert line break at first space character
+
+     --background-color
+             Change the background color of the design	(black, white, gray, random)	 
+
+COMMANDS
+     Change Command
+             Generate new command from selected category
+             
+     Change Google Font
+             Apply random font from filtered Google Fonts API (excludes: barcode,
+             material icons, wavefont, yarndings, guides, redacted, charted)
+             
+     Change Font Style
+             Randomize webkit-text-fill-color, webkit-text-stroke-width,
+             webkit-text-stroke-color, and text-shadow (blue hue: 180-240°)
+             
+     Change Font Render
+             Modify font-weight, font-style, text-transform
+             
+     Bigger Font / Smaller Font
+             Adjust font-size in 20px increments (range: 20-1200px)
+             
+     Border Color
+             Regenerate border color (maintains width and style)
+             
+     Border Style
+             Randomize border width (1-50px), style, and color
+             
+     Bigger Border Box / Smaller Border Box
+             Adjust padding in 10px increments (range: 0-100px)
+             
+     Download as PNG
+             Export current rendering via dom-to-image library
+             
+     Share This Design
+             Generate state-encoded URL, copy to clipboard
+
+BACKGROUND
+     click Random repeatedly to change random color
+
+ARRAYS
+     html          HTML5 element tags (encoded: &lt; &gt;)
+     css           CSS properties and values
+     javascript    JS operators, keywords, promises
+     crypto        sha-256, sha-384, sha-512, md5 (appended with -gen for generation)
+     sql           SQL commands (TRUNCATE, DROP TABLE, COALESCE, etc.)
+     sysadmin      Unix/Linux commands (chmod 777, rm -rf, whoami, etc.)
+     git           Git commands plus commit-sha (generates valid short hash)
+     python        Python keywords and pandas methods
+     ml            Machine learning terminology
+     adm           Corporate admonitions (Fuck it Ship it, Quick Question, etc.)
+
+FILES
+     Google Fonts API (filtered latin subset, monospace for UI)
+     js-sha256, js-sha512, js-md5 (cryptographic hash libraries)
+     dom-to-image (PNG export)
+
+NOTES
+     All webkit properties may render differently across browsers.
+     
+     Hash generation uses Math.random() + Date.now() as input, ensuring
+     cryptographic validity without deterministic reproducibility.
+     
+     URL state encoding uses base64 JSON. Maximum practical length: ~2000 characters.
+
+AUTHOR
+     Matthew Cryer, with Claude (Anthropic), with chatGPT (openAI)
+     
+TAGLINE(S)
+     various
+
+SEE ALSO
+     git(1), sha256sum(1), chmod(1), perl(1), SQL standards documentation
+    </pre>
 </div>
 
 </body>
