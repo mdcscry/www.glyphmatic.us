@@ -46,7 +46,8 @@
                 <option value="sysadmin">Unix/Sysadmin</option>
                 <option value="git">Git</option>
                 <option value="python">Python</option>
-                <option value="ml">Machine Learning</option>				
+                <option value="ml">Machine Learning</option>
+				<option value="adm">Admonitions</option>				
             </select>
             <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                 <div><input type="checkbox" id="breakCheck"> <label for="breakCheck">Add Break</label></div>
@@ -67,8 +68,11 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-1.11.0.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha512/0.8.0/sha512.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-md5/0.7.3/md5.min.js"></script>
+
 <script type="text/javascript">
 
 var linkFont=[];
@@ -81,7 +85,7 @@ var current_glyph_index = 1;
 const html = ['&lt;style&gt;','&lt;b&gt;', '&lt;a&gt;', '&lt;strong&gt;', '&lt;em&gt;', '&lt;br&gt;', '&lt;head&gt;', '&lt;h1&gt;', '&lt;body&gt;', '&lt;select&gt;', '&lt;details&gt;', '&lt;search&gt;', '&lt;main&gt;'];
 const css = ['rotate()', 'scale()', 'position', 'float', 'z-index', 'transform', 'animate', 'overflow', 'justify', 'right', 'center', 'static', 'relative', 'absolute', 'fixed', 'sticky', 'flex', 'cell', 'grid', 'color', 'align-self', 'gap', 'isolation', '!important', 'justify-self', 'mask', 'clip', 'offset', 'order', 'overscroll-behavior', 'place-self', 'rotate', 'scroll-behavior', 'white-space', '&amp;nbsp;', 'zoom'];
 const javascript = ['===', '!=', 'return', 'hello world!', 'setTimeout', 'await', 'while', 'switch', 'try', 'if', 'get', 'random()', 'onClick', 'onChange', 'break', 'promise', 'pending', 'rejected', 'fulfilled', 'await promise', 'dom'];
-const crypto = ['sha-256', 'sha-128', 'sha-512', 'md5', 'sha-256-gen', 'sha-128-gen', 'sha-512-gen'];
+const crypto = ['sha-1', 'sha-256', 'sha-384', 'sha-512', 'md5', 'sha-1-gen', 'sha-256-gen', 'sha-384-gen', 'sha-512-gen', 'md5-gen'];
 const sql_commands = ['TRUNCATE','DELETE ALL','UNION','UNION ALL','OUTER JOIN','COALESCE','CONCAT','REPLACE','MIN','MAX','DROP TABLE','MERGE','ALTER TABLE','INSERT','UNION'];
 const sysadmin_commands = ['#!','finger',
 '#!', '/dev/null', 'rm -rf', 'kill -9', 'cat', 'man', 'cd', 'pwd', 'find/-', 'grep', '||', '&&',
@@ -89,10 +93,15 @@ const sysadmin_commands = ['#!','finger',
 '.*', '[a-zA-Z]', "perl -pe 's/perl/perl/g'", '!-1', '~/','touch','touch touch','more','ping','less',
 'clear','alias','sleep','who','chown','curl','shutdown','reboot','halt','ctrl-z','ctrl-c','* * * * *','|', '`whoami`'
 ];
-const git = ["rebase","commit","push","pull -u","add","init","clone","status","diff","restore","reset","checkout","merge","stash","fetch","remote","apply","cherry-pick","blame"];
+const git = ["rebase","commit","push","pull -u","add","init","clone","status","diff","restore","reset","checkout","merge","stash","fetch","remote","apply","cherry-pick","blame","commit-sha",
+"commit-sha"];
 const python = ['unique','factorize','get dummies','cut','pivot','melt','class','yield', 'await', 'self', 'none', 'true', 'false', 'pass', 'global', 'async', 'return', 'try', 'except', 'raise', 'del'];
 const ml = ['Random Forest','Nearest Neighbors','Perceptron','P(A|B)','Decision Tree',
 	'Semi-Supervised','Unsupervised','Supervised','Bagging','Lasso','Ensemble','Kernal'];
+const adm = ['Fuck it, Ship it!','Onboarding','POC','High Priority',"Can't Fail",'Please Fix.',
+	'Quick Question','Action Item','Bug Fix'
+	//'Kay Cee is adorbs'
+];	
 
 
 const all_commands = html.concat(css, javascript, crypto, python, git, sysadmin_commands, sql_commands, ml);
@@ -280,6 +289,8 @@ function getActiveCommandArray() {
 			return python;
 		case 'ml':
 			return ml;	
+		case 'adm':
+			return adm;		
 		case 'all':
 		default:
 			return all_commands;
@@ -348,61 +359,54 @@ async function changeCommand() {
 	if (command_text.endsWith('-gen')) {
 		command_text = await generateHash(command_text);
 	}
+	// Check if it's a git commit sha
+	else if (command_text === 'commit-sha') {
+		// Generate a real SHA-256 hash and take first 7 chars
+		var randomData = Math.random().toString() + Date.now().toString();
+		var fullHash = sha256(randomData);
+		command_text = 'commit: ' + fullHash.substring(0, 7);
+	}
 	
 	if (document.getElementById('breakCheck').checked) {
 		command_text = command_text.replace(' ', '<br>');
 	}
 	
 	navGlyph[current_glyph_index].innerHTML = command_text;
-	saveStateToURL()
+	saveStateToURL();
 }
 
 async function generateHash(hashType) {
-	// Remove the -gen suffix to get the algorithm
 	var algorithm = hashType.replace('-gen', '');
 	
 	// Generate random data to hash
-	var randomData = Math.random().toString() + Date.now().toString();
+	var randomData = Math.random().toString() + Date.now().toString() + Math.random().toString();
 	
-	// Simple hash function (since Web Crypto API requires HTTPS)
-	var hash = 0;
-	for (var i = 0; i < randomData.length; i++) {
-		var char = randomData.charCodeAt(i);
-		hash = ((hash << 5) - hash) + char;
-		hash = hash & hash; // Convert to 32bit integer
-	}
+	var hashHex;
 	
-	// Convert to hex and pad based on algorithm
-	var hashHex = Math.abs(hash).toString(16);
-	
-	// Pad to appropriate length based on algorithm
-	var targetLength;
+	// Use real hash functions
 	switch(algorithm) {
+		case 'sha-1':
+			hashHex = sha1(randomData);
+			break;
 		case 'sha-256':
-			targetLength = 64; // 256 bits = 64 hex chars
+			hashHex = sha256(randomData);
+			break;
+		case 'sha-384':
+			hashHex = sha384(randomData);
 			break;
 		case 'sha-512':
-			targetLength = 128; // 512 bits = 128 hex chars
+			hashHex = sha512(randomData);
 			break;
-		case 'sha-128':
 		case 'md5':
-			targetLength = 32; // 128 bits = 32 hex chars
+			hashHex = md5(randomData);
 			break;
 		default:
-			targetLength = 64;
+			hashHex = sha256(randomData);
 	}
-	
-	// Repeat and pad the hash to reach target length
-	while (hashHex.length < targetLength) {
-		hashHex += Math.random().toString(16).substring(2);
-	}
-	
-	hashHex = hashHex.substring(0, targetLength);
 	
 	// Format with algorithm name and line breaks
 	var formattedHash = algorithm + ':<br>';
 	
-	// Add line breaks every 64 characters for readability
 	for (var i = 0; i < hashHex.length; i += 64) {
 		formattedHash += hashHex.substring(i, i + 64);
 		if (i + 64 < hashHex.length) {
@@ -412,6 +416,62 @@ async function generateHash(hashType) {
 	
 	return formattedHash;
 }
+
+// async function generateHash(hashType) {
+// 	// Remove the -gen suffix to get the algorithm
+// 	var algorithm = hashType.replace('-gen', '');
+	
+// 	// Generate random data to hash
+// 	var randomData = Math.random().toString() + Date.now().toString();
+	
+// 	// Simple hash function (since Web Crypto API requires HTTPS)
+// 	var hash = 0;
+// 	for (var i = 0; i < randomData.length; i++) {
+// 		var char = randomData.charCodeAt(i);
+// 		hash = ((hash << 5) - hash) + char;
+// 		hash = hash & hash; // Convert to 32bit integer
+// 	}
+	
+// 	// Convert to hex and pad based on algorithm
+// 	var hashHex = Math.abs(hash).toString(16);
+	
+// 	// Pad to appropriate length based on algorithm
+// 	var targetLength;
+// 	switch(algorithm) {
+// 		case 'sha-256':
+// 			targetLength = 64; // 256 bits = 64 hex chars
+// 			break;
+// 		case 'sha-512':
+// 			targetLength = 128; // 512 bits = 128 hex chars
+// 			break;
+// 		case 'sha-128':
+// 		case 'md5':
+// 			targetLength = 32; // 128 bits = 32 hex chars
+// 			break;
+// 		default:
+// 			targetLength = 64;
+// 	}
+	
+// 	// Repeat and pad the hash to reach target length
+// 	while (hashHex.length < targetLength) {
+// 		hashHex += Math.random().toString(16).substring(2);
+// 	}
+	
+// 	hashHex = hashHex.substring(0, targetLength);
+	
+// 	// Format with algorithm name and line breaks
+// 	var formattedHash = algorithm + ':<br>';
+	
+// 	// Add line breaks every 64 characters for readability
+// 	for (var i = 0; i < hashHex.length; i += 64) {
+// 		formattedHash += hashHex.substring(i, i + 64);
+// 		if (i + 64 < hashHex.length) {
+// 			formattedHash += '<br>';
+// 		}
+// 	}
+	
+// 	return formattedHash;
+// }
 
 function changeFont() {
 	var font = JSON.stringify(json_fonts.items[Math.round((json_fonts.items.length-1)*Math.random())].family);
