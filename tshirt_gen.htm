@@ -716,6 +716,15 @@ function styleControls() {
 		label.style.marginLeft = '10px';
 		label.style.fontFamily = menu_font;
 	});
+
+	var tagline = document.getElementById('tagline');
+	if (tagline) {
+		tagline.style.fontFamily = menu_font;
+		tagline.style.background = background_color;
+		tagline.style.border = '3px solid ' + main_color;
+		tagline.style.color = text_color;
+		tagline.style.fontWeight = 'bold';
+	}
 }
 
 function getContrastColor(bg_color) {
@@ -947,5 +956,8 @@ function loadStateFromURL() {
 
 
 </script>
+<div id="tagline" style="position: fixed; top: 20px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.9); padding: 15px; border-radius: 10px; max-width: 400px; font-size: 13px;">
+    T H E &nbsp; G E N E R A T O R <br><br>T-shirt design for nerds who nerds think are nerds.
+</div>
 </body>
 </html>
