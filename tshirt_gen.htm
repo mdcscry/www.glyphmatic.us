@@ -64,6 +64,8 @@
             </select>
         </div>
 		<button id="downloadBtn" style="width: 100%; margin: 2px 0;">Download as PNG</button><br>
+		<button id="shareBtn" style="width: 100%; margin: 2px 0;">Share This Design</button><br>
+
     </div>
 </div>
 
@@ -80,6 +82,7 @@ var outString='';
 var navGlyph=[];
 var json_fonts;
 var current_glyph_index = 1;
+var main_color, background_color, text_color;
 
 // Command arrays
 const html = ['&lt;style&gt;','&lt;b&gt;', '&lt;a&gt;', '&lt;strong&gt;', '&lt;em&gt;', '&lt;br&gt;', '&lt;head&gt;', '&lt;h1&gt;', '&lt;body&gt;', '&lt;select&gt;', '&lt;details&gt;', '&lt;search&gt;', '&lt;main&gt;'];
@@ -372,7 +375,6 @@ async function changeCommand() {
 	}
 	
 	navGlyph[current_glyph_index].innerHTML = command_text;
-	saveStateToURL();
 }
 
 async function generateHash(hashType) {
@@ -415,68 +417,11 @@ async function generateHash(hashType) {
 	}
 	
 	return formattedHash;
-}
-
-// async function generateHash(hashType) {
-// 	// Remove the -gen suffix to get the algorithm
-// 	var algorithm = hashType.replace('-gen', '');
-	
-// 	// Generate random data to hash
-// 	var randomData = Math.random().toString() + Date.now().toString();
-	
-// 	// Simple hash function (since Web Crypto API requires HTTPS)
-// 	var hash = 0;
-// 	for (var i = 0; i < randomData.length; i++) {
-// 		var char = randomData.charCodeAt(i);
-// 		hash = ((hash << 5) - hash) + char;
-// 		hash = hash & hash; // Convert to 32bit integer
-// 	}
-	
-// 	// Convert to hex and pad based on algorithm
-// 	var hashHex = Math.abs(hash).toString(16);
-	
-// 	// Pad to appropriate length based on algorithm
-// 	var targetLength;
-// 	switch(algorithm) {
-// 		case 'sha-256':
-// 			targetLength = 64; // 256 bits = 64 hex chars
-// 			break;
-// 		case 'sha-512':
-// 			targetLength = 128; // 512 bits = 128 hex chars
-// 			break;
-// 		case 'sha-128':
-// 		case 'md5':
-// 			targetLength = 32; // 128 bits = 32 hex chars
-// 			break;
-// 		default:
-// 			targetLength = 64;
-// 	}
-	
-// 	// Repeat and pad the hash to reach target length
-// 	while (hashHex.length < targetLength) {
-// 		hashHex += Math.random().toString(16).substring(2);
-// 	}
-	
-// 	hashHex = hashHex.substring(0, targetLength);
-	
-// 	// Format with algorithm name and line breaks
-// 	var formattedHash = algorithm + ':<br>';
-	
-// 	// Add line breaks every 64 characters for readability
-// 	for (var i = 0; i < hashHex.length; i += 64) {
-// 		formattedHash += hashHex.substring(i, i + 64);
-// 		if (i + 64 < hashHex.length) {
-// 			formattedHash += '<br>';
-// 		}
-// 	}
-	
-// 	return formattedHash;
-// }
+} 
 
 function changeFont() {
 	var font = JSON.stringify(json_fonts.items[Math.round((json_fonts.items.length-1)*Math.random())].family);
 	navGlyph[current_glyph_index].style.fontFamily = font;
-	saveStateToURL()
 }
 
 function changeFontStyle() {
@@ -507,7 +452,6 @@ function changeFontStyle() {
 	
 	// Apply shadow
 	navGlyph[current_glyph_index].style.textShadow = offset_x + 'px ' + offset_y + 'px ' + blur + 'px ' + shadow_color;
-	saveStateToURL()
 }
 
 function changeFontRender() {
@@ -519,7 +463,6 @@ function changeFontRender() {
 	navGlyph[current_glyph_index].style.fontWeight = weights[Math.floor(Math.random() * weights.length)];
 	navGlyph[current_glyph_index].style.fontStyle = styles[Math.floor(Math.random() * styles.length)];
 	navGlyph[current_glyph_index].style.textTransform = transforms[Math.floor(Math.random() * transforms.length)];
-	saveStateToURL()
 }
 
 function changeStyle() {
@@ -543,7 +486,6 @@ function changeStyle() {
 	navGlyph[current_glyph_index].style.webkitTextFillColor = mycolors[Math.round((mycolors.length-1)*Math.random())];
 	navGlyph[current_glyph_index].style.webkitTextStrokeWidth = Math.round(Math.random()*5) + "px";
 	navGlyph[current_glyph_index].style.webkitTextStrokeColor = mycolors[Math.round((mycolors.length-1)*Math.random())];
-    saveStateToURL()
 }
 
 function changeBorderColor() {
@@ -560,7 +502,6 @@ function changeBorderColor() {
 		
 		navGlyph[current_glyph_index].style.border = width + ' ' + style + ' ' + border_color;
 	}
-    saveStateToURL()
 }
 
 function changeBorderStyle() {
@@ -576,7 +517,6 @@ function changeBorderStyle() {
 		
 		navGlyph[current_glyph_index].style.border = new_width + ' ' + new_style + ' ' + new_color;
 	}
-    saveStateToURL()
 }
 
 function biggerBorder() {
@@ -585,7 +525,6 @@ function biggerBorder() {
 		var new_padding = Math.min(current_padding + 10, 100);
 		navGlyph[current_glyph_index].style.padding = new_padding + 'px';
 	}
-    saveStateToURL()
 }
 
 function smallerBorder() {
@@ -594,21 +533,18 @@ function smallerBorder() {
 		var new_padding = Math.max(current_padding - 10, 0);
 		navGlyph[current_glyph_index].style.padding = new_padding + 'px';
 	}
-    saveStateToURL()
 }
 
 function biggerFont() {
 	var current_size = parseInt(navGlyph[current_glyph_index].style.fontSize) || 200;
 	var new_size = Math.min(current_size + 20, 1200);
 	navGlyph[current_glyph_index].style.fontSize = new_size + 'px';
-    saveStateToURL()
 }
 
 function smallerFont() {
 	var current_size = parseInt(navGlyph[current_glyph_index].style.fontSize) || 200;
 	var new_size = Math.max(current_size - 20, 20);
 	navGlyph[current_glyph_index].style.fontSize = new_size + 'px';
-    saveStateToURL()
 }
 
 function styleControls() {
@@ -637,7 +573,7 @@ function styleControls() {
 
 	// Get background color to determine color scheme
 	var bg_color = getComputedStyle(document.body).backgroundColor;
-	var main_color, background_color, text_color;
+	//var main_color, background_color, text_color;
 	
 	if (bg_color === 'white' || bg_color === 'rgb(255, 255, 255)') {
 		// White background: Blue, Red, Black scheme
@@ -894,7 +830,39 @@ function bindEvents() {
 	document.getElementById('downloadBtn').addEventListener('click', function() {
 		downloadPNG();
 	});
-}
+
+	document.getElementById('shareBtn').addEventListener('click', function() {
+		saveStateToURL();
+		var fullURL = window.location.origin + window.location.pathname + window.location.hash;
+		navigator.clipboard.writeText(fullURL).then(function() {
+			// Create temporary message
+			var msg = document.createElement('div');
+			msg.textContent = 'Link copied!';
+			msg.style.position = 'fixed';
+			msg.style.bottom = '20px';
+			msg.style.left = '50%';
+			msg.style.transform = 'translateX(-50%)';
+			//msg.style.background = 'rgba(0, 255, 0, 0.9)';
+			msg.style.background = text_color;
+			msg.style.color = 'black';
+			msg.style.padding = '20px 40px';
+			msg.style.borderRadius = '10px';
+			msg.style.fontSize = '24px';
+			msg.style.fontWeight = 'bold';
+			msg.style.zIndex = '9999';
+			document.body.appendChild(msg);
+			
+			// Fade out and remove
+			setTimeout(function() {
+				msg.style.transition = 'opacity 0.5s';
+				msg.style.opacity = '0';
+				setTimeout(function() {
+					document.body.removeChild(msg);
+				}, 500);
+			}, 1000);
+		});
+	});
+	}
 
 function saveStateToURL() {
 	var state = {
