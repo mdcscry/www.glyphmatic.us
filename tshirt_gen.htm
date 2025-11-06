@@ -12,7 +12,7 @@
     
     <div id="menuContent">
         <button id="refreshBtn" style="width: 100%; margin: 2px 0;">Refresh<br>T H E G E N E R A T O R</button><br>
-        <button id="changeCmd" style="width: 100%; margin: 2px 0;">Change Command</button><br>
+		<button id="changeCmd" style="width: 100%; margin: 2px 0;">Change Command</button><br>
         
         <div style="display: flex; gap: 2px; margin: 5px 0;">
             <button id="changeFontBtn" style="width: 32%; font-size: 10px;">Change<br>Google<br>Font</button>
@@ -24,7 +24,9 @@
             <button id="biggerFontBtn" style="width: 48%; font-size: 12px;">Bigger Font</button>
             <button id="smallerFontBtn" style="width: 48%; font-size: 12px;">Smaller Font</button>
         </div>
-        
+		<div style="display: flex; gap: 15px; flex-wrap: wrap;">
+			<div><input type="checkbox" id="borderCheck"> <label for="borderCheck">Add a Border</label></div>
+		</div>
         <div style="display: flex; justify-content: space-between; gap: 2px; margin: 5px 0;">
             <button id="changeBorderBtn" style="width: 23%; font-size: 8px; padding: 5px 2px;">Border Color</button>
             <button id="changeBorderStyleBtn" style="width: 23%; font-size: 8px; padding: 5px 2px;">Border Style</button>
@@ -47,7 +49,6 @@
                 <option value="ml">Machine Learning</option>				
             </select>
             <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                <div><input type="checkbox" id="borderCheck"> <label for="borderCheck">Add a Border</label></div>
                 <div><input type="checkbox" id="breakCheck"> <label for="breakCheck">Add Break</label></div>
             </div>
         </div>
@@ -61,10 +62,13 @@
                 <option value="random">Random</option>
             </select>
         </div>
+		<button id="downloadBtn" style="width: 100%; margin: 2px 0;">Download as PNG</button><br>
     </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-1.11.0.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script>
 <script type="text/javascript">
 
 var linkFont=[];
@@ -672,6 +676,45 @@ function getContrastColor(bg_color) {
 	}
 }
 
+async function downloadPNG() {
+	try {
+		const glyphElement = navGlyph[current_glyph_index];
+		
+		// Create a temporary container with background
+		const tempContainer = document.createElement('div');
+		tempContainer.style.backgroundColor = getComputedStyle(document.body).backgroundColor;
+		tempContainer.style.display = 'inline-block';
+		tempContainer.style.padding = '50px';
+		
+		// Clone the glyph
+		const clone = glyphElement.cloneNode(true);
+		clone.style.position = 'relative';
+		clone.style.transform = 'none';
+		clone.style.top = 'auto';
+		clone.style.left = 'auto';
+		
+		tempContainer.appendChild(clone);
+		document.body.appendChild(tempContainer);
+		
+		// Capture just the temp container
+		const dataUrl = await domtoimage.toPng(tempContainer);
+		
+		// Remove temp container
+		document.body.removeChild(tempContainer);
+		
+		// Download
+		const link = document.createElement('a');
+		link.download = 'the-generator-' + Date.now() + '.png';
+		link.href = dataUrl;
+		link.click();
+		
+	} catch (error) {
+		console.error('Download failed:', error);
+		alert('Download failed - check console for details');
+	}
+}
+
+
 function bindEvents() {
 	document.getElementById('refreshBtn').addEventListener('click', function() {
 		location.reload();
@@ -777,6 +820,10 @@ function bindEvents() {
 			navGlyph[current_glyph_index].style.padding = Math.max(current_padding - 20, 3) + 'px';
 		}
 		navGlyph[current_glyph_index].innerHTML = current_text;
+	});
+
+	document.getElementById('downloadBtn').addEventListener('click', function() {
+		downloadPNG();
 	});
 }
 
