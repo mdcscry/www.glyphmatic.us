@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF.8">
+    <TITLE>9.DeGenerator-EnhancedGlyphs</TITLE>
+    <script src="./css_js/boxplot.js"></script>
+    <link rel="stylesheet" href="./css_js/boxplot.css">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+</head>
+<body>
+
+    <div id="leftBlock" class="main-block"></div>
+    <div id="rightBlock" class="main-block"></div>
+
+
+<script type="text/javascript">
+
+    var fontChangeRate = 6000;
+
+    const leftBlock = document.getElementById('leftBlock');
+    const rightBlock = document.getElementById('rightBlock');
+
+    let allLayers = [];
+    
+    // <<< NEW: Store the full palette >>>
+    let currentPalette = []; 
+    // These will draw from currentPalette
+    let themeColor;   
+    let themeColor2;  
+    let themeColor3;  
+
+
+    // --- Helper to convert Colormind's [R,G,B] array to an rgb(R,G,B) string ---
+    function rgbArrayToString(rgb) {
+        if (!Array.isArray(rgb) || rgb.length !== 3) {
+            console.error("Invalid RGB array format:", rgb);
+            return "rgb(0,0,0)"; // Fallback
+        }
+        return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+    }
+
+    // <<< NEW: Get a random color from the currently active palette >>>
+    function getRandomPaletteColor() {
+        if (currentPalette.length === 0) {
+            console.warn("Palette is empty, returning fallback color.");
+            return "rgb(128,128,128)"; // Fallback to gray if no palette
+        }
+        return currentPalette[Math.floor(Math.random() * currentPalette.length)];
+    }
+
+    // --- Utility functions for random colors, now ALL draw from the palette ---
+    function getRandomColor() {
+        return themeColor; // Still use assigned main color for a focal point
+    }
+
+    function getRandomColor2() {
+        return themeColor2; // Still use assigned secondary color
+    }   
+
+    function getRandomColor3() {
+        return themeColor3; // Still use assigned tertiary color
+    } 
+
+    // MODIFIED: This function now also draws from the palette (or falls back to full random if palette empty)
+    function getRandomRGBAColor(minAlpha = 0.01, maxAlpha = 0.1) {
+        let baseColor = getRandomPaletteColor(); // Get a color from the harmonized palette
+        
+        if (baseColor && baseColor.startsWith('rgb')) {
+            // Extract RGB values from "rgb(R,G,B)" string
+            const rgbValues = baseColor.match(/\d+/g).map(Number);
+            const a = (Math.random() * (maxAlpha - minAlpha)) + minAlpha;
+            return `rgba(${rgbValues[0]},${rgbValues[1]},${rgbValues[2]},${a.toFixed(2)})`;
+        } else {
+            // Fallback to entirely random if getRandomPaletteColor fails or returns unexpected format
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            const a = (Math.random() * (maxAlpha - minAlpha)) + minAlpha;
+            return `rgba(${r},${g},${b},${a.toFixed(2)})`;
+        }
+    }
+
+    // --- Other random functions (mostly unchanged, their colors now come from `getRandomRGBAColor` or `getRandomPaletteColor`) ---
+    function getRandomNoiseGradient() {
+        const fromAngle = Math.floor(Math.random() * 360);
+        const opacity1 = (Math.random() * 0.2 + 0.15).toFixed(4); 
+        const opacity2 = (Math.random() * 0.3 + 0.2).toFixed(4); 
+        const stopAngle = (Math.random() * 0.001 + 0.0005).toFixed(6);
+        
+        // Use a palette color for noise more directly
+        const noiseBaseColor = getRandomPaletteColor(); 
+        const rgbValues = noiseBaseColor ? noiseBaseColor.match(/\d+/g).map(Number) : [255,255,255]; // Fallback to white if no palette
+
+        return `repeating-conic-gradient(from ${fromAngle}deg, 
+            rgba(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]}, 0) 0deg ${stopAngle}deg, 
+            rgba(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]}, ${opacity1}) ${stopAngle}deg ${(stopAngle * 2).toFixed(6)}deg)`;
+    }
+
+    function getRandomRadialGradient() {
+        const centerX = Math.floor(Math.random() * 100);
+        const centerY = Math.floor(Math.random() * 100);
+        // MODIFIED: Use palette colors for radial gradient stops
+        const color1 = getRandomRGBAColor(0.6, 0.9); // Higher alpha since it's a primary gradient
+        const color2 = getRandomRGBAColor(0.4, 0.7);
+        const color3 = getRandomRGBAColor(0.2, 0.5);
+        
+        return `radial-gradient(circle at ${centerX}% ${centerY}%, ${color1}, ${color2}, ${color3})`;
+    }
+
+    function getRandomBlendMode() {
+        if (typeof mixBlendModes === 'undefined' || mixBlendModes.length === 0) {
+            console.warn("mixBlendModes array is not defined or is empty. Falling back to 'normal'.");
+            return 'normal';
+        }
+        return mixBlendModes[Math.floor(Math.random() * mixBlendModes.length)];
+    }
+
+    function getRandomBorderStyle() {
+      const styles = ['solid', 'dashed', 'double'];
+      return styles[Math.floor(Math.random() * styles.length)];
+    }
+
+    function getRandomBorderWidth(max = 10) { 
+        return Math.floor(Math.random() * (max + 1)) + 'px'; 
+    }
+    
+    function getRandomStrokeWidth(max = 20) { 
+        return Math.floor(Math.random() * (max + 1)) + 'px'; 
+    }
+
+    function getRandomShadow() {
+        const offsetX = Math.floor(Math.random() * 100) - 50;
+        const offsetY = Math.floor(Math.random() * 100) - 50;
+        const blur = Math.floor(Math.random() * 5);
+        const color = getRandomColor2(); // Always from derived theme color 2
+        
+        if (Math.random() < 0.6) { 
+            return 'none'; 
+        }
+        return `${offsetX}px ${offsetY}px ${blur}px ${color}`;
+    }
+
+    function createAndAddLayer(parentBlock) {
+        const layerDiv = document.createElement("div");
+        layerDiv.className = "layer";
+
+        const charSpan = document.createElement("span");
+        layerDiv.appendChild(charSpan);
+
+        parentBlock.appendChild(layerDiv);
+        allLayers.push(layerDiv);
+        updateLayer(layerDiv);
+        return layerDiv;
+    }
+
+    function updateLayer(layerElement) {
+        // --- Layer Div Styling ---
+        
+        // MODIFIED: Layer background now always uses a palette color
+        if (Math.random() < 0.4) {
+            layerElement.style.background = getRandomRadialGradient(); // Radial now uses palette
+            layerElement.classList.remove('noise-animation');
+        } else {
+            // MODIFIED: Layer background color drawn from palette
+            layerElement.style.backgroundColor = getRandomRGBAColor(0.1, 0.4); // Use palette color with alpha
+            layerElement.style.background = '';
+            layerElement.classList.remove('noise-animation');
+        }
+        
+        layerElement.style.mixBlendMode = getRandomBlendMode();
+        layerElement.style.opacity = .95;
+        // Consider removing or making layer borders more explicit
+        // layerElement.style.border = 'none';
+
+        const charSpan = layerElement.querySelector('span');
+        if (charSpan) {
+            // --- Character Glyph Styling ---
+            
+            // This acts as webkitTextFillColor, using themeColor (now first color from palette)
+            charSpan.style.color = getRandomColor(); 
+            charSpan.style.mixBlendMode = getRandomBlendMode(); 
+
+            if (Math.random() < 0.975) {
+                charSpan.style.border = 'none';
+            } else {
+                const borderWidth = getRandomBorderWidth(3);
+                const borderStyle = getRandomBorderStyle();
+                const borderColor = getRandomColor3(); // Always from derived theme color 3
+                charSpan.style.border = `${borderWidth} ${borderStyle} ${borderColor}`;
+            }
+
+            if (Math.random() < 0.25) {
+                charSpan.style.webkitTextStrokeWidth = (Math.random() * 3 + 1) + "px";
+                charSpan.style.webkitTextStrokeColor = getRandomColor2(); // Always from derived theme color 2
+                charSpan.style.webkitTextFillColor = getRandomColor3(); // Always from derived theme color 3
+            } else {
+                charSpan.style.webkitTextStrokeWidth = '0px';
+                charSpan.style.webkitTextStrokeColor = 'transparent';
+                charSpan.style.webkitTextFillColor = getRandomColor(); // Revert to themeColor if no stroke
+            }
+
+            if (Math.random() < 0.20) {
+                charSpan.classList.add('noise-glyph');
+                charSpan.style.setProperty('--glyph-noise-gradient', getRandomNoiseGradient());
+                charSpan.style.webkitTextFillColor = 'transparent';
+            } else {
+                charSpan.classList.remove('noise-glyph');
+            }
+
+            charSpan.style.textShadow = getRandomShadow(); 
+
+            if (typeof myarray === 'undefined' || myarray.length === 0) {
+                console.warn("myarray is not defined or is empty. Cannot render glyphs.");
+                charSpan.innerHTML = ''; 
+                layerElement.title = `Glyph HEX: N/A (myarray empty)`;
+                return;
+            }
+
+            if (Math.random() < 0.5) { 
+                const randomGlyphHex = myarray[Math.round((myarray.length - 1) * Math.random())];
+                charSpan.innerHTML = `&#x${randomGlyphHex};`;
+                layerElement.title = `Glyph HEX: ${randomGlyphHex}`;
+            }
+        }
+    }
+
+    /**
+     * Sets up or re-sets up the dynamic blocks with random layers.
+     * Fetches a new color palette from Colormind.
+     */
+    async function setupDynamicBlocks() {
+        leftBlock.innerHTML = '';
+        rightBlock.innerHTML = '';
+        allLayers = [];
+
+        // <<< NEW: Dynamic Proxy Application >>>
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const colormindApiUrl = 'http://colormind.io/api/';
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; 
+        const targetUrl = isLocalhost ? `${proxyUrl}${colormindApiUrl}` : colormindApiUrl;
+
+        try {
+            const response = await fetch(targetUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "model": "default",
+                    "input": ["N", "N", "N", "N", "N"]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Colormind API error: ${response.status} ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            const paletteRGB = data.result; // paletteRGB will be an array of 5 [R,G,B] arrays
+
+            if (!paletteRGB || paletteRGB.length < 5) { // Ensure we got all 5 colors
+                throw new Error("Colormind API did not return enough colors for the theme.");
+            }
+
+            // <<< NEW: Store the full palette as RGB strings >>>
+            currentPalette = paletteRGB.map(rgbArrayToString);
+
+            // Assign specific roles from the first few colors of the palette for consistency
+            themeColor = currentPalette[0]; // Main body background, primary glyph fill
+            themeColor2 = currentPalette[1]; // Stroke, shadows
+            themeColor3 = currentPalette[2]; // Secondary glyph fill, borders
+
+            console.log("Colormind Palette fetched (RGB strings):", currentPalette);
+            console.log("Assigned themeColor:", themeColor, "themeColor2:", themeColor2, "themeColor3:", themeColor3);
+
+        } catch (error) {
+            console.error("Failed to fetch Colormind palette. Falling back to default colors:", error);
+            // Fallback to a default harmonized palette
+            currentPalette = ["rgb(200,200,200)", "rgb(150,150,150)", "rgb(100,100,100)", "rgb(50,50,50)", "rgb(0,0,0)"];
+            themeColor = currentPalette[0];
+            themeColor2 = currentPalette[1];
+            themeColor3 = currentPalette[2];
+        }
+
+        document.body.style.backgroundColor = themeColor; // Main theme color for body
+
+        if (typeof myarray === 'undefined' || myarray.length === 0) {
+            console.warn("myarray is not defined or is empty. Glyph rendering might fail.");
+        }
+
+        const numLayersLeft = Math.floor(Math.random() * (20 - 5 + 1)) + 5;
+        for (let i = 0; i < numLayersLeft; i++) {
+            createAndAddLayer(leftBlock);
+        }
+
+        const numLayersRight = Math.floor(Math.random() * (20 - 5 + 1)) + 5;
+        for (let i = 0; i < numLayersRight; i++) {
+            createAndAddLayer(rightBlock);
+        }
+    }
+
+    setupDynamicBlocks();
+
+    window.setInterval(function() {
+        if (allLayers.length > 0) {
+            const randomLayerIndex = Math.floor(Math.random() * allLayers.length);
+            updateLayer(allLayers[randomLayerIndex]);
+        }
+    }, fontChangeRate);
+
+    window.setInterval(function() {
+        setupDynamicBlocks();
+    }, fontChangeRate * 20);
+    
+</script>
+</body>
+</html>
