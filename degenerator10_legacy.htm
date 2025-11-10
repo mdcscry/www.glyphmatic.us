@@ -235,7 +235,7 @@
 
         // <<< NEW: Dynamic Proxy Application >>>
         const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const colormindApiUrl = 'http://colormind.io/api/';
+        const colormindApiUrl = 'https://colormind.io/api/';
         const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; 
         const targetUrl = isLocalhost ? `${proxyUrl}${colormindApiUrl}` : colormindApiUrl;
 
