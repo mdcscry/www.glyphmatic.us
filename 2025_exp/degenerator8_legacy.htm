@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF.8">
+    <TITLE>8.DeGenerator-EnhancedGlyphs</TITLE>
+    <script src="./css_js/boxplot.js"></script>
+    <link rel="stylesheet" href="./css_js/boxplot.css">    
+
+</head>
+<body>
+
+    <div id="leftBlock" class="main-block"></div>
+    <div id="rightBlock" class="main-block"></div>
+
+<script type="text/javascript">
+
+    // These arrays are expected to be defined in boxplot.js or boxplot.css
+    // var mycolors = [...];
+    // var myarray = [...]; // Glyph hex codes
+    // var mixBlendModes = [...];
+
+    var fontChangeRate = 6000; // Slower change rate: 6000 milliseconds (6 seconds)
+
+    const leftBlock = document.getElementById('leftBlock');
+    const rightBlock = document.getElementById('rightBlock');
+
+    let allLayers = [];
+    let themeColor; // This variable will hold the single chosen theme color
+
+
+    // --- Utility functions for random values ---
+    // This function now returns the globally selected themeColor
+    function getRandomColor() {
+        return themeColor;
+    }
+
+    function getRandomRGBAColor(minAlpha = 0.01, maxAlpha = 0.1) { // Much lower alpha range for better transparency
+        const r = Math.floor(Math.random() * 256);
+        const g = Math.floor(Math.random() * 256);
+        const b = Math.floor(Math.random() * 256);
+        const a = (Math.random() * (maxAlpha - minAlpha)) + minAlpha; // Random alpha between minAlpha and maxAlpha
+        return `rgba(${r},${g},${b},${a.toFixed(2)})`; // .toFixed(2) for cleaner output
+    }
+
+    function getRandomBlendMode() {
+        // Ensure mixBlendModes is defined before trying to access it
+        if (typeof mixBlendModes === 'undefined' || mixBlendModes.length === 0) {
+            console.warn("mixBlendModes array is not defined or is empty. Falling back to 'normal'.");
+            return 'normal';
+        }
+        return mixBlendModes[Math.floor(Math.random() * mixBlendModes.length)];
+    }
+
+    function getRandomBorderStyle() {
+      const styles = ['solid', 'dotted', 'dashed', 'double', 'groove', 'ridge', 'inset', 'outset'];
+      return styles[Math.floor(Math.random() * styles.length)];
+    }
+
+    function getRandomBorderWidth(max = 500) { // Max border width in px
+      return Math.floor(Math.random() * max) + 'px'; // Can be 0 to (max-1)px
+    }
+    
+    function getRandomStrokeWidth(max = 500) { // Max text stroke width in px
+        return Math.floor(Math.random() * max) + 'px'; // Can be 0 to (max-1)px
+    }
+
+    function getRandomShadow() {
+        const offsetX = Math.floor(Math.random() * 20) - 10; // -10px to +9px
+        const offsetY = Math.floor(Math.random() * 20) - 10; // -10px to +9px
+        const blur = Math.floor(Math.random() * 15); // 0px to 14px
+        const spread = Math.floor(Math.random() * 5); // 0px to 4px (for text-shadow)
+        const color = getRandomColor(); // This will now be the themeColor
+        
+        // Sometimes no shadow (increased chance to remove some clutter)
+        if (Math.random() < 0.1) { // Increased chance to be 'none' for this test
+            return 'none'; 
+        }
+        // CORRECTED TEMPLATE LITERAL HERE
+        return `${offsetX}px ${offsetY}px ${blur}px ${spread}px ${color}`;
+    }
+
+    /**
+     * Creates a new layer div and appends it to the specified parent block.
+     */
+    function createAndAddLayer(parentBlock) {
+        const layerDiv = document.createElement("div");
+        layerDiv.className = "layer";
+
+        const charSpan = document.createElement("span");
+        layerDiv.appendChild(charSpan);
+
+        parentBlock.appendChild(layerDiv);
+        allLayers.push(layerDiv);
+        updateLayer(layerDiv); // Apply initial random styles to this new layer
+        return layerDiv;
+    }
+
+    /**
+     * Updates the content and styles of a single layer.
+     */
+    function updateLayer(layerElement) {
+        // --- Layer Div Styling ---
+        // Transparency is now handled by the rgba background, keeping layer opacity at 1
+        layerElement.style.backgroundColor = getRandomRGBAColor();
+        layerElement.style.mixBlendMode = getRandomBlendMode();
+        layerElement.style.opacity = .9;
+
+        // Ensure no border on the layer div itself
+        layerElement.style.border = 'none'; 
+
+        const charSpan = layerElement.querySelector('span');
+        if (charSpan) {
+            // --- Character Glyph Styling --- (these remain on the glyphs)
+            charSpan.style.color = getRandomColor(); // Uses themeColor
+            charSpan.style.mixBlendMode = getRandomBlendMode(); 
+
+            // REMOVED RANDOMNESS FOR BORDERS, ALWAYS NONE FOR THIS TEST
+            charSpan.style.border = 'none'; 
+
+            // REMOVED RANDOMNESS FOR STROKES, ALMOST ALWAYS NONE FOR THIS TEST
+            if (Math.random() < 0.1) { // 90% chance for no text stroke
+              charSpan.style.webkitTextStroke = '0px transparent';
+            } else {
+              charSpan.style.webkitTextStroke = `${getRandomStrokeWidth(8)} ${getRandomColor()}`; // Uses themeColor
+            }
+
+            // REMOVED RANDOMNESS FOR SHADOWS, ALMOST ALWAYS NONE FOR THIS TEST (reusing getRandomShadow logic but modified probability)
+            charSpan.style.textShadow = getRandomShadow(); // Probability of none is set in getRandomShadow
+
+            // Ensure myarray is defined and not empty before trying to access it
+            if (typeof myarray === 'undefined' || myarray.length === 0) {
+                console.warn("myarray is not defined or is empty. Cannot render glyphs.");
+                charSpan.innerHTML = ''; // Clear content if no glyphs can be rendered
+                layerElement.title = `Glyph HEX: N/A (myarray empty)`;
+                return;
+            }
+
+            // Randomly change character HTML (lower chance for more stability)
+            if (Math.random() < 0.5) { 
+                const randomGlyphHex = myarray[Math.round((myarray.length - 1) * Math.random())];
+                charSpan.innerHTML = `&#x${randomGlyphHex};`;
+                // Add title to the layerDiv with the glyph's hex code
+                // The title is on the layerDiv, so hovering over the whole layer shows the glyph hex.
+                layerElement.title = `Glyph HEX: ${randomGlyphHex}`;
+            }
+        }
+    }
+
+    /**
+     * Sets up or re-sets up the dynamic blocks with random layers.
+     */
+    function setupDynamicBlocks() {
+        // Clear existing layers and reset the tracking array
+        leftBlock.innerHTML = '';
+        rightBlock.innerHTML = '';
+        allLayers = [];
+
+        // Ensure mycolors is defined and not empty before trying to access it
+        if (typeof mycolors === 'undefined' || mycolors.length === 0) {
+            console.error("mycolors array is not defined or is empty. Cannot determine theme color.");
+            themeColor = '#000000'; // Fallback to black
+            document.body.style.backgroundColor = themeColor;
+            return;
+        }
+
+        // Pick one color from mycolors to be the theme for this setup
+        themeColor = mycolors[Math.round((mycolors.length - 1) * Math.random())];
+
+        // Apply chosen theme color to body background
+        document.body.style.backgroundColor = themeColor;
+
+        // Create random number of layers for left block (e.g., 5 to 20 layers)
+        const numLayersLeft = Math.floor(Math.random() * (20 - 5 + 1)) + 5;
+        for (let i = 0; i < numLayersLeft; i++) {
+            createAndAddLayer(leftBlock);
+        }
+
+        // Create random number of layers for right block (e.g., 5 to 20 layers)
+        const numLayersRight = Math.floor(Math.random() * (20 - 5 + 1)) + 5;
+        for (let i = 0; i < numLayersRight; i++) {
+            createAndAddLayer(rightBlock);
+        }
+    }
+
+    // --- Initial Setup ---
+    setupDynamicBlocks();
+
+    // --- Continuous Updates ---
+
+    // Main interval: Periodically update a random layer
+    window.setInterval(function() {
+        if (allLayers.length > 0) {
+            const randomLayerIndex = Math.floor(Math.random() * allLayers.length);
+            updateLayer(allLayers[randomLayerIndex]);
+        }
+    }, fontChangeRate); // 6-second change rate
+
+    // Optional: Interval to change the body background color (and thus the themeColor) less frequently
+    window.setInterval(function() {
+        if (typeof mycolors === 'undefined' || mycolors.length === 0) {
+            console.warn("mycolors array is not defined or is empty. Cannot change theme color.");
+            return;
+        }
+        themeColor = mycolors[Math.round((mycolors.length - 1) * Math.random())]; // Pick a new theme color
+        document.body.style.backgroundColor = themeColor; // Apply to body
+        // Note: Existing glyphs will only pick up the new themeColor on their next individual update.
+        // If immediate propagation to all existing glyphs is needed, you would iterate `allLayers`
+        // and call `updateLayer` on each after changing `themeColor`.
+    }, fontChangeRate * 2); // Change body background (and themeColor) every 12 seconds
+    
+    // Optional: Interval to entirely re-generate the layers and their counts
+    window.setInterval(function() {
+        setupDynamicBlocks();
+    }, fontChangeRate * 5); // Re-generate layers every 30 seconds
+
+</script>
+</body>
+</html>

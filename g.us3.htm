@@ -147,15 +147,17 @@ console.log('Meta refresh tag created and added');
 var insertArrayRnd;
 
 // Load the current script based on the i parameter
+// Load the current script based on the i parameter
 if (currentIndexNum !== null && currentIndexNum >= 0 && currentIndexNum < insertArray.length) {
 	console.log('Loading script from URL parameter');
 	insertArrayRnd = currentIndexNum;
 	const scriptToLoad = insertArray[currentIndexNum][0];
 	console.log(`Script to load: ${scriptToLoad}`);
 	const script = document.createElement('script');
+	// These scripts come from css_js, not the insert directories
 	script.src = './css_js/' + scriptToLoad;
 	document.head.appendChild(script);
-	console.log(`✓ Loaded script: ${scriptToLoad} (index ${currentIndexNum})`);
+	console.log(`✓ Loaded script: ${scriptToLoad} from css_js (index ${currentIndexNum})`);
 } else {
 	// Default behavior if no valid parameter
 	console.log('No valid parameter - loading random default script');
@@ -165,9 +167,10 @@ if (currentIndexNum !== null && currentIndexNum >= 0 && currentIndexNum < insert
 	const scriptToLoad = insertArray[defaultIndex][0];
 	console.log(`Script to load: ${scriptToLoad}`);
 	const script = document.createElement('script');
-	script.src ='./css_js/' +  scriptToLoad;
+	// These scripts also come from css_js
+	script.src = './css_js/' + scriptToLoad;
 	document.head.appendChild(script);
-	console.log(`✓ Loaded default script: ${scriptToLoad} (index ${defaultIndex})`);
+	console.log(`✓ Loaded default script: ${scriptToLoad} from css_js (index ${defaultIndex})`);
 }
 console.log('insertArrayRnd (for watermark logic):', insertArrayRnd);
 console.log(`⏰ Next refresh in ${refreshTime} seconds to index ${nextIndex}`);
@@ -188,22 +191,19 @@ document.body.style.margin='0px';
 
 
 function jsWaitLetters() {
-        if (typeof msucdArraySignal =="undefined")
-        {
-
-            window.setTimeout(jsWaitLetters, 100);
-
-        }
-        else {
-
-		/// insert.js determined and attached sheet
-		var script1 = document.createElement('script');
-		var src='./insert_js/insert' + insertArrayRnd+ '.js';
-		script1.src = src;
-		document.getElementsByTagName('body')[0].appendChild(script1);
-		console.log('Letters have been loaded')
-        }
+    if (typeof msucdArraySignal == "undefined") {
+        window.setTimeout(jsWaitLetters, 100);
+    } else {
+        /// insert.js determined and attached sheet
+        var script1 = document.createElement('script');
+        // Apply the same directory logic here
+        const directory = (insertArrayRnd <= 12) ? 'insert_js_2013' : 'insert_js_2025';
+        var src = './' + directory + '/insert' + insertArrayRnd + '.js';
+        script1.src = src;
+        document.getElementsByTagName('body')[0].appendChild(script1);
+        console.log(`Letters have been loaded from ${directory} (index ${insertArrayRnd})`);
     }
+}
 
 
 var mycolors=[];

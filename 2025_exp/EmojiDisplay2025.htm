@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Flex Grid</title>
+<style>
+    /* Apply box-sizing: border-box to all elements for consistent width/height calculations.
+       Padding and border are included within the element's specified width and height. */
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    html, body {
+        height: 100%; /* Make html and body fill the entire viewport height */
+        width: 100%;  /* Make html and body fill the entire viewport width */
+        margin: 0;    /* Remove default margins */
+        padding: 0;   /* Remove default paddings */
+        overflow: hidden; /* Prevent scrollbars if content slightly overflows */
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center; /* Centers grid horizontally */
+        align-items: center;   /* Centers grid vertically */
+        /* background-color will be set by JS */
+    }
+
+    #emojiGrid {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        height: 100%;
+        
+        /* THE OUTER BORDER FOR THE ENTIRE GRID CONTAINER */
+        border: 25px solid; /* Color will be set by JS */
+        
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Adds a subtle shadow for depth */
+        background-color: transparent; /* Allows the body background to show through any gaps */
+    }
+
+    .grid-cell {
+        width: 10%;
+        height: 10%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* Line height helps with vertical centering of content */
+        line-height: 1.5;
+
+        /* THE BORDER FOR EACH INDIVIDUAL CELL */
+        border: 3px solid; /* Color will be set by JS (to match body background) */
+        
+        background-color: transparent; /* Will be set by JS to a pastel color */
+
+        /* Prevent flicker and ensure smooth transforms for the inner emoji */
+        perspective: 1000px; /* Gives a 3D perspective to child elements */
+        border-radius: 8px; /* Added: Subtle rounding for cell corners */
+    }
+    
+    /* The span that actually holds the emoji */
+    .emoji-content {
+        display: block; /* Allows block-level styling and transforms */
+        font-size: min(8vh, 6rem); /* Emoji font size, scales with viewport. '5rem' cap prevents it from becoming too huge on extra-large screens. */
+        opacity: 1;
+        transform: rotateY(0deg) scale(1); /* Initial state */
+        transform-style: preserve-3d; /* Allows for 3D transforms */
+        backface-visibility: hidden; /* Prevents backface issues during rotation */
+        transition: none; /* No default transitions, animations will handle state changes */
+    }
+
+    /* Animation for the first half of the change: old emoji dissolves and twists out */
+    @keyframes fade-out-twist {
+        0% {
+            opacity: 1;
+            transform: rotateY(0deg) scale(1);
+        }
+        100% {
+            opacity: 0;
+            transform: rotateY(180deg) scale(0.7); /* Smaller scale for dissolve */
+        }
+    }
+
+    /* Animation for the second half of the change: new emoji appears twisting in */
+    @keyframes fade-in-twist {
+        0% {
+            opacity: 0;
+            transform: rotateY(180deg) scale(0.7); /* Start from the "flipped away" state */
+        }
+        100% {
+            opacity: 1;
+            transform: rotateY(360deg) scale(1); /* End at the "normal" state */
+        }
+    }
+
+    /* Classes to apply animations dynamically via JavaScript */
+    /* Adjust these animation durations to your preference (e.g., 2.5s for slower) */
+    .emoji-content.is-fading-out {
+        animation: fade-out-twist 4s ease-in-out forwards; /* 2 seconds for dissolve/twist out */
+    }
+
+    .emoji-content.is-fading-in {
+        animation: fade-in-twist 2s ease-in-out forwards; /* 2 seconds for dissolve/twist in */
+    }
+</style>
+</head>
+<body>
+    <div id="emojiGrid">
+        <!-- Emojis will be inserted here by JavaScript -->
+    </div>
+
+    <!-- Include the emoji data first -->
+    <script src="./css_js/emoji_versions_data2.js"></script>
+    <!-- Then include the script that uses the data -->
+    <script src="./css_js/emoji_display_script.js"></script>
+</body>
+</html>

@@ -14,7 +14,7 @@ var mycolors = [
         , '#FFE4B5', '#FFE4C4', '#FFE4E1', '#FFEBCD', '#FFEFD5', '#FFF0F5', '#FFF5EE', '#FFF8DC', '#FFFACD', '#FFFAF0', '#FFFAFA'
         , '#FFFF00', '#FFFFE0', '#FFFFF0', '#FFFFFF'
     
-    ];
+    ];  
 
     // USER-SPECIFIED mixBlendModes array
     var mixBlendModes = [

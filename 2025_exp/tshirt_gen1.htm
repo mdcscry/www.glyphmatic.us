@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T H E   G E N E R A T O R</title>
+    
+    <!-- External Libraries -->
+    <script src="https://code.jquery.com/jquery-1.11.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha512/0.8.0/sha512.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-md5/0.7.3/md5.min.js"></script>
+    
+    <!-- Our CSS -->
+    <link rel="stylesheet" href="./css_js/tshirt_gen1.css">
+    
+    <!-- Our JavaScript -->
+    <script src="./css_js/tshirt_gen1.js"></script>
+</head>
+
+<body>
+    <!-- Control Panel -->
+    <div id="controls" class="themed-element">
+        <div class="text-center">
+            <button id="toggleMenu">−</button>
+        </div>
+        
+        <div id="menuContent">
+            <!-- Main Action Buttons -->
+            <button id="refreshBtn">Refresh<br>T H E G E N E R A T O R</button>
+            <button id="changeCmd">Change Command</button>
+            
+            <!-- Font Controls -->
+            <div class="button-row-triple">
+                <button id="changeFontBtn">Change<br>Google<br>Font</button>
+                <button id="changeFontStyleBtn">Change<br>Font<br>Style</button>
+                <button id="changeFontRenderBtn">Change<br>Font<br>Render</button>
+            </div>
+            
+            <!-- Font Size -->
+            <div class="button-row-double">
+                <button id="biggerFontBtn">Bigger Font</button>
+                <button id="smallerFontBtn">Smaller Font</button>
+            </div>
+            
+            <!-- Border Checkbox -->
+            <div class="checkbox-wrapper">
+                <div>
+                    <input type="checkbox" id="borderCheck">
+                    <label for="borderCheck">Add a Border</label>
+                </div>
+            </div>
+            
+            <!-- Border Controls -->
+            <div class="button-row-quad">
+                <button id="changeBorderBtn">Border<br>Color</button>
+                <button id="changeBorderStyleBtn">Border<br>Style</button>
+                <button id="biggerBorderBtn">Bigger<br>Border<br>Box</button>
+                <button id="smallerBorderBtn">Smaller<br>Border<br>Box</button>
+            </div>
+            
+            <!-- Command Type Selection -->
+            <div class="form-group">
+                <label for="commandSelect">Command Type:</label>
+                <select id="commandSelect">
+                    <option value="all">All</option>
+                    <option value="html">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="crypto">Crypto</option>
+                    <option value="sql">SQL</option>
+                    <option value="sysadmin">Unix/Sysadmin</option>
+                    <option value="git">Git</option>
+                    <option value="python">Python</option>
+                    <option value="ml">Machine Learning</option>
+                    <option value="ai">A.I.</option>
+                    <option value="adm">Admonitions</option>
+                </select>
+                
+                <div class="checkbox-wrapper">
+                    <div>
+                        <input type="checkbox" id="breakCheck">
+                        <label for="breakCheck">Add Break</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Background Selection -->
+            <div class="form-group">
+                <label for="bgSelect">Background:</label>
+                <select id="bgSelect">
+                    <option value="black">Black</option>
+                    <option value="white">White</option>
+                    <option value="gray">Gray</option>
+                    <option value="random">Random</option>
+                </select>
+            </div>
+            
+            <!-- Export/Share Buttons -->
+            <button id="downloadBtn">Download as PNG</button>
+            <button id="shareBtn">Share This Design</button>
+        </div>
+    </div>
+
+    <!-- Tagline -->
+    <div id="tagline" class="themed-element">
+        T H E &nbsp; G E N E R A T O R<br><br>
+        Fashion design <span id="taglineText"></span>.<br>
+        <a id="manLink" href="#"><br>man the_generator</a>
+    </div>
+
+    <!-- Man Page -->
+    <div id="manPage" class="themed-element">
+        <button id="closeMan">CLOSE</button>
+        <pre>
+NAME
+     the_generator - cryptographically valid command typography generator
+
+SYNOPSIS
+     the_generator [--command-type TYPE] [--border] [--break] [--backgroundColor]
+
+DESCRIPTION
+     the_generator produces unique typographic renderings of technical commands,
+     SQL statements, cryptographic hashes, and corporate admonitions using random
+     Google Fonts with randomized webkit styling properties.
+
+     All generated SHA hashes (256, 384, 512) and MD5 hashes are cryptographically
+     valid outputs of their respective algorithms applied to pseudorandom input data.
+     
+     Git commit hashes display the first 7 hexadecimal characters of SHA-256 output,
+     conforming to standard Git short hash format.
+
+OPTIONS
+     --command-type TYPE
+             Select command category: all, html, css, javascript, crypto, sql,
+             sysadmin, git, python, ml, adm
+             
+     --border
+             Apply random border (width: 1-50px, style: varies, color: contrasting)
+             
+     --break
+             Insert line break at first space character
+
+     --background-color
+             Change the background color of the design (black, white, gray, random)
+
+COMMANDS
+     Change Command
+             Generate new command from selected category
+             
+     Change Google Font
+             Apply random font from filtered Google Fonts API (excludes: barcode,
+             material icons, wavefont, yarndings, guides, redacted, charted)
+             
+     Change Font Style
+             Randomize webkit-text-fill-color, webkit-text-stroke-width,
+             webkit-text-stroke-color, and text-shadow (blue hue: 180-240°)
+             
+     Change Font Render
+             Modify font-weight, font-style, text-transform
+             
+     Bigger Font / Smaller Font
+             Adjust font-size in 20px increments (range: 20-1200px)
+             
+     Border Color
+             Regenerate border color (maintains width and style)
+             
+     Border Style
+             Randomize border width (1-50px), style, and color
+             
+     Bigger Border Box / Smaller Border Box
+             Adjust padding in 10px increments (range: 0-100px)
+             
+     Download as PNG
+             Export current rendering via dom-to-image library
+             
+     Share This Design
+             Generate state-encoded URL, copy to clipboard
+
+BACKGROUND
+     click Random repeatedly to change random color
+
+ARRAYS
+     html          HTML5 element tags (encoded: &lt; &gt;)
+     css           CSS properties and values
+     javascript    JS operators, keywords, promises
+     crypto        sha-256, sha-384, sha-512, md5 (appended with -gen for generation)
+     sql           SQL commands (TRUNCATE, DROP TABLE, COALESCE, etc.)
+     sysadmin      Unix/Linux commands (chmod 777, rm -rf, whoami, etc.)
+     git           Git commands plus commit-sha (generates valid short hash)
+     python        Python keywords and pandas methods
+     ml            Machine learning terminology
+     adm           Corporate admonitions (Fuck it Ship it, Quick Question, etc.)
+
+FILES
+     Google Fonts API (filtered latin subset, monospace for UI)
+     js-sha256, js-sha512, js-md5 (cryptographic hash libraries)
+     dom-to-image (PNG export)
+
+NOTES
+     All webkit properties may render differently across browsers.
+     
+     Hash generation uses Math.random() + Date.now() as input, ensuring
+     cryptographic validity without deterministic reproducibility.
+     
+     URL state encoding uses base64 JSON. Maximum practical length: ~2000 characters.
+
+AUTHOR
+     Matthew Cryer, with Claude (Anthropic), with chatGPT (openAI)
+     
+TAGLINE(S)
+     various
+
+SEE ALSO
+     git(1), sha256sum(1), chmod(1), perl(1), SQL standards documentation
+        </pre>
+    </div>
+
+    <!-- Generated glyph will be added here by JavaScript -->
+</body>
+</html>
