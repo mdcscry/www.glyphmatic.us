@@ -2,6 +2,14 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>T H E   G E N E R A T O R</title>
+
+		<script src="https://code.jquery.com/jquery-1.11.0.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha512/0.8.0/sha512.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/js-md5/0.7.3/md5.min.js"></script>
+		<script src="./css_js/tshirt_gen.js"></script>		
+
 	</head>
 
 <body>
@@ -12,7 +20,7 @@
     
     <div id="menuContent">
         <button id="refreshBtn" style="width: 100%; margin: 2px 0;">Refresh<br>T H E G E N E R A T O R</button><br>
-        <button id="changeCmd" style="width: 100%; margin: 2px 0;">Change Command</button><br>
+		<button id="changeCmd" style="width: 100%; margin: 2px 0;">Change Command</button><br>
         
         <div style="display: flex; gap: 2px; margin: 5px 0;">
             <button id="changeFontBtn" style="width: 32%; font-size: 10px;">Change<br>Google<br>Font</button>
@@ -24,7 +32,9 @@
             <button id="biggerFontBtn" style="width: 48%; font-size: 12px;">Bigger Font</button>
             <button id="smallerFontBtn" style="width: 48%; font-size: 12px;">Smaller Font</button>
         </div>
-        
+		<div style="display: flex; gap: 15px; flex-wrap: wrap;">
+			<div><input type="checkbox" id="borderCheck"> <label for="borderCheck">Add a Border</label></div>
+		</div>
         <div style="display: flex; justify-content: space-between; gap: 2px; margin: 5px 0;">
             <button id="changeBorderBtn" style="width: 23%; font-size: 8px; padding: 5px 2px;">Border Color</button>
             <button id="changeBorderStyleBtn" style="width: 23%; font-size: 8px; padding: 5px 2px;">Border Style</button>
@@ -44,10 +54,11 @@
                 <option value="sysadmin">Unix/Sysadmin</option>
                 <option value="git">Git</option>
                 <option value="python">Python</option>
-                <option value="ml">Machine Learning</option>				
+                <option value="ml">Machine Learning</option>
+                <option value="ai">A.I.</option>			
+				<option value="adm">Admonitions</option>				
             </select>
             <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                <div><input type="checkbox" id="borderCheck"> <label for="borderCheck">Add a Border</label></div>
                 <div><input type="checkbox" id="breakCheck"> <label for="breakCheck">Add Break</label></div>
             </div>
         </div>
@@ -61,784 +72,123 @@
                 <option value="random">Random</option>
             </select>
         </div>
+		<button id="downloadBtn" style="width: 100%; margin: 2px 0;">Download as PNG</button><br>
+		<button id="shareBtn" style="width: 100%; margin: 2px 0;">Share This Design</button><br>
+
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-1.11.0.js"></script>
-<script type="text/javascript">
+<div id="tagline">
+    T H E &nbsp; G E N E R A T O R<br><br>
+    Fashion design <span id="taglineText"></span>.<br>
+    <a id="manLink" href="#" style="text-decoration: underline; cursor: pointer;"><br>man the_generator</a>
+</div>
 
-var linkFont=[];
-var outString='';
-var navGlyph=[];
-var json_fonts;
-var current_glyph_index = 1;
+<div id="manPage" style="display: none; position: fixed; top: 50px; left: 50px; right: 50px; bottom: 50px; padding: 30px; overflow-y: auto; z-index: 10000; border-radius: 10px;">
+    <button id="closeMan" style="position: absolute; top: 10px; right: 10px; padding: 8px 15px; cursor: pointer; border-radius: 8px; font-weight: bold;">CLOSE</button>
+    <pre style="white-space: pre-wrap; margin: 0;">
+NAME
+     the_generator - cryptographically valid command typography generator
 
-// Command arrays
-const html = ['&lt;style&gt;','&lt;b&gt;', '&lt;a&gt;', '&lt;strong&gt;', '&lt;em&gt;', '&lt;br&gt;', '&lt;head&gt;', '&lt;h1&gt;', '&lt;body&gt;', '&lt;select&gt;', '&lt;details&gt;', '&lt;search&gt;', '&lt;main&gt;'];
-const css = ['rotate()', 'scale()', 'position', 'float', 'z-index', 'transform', 'animate', 'overflow', 'justify', 'right', 'center', 'static', 'relative', 'absolute', 'fixed', 'sticky', 'flex', 'cell', 'grid', 'color', 'align-self', 'gap', 'isolation', '!important', 'justify-self', 'mask', 'clip', 'offset', 'order', 'overscroll-behavior', 'place-self', 'rotate', 'scroll-behavior', 'white-space', '&amp;nbsp;', 'zoom'];
-const javascript = ['===', '!=', 'return', 'hello world!', 'setTimeout', 'await', 'while', 'switch', 'try', 'if', 'get', 'random()', 'onClick', 'onChange', 'break', 'promise', 'pending', 'rejected', 'fulfilled', 'await promise', 'dom'];
-const crypto = ['sha-256', 'sha-128', 'sha-512', 'md5', 'sha-256-gen', 'sha-128-gen', 'sha-512-gen'];
-const sql_commands = ['TRUNCATE','DELETE ALL','UNION','UNION ALL','OUTER JOIN','COALESCE','CONCAT','REPLACE','MIN','MAX','DROP TABLE','MERGE','ALTER TABLE','INSERT','UNION'];
-const sysadmin_commands = ['#!',
-'#!', '/dev/null', 'rm -rf', 'kill -9', 'cat', 'man', 'cd', 'pwd', 'find/-', 'grep', '||', '&&',
-'awk', 'chmod 777', 'tail -f', 'uptime', 'head', 'mount', 'sftp', 'scp', 'cron', 'whoami', 'history',
-'.*', '[a-zA-Z]', "perl -pe 's/perl/perl/g'", '!-1', '~/','touch','touch touch','more','ping','less',
-'clear','alias','sleep','who','chown','curl','shutdown','reboot','halt','ctrl-z','ctrl-c','* * * * *','|', '`whoami`'
-];
-const git = ["rebase","commit","push","pull -u","add","init","clone","status","diff","restore","reset","checkout","merge","stash","fetch","remote","apply","cherry-pick","blame"];
-const python = ['unique','factorize','get dummies','cut','pivot','melt','class','yield', 'await', 'self', 'none', 'true', 'false', 'pass', 'global', 'async', 'return', 'try', 'except', 'raise', 'del'];
-const ml = ['Random Forest','Nearest Neighbors','Perceptron','P(A|B)','Decision Tree',
-	'Semi-Supervised','Unsupervised','Supervised','Bagging','Lasso','Ensemble','Kernal'];
+SYNOPSIS
+     the_generator [--command-type TYPE] [--border] [--break] [--backgroundColor]
 
+DESCRIPTION
+     the_generator produces unique typographic renderings of technical commands,
+     SQL statements, cryptographic hashes, and corporate admonitions using random
+     Google Fonts with randomized webkit styling properties.
 
-const all_commands = html.concat(css, javascript, crypto, python, git, sysadmin_commands, sql_commands, ml);
+     All generated SHA hashes (256, 384, 512) and MD5 hashes are cryptographically
+     valid outputs of their respective algorithms applied to pseudorandom input data.
+     
+     Git commit hashes display the first 7 hexadecimal characters of SHA-256 output,
+     conforming to standard Git short hash format.
 
-$(function(){
-	loadGenerator();
-});
+OPTIONS
+     --command-type TYPE
+             Select command category: all, html, css, javascript, crypto, sql,
+             sysadmin, git, python, ml, adm
+             
+     --border
+             Apply random border (width: 1-50px, style: varies, color: contrasting)
+             
+     --break
+             Insert line break at first space character
 
-function loadGenerator() {
-	$.getJSON('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPEC-k91wzgVIMm9CZSJIINd-WKmR2Wmo', function(json) {
-		// Filter out barcode, icon fonts, and other non-text fonts
-		const excludeKeywords = ['barcode', 
-			'material icons', 'material symbols', 
-			'jacqard', 'wavefont',
-			'flow','yarndings','guides','redacted','charted'];
-		
-		var filtered_items = json.items.filter(function(font) {
-			var fontName = font.family.toLowerCase();
-			return !excludeKeywords.some(function(keyword) {
-				return fontName.includes(keyword);
-			});
-		});
-		
-		// Replace original items with filtered list
-		json.items = filtered_items;
-		json_fonts = json;
-		
-		var cssImportRule = document.createElement('style');
-		document.getElementsByTagName('body')[0].appendChild(cssImportRule);
+     --background-color
+             Change the background color of the design	(black, white, gray, random)	 
 
-		var cssImportStyle = document.styleSheets[0];
-		var cssImportRules=cssImportStyle.cssRules;
+COMMANDS
+     Change Command
+             Generate new command from selected category
+             
+     Change Google Font
+             Apply random font from filtered Google Fonts API (excludes: barcode,
+             material icons, wavefont, yarndings, guides, redacted, charted)
+             
+     Change Font Style
+             Randomize webkit-text-fill-color, webkit-text-stroke-width,
+             webkit-text-stroke-color, and text-shadow (blue hue: 180-240°)
+             
+     Change Font Render
+             Modify font-weight, font-style, text-transform
+             
+     Bigger Font / Smaller Font
+             Adjust font-size in 20px increments (range: 20-1200px)
+             
+     Border Color
+             Regenerate border color (maintains width and style)
+             
+     Border Style
+             Randomize border width (1-50px), style, and color
+             
+     Bigger Border Box / Smaller Border Box
+             Adjust padding in 10px increments (range: 0-100px)
+             
+     Download as PNG
+             Export current rendering via dom-to-image library
+             
+     Share This Design
+             Generate state-encoded URL, copy to clipboard
 
-		for (i=1;i<=json.items.length-1;i++){
-			for (subsetCnt=0;subsetCnt<=json.items[i].subsets.length-1;subsetCnt++){
-				if (JSON.stringify(json.items[i].subsets[subsetCnt]) == '"latin"'){
-					outString+=JSON.stringify(json.items[Math.round((json.items.length-1)*Math.random())].family)+ '<br>';
-					linkFont[i] = document.createElement('link');
-					document.getElementsByTagName('body')[0].appendChild(linkFont[i]);
-					linkFont[i].id=JSON.stringify(json.items[i].family).replace(/"/g,"")
-					linkFont[i].rel = 'stylesheet';
-					linkFont[i].type = 'text/css';
-					linkFont[i].href = 'https://fonts.googleapis.com/css?family=' + JSON.stringify(json.items[i].family).replace(/"/g,"") ;
-				}
-			}
-		}
+BACKGROUND
+     click Random repeatedly to change random color
 
-		createGlyph();
-		styleControls();
-		bindEvents();
-		loadStateFromURL();
-	});
-}
+ARRAYS
+     html          HTML5 element tags (encoded: &lt; &gt;)
+     css           CSS properties and values
+     javascript    JS operators, keywords, promises
+     crypto        sha-256, sha-384, sha-512, md5 (appended with -gen for generation)
+     sql           SQL commands (TRUNCATE, DROP TABLE, COALESCE, etc.)
+     sysadmin      Unix/Linux commands (chmod 777, rm -rf, whoami, etc.)
+     git           Git commands plus commit-sha (generates valid short hash)
+     python        Python keywords and pandas methods
+     ml            Machine learning terminology
+     adm           Corporate admonitions (Fuck it Ship it, Quick Question, etc.)
 
-function createGlyph() {
-	// Clear existing glyph
-	if (navGlyph[current_glyph_index]) {
-		navGlyph[current_glyph_index].remove();
-	}
+FILES
+     Google Fonts API (filtered latin subset, monospace for UI)
+     js-sha256, js-sha512, js-md5 (cryptographic hash libraries)
+     dom-to-image (PNG export)
 
-	var mycolors=[];
-	var colNum=1;
+NOTES
+     All webkit properties may render differently across browsers.
+     
+     Hash generation uses Math.random() + Date.now() as input, ensuring
+     cryptographic validity without deterministic reproducibility.
+     
+     URL state encoding uses base64 JSON. Maximum practical length: ~2000 characters.
 
-	function setColor(hue,sat,light,opa){
-		for (colorCounter=1;colorCounter<=colNum;colorCounter++){
-			var toSpliceColor='hsla('
-			+  Math.round(Math.random()*10-20+hue) + ','
-			+  Math.round(40*Math.random()+sat-20)+ '%,'
-			+ (Math.round(Math.random()*20)+light) + '%,'
-			+ (1)
-			+ ')';
-			mycolors.splice(1,0,toSpliceColor);
-		}
-	}
+AUTHOR
+     Matthew Cryer, with Claude (Anthropic), with chatGPT (openAI)
+     
+TAGLINE(S)
+     various
 
-	setColor(Math.round(Math.random()*80-10),Math.round(Math.random()*1800),Math.round(Math.random()*80),1);
-	setColor(Math.round(Math.random()*340),Math.round(Math.random()*800),Math.round(Math.random()*80),1);
+SEE ALSO
+     git(1), sha256sum(1), chmod(1), perl(1), SQL standards documentation
+    </pre>
+</div>
 
-	// Set background
-	setBackground();
-
-	// Get command array based on checkboxes
-	var command_array = getActiveCommandArray();
-	
-	var font=JSON.stringify(json_fonts.items[Math.round((json_fonts.items.length-1)*Math.random())].family);
-	var elementName='glyphmatic' + current_glyph_index;
-	navGlyph[current_glyph_index] = document.createElement("div");
-	document.body.appendChild(navGlyph[current_glyph_index]);
-	
-	var command_text = command_array[Math.round((command_array.length-1)*Math.random())];
-	
-	// Check if it's a crypto hash generation command
-	if (command_text.endsWith('-gen')) {
-		// Use async/await to generate hash
-		(async function() {
-			var hash = await generateHash(command_text);
-			
-			if (document.getElementById('breakCheck').checked) {
-				hash = hash.replace(' ', '<br>');
-			}
-			
-			navGlyph[current_glyph_index].innerHTML = hash;
-		})();
-		
-		// Set a placeholder temporarily
-		command_text = 'generating...';
-	}
-	
-	// Add break if checkbox is checked
-	if (document.getElementById('breakCheck').checked && !command_text.endsWith('-gen')) {
-		command_text = command_text.replace(' ', '<br>');
-	}
-	
-	navGlyph[current_glyph_index].innerHTML = command_text;
-	navGlyph[current_glyph_index].id=elementName;
-	navGlyph[current_glyph_index].style.position='relative';
-	navGlyph[current_glyph_index].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
-	
-	// Dynamic font size based on string length
-	var text_length = command_text.replace('<br>', '').length;
-	var font_size = 200;
-	if (text_length > 15) {
-		font_size = 120;
-	} else if (text_length > 10) {
-		font_size = 150;
-	} else if (text_length > 6) {
-		font_size = 180;
-	}
-	navGlyph[current_glyph_index].style.fontSize = font_size + 'px';
-	
-	navGlyph[current_glyph_index].style.padding=3+ Math.round( Math.random()*15 ) + 'px';
-	
-	// Adjust line height for breaks
-	if (document.getElementById('breakCheck').checked) {
-		navGlyph[current_glyph_index].style.lineHeight = '1.4';
-		navGlyph[current_glyph_index].style.whiteSpace = 'normal';
-		// Add more padding when broken to give container space
-		var current_padding = parseInt(navGlyph[current_glyph_index].style.padding) || 10;
-		navGlyph[current_glyph_index].style.padding = (current_padding + 20) + 'px';
-	} else {
-		navGlyph[current_glyph_index].style.lineHeight = Math.random()+.3;
-		navGlyph[current_glyph_index].style.whiteSpace = 'nowrap';
-	}
-	navGlyph[current_glyph_index].style.fontFamily=font;
-	navGlyph[current_glyph_index].style.textAlign = 'center';
-	navGlyph[current_glyph_index].style.position = 'absolute';
-	navGlyph[current_glyph_index].style.top = '50%';
-	navGlyph[current_glyph_index].style.left = '50%';
-	navGlyph[current_glyph_index].style.transform = 'translate(-50%, -50%)';
-	navGlyph[current_glyph_index].style.whiteSpace = 'nowrap';
-
-	// Style the glyphs
-	navGlyph[current_glyph_index].style.textShadow=Math.round( Math.random()*5-1 ) + 'px '
-									+Math.round( Math.random()*5-1 ) + 'px '
-									+ mycolors[Math.round((mycolors.length-1)*Math.random())];
-	navGlyph[current_glyph_index].style.webkitTextFillColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
-	navGlyph[current_glyph_index].style.webkitTextStrokeWidth=Math.round(Math.random()*3-1) +"px";
-	navGlyph[current_glyph_index].style.webkitTextStrokeColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
-
-	// Add border if checkbox is checked
-	if (document.getElementById('borderCheck').checked) {
-		addRandomBorder();
-	}
-}
-
-function getActiveCommandArray() {
-	var command_type = document.getElementById('commandSelect').value;
-	
-	switch(command_type) {
-		case 'html':
-			return html;
-		case 'css':
-			return css;
-		case 'javascript':
-			return javascript;
-		case 'crypto':
-			return crypto;
-		case 'sql':
-			return sql_commands;
-		case 'sysadmin':
-			return sysadmin_commands;
-		case 'git':
-			return git;
-		case 'python':
-			return python;
-		case 'ml':
-			return ml;	
-		case 'all':
-		default:
-			return all_commands;
-	}
-}
-
-function addRandomBorder() {
-	var border_styles = ['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset'];
-	var border_style = border_styles[Math.floor(Math.random() * border_styles.length)];
-	var border_width = Math.floor(Math.random() * 50) + 1;
-	
-	// Get contrasting border color based on background
-	var border_color = getContrastingBorderColor();
-	
-	navGlyph[current_glyph_index].style.border = border_width + 'px ' + border_style + ' ' + border_color;
-}
-
-function getContrastingBorderColor() {
-	var bg_color = getComputedStyle(document.body).backgroundColor;
-	
-	// Check if background is light or dark
-	if (bg_color === 'rgb(255, 255, 255)' || bg_color === 'white') {
-		// White background - use dark/saturated colors
-		var dark_hues = [0, 210, 270]; // red, blue, purple
-		var hue = dark_hues[Math.floor(Math.random() * dark_hues.length)];
-		return 'hsl(' + hue + ', ' + (60 + Math.floor(Math.random() * 40)) + '%, ' + (20 + Math.floor(Math.random() * 30)) + '%)';
-	} else if (bg_color === 'rgb(128, 128, 128)' || bg_color === 'gray' || bg_color === 'grey') {
-		// Gray background - use bright or dark saturated colors
-		var contrast_hues = [0, 120, 240]; // red, green, blue
-		var hue = contrast_hues[Math.floor(Math.random() * contrast_hues.length)];
-		var lightness = Math.random() < 0.5 ? (10 + Math.floor(Math.random() * 30)) : (70 + Math.floor(Math.random() * 30));
-		return 'hsl(' + hue + ', ' + (70 + Math.floor(Math.random() * 30)) + '%, ' + lightness + '%)';
-	} else {
-		// Black or random dark background - use bright colors
-		return 'hsl(' + Math.floor(Math.random() * 360) + ', ' + (70 + Math.floor(Math.random() * 30)) + '%, ' + (60 + Math.floor(Math.random() * 35)) + '%)';
-	}
-}
-
-function setBackground() {
-	var bg_select = document.getElementById('bgSelect').value;
-	
-	switch(bg_select) {
-		case 'black':
-			document.body.style.backgroundColor = 'black';
-			break;
-		case 'white':
-			document.body.style.backgroundColor = 'white';
-			break;
-		case 'gray':
-			document.body.style.backgroundColor = 'gray';
-			break;
-		case 'random':
-			var random_color = 'hsl(' + Math.floor(Math.random() * 360) + ', ' + 
-							   Math.floor(Math.random() * 100) + '%, ' + 
-							   Math.floor(Math.random() * 50) + '%)';
-			document.body.style.backgroundColor = random_color;
-			break;
-	}
-}
-
-async function changeCommand() {
-	var command_array = getActiveCommandArray();
-	var command_text = command_array[Math.round((command_array.length-1)*Math.random())];
-	
-	// Check if it's a crypto hash generation command
-	if (command_text.endsWith('-gen')) {
-		command_text = await generateHash(command_text);
-	}
-	
-	if (document.getElementById('breakCheck').checked) {
-		command_text = command_text.replace(' ', '<br>');
-	}
-	
-	navGlyph[current_glyph_index].innerHTML = command_text;
-	saveStateToURL()
-}
-
-async function generateHash(hashType) {
-	// Remove the -gen suffix to get the algorithm
-	var algorithm = hashType.replace('-gen', '');
-	
-	// Generate random data to hash
-	var randomData = Math.random().toString() + Date.now().toString();
-	
-	// Simple hash function (since Web Crypto API requires HTTPS)
-	var hash = 0;
-	for (var i = 0; i < randomData.length; i++) {
-		var char = randomData.charCodeAt(i);
-		hash = ((hash << 5) - hash) + char;
-		hash = hash & hash; // Convert to 32bit integer
-	}
-	
-	// Convert to hex and pad based on algorithm
-	var hashHex = Math.abs(hash).toString(16);
-	
-	// Pad to appropriate length based on algorithm
-	var targetLength;
-	switch(algorithm) {
-		case 'sha-256':
-			targetLength = 64; // 256 bits = 64 hex chars
-			break;
-		case 'sha-512':
-			targetLength = 128; // 512 bits = 128 hex chars
-			break;
-		case 'sha-128':
-		case 'md5':
-			targetLength = 32; // 128 bits = 32 hex chars
-			break;
-		default:
-			targetLength = 64;
-	}
-	
-	// Repeat and pad the hash to reach target length
-	while (hashHex.length < targetLength) {
-		hashHex += Math.random().toString(16).substring(2);
-	}
-	
-	hashHex = hashHex.substring(0, targetLength);
-	
-	// Format with algorithm name and line breaks
-	var formattedHash = algorithm + ':<br>';
-	
-	// Add line breaks every 64 characters for readability
-	for (var i = 0; i < hashHex.length; i += 64) {
-		formattedHash += hashHex.substring(i, i + 64);
-		if (i + 64 < hashHex.length) {
-			formattedHash += '<br>';
-		}
-	}
-	
-	return formattedHash;
-}
-
-function changeFont() {
-	var font = JSON.stringify(json_fonts.items[Math.round((json_fonts.items.length-1)*Math.random())].family);
-	navGlyph[current_glyph_index].style.fontFamily = font;
-	saveStateToURL()
-}
-
-function changeFontStyle() {
-	// Generate random colors
-	var stroke_color = 'hsl(' + Math.floor(Math.random() * 360) + ', ' + 
-					   Math.floor(Math.random() * 100) + '%, ' + 
-					   Math.floor(Math.random() * 100) + '%)';
-	var fill_color = 'hsl(' + Math.floor(Math.random() * 360) + ', ' + 
-					 Math.floor(Math.random() * 100) + '%, ' + 
-					 Math.floor(Math.random() * 100) + '%)';
-	
-	// Random blue hue (180-240) for shadow
-	var shadow_color = 'hsl(' + (180 + Math.floor(Math.random() * 60)) + ', ' + 
-					   (60 + Math.floor(Math.random() * 40)) + '%, ' + 
-					   (40 + Math.floor(Math.random() * 40)) + '%)';
-	
-	// Random offset for shadow
-	var offset_x = Math.floor(Math.random() * 20) - 10;
-	var offset_y = Math.floor(Math.random() * 20) - 10;
-	var blur = Math.floor(Math.random() * 15) + 5;
-	
-	// Apply webkit stroke
-	navGlyph[current_glyph_index].style.webkitTextStrokeWidth = (Math.floor(Math.random() * 5) + 1) + 'px';
-	navGlyph[current_glyph_index].style.webkitTextStrokeColor = stroke_color;
-	
-	// Apply fill
-	navGlyph[current_glyph_index].style.webkitTextFillColor = fill_color;
-	
-	// Apply shadow
-	navGlyph[current_glyph_index].style.textShadow = offset_x + 'px ' + offset_y + 'px ' + blur + 'px ' + shadow_color;
-	saveStateToURL()
-}
-
-function changeFontRender() {
-	// Change font weight, style, and text transform ONLY - NO visual styling
-	var weights = ['normal', 'bold', '100', '300', '500', '700', '900'];
-	var styles = ['normal', 'italic', 'oblique'];
-	var transforms = ['none', 'uppercase', 'lowercase', 'capitalize'];
-	
-	navGlyph[current_glyph_index].style.fontWeight = weights[Math.floor(Math.random() * weights.length)];
-	navGlyph[current_glyph_index].style.fontStyle = styles[Math.floor(Math.random() * styles.length)];
-	navGlyph[current_glyph_index].style.textTransform = transforms[Math.floor(Math.random() * transforms.length)];
-	saveStateToURL()
-}
-
-function changeStyle() {
-	var mycolors = [];
-	var colNum = 5;
-
-	// Generate new colors
-	for (var i = 0; i < colNum; i++) {
-		var hue = Math.round(Math.random() * 360);
-		var sat = Math.round(Math.random() * 100);
-		var light = Math.round(Math.random() * 80 + 20);
-		var color = 'hsla(' + hue + ',' + sat + '%,' + light + '%,1)';
-		mycolors.push(color);
-	}
-	
-	// Apply new styles
-	navGlyph[current_glyph_index].style.color = mycolors[Math.round((mycolors.length-1)*Math.random())];
-	navGlyph[current_glyph_index].style.textShadow = Math.round(Math.random()*5-1) + 'px ' +
-													Math.round(Math.random()*5-1) + 'px ' +
-													mycolors[Math.round((mycolors.length-1)*Math.random())];
-	navGlyph[current_glyph_index].style.webkitTextFillColor = mycolors[Math.round((mycolors.length-1)*Math.random())];
-	navGlyph[current_glyph_index].style.webkitTextStrokeWidth = Math.round(Math.random()*5) + "px";
-	navGlyph[current_glyph_index].style.webkitTextStrokeColor = mycolors[Math.round((mycolors.length-1)*Math.random())];
-    saveStateToURL()
-}
-
-function changeBorderColor() {
-	if (navGlyph[current_glyph_index] && navGlyph[current_glyph_index].style.border && navGlyph[current_glyph_index].style.border !== 'none') {
-		var border_color = getContrastingBorderColor();
-		
-		// Parse current border to preserve width and style
-		var current_border = navGlyph[current_glyph_index].style.border;
-		var width_match = current_border.match(/(\d+)px/);
-		var style_match = current_border.match(/\s(solid|dashed|dotted|double|groove|ridge|inset|outset)\s/);
-		
-		var width = width_match ? width_match[1] + 'px' : '2px';
-		var style = style_match ? style_match[1] : 'solid';
-		
-		navGlyph[current_glyph_index].style.border = width + ' ' + style + ' ' + border_color;
-	}
-    saveStateToURL()
-}
-
-function changeBorderStyle() {
-	if (navGlyph[current_glyph_index] && navGlyph[current_glyph_index].style.border && navGlyph[current_glyph_index].style.border !== 'none') {
-		var border_styles = ['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset'];
-		var new_style = border_styles[Math.floor(Math.random() * border_styles.length)];
-		
-		// New random width
-		var new_width = (Math.floor(Math.random() * 50) + 1) + 'px';
-		
-		// New contrasting color
-		var new_color = getContrastingBorderColor();
-		
-		navGlyph[current_glyph_index].style.border = new_width + ' ' + new_style + ' ' + new_color;
-	}
-    saveStateToURL()
-}
-
-function biggerBorder() {
-	if (navGlyph[current_glyph_index]) {
-		var current_padding = parseInt(navGlyph[current_glyph_index].style.padding) || 10;
-		var new_padding = Math.min(current_padding + 10, 100);
-		navGlyph[current_glyph_index].style.padding = new_padding + 'px';
-	}
-    saveStateToURL()
-}
-
-function smallerBorder() {
-	if (navGlyph[current_glyph_index]) {
-		var current_padding = parseInt(navGlyph[current_glyph_index].style.padding) || 10;
-		var new_padding = Math.max(current_padding - 10, 0);
-		navGlyph[current_glyph_index].style.padding = new_padding + 'px';
-	}
-    saveStateToURL()
-}
-
-function biggerFont() {
-	var current_size = parseInt(navGlyph[current_glyph_index].style.fontSize) || 200;
-	var new_size = Math.min(current_size + 20, 1200);
-	navGlyph[current_glyph_index].style.fontSize = new_size + 'px';
-    saveStateToURL()
-}
-
-function smallerFont() {
-	var current_size = parseInt(navGlyph[current_glyph_index].style.fontSize) || 200;
-	var new_size = Math.max(current_size - 20, 20);
-	navGlyph[current_glyph_index].style.fontSize = new_size + 'px';
-    saveStateToURL()
-}
-
-function styleControls() {
-	var controls = document.getElementById('controls');
-	var buttons = controls.querySelectorAll('button');
-	var checkboxes = controls.querySelectorAll('input[type="checkbox"]');
-	var select = controls.querySelector('select');
-	var labels = controls.querySelectorAll('label');
-// Style BOTH select elements
-	var commandSelect = document.getElementById('commandSelect');
-	var bgSelect = document.getElementById('bgSelect');	
-	
-	// Filter for monospace fonts only
-	var mono_fonts = json_fonts.items.filter(function(font) {
-		return font.category === 'monospace';
-	});
-
-	// Apply random Google font to controls (ONE font for everything)
-	var menu_font;
-	if (mono_fonts.length > 0) {
-		menu_font = JSON.stringify(mono_fonts[Math.round((mono_fonts.length-1)*Math.random())].family);
-	} else {
-		menu_font = JSON.stringify(json_fonts.items[Math.round((json_fonts.items.length-1)*Math.random())].family);
-	}
-
-
-	// Get background color to determine color scheme
-	var bg_color = getComputedStyle(document.body).backgroundColor;
-	var main_color, background_color, text_color;
-	
-	if (bg_color === 'white' || bg_color === 'rgb(255, 255, 255)') {
-		// White background: Blue, Red, Black scheme
-		var colors = ['#0066ff', '#ff0033', '#000000'];
-		main_color = colors[Math.floor(Math.random() * colors.length)];
-		background_color = 'rgba(255, 255, 255, 0.9)';
-		text_color = main_color;
-	} else if (bg_color === 'gray' || bg_color === 'grey' || bg_color === 'rgb(128, 128, 128)') {
-		// Gray background: Blue, Red, Black scheme
-		var colors = ['#0066ff', '#ff0033', '#000000'];
-		main_color = colors[Math.floor(Math.random() * colors.length)];
-		background_color = 'rgba(200, 200, 200, 0.9)';
-		text_color = main_color;
-	} else {
-		// Black or random background: Electric colors (less fugly)
-		var electric_colors = ['#00ffff', '#ff00ff', '#00ff00', '#ffff00'];
-		main_color = electric_colors[Math.floor(Math.random() * electric_colors.length)];
-		background_color = 'rgba(0, 0, 0, 0.9)';
-		text_color = main_color;
-	}
-	
-	// Apply consistent font and background to entire controls
-	controls.style.fontFamily = menu_font;
-	controls.style.background = background_color;
-	controls.style.border = '3px solid ' + main_color;
-	controls.style.borderRadius = '15px';
-	
-	// Fix the toggle button to match the color scheme
-	var toggleBtn = document.getElementById('toggleMenu');
-	if (toggleBtn) {
-		toggleBtn.style.background = background_color;
-		toggleBtn.style.color = text_color;
-		toggleBtn.style.border = '2px solid ' + main_color;
-	}
-	
-	// ALL buttons get identical OUTLINE styling with rounded corners
-	buttons.forEach(function(button) {
-		button.style.backgroundColor = 'transparent';
-		button.style.color = text_color;
-		button.style.border = '2px solid ' + main_color;
-		button.style.borderRadius = '8px';
-		button.style.padding = '8px 10px';
-		button.style.fontSize = '14px';
-		button.style.fontWeight = 'bold';
-		button.style.cursor = 'pointer';
-		button.style.margin = '2px 0';
-		button.style.fontFamily = menu_font;
-	});
-	
-	// ALL checkboxes get identical styling
-	checkboxes.forEach(function(checkbox) {
-		checkbox.style.transform = 'scale(1.3)';
-		checkbox.style.accentColor = main_color;
-		checkbox.style.marginRight = '12px';
-	});
-	
-	// Apply same styling to both
-	[commandSelect, bgSelect].forEach(function(select) {
-		select.style.backgroundColor = 'transparent';
-		select.style.color = text_color;
-		select.style.border = '2px solid ' + main_color;
-		select.style.borderRadius = '8px';
-		select.style.padding = '8px 10px';
-		select.style.fontSize = '14px';
-		select.style.width = '100%';
-		select.style.fontFamily = menu_font;
-		select.style.fontWeight = 'bold';
-	});
-	
-	// ALL labels get identical styling
-	labels.forEach(function(label) {
-		label.style.color = text_color;
-		label.style.fontWeight = 'bold';
-		label.style.fontSize = '18px';
-		label.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
-		label.style.marginLeft = '10px';
-		label.style.fontFamily = menu_font;
-	});
-}
-
-function getContrastColor(bg_color) {
-	// Simple contrast function - returns white or bright color for dark backgrounds, dark color for light backgrounds
-	if (bg_color.includes('rgb')) {
-		// Extract RGB values and calculate brightness
-		var rgb = bg_color.match(/\d+/g);
-		var brightness = (parseInt(rgb[0]) * 299 + parseInt(rgb[1]) * 587 + parseInt(rgb[2]) * 114) / 1000;
-		return brightness < 128 ? '#ffffff' : '#000000';
-	} else if (bg_color === 'black') {
-		return '#ffffff';
-	} else if (bg_color === 'white') {
-		return '#000000';
-	} else if (bg_color === 'gray') {
-		return '#ffffff';
-	} else {
-		return '#ffffff'; // Default to white for random colors
-	}
-}
-
-function bindEvents() {
-	document.getElementById('refreshBtn').addEventListener('click', function() {
-		location.reload();
-	});
-	
-	document.getElementById('changeCmd').addEventListener('click', function() {
-		changeCommand();
-	});
-	
-	document.getElementById('changeFontBtn').addEventListener('click', function() {
-		changeFont();
-	});
-	
-	document.getElementById('changeFontStyleBtn').addEventListener('click', function() {
-		changeFontStyle();
-	});
-	
-	document.getElementById('changeFontRenderBtn').addEventListener('click', function() {
-		changeFontRender();
-	});
-	
-	document.getElementById('biggerFontBtn').addEventListener('click', function() {
-		biggerFont();
-	});
-	
-	document.getElementById('smallerFontBtn').addEventListener('click', function() {
-		smallerFont();
-	});
-	
-	document.getElementById('changeBorderBtn').addEventListener('click', function() {
-		changeBorderColor();
-	});
-	
-	document.getElementById('changeBorderStyleBtn').addEventListener('click', function() {
-		changeBorderStyle();
-	});
-	
-	document.getElementById('biggerBorderBtn').addEventListener('click', function() {
-		biggerBorder();
-	});
-	
-	document.getElementById('smallerBorderBtn').addEventListener('click', function() {
-		smallerBorder();
-	});
-	
-	document.getElementById('toggleMenu').addEventListener('click', function() {
-		var menuContent = document.getElementById('menuContent');
-		var toggleBtn = document.getElementById('toggleMenu');
-		if (menuContent.style.display === 'none') {
-			menuContent.style.display = 'block';
-			toggleBtn.innerHTML = '−';
-		} else {
-			menuContent.style.display = 'none';
-			toggleBtn.innerHTML = '+';
-		}
-	});
-	
-	document.getElementById('bgSelect').addEventListener('change', function() {
-		setBackground();
-		styleControls(); // Re-style labels for new background
-	});
-	
-	// Add click event for random background re-generation (without menu re-styling)
-	document.getElementById('bgSelect').addEventListener('click', function() {
-		if (this.value === 'random') {
-			var random_color = 'hsl(' + Math.floor(Math.random() * 360) + ', ' + 
-							   Math.floor(Math.random() * 100) + '%, ' + 
-							   Math.floor(Math.random() * 50) + '%)';
-			document.body.style.backgroundColor = random_color;
-		}
-	});
-	
-	document.getElementById('borderCheck').addEventListener('change', function() {
-		if (this.checked) {
-			addRandomBorder();
-		} else {
-			navGlyph[current_glyph_index].style.border = 'none';
-		}
-	});
-	
-	document.getElementById('commandSelect').addEventListener('change', function() {
-		changeCommand();
-	});
-	
-	document.getElementById('breakCheck').addEventListener('change', function() {
-		// Only update current command when break checkbox changes
-		var current_text = navGlyph[current_glyph_index].innerHTML;
-		if (this.checked) {
-			// Add break to current text (replace first space with <br>)
-			current_text = current_text.replace(' ', '<br>');
-			navGlyph[current_glyph_index].style.lineHeight = '1.4';
-			navGlyph[current_glyph_index].style.whiteSpace = 'normal';
-			// Add more padding when broken to give container space
-			var current_padding = parseInt(navGlyph[current_glyph_index].style.padding) || 10;
-			navGlyph[current_glyph_index].style.padding = (current_padding + 20) + 'px';
-		} else {
-			// Remove breaks from current text
-			current_text = current_text.replace('<br>', ' ');
-			navGlyph[current_glyph_index].style.lineHeight = Math.random()+.3;
-			navGlyph[current_glyph_index].style.whiteSpace = 'nowrap';
-			// Reduce padding back
-			var current_padding = parseInt(navGlyph[current_glyph_index].style.padding) || 30;
-			navGlyph[current_glyph_index].style.padding = Math.max(current_padding - 20, 3) + 'px';
-		}
-		navGlyph[current_glyph_index].innerHTML = current_text;
-	});
-}
-
-function saveStateToURL() {
-	var state = {
-		f: navGlyph[current_glyph_index].style.fontFamily.replace(/"/g, ''),
-		fs: navGlyph[current_glyph_index].style.fontSize,
-		c: navGlyph[current_glyph_index].innerHTML,
-		ct: document.getElementById('commandSelect').value,
-		bg: getComputedStyle(document.body).backgroundColor,
-		col: navGlyph[current_glyph_index].style.color,
-		ts: navGlyph[current_glyph_index].style.textShadow,
-		sw: navGlyph[current_glyph_index].style.webkitTextStrokeWidth,
-		sc: navGlyph[current_glyph_index].style.webkitTextStrokeColor,
-		fc: navGlyph[current_glyph_index].style.webkitTextFillColor,
-		b: navGlyph[current_glyph_index].style.border,
-		p: navGlyph[current_glyph_index].style.padding,
-		bc: document.getElementById('borderCheck').checked ? 1 : 0,
-		br: document.getElementById('breakCheck').checked ? 1 : 0,
-		fw: navGlyph[current_glyph_index].style.fontWeight,
-		fst: navGlyph[current_glyph_index].style.fontStyle,
-		tt: navGlyph[current_glyph_index].style.textTransform,
-		lh: navGlyph[current_glyph_index].style.lineHeight
-	};
-	
-	window.location.hash = btoa(JSON.stringify(state)).replace(/=/g, '');
-}
-
-function loadStateFromURL() {
-	if (window.location.hash) {
-		try {
-			var hash = window.location.hash.substring(1);
-			var state = JSON.parse(atob(hash));
-			
-			navGlyph[current_glyph_index].style.fontFamily = '"' + state.f + '"';
-			navGlyph[current_glyph_index].style.fontSize = state.fs;
-			navGlyph[current_glyph_index].innerHTML = state.c;
-			document.getElementById('commandSelect').value = state.ct;
-			document.body.style.backgroundColor = state.bg;
-			navGlyph[current_glyph_index].style.color = state.col;
-			navGlyph[current_glyph_index].style.textShadow = state.ts;
-			navGlyph[current_glyph_index].style.webkitTextStrokeWidth = state.sw;
-			navGlyph[current_glyph_index].style.webkitTextStrokeColor = state.sc;
-			navGlyph[current_glyph_index].style.webkitTextFillColor = state.fc;
-			navGlyph[current_glyph_index].style.border = state.b;
-			navGlyph[current_glyph_index].style.padding = state.p;
-			document.getElementById('borderCheck').checked = state.bc === 1;
-			document.getElementById('breakCheck').checked = state.br === 1;
-			navGlyph[current_glyph_index].style.fontWeight = state.fw;
-			navGlyph[current_glyph_index].style.fontStyle = state.fst;
-			navGlyph[current_glyph_index].style.textTransform = state.tt;
-			navGlyph[current_glyph_index].style.lineHeight = state.lh;
-		} catch (e) {
-			console.error('Failed to load state:', e);
-		}
-	}
-}
-
-
-
-
-
-</script>
 </body>
 </html>
