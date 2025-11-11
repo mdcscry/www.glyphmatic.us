@@ -18,7 +18,7 @@ var myarray=[
 ,4592//fat middle ovoid
 ,4428//feet base
 ,4338//fat lower ovoid
-,8576//big rectangle
+//,8576//big rectangle
 ,12615 //fat flat middle ovoid
 
 ,10040,10039,10038,10037,10036,10035,10034,10033

@@ -49,12 +49,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Javanese&family=Noto+Sans+Mongolian&family=Noto+Sans+Soyombo&family=Noto+Sans+Thaana&family=Noto+Sans+Warang+Citi&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&family=Kaisei+Opti&family=Shippori+Mincho+B1&family=Yuji+Boku&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Cuneiform&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tai+Le&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Old+Persian&family=Noto+Sans+Ugaritic&display=swap');
 /* symbols,chinese, hebrew, telugu, malayalam, bengali, malayalam, gurmurkhi, gujarati, arabic, korean, gurmukhi, sharada
 ,cham, emoji, devanagari, marchen, vai, avestan, yi, lao, osmanya, kannada, khmer, ethiopic, armenian, georgian, thai
 cherokee, myanmar, tibetan, color emoji, music, bamum, balinse, tai tham, jain, fancy latin 
 grantha lepcha kawi limbu Meitei-Mayek modi newa phagpa siddham takri tirhuta oriya zanabazar khmer sundanese
-thai chinese korean japanese mongolian thaana warangciti javanese soyombo japanese(special) sinhala
+thai chinese korean japanese mongolian thaana warangciti javanese soyombo japanese(special) sinhala, cuneifrom, tai le
+ugaritic old persian
+
+
+/* Ugaritic  Old Persian*/
+.noto-sans-ugaritic-regular {
+  font-family: "Noto Sans Ugaritic", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-old-persian-regular {
+  font-family: "Noto Sans Old Persian", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+/* Tai Le */
+.noto-sans-tai-le-regular {
+  font-family: "Noto Sans Tai Le", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Cuneiform */
+.noto-sans-cuneiform-regular {
+  font-family: "Noto Sans Cuneiform", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
 
 /* Sinhala */
 
@@ -741,7 +773,7 @@ thai chinese korean japanese mongolian thaana warangciti javanese soyombo japane
 /* Avestan */
 
 .noto-sans-avestan {
-  font-family: "Noto Sans Vai", sans-serif;
+  font-family: "Noto Sans Avestan", sans-serif;
   font-weight: 400;
   font-style: normal;
 }
@@ -1469,6 +1501,11 @@ thai chinese korean japanese mongolian thaana warangciti javanese soyombo japane
 }
 
 @font-face {
+    font-family: 'Sun-ExtA';
+    src: url('../fonts/Sun-ExtA.ttf') format('truetype');
+}
+
+@font-face {
     font-family: 'Qomolangma-Betsu';
     src: url('../fonts/Qomolangma-Betsu.ttf') format('truetype');
 }
@@ -1621,6 +1658,11 @@ thai chinese korean japanese mongolian thaana warangciti javanese soyombo japane
 }
 
 @font-face {
+    font-family: 'Cretan';
+    src: url('../fonts/Cretan.ttf') format('truetype');
+}
+
+@font-face {
     font-family: 'Anatolian';
     src: url('../tff/NotoSansAnatolianHieroglyphs-Regular.ttf') format('truetype');
 }
@@ -1683,6 +1725,12 @@ thai chinese korean japanese mongolian thaana warangciti javanese soyombo japane
     font-family: 'fajer noori nastalique';
     src: url('../fonts/fajeernoori.ttf') format('truetype');
 }
+
+@font-face {
+    font-family: 'Akkadian';
+    src: url('../fonts/Akkadian.ttf') format('truetype');
+}
+
 @font-face {
     font-family: 'AegyptusB';
     src: url('../fonts/AegyptusB.ttf') format('truetype');
@@ -1856,6 +1904,10 @@ thai chinese korean japanese mongolian thaana warangciti javanese soyombo japane
     font-family: 'Gautami', sans-serif;
 }
 
+.cretan {
+    font-family: 'Cretan', sans-serif;
+}
+
 .vrinda {
     font-family: 'Vrinda', sans-serif;
 } 
@@ -1886,6 +1938,10 @@ thai chinese korean japanese mongolian thaana warangciti javanese soyombo japane
 
 .mph-2b-damase {
     font-family: 'MPH 2B Damase', sans-serif;
+}
+
+.sun-exta {
+    font-family: 'Sun-ExtA', sans-serif;
 }
 
 .qomolangma-betsu {
@@ -2028,7 +2084,6 @@ thai chinese korean japanese mongolian thaana warangciti javanese soyombo japane
 .ms-pgothic {
     font-family: 'MS PGothic', sans-serif;
 }
-
 .quivira {
     font-family: 'Quivira', sans-serif;
 }
@@ -2066,47 +2121,39 @@ thai chinese korean japanese mongolian thaana warangciti javanese soyombo japane
 .gardiner {
     font-family: 'Gardiner', sans-serif;
 }
-
 .notoegyptian {
     font-family: 'NotoEgyptian', serif;
 }
-
 .maya {
     font-family: 'Maya', sans-serif;
 }
-
 .watermark-font {
     font-family: 'Two STIX Math','Noto Sans Math Full','Noto Sans Full', 
                  'Noto Sans Thai', 'Noto Sans Lao', 'Noto Sans Arabic','Noto Sans CJK JP';
     /* any other styling you want for your watermarks */
 }
-
 body {
     font-family: sans-serif;
     padding: 20px;
     background: #1a1a1a;
     color: #eee;
 }
-
 .font-section {
     margin-bottom: 20px;
     border-bottom: 1px solid #333;
     padding-bottom: 10px;
 }
-
 .font-header {
     font-size: 16px;
     margin-bottom: 10px;
     color: #fff;
     font-weight: bold;
 }
-
 .glyph-samples {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
 }
-
 .glyph-sample {
     text-align: center;
     padding: 5px;
@@ -2115,7 +2162,6 @@ body {
     min-width: 60px;
     font-size: 5vw !important; 
 }
-
 .glyph-sample .glyph-char {
     display: flex;
     justify-content: center;
