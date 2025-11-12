@@ -52,13 +52,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Cuneiform&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tai+Le&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Old+Persian&family=Noto+Sans+Ugaritic&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Runic&display=swap');
+
+
 /* symbols,chinese, hebrew, telugu, malayalam, bengali, malayalam, gurmurkhi, gujarati, arabic, korean, gurmukhi, sharada
 ,cham, emoji, devanagari, marchen, vai, avestan, yi, lao, osmanya, kannada, khmer, ethiopic, armenian, georgian, thai
 cherokee, myanmar, tibetan, color emoji, music, bamum, balinse, tai tham, jain, fancy latin 
 grantha lepcha kawi limbu Meitei-Mayek modi newa phagpa siddham takri tirhuta oriya zanabazar khmer sundanese
 thai chinese korean japanese mongolian thaana warangciti javanese soyombo japanese(special) sinhala, cuneifrom, tai le
-ugaritic old persian
+ugaritic old persian runic
 
+
+/* Runic */
+.noto-sans-runic-regular {
+  font-family: "Noto Sans Runic", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
 
 /* Ugaritic  Old Persian*/
 .noto-sans-ugaritic-regular {
@@ -1755,6 +1765,86 @@ ugaritic old persian
     src: url('../fonts/maya.ttf') format('truetype');
 }
 
+@font-face {
+    font-family: 'Junicode Two Regular';
+    src: url('../fonts/JunicodeTwoBeta-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Junicode';
+    src: url('../fonts/Junicode.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Antinoou'; /*coptic*/
+    src: url('../fonts/Antinoou.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Sadagolthina'; /*gothic*/
+    src: url('../fonts/Sadagolthina.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Dukor'; /*Vai*/
+    src: url('../fonts/Dukor.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Wakor';/*Vai*/
+    src: url('../fonts/Wakor.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Rupakara'; /*Currency Block*/
+    src: url('../fonts/Rupakara.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Conakry'; /*N'Ko*/
+    src: url('../fonts/Conakry.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'BabelStone Zanabazar'; 
+    src: url('../fonts/BabelStoneZanabazar.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'BabelStone Runic Dotted'; 
+    src: url('../fonts/BabelStoneRunicDotted.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'BabelStone Runic Byrhtferth'; 
+    src: url('../fonts/BabelStoneRunicByrhtferth.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'BabelStone Runic'; 
+    src: url('../fonts/BabelStoneRunic.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'BabelStone Roman'; 
+    src: url('../fonts/BabelStoneRoman.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'BabelStone Pseudographica'; 
+    src: url('../fonts/BabelStonePseudographica.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'BabelStone Moon Runes'; 
+    src: url('../fonts/BabelStoneMoonRunes.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'BabelStone Marchen'; 
+    src: url('../fonts/BabelStoneMarchen.ttf') format('truetype');
+}
+
 .myanmar-taungyi {
     font-family: 'Myanmar Taungyi', sans-serif;
 }
@@ -2124,9 +2214,10 @@ ugaritic old persian
 .notoegyptian {
     font-family: 'NotoEgyptian', serif;
 }
-.maya {
-    font-family: 'Maya', sans-serif;
-}
+
+
+
+
 .watermark-font {
     font-family: 'Two STIX Math','Noto Sans Math Full','Noto Sans Full', 
                  'Noto Sans Thai', 'Noto Sans Lao', 'Noto Sans Arabic','Noto Sans CJK JP';

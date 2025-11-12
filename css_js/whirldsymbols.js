@@ -44,7 +44,7 @@ whirldFontArray=[
 'Kosugi Maru','Dela Gothic One','Yuji Boku',
 'Hachi Maru Pop','Rampart One','Reggae One',
 'Stick','Black Han Sans','Nanum Brush Script',
-'Chiron GoRound TC','Nanum Pen Script','Lucida Sans Unicode'
+'Chiron GoRound TC','Nanum Pen Script','Lucida Sans Unicode','Junicode','Junicode Two Regular'
 ];
 
 // Crosses and Christian symbols
@@ -352,7 +352,102 @@ myFontSet[231]=['x1AA4','Noto Sans Tai Tham']; // Thai Tham Spiral for Spinners
 myFontSet[232]=['x11A9E','Noto Sans Soyombo']; //SOYOMBO HEAD MARK WITH MOON AND SUN AND TRIPLE FLAME
 myFontSet[233]=['x11A9F','Noto Sans Soyombo']; //SOYOMBO HEAD MARK WITH MOON AND SUN AND FLAME
 myFontSet[234]=['x11AA0','Noto Sans Soyombo']; //SOYOMBO HEAD MARK WITH MOON AND SUN
-myFontSet[235]=['x1F54E','Noto Emoji','Symbola','Noto Sans Symbols 2']; //9 branch Menorah
+myFontSet[235]=['x1F54E','Noto Emoji','Symbola']; //9 branch Menorah
+
+// RUNIC SYMBOLS (U+16A0 - U+16FF)
+// Elder Futhark (24 runes)
+myFontSet[236] = ['x16A0','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Dotted','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᚠ Fehu
+myFontSet[237] = ['x16A1','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᚡ Fehu variant
+myFontSet[238] = ['x16A2','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Dotted','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᚢ Uruz
+myFontSet[239] = ['x16A3','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᚣ Yr
+myFontSet[240] = ['x16A4','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᚤ Y
+myFontSet[241] = ['x16A5','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᚥ W
+myFontSet[242] = ['x16A6','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Dotted','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᚦ Thurisaz
+myFontSet[243] = ['x16A7','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᚧ Eth
+myFontSet[244] = ['x16A8','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᚨ Ansuz
+myFontSet[245] = ['x16A9','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᚩ Os
+myFontSet[246] = ['x16AA','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᚪ Ac
+myFontSet[247] = ['x16AB','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᚫ Aesc
+myFontSet[248] = ['x16AC','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᚬ Long-branch-oss O
+myFontSet[249] = ['x16AD','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᚭ Short-twig-oss O
+myFontSet[250] = ['x16AE','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᚮ O
+myFontSet[251] = ['x16AF','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᚯ Oe
+myFontSet[252] = ['x16B0','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᚰ On
+myFontSet[253] = ['x16B1','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Dotted','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᚱ Raidho
+myFontSet[254] = ['x16B2','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᚲ Kauna
+myFontSet[255] = ['x16B3','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᚳ Cen
+myFontSet[256] = ['x16B4','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᚴ Kaun
+myFontSet[257] = ['x16B5','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᚵ G
+myFontSet[258] = ['x16B6','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᚶ Eng
+myFontSet[259] = ['x16B7','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᚷ Gebo
+myFontSet[260] = ['x16B8','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᚸ Gar
+myFontSet[261] = ['x16B9','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᚹ Wunjo
+myFontSet[262] = ['x16BA','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᚺ Haglas=z
+myFontSet[263] = ['x16BB','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᚻ Haegl
+myFontSet[264] = ['x16BC','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᚼ Long-branch-hagall H
+myFontSet[265] = ['x16BD','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᚽ Short-twig-hagall H
+myFontSet[266] = ['x16BE','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᚾ Naudiz
+myFontSet[267] = ['x16BF','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᚿ Short-twig-naud N
+myFontSet[268] = ['x16C0','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᛀ Dotted-n
+myFontSet[269] = ['x16C1','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Dotted','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛁ Isaz
+myFontSet[270] = ['x16C2','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᛂ E
+myFontSet[271] = ['x16C3','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᛃ Jeran
+myFontSet[272] = ['x16C4','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛄ Ger
+myFontSet[273] = ['x16C5','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᛅ Long-branch-ar Ae
+myFontSet[274] = ['x16C6','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᛆ Short-twig-ar A
+myFontSet[275] = ['x16C7','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛇ Iwaz
+myFontSet[276] = ['x16C8','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛈ Pertho
+myFontSet[277] = ['x16C9','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛉ Algiz
+myFontSet[278] = ['x16CA','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᛊ Sowilo
+myFontSet[279] = ['x16CB','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛋ Sigel Long-branch-sol S
+myFontSet[280] = ['x16CC','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᛌ Short-twig-sol S
+myFontSet[281] = ['x16CD','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᛍ  C
+myFontSet[282] = ['x16CE','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᛎ Z
+myFontSet[283] = ['x16CF','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛏ Tiwaz
+myFontSet[284] = ['x16D0','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᛐ Short-twig-tyr T
+myFontSet[285] = ['x16D1','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᛑ D
+myFontSet[286] = ['x16D2','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Dotted','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛒ Berkanan
+myFontSet[287] = ['x16D3','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᛓ Short-twig-bjarkan B
+myFontSet[288] = ['x16D4','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᛔ Dotted-p
+myFontSet[289] = ['x16D5','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᛕ Open-p
+myFontSet[290] = ['x16D6','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛖ Ehwaz
+myFontSet[291] = ['x16D7','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛗ Mannaz
+myFontSet[292] = ['x16D8','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᛘ Long-branch-madr M
+myFontSet[293] = ['x16D9','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᛙ Short-twig-madr M
+myFontSet[294] = ['x16DA','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Dotted','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛚ Laukaz
+myFontSet[295] = ['x16DB','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᛛ Dotted-l
+myFontSet[296] = ['x16DC','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᛜ Ingwaz
+myFontSet[297] = ['x16DD','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛝ Ing
+myFontSet[298] = ['x16DE','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛞ Dagaz
+myFontSet[299] = ['x16DF','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛟ Othalan
+myFontSet[300] = ['x16E0','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛠ Ear
+myFontSet[301] = ['x16E1','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛡ Ior
+myFontSet[302] = ['x16E2','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛢ Cweorth
+myFontSet[303] = ['x16E3','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛣ Calc
+myFontSet[304] = ['x16E4','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛤ Cealc
+myFontSet[305] = ['x16E5','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛥ Stan
+myFontSet[306] = ['x16E6','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᛦ Long-branch-yr
+myFontSet[307] = ['x16E7','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᛧ Short-twig-yr
+myFontSet[308] = ['x16E8','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᛨ Icelandic-yr
+myFontSet[309] = ['x16E9','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᛩ Q
+myFontSet[310] = ['x16EA','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic','BabelStone Runic Dotted']; // ᛪ X
+
+// Additional runic letters and punctuation
+myFontSet[311] = ['x16EB','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Dotted','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛫ Single punctuation
+myFontSet[312] = ['x16EC','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Dotted','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛬ Multiple punctuation
+myFontSet[313] = ['x16ED','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic Dotted','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛭ Cross punctuation
+myFontSet[314] = ['x16EE','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᛮ Arlaug
+myFontSet[315] = ['x16EF','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᛯ Tvimadur
+myFontSet[316] = ['x16F0','Noto Sans Runic','Segoe UI Symbol','Code2000','Junicode','Junicode Two Regular','Quivira','Everson Mono','BabelStone Runic']; // ᛰ Belgthor
+myFontSet[317] = ['x16F1','Noto Sans Runic','Code2000','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛱ K
+myFontSet[318] = ['x16F2','Noto Sans Runic','Code2000','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛲ Sh
+myFontSet[319] = ['x16F3','Noto Sans Runic','Code2000','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛳ Oo
+myFontSet[320] = ['x16F4','Noto Sans Runic','Code2000','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛴ Franks Casket Os
+myFontSet[321] = ['x16F5','Noto Sans Runic','Code2000','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛵ Franks Casket Is
+myFontSet[322] = ['x16F6','Noto Sans Runic','Code2000','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛶ Franks Casket Eh
+myFontSet[323] = ['x16F7','Noto Sans Runic','Code2000','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛷ Franks Casket Ac
+myFontSet[324] = ['x16F8','Noto Sans Runic','Code2000','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛸ Franks Casket Aesc
+
 var glyphDescriptions = [];
 
 // Original entries 0-104
@@ -595,6 +690,96 @@ glyphDescriptions[232]='HEAD MARK WITH MOON AND SUN AND TRIPLE FLAME'; //Soyombo
 glyphDescriptions[233]='SOYOMBO HEAD MARK WITH MOON AND SUN AND FLAME'; //Soyombo
 glyphDescriptions[234]='SOYOMBO HEAD MARK WITH MOON AND SUN'; //Soyombo
 glyphDescriptions[235]= 'MENORAH WITH NINE BRANCHES' 
+// Descriptions with runic tradition origins
+glyphDescriptions[236] = 'Fehu (cattle, wealth) - Elder Futhark';
+glyphDescriptions[237] = 'Fehu variant - Anglo-Saxon Futhorc';
+glyphDescriptions[238] = 'Uruz (aurochs, strength) - Elder Futhark';
+glyphDescriptions[239] = 'Yr (yew bow) - Younger Futhark';
+glyphDescriptions[240] = 'Y - Anglo-Saxon Futhorc';
+glyphDescriptions[241] = 'W - Anglo-Saxon Futhorc';
+glyphDescriptions[242] = 'Thurisaz (giant, thorn) - Elder Futhark';
+glyphDescriptions[243] = 'Eth - Anglo-Saxon Futhorc';
+glyphDescriptions[244] = 'Ansuz (god, mouth) - Elder Futhark';
+glyphDescriptions[245] = 'Os - Anglo-Saxon Futhorc';
+glyphDescriptions[246] = 'Ac (oak) - Anglo-Saxon Futhorc';
+glyphDescriptions[247] = 'Aesc (ash tree) - Anglo-Saxon Futhorc';
+glyphDescriptions[248] = 'Long-branch-oss O - Younger Futhark';
+glyphDescriptions[249] = 'Short-twig-oss O - Younger Futhark';
+glyphDescriptions[250] = 'O - Medieval Runes';
+glyphDescriptions[251] = 'Oe - Medieval Runes';
+glyphDescriptions[252] = 'On - Anglo-Saxon Futhorc';
+glyphDescriptions[253] = 'Raidho (ride, journey) - Elder Futhark';
+glyphDescriptions[254] = 'Kauna (ulcer) - Elder Futhark';
+glyphDescriptions[255] = 'Cen (torch) - Anglo-Saxon Futhorc';
+glyphDescriptions[256] = 'Kaun - Younger Futhark';
+glyphDescriptions[257] = 'G - Anglo-Saxon Futhorc';
+glyphDescriptions[258] = 'Eng - Anglo-Saxon Futhorc';
+glyphDescriptions[259] = 'Gebo (gift) - Elder Futhark';
+glyphDescriptions[260] = 'Gar (spear) - Anglo-Saxon Futhorc';
+glyphDescriptions[261] = 'Wunjo (joy) - Elder Futhark';
+glyphDescriptions[262] = 'Haglaz (hail) - Elder Futhark';
+glyphDescriptions[263] = 'Haegl (hail) - Anglo-Saxon Futhorc';
+glyphDescriptions[264] = 'Long-branch-hagall H - Younger Futhark';
+glyphDescriptions[265] = 'Short-twig-hagall H - Younger Futhark';
+glyphDescriptions[266] = 'Naudiz (need) - Elder Futhark';
+glyphDescriptions[267] = 'Short-twig-naud N - Younger Futhark';
+glyphDescriptions[268] = 'Dotted-n - Medieval Runes';
+glyphDescriptions[269] = 'Isaz (ice) - Elder Futhark';
+glyphDescriptions[270] = 'E - Anglo-Saxon Futhorc';
+glyphDescriptions[271] = 'Jeran (year, harvest) - Elder Futhark';
+glyphDescriptions[272] = 'Ger - Anglo-Saxon Futhorc';
+glyphDescriptions[273] = 'Long-branch-ar Ae - Younger Futhark';
+glyphDescriptions[274] = 'Short-twig-ar A - Younger Futhark';
+glyphDescriptions[275] = 'Iwaz (yew) - Elder Futhark';
+glyphDescriptions[276] = 'Pertho (fate, mystery) - Elder Futhark';
+glyphDescriptions[277] = 'Algiz (elk, protection) - Elder Futhark';
+glyphDescriptions[278] = 'Sowilo (sun) - Elder Futhark';
+glyphDescriptions[279] = 'Sigel (sun) - Anglo-Saxon Futhorc';
+glyphDescriptions[280] = 'Long-branch-sol S - Younger Futhark';
+glyphDescriptions[281] = 'Short-twig-sol S - Younger Futhark';
+glyphDescriptions[282] = 'C - Medieval Runes';
+glyphDescriptions[283] = 'Tiwaz (Tyr, victory) - Elder Futhark';
+glyphDescriptions[284] = 'Short-twig-tyr T - Younger Futhark';
+glyphDescriptions[285] = 'D - Medieval Runes';
+glyphDescriptions[286] = 'Berkanan (birch, growth) - Elder Futhark';
+glyphDescriptions[287] = 'Short-twig-bjarkan B - Younger Futhark';
+glyphDescriptions[288] = 'Dotted-p - Medieval Runes';
+glyphDescriptions[289] = 'Open-p - Medieval Runes';
+glyphDescriptions[290] = 'Ehwaz (horse) - Elder Futhark';
+glyphDescriptions[291] = 'Mannaz (man, humanity) - Elder Futhark';
+glyphDescriptions[292] = 'Long-branch-madr M - Younger Futhark';
+glyphDescriptions[293] = 'Short-twig-madr M - Younger Futhark';
+glyphDescriptions[294] = 'Laukaz (water, lake) - Elder Futhark';
+glyphDescriptions[295] = 'Dotted-l - Medieval Runes';
+glyphDescriptions[296] = 'Ingwaz (Ing, fertility) - Elder Futhark';
+glyphDescriptions[297] = 'Ing - Anglo-Saxon Futhorc';
+glyphDescriptions[298] = 'Dagaz (day) - Elder Futhark';
+glyphDescriptions[299] = 'Othalan (heritage, estate) - Elder Futhark';
+glyphDescriptions[300] = 'Ear (earth, grave) - Anglo-Saxon Futhorc';
+glyphDescriptions[301] = 'Ior (serpent) - Anglo-Saxon Futhorc';
+glyphDescriptions[302] = 'Cweorth (fire) - Anglo-Saxon Futhorc';
+glyphDescriptions[303] = 'Calc (chalice) - Anglo-Saxon Futhorc';
+glyphDescriptions[304] = 'Cealc - Anglo-Saxon Futhorc';
+glyphDescriptions[305] = 'Stan (stone) - Anglo-Saxon Futhorc';
+glyphDescriptions[306] = 'Long-branch-yr - Younger Futhark';
+glyphDescriptions[307] = 'Short-twig-yr - Younger Futhark';
+glyphDescriptions[308] = 'Icelandic-yr - Medieval Runes';
+glyphDescriptions[309] = 'Q - Medieval Runes';
+glyphDescriptions[310] = 'X - Medieval Runes';
+glyphDescriptions[311] = 'Runic single punctuation';
+glyphDescriptions[312] = 'Runic multiple punctuation';
+glyphDescriptions[313] = 'Runic cross punctuation';
+glyphDescriptions[314] = 'Arlaug (golden rune) - Medieval Runes';
+glyphDescriptions[315] = 'Tvimadur (double man) - Medieval Runes';
+glyphDescriptions[316] = 'Belgthor - Medieval Runes';
+glyphDescriptions[317] = 'K - Medieval Runes';
+glyphDescriptions[318] = 'Sh - Medieval Runes';
+glyphDescriptions[319] = 'Oo - Medieval Runes';
+glyphDescriptions[320] = 'Franks Casket Os - Anglo-Saxon Futhorc';
+glyphDescriptions[321] = 'Franks Casket Is - Anglo-Saxon Futhorc';
+glyphDescriptions[322] = 'Franks Casket Eh - Anglo-Saxon Futhorc';
+glyphDescriptions[323] = 'Franks Casket Ac - Anglo-Saxon Futhorc';
+glyphDescriptions[324] = 'Franks Casket Aesc - Anglo-Saxon Futhorc';
 // Place of Worship 
 
 //'xaa05;&#xaa4c' //cham om
