@@ -33,7 +33,7 @@ const sysadmin_commands = ['#!','finger',
 '.*', '[a-zA-Z]', "perl -pe 's/perl/perl/g'", '!-1', '~/','touch','touch touch','more','ping','less',
 'clear','alias','sleep','who','chown','curl','shutdown','reboot','halt','ctrl-z','ctrl-c','* * * * *','|', '`whoami`'
 ];
-const git = ["rebase","commit","push","pull -u","add","init","clone","status","diff","restore","reset","checkout","merge","stash","fetch","remote","apply","cherry-pick","blame","commit-sha",
+const git = ["rebase","commit","push -u","pull","add","init","clone","status","diff","restore","reset","checkout","merge","stash","fetch","remote","apply","cherry-pick","blame","commit-sha",
 "commit-sha"];
 const python = ['unique','factorize','get dummies','cut','pivot','melt','class','yield', 'await', 'self', 'none', 'true', 'false', 'pass', 'global', 'async', 'return', 'try', 'except', 'raise', 'del'];
 const ml = ['random forest','nearest neighbors','perceptron','P(A|B)','decision tree',
@@ -64,7 +64,7 @@ function loadGenerator() {
         
         // Filter out bad mono fonts
         const excludeSpecificFonts = [
-            'Sixtyfour', 'Workbench', 'Monofett', 'Martian Mono SemiExpanded'
+            'Sixtyfour', 'Workbench', 'Monofett', 'Martian Mono SemiExpanded','Sixtyfour Convergence'
         ];    
         
         var filtered_items = json.items.filter(function(font) {
