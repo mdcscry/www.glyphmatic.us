@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>glyphmatic.us</title>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<link rel="stylesheet" href="./css_js/glyphmatic-fonts.css">
+</head>
+
+<body onload="startUpMain()">
+
+<!-- Core scripts -->
+<script type="text/JavaScript" src="./css_js/msucd_letters.js"></script>
+<script type="text/JavaScript" src="./css_js/watermark.js"></script>
+<script type="text/JavaScript" src="./css_js/insert_config.js"></script>
+<script type="text/JavaScript" src="./css_js/nav_menu.js"></script>
+
+<script type="text/JavaScript">
+// Global variables
+var myValidationArray = [];
+var myFontSet = [];
+var insertArray = [];
+var hDetect;
+var sRefresh = 0;
+var tenHit = 0;
+var insertArrayRnd;
+var mycolors = [];
+var colNum = 3;
+var navGlyph = [];
+
+// Browser detection
+var ua = navigator.userAgent.toLowerCase();
+var browserPrefix;
+var browseWidth;
+
+if (ua.indexOf("applewebkit") > 0) {
+    browserPrefix = 'webkit';
+    browseWidth = 50;
+} else if (ua.indexOf("msie") > 0) {
+    browserPrefix = 'msie';
+} else {
+    browserPrefix = 'moz';
+    browseWidth = 22;
+}
+
+console.log('=== Script Started ===');
+
+// Define insert array
+insertArray[0] = ['msucd_hangul.js'];
+insertArray[1] = ['msucd_hangul.js'];
+insertArray[2] = ['msucd_drop.js'];
+insertArray[3] = ['superpainters.js'];
+insertArray[4] = ['msucd.js'];
+insertArray[5] = ['msucd.js'];
+insertArray[6] = ['nonRsvdUtf.js', 'flasher1-the beginning'];
+insertArray[7] = ['geometric.js', 'flasher25', 'Rothko Blur'];
+insertArray[8] = ['msucd_mandala.js', 'flasher34', 'MandalaExtrudedFillSkewdnRotaterd'];
+insertArray[9] = ['msucd_mandala.js', 'flasher34', 'ElectrickMandala'];
+insertArray[10] = ['msucd_mandala.js', 'flasher34', 'MandalaExtrudedFillSkewdnRotaterdSmall'];
+insertArray[11] = ['nonRsvdUtf.js', 'flasher1-the beginning-fast'];
+insertArray[12] = ['whirldsymbols.js', 'flasher1-the beginning-Whirld'];
+insertArray[13] = ['whirldsymbols.js', 'Braids'];
+insertArray[14] = ['whirldsymbols.js', 'Masked-Dissolve'];
+insertArray[15] = ['whirldsymbols.js', 'Braids 2'];
+insertArray[16] = ['emoji_versions_data2.js', 'Emoji Sequence Exploration'];
+insertArray[17] = ['emoji_versions_data2.js', 'Emoji Sequence Exploration'];
+insertArray[18] = ['emoji_versions_data2.js', 'The Solar System'];
+insertArray[19] = ['emoji_versions_data2.js', 'Emoji Sequence with Fonts'];
+insertArray[20] = ['whirldsymbols.js', 'Spirals'];
+insertArray[21] = ['whirldsymbols.js', 'Spirals'];
+insertArray[22] = ['whirldsymbols-OM.js', 'flasher1-the OM'];
+insertArray[23] = ['whirldsymbols-OM.js', 'flasher1-the OM'];
+
+console.log('Insert array length:', insertArray.length);
+
+// Get current parameter from URL
+const urlParams = new URLSearchParams(window.location.search);
+const currentIndex = urlParams.get('i');
+const currentIndexNum = currentIndex !== null ? parseInt(currentIndex) : null;
+console.log('URL parameter i:', currentIndex);
+console.log('Parsed current index:', currentIndexNum);
+
+/**
+ * Get random index excluding current
+ */
+function getRandomIndex(excludeIndex, maxIndex) {
+    console.log(`Getting random index (excluding ${excludeIndex}, max ${maxIndex})`);
+    let availableIndices = [];
+    for (let i = 0; i < maxIndex; i++) {
+        if (i !== excludeIndex) {
+            availableIndices.push(i);
+        }
+    }
+    console.log('Available indices:', availableIndices);
+    const selected = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+    console.log('Selected index:', selected);
+    return selected;
+}
+
+/**
+ * Pad index to 2 digits
+ */
+function padIndex(num) {
+    return num.toString().padStart(2, '0');
+}
+
+// Select the next random index
+const nextIndex = getRandomIndex(currentIndexNum, insertArray.length);
+const nextIndexPadded = padIndex(nextIndex);
+console.log('Next index for refresh:', nextIndex);
+console.log('Next index padded:', nextIndexPadded);
+
+// Random refresh time between 1.5 min -> 6.5 min
+const refreshTime = Math.floor(Math.random() * 300) + 90;
+console.log('Refresh time (seconds):', refreshTime);
+
+// Detect if we're on localhost or production
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+console.log('Hostname:', window.location.hostname);
+console.log('Is localhost:', isLocalhost);
+
+let refreshUrl;
+if (isLocalhost) {
+    const pathname = window.location.pathname;
+    console.log('Pathname:', pathname);
+    refreshUrl = `${window.location.origin}${pathname}?i=${nextIndexPadded}`;
+} else {
+    refreshUrl = `https://www.glyphmatic.us?i=${nextIndex}`;
+}
+console.log('Refresh URL:', refreshUrl);
+
+// Create and set the meta refresh tag
+const metaRefresh = document.createElement('meta');
+metaRefresh.setAttribute('http-equiv', 'refresh');
+metaRefresh.setAttribute('content', `${refreshTime}; url=${refreshUrl}`);
+document.head.appendChild(metaRefresh);
+console.log('Meta refresh tag created and added');
+
+// Load the current script based on the i parameter
+if (currentIndexNum !== null && currentIndexNum >= 0 && currentIndexNum < insertArray.length) {
+    console.log('Loading script from URL parameter');
+    insertArrayRnd = currentIndexNum;
+    const scriptToLoad = insertArray[currentIndexNum][0];
+    console.log(`Script to load: ${scriptToLoad}`);
+    const script = document.createElement('script');
+    script.src = './css_js/' + scriptToLoad;
+    document.head.appendChild(script);
+    console.log(`✓ Loaded script: ${scriptToLoad} from css_js (index ${currentIndexNum})`);
+} else {
+    console.log('No valid parameter - loading random default script');
+    const defaultIndex = Math.floor(Math.random() * insertArray.length);
+    insertArrayRnd = defaultIndex;
+    console.log('Default index selected:', defaultIndex);
+    const scriptToLoad = insertArray[defaultIndex][0];
+    console.log(`Script to load: ${scriptToLoad}`);
+    const script = document.createElement('script');
+    script.src = './css_js/' + scriptToLoad;
+    document.head.appendChild(script);
+    console.log(`✓ Loaded default script: ${scriptToLoad} from css_js (index ${defaultIndex})`);
+}
+console.log('insertArrayRnd (for watermark logic):', insertArrayRnd);
+console.log(`⏰ Next refresh in ${refreshTime} seconds to index ${nextIndex}`);
+console.log('=== Script Complete ===');
+
+// Body styling
+document.body.style.overflow = 'hidden';
+document.body.style.width = '100%';
+document.body.style.height = '100%';
+document.body.style.margin = '0px';
+
+/**
+ * Wait for letters to load, then load insert
+ */
+function jsWaitLetters() {
+    if (typeof msucdArraySignal == "undefined") {
+        window.setTimeout(jsWaitLetters, 100);
+    } else {
+        const directory = (insertArrayRnd <= 12) ? 'insert_js_2013' : 'insert_js_2025';
+        const script1 = document.createElement('script');
+        script1.src = './' + directory + '/insert' + insertArrayRnd + '.js';
+        document.getElementsByTagName('body')[0].appendChild(script1);
+        console.log(`Letters have been loaded from ${directory} (index ${insertArrayRnd})`);
+    }
+}
+
+/**
+ * Generate color palette
+ */
+function setColor(hue, sat, light, opa) {
+    for (let colorCounter = 1; colorCounter <= colNum; colorCounter++) {
+        const toSpliceColor = 'hsla(' +
+            Math.round(40 * Math.random() + hue - 20) + ',' +
+            Math.round(20 * Math.random() + sat - 20) + '%,' +
+            (Math.round(Math.random() * 20) + light) + '%,' +
+            (Math.random() * opa + .6) +
+            ')';
+        mycolors.push(toSpliceColor);
+    }
+}
+
+/**
+ * Create watermark glyphs based on config
+ */
+function createWatermarks(config) {
+    const count = config.watermarks.count;
+    const zIndex = config.watermarks.zIndex;
+    const positioning = config.watermarks.positioning;
+    
+    for (let i = 1; i <= count; i++) {
+        const elementName = 'glyphmatic' + i;
+        
+        navGlyph[i] = document.createElement("div");
+        navGlyph[i].classList.add("watermark-font");
+        navGlyph[i].innerHTML = buildGlyphmaticWatermark();
+        
+        document.body.appendChild(navGlyph[i]);
+        navGlyph[i].id = elementName;
+        navGlyph[i].style.position = 'relative';
+        navGlyph[i].style.color = mycolors[Math.round((mycolors.length - 1) * Math.random())];
+        navGlyph[i].style.opacity = .85;
+        navGlyph[i].onclick = function() { changeHtmlDisplayInline() };
+        navGlyph[i].style.fontSize = 50 + Math.round(Math.random() * 20 - 10) + 'px';
+        navGlyph[i].style.lineHeight = Math.random() + 1.3;
+        navGlyph[i].style.textAlign = 'justify';
+        
+        if (count > 1 && positioning === 'scattered') {
+            navGlyph[i].style.padding = 30 + Math.round(Math.random() * 70) + 'px';
+            navGlyph[i].style.fontSize = 50 + Math.round(Math.random() * 50 - 25) + 'px';
+            navGlyph[i].style.lineHeight = Math.random() + 1.9;
+        } else {
+            navGlyph[i].style.padding = 3 + Math.round(Math.random() * 20) + 'px';
+            navGlyph[i].style.fontSize = 50 + Math.round(Math.random() * 10 - 5) + 'px';
+            navGlyph[i].style.lineHeight = Math.random() + 1.3;
+        }
+        
+        navGlyph[i].style.textShadow = Math.round(Math.random() * 2 - 1) + 'px ' +
+            Math.round(Math.random() * 2 - 1) + 'px ' +
+            mycolors[Math.round((mycolors.length - 1) * Math.random())];
+        
+        navGlyph[i].style.webkitTextFillColor = mycolors[Math.round((mycolors.length - 1) * Math.random())];
+        navGlyph[i].style.webkitTextStrokeWidth = Math.round(Math.random() * 2 - 1) + "px";
+        navGlyph[i].style.webkitTextStrokeColor = mycolors[Math.round((mycolors.length - 1) * Math.random())];
+        
+        navGlyph[i].style.zIndex = zIndex;
+        navGlyph[i].style.cssFloat = 'left';
+        navGlyph[i].style.left = '20px';
+        navGlyph[i].style.top = '-10px';
+        navGlyph[i].style.width = 'auto';
+        navGlyph[i].style.height = 'auto';
+        navGlyph[i].style.visibility = 'visible';
+        navGlyph[i].style.background = 'transparent';
+    }
+}
+
+/**
+ * Main startup function
+ */
+function startUpMain() {
+    // Generate color palette
+    for (let i = 0; i < 8; i++) {
+        setColor(
+            Math.round(Math.random() * 340),
+            Math.round(Math.random() * 1800),
+            Math.round(Math.random() * 80),
+            1
+        );
+    }
+    
+    // Get config for current insert
+    const config = getInsertConfig(insertArrayRnd);
+    
+    // Create watermarks
+    createWatermarks(config);
+    
+    // Initialize navigation menu
+    initNavMenu(insertArrayRnd, mycolors);
+    
+    // Wait for letters to load
+    jsWaitLetters();
+}
+</script>
+
+</body>
+</html>

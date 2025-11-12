@@ -197,7 +197,7 @@ function initBraid() {
     // Clear body but keep nav elements
     console.log('initBraid START');
     console.log('GRID_SIZE:', GRID_SIZE);
-    var navElements = ['spanNavColor', 'spanNavHTML', 'spanNavSizeDown', 'spanNavSizeUp'];
+    var navElements = ['spanNavColor', 'spanNavHTML', 'spanNavSizeDown', 'spanNavSizeUp', 'navPanel', 'navTabContainer'];
     var savedNavs = {};
     navElements.forEach(function(id) {
         var el = document.getElementById(id);
