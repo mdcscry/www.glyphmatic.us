@@ -56,7 +56,7 @@ lang_font =[{}]
  block_lang['Common Indic Number Forms'] = ['noto-devanagari'];
 // block_lang['Control_Pictures'] = ['symbols2'];
  block_lang['Coptic'] = ['coptic'];
- block_lang['Coptic Epact Numbers'] = ['coptic','symbols2'];
+ block_lang['Coptic Epact Numbers'] = ['coptic-epact','symbols2'];
  block_lang['Counting Rod Numerals'] = ['symbols2'];
  block_lang['Cuneiform'] = ['cuneiform'];
  block_lang['Cuneiform Numbers and Punctuation'] = ['cuneiform'];
@@ -95,7 +95,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Glagolitic'] = ['glagolitic'];
  block_lang['Gothic'] = ['gothic'];
  block_lang['Grantha'] = ['grantha'];
- block_lang['Greek and Coptic'] = ['coptic','greek-and-coptic'];
+ block_lang['Greek and Coptic'] = ['coptic','greek-and-coptic','sil'];
  block_lang['Greek Extended'] = ['latin-ext'];
  block_lang['Gujarati'] = ['gujarati'];
  block_lang['Gunjala Gondi'] = ['gunjala-gondi'];
@@ -118,7 +118,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Indic Siyaq Numbers'] = ['indic-siyaq-numbers'];
  block_lang['Inscriptional Pahlavi'] = ['inscriptionalpahlavi'];
  block_lang['Inscriptional Parthian'] = ['inscriptionalparthian'];
- block_lang['IPA Extensions'] = ['noto-regular'];
+ block_lang['IPA Extensions'] = ['noto-regular',"roman",'sil'];
  block_lang['Javanese'] = ['javanese'];
  block_lang['Kaithi'] = ['kaithi'];
  block_lang['Kannada'] = ['kannada'];
@@ -133,13 +133,13 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Lao'] = ['lao'];
  block_lang['Latin-1 Supplement'] = ['latin-ext-b','noto-regular-no-display'];
  block_lang['Latin Extended-A'] = ['latin-ext'];
- block_lang['Latin Extended Additional'] = ['latin-ext-additional','noto-regular-no-display'];
- block_lang['Latin Extended-B'] = ['latin-ext-b','noto-regular-no-display'];
- block_lang['Latin Extended-C'] = ['latin-ext-c','noto-regular-no-display'];
- block_lang['Latin Extended-D'] = ['noto-full'];
- block_lang['Latin Extended-E'] = ['noto-full'];
- block_lang['Latin Extended-F'] = ['noto-full']; //unicode 14
- block_lang['Latin Extended-G'] = ['noto-full']; //unicode 14
+ block_lang['Latin Extended Additional'] = ['latin-ext-additional','noto-regular-no-display','sil','roman'];
+ block_lang['Latin Extended-B'] = ['latin-ext-b','noto-regular-no-display','roman','sil'];
+ block_lang['Latin Extended-C'] = ['latin-ext-c','noto-regular-no-display','roman','sil'];
+ block_lang['Latin Extended-D'] = ['noto-full',"roman"];
+ block_lang['Latin Extended-E'] = ['noto-full',"roman"];
+ block_lang['Latin Extended-F'] = ['noto-full',"roman"]; //unicode 14
+ block_lang['Latin Extended-G'] = ['noto-full',"roman"]; //unicode 14
  block_lang['Lepcha'] = ['lepcha'];
  block_lang['Letterlike Symbols'] = ['noto-full'];
  block_lang['Limbu'] = ['limbu'];
@@ -211,7 +211,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Palmyrene'] = ['palmyrene'];
  block_lang['Pau Cin Hau'] = ['pau-cin-hau'];
  block_lang['Phags-pa'] = ['phagspa'];
- block_lang['Phaistos Disc'] = ['symbols2'];
+ block_lang['Phaistos Disc'] = ['symbols2','everson'];
  block_lang['Phoenician'] = ['phoenician'];
  block_lang['Phonetic Extensions'] = ['noto-regular'];
  block_lang['Phonetic Extensions Supplement'] = ['noto-regular'];
@@ -274,8 +274,8 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Transport and Map Symbols'] = ['symbols2-symbola'];
  block_lang['Ugaritic'] = ['ugaritic'];
  block_lang['Unified Canadian Aboriginal Syllabics'] = ['canadianaboriginal'];
-block_lang['Unified Canadian Aboriginal Syllabics Extended'] = ['canadianaboriginal'];
- block_lang['Unified Canadian Aboriginal Syllabics Extended-A'] = ['canadianaboriginal'];
+ block_lang['Unified Canadian Aboriginal Syllabics Extended'] = ['canadianaboriginal'];
+ block_lang['Unified Canadian Aboriginal Syllabics Extended-A'] = ['canadianaboriginal-noto'];
  block_lang['Vai'] = ['vai'];
  block_lang['Vedic Extensions'] = ['noto-devanagari'];
  block_lang['Vertical Forms'] = ['noto-japanese'];
@@ -298,7 +298,6 @@ block_lang['Unified Canadian Aboriginal Syllabics Extended'] = ['canadianaborigi
  block_lang['Arabic Extended-B'] = ['noto-arabic'];
  block_lang['Vithkuqi'] = ['vithkuqi'];
  block_lang['Old Uyghur'] = ['old-uyghur'];
- block_lang['Unified_Canadian_Aboriginal_Syllabics_Extended_A'] = ['canadianaboriginal'];
  block_lang['Cypro-Minoan'] = ['cyprominoan'];
  block_lang['Tangsa'] = ['tangsa'];
  block_lang['Znamenny Musical Notation'] = ['znamenny-musical-notation'];
@@ -322,7 +321,7 @@ block_lang['Sunuwar'] = [ "sunuwar" ]
 //block_lang['Egyptian_Hieroglyphs_Extended_A'] = [ "egyptianheiroglyphics" ]
 //block_lang['Gurung_Khema'] = [ "gurung-khema" ]
 //block_lang['Kirat_Rai'] = [ "kirat-rai" ]
-block_lang['Symbols for Legacy Computing Supplement'] = [ "symbols2" ]
+//block_lang['Symbols for Legacy Computing Supplement'] = [ "symbols2"]
 //block_lang['Ol_Onal'] = [ "ol-onal" ]
 
 //Unicode 17
@@ -377,7 +376,7 @@ lang_font['sunuwar'] = [ "Noto Sans Sunuwar" ]
 //Before Unicode 13
 //New Noto Fonts since 2020
 lang_font['hentaigana'] = ["Noto Serif Hentaigana"]
-lang_font['zanabazar-square'] = [ "Noto Sans Zanabazar Square" ]
+lang_font['zanabazar-square'] = [ "Noto Sans Zanabazar Square",'BabelStone Zanabazar-local-fonts']
 lang_font['yi'] = [ "Noto Sans Yi" ]
 lang_font['warangciti'] = [ "Noto Sans Warang Citi"  ]
 lang_font['wancho'] = [ "Noto Sans Wancho"  ]
@@ -402,6 +401,8 @@ lang_font['noto-regular-no-display'] = [ "Noto Sans","Noto Sans Mono","Noto Seri
 lang_font['noto-mono'] = [ "Noto Sans Mono-local" ]
 lang_font['noto-serif'] = [ "Noto Serif-local" ]
 lang_font['noto-full'] = [ "Noto Sans-local" ]
+lang_font['sil'] = ['Charis SIL','Gentium Plus','Andika']
+lang_font['roman']=["BabelStone Roman-local-fonts"]
 lang_font['ottoman-siyaq-numbers'] = [ "Noto Serif Ottoman Siyaq"]
 lang_font['pahawh-hmong'] = [ "Noto Sans Pahawh Hmong"  ]
 lang_font['palmyrene'] = [ "Noto Sans Palmyrene"  ]
@@ -413,7 +414,7 @@ lang_font['old-permic'] = [ "Noto Sans Old Permic"  ]
 lang_font['nabataean'] = [ "Noto Sans Nabataean" ]
 lang_font['nandinagari'] = [ "Noto Sans Nandinagari" ]
 lang_font['newa'] = [ "Noto Sans Newa"  ]
-lang_font['nko'] = [ "Noto Sans NKo Unjoined","Noto Sans NKo" ]
+lang_font['nko'] = [ "Noto Sans NKo Unjoined","Noto Sans NKo","Conakry-local-fonts"]
 lang_font['nushu'] = [ "Noto Traditional Nushu", "Noto Sans Nushu" ]
 lang_font['nyiakeng-puachue-hmong'] = [ "Noto Serif Nyiakeng Puachue Hmong" ]
 lang_font['mende-kikakui'] = [ "Noto Sans Mende Kikakui" ]
@@ -425,7 +426,7 @@ lang_font['multani'] = [ "Noto Sans Multani" ]
 lang_font['mahajani'] = [ "Noto Sans Mahajani" ]
 lang_font['makasar'] = [ "Noto Serif Makasar" ]
 lang_font['manichaean'] = [ "Noto Sans Manichaean" ]
-lang_font['marchen'] = [ "Noto Sans Marchen" ]
+lang_font['marchen'] = [ "Noto Sans Marchen","BabelStone Marchen-local-fonts" ]
 lang_font['masaram-gondi'] = [ "Noto Sans Masaram Gondi" ]
 lang_font['mayan-numerals'] = [ "Noto Sans Mayan Numerals" ]
 lang_font['medefaidrin'] = [ "Noto Sans Medefaidrin" ]
@@ -458,7 +459,7 @@ lang_font['adlam'] = [
 lang_font['ahom'] = [ "Noto Serif Ahom"]
 lang_font['math-symbola'] = [ "Noto Sans Math","Symbola-local-fonts"]
 lang_font['math'] = [ "Noto Sans Math"]
-lang_font['linearb'] = [ "Noto Sans Linear B" ]
+lang_font['linearb'] = [ "Noto Sans Linear B",'Code2001-local-fonts','Aegean-local-fonts' ]
 lang_font['lineara'] = [ "Noto Sans Linear A" ]
 
 //Before Unicode 13
@@ -485,56 +486,58 @@ lang_font['kayahli'] = ["Noto Sans Kayah Li"]
 lang_font['rejang'] = ["Noto Sans Rejang"]  
 lang_font['lepcha'] = ["Noto Sans Lepcha"]
 lang_font['thaana'] = ["Noto Sans Thaana"] 
-lang_font['gothic'] = ["Noto Sans Gothic"] 
-lang_font['cuneiform'] = ["Noto Sans Cuneiform","Akkadian-local"] 
+lang_font['gothic'] = ["Noto Sans Gothic","Sadagolthina-local-fonts","Code2001-local-fonts"] 
+lang_font['cuneiform'] = ["Noto Sans Cuneiform","Akkadian-local-fonts"] 
 lang_font['sudanese'] = ["Noto Sans Sundanese" ]           
 lang_font['samaritan'] = ["Noto Sans Samaritan"]
 lang_font['brahmi'] = ["Noto Sans Brahmi"] 
 lang_font['olchiki'] = ["Noto Sans Ol Chiki"] 
-lang_font['shavian'] = ["Noto Sans Shavian"]         
+lang_font['shavian'] = ["Noto Sans Shavian",'Code2001-local-fonts']         
 lang_font['tagbanwa'] = ["Noto Sans Tagbanwa"]           
 lang_font['oldturkic'] = ["Noto Sans Old Turkic"]                    
 lang_font['tifinagh'] = ["Noto Sans Tifinagh"]             
-lang_font['deseret'] = ["Noto Sans Deseret"]           
-lang_font['cypriot'] = ["Noto Sans Cypriot"]
-lang_font['olditalic'] = ["Noto Sans Old Italic"]
+lang_font['deseret'] = ["Noto Sans Deseret","Code2001-local-fonts"]           
+lang_font['cypriot'] = ["Noto Sans Cypriot",'Code2001-local-fonts','Aegean-local-fonts']
+lang_font['olditalic'] = ["Noto Sans Old Italic",'Code2001-local-fonts']
 lang_font['avestan'] = ["Noto Sans Avestan"]
 lang_font['bamum'] = ["Noto Sans Bamum"]
 lang_font['ilycian'] = ["Noto Sans lLycian"]
 lang_font['sylotinagri'] = ["Noto Sans Syloti Nagri"]
 lang_font['phagspa'] = ["Noto Sans PhagsPa"]
-lang_font['canadianaboriginal'] = ["Noto Sans Canadian Aboriginal"]
+lang_font['canadianaboriginal'] = ["Noto Sans Canadian Aboriginal",'Everson Mono-local-fonts']
+lang_font['canadianaboriginal-noto'] = ["Noto Sans Canadian Aboriginal"]
 lang_font['mongolian'] = ["Noto Sans Mongolian"]
 lang_font['kaithi'] = [ "Noto Sans Kaithi" ]
 lang_font['tibetan'] = [ "Noto Serif Tibetan" ]
 lang_font['saurashtra'] = [ "Noto Sans Saurashtra"]
 lang_font['lisu'] = ["Noto Sans Lisu"]
-lang_font['symbols'] = ["Noto Sans Symbols","Symbola-local"]
-lang_font['symbols'] = ["Noto Sans Symbols","Symbola-local"]
+lang_font['symbols'] = ["Noto Sans Symbols","Symbola-local-fonts"]
+lang_font['symbols2-pseudo'] = ["Noto Sans Symbols 2","BabelStone Pseudographica-local-fonts"]
 lang_font['symbols2'] = ["Noto Sans Symbols 2"]
-lang_font['symbols2-symbola'] = ["Noto Sans Symbols 2","Symbola-local"]
-lang_font['symbols2-currency'] = ["Noto Sans","Noto Sans Mono","Noto Serif","Helvetica","Symbola-local"]
-lang_font['symbols-special'] = ["Noto Emoji","Symbola-local"]
+lang_font['symbols2-symbola'] = ["Noto Sans Symbols 2","Symbola-local-fonts"]
+lang_font['symbols2-currency'] = ["Noto Sans","Noto Sans Mono","Noto Serif","Helvetica","Symbola-local-fonts","Rupakara-local-fonts"]
+lang_font['symbols-special'] = ["Noto Emoji","Symbola-local-fonts"]
 lang_font['emoji-bw'] = ["Noto Emoji-local"]
 lang_font['bw-emoji-extra'] = ["Open Moji Black-local-fonts","Fluent Emoji INV HC-local-fonts",'Twitter Color Emoji-local-fonts']
 lang_font['emoji-color'] = ["Noto Color Emoji"]
 lang_font['syriac'] = ["Noto Sans Syriac Eastern","Noto Sans Syriac"]
-lang_font['buhid'] = ["Noto Sans Buhid"]
+lang_font['buhid'] = ["Noto Sans Buhid",'Code2000-local-fonts']
 lang_font['buginese'] = ["Noto Sans Buginese"]
-lang_font['coptic'] = ["Noto Sans Coptic"]
+lang_font['coptic'] = ["Noto Sans Coptic","Antinoou-local-fonts"]
+lang_font['coptic-epact'] = ["Noto Sans Coptic"]
 lang_font['lydian'] = [ "Noto Sans Lydian" ]
 lang_font['limbu'] = [ "Noto Sans Limbu" ]
 lang_font['ogham'] = [ "Noto Sans Ogham" ]
-lang_font['mandaic'] = [ "Noto Sans Mandaic" ]	
-lang_font['oldpersian'] = [ "Noto Sans Old Persian" ]
+lang_font['mandaic'] = [ "Noto Sans Mandaic" ]	 
+lang_font['oldpersian'] = [ "Noto Sans Old Persian" ,'Code2001-local-fonts']
 lang_font['oldsoutharabian'] = [ "Noto Sans Old South Arabian" ]	
 lang_font['kharoshthi'] = [ "Noto Sans Kharoshthi" ]	
-lang_font['ugaritic'] = [ "Noto Sans Ugaritic" ]
-lang_font['runic'] = ['Noto Sans Runic']
+lang_font['ugaritic'] = [ "Noto Sans Ugaritic",'Code2001-local-fonts' ]
+lang_font['runic'] = ['Noto Sans Runic','Junicode-local-fonts',"Junicode Two Regular-local-fonts"]
 lang_font['imperialaramaic'] = [ "Noto Sans Imperial Aramaic" ]
 lang_font['inscriptionalparthian'] = [ "Noto Sans Inscriptional Parthian" ]
 lang_font['anatolianheiroglyphics'] = [ "Noto Sans Anatolian Hieroglyphs"]
-lang_font['egyptianheiroglyphics'] = [ "Noto Sans Egyptian Hieroglyphs","AegyptusR-local","AegyptusB-local"]
+lang_font['egyptianheiroglyphics'] = [ "Noto Sans Egyptian Hieroglyphs","AegyptusR-local-fonts","AegyptusB-local-fonts"]
 lang_font['georgian'] = [ 
 	"Noto Sans Georgian",
 	"Noto Serif Georgian"       
@@ -549,8 +552,8 @@ lang_font['kannada'] = [
 	"Noto Serif Kannada"
 ]
 lang_font['cham'] = ["Noto Sans Cham"]
-lang_font['vai'] = ["Noto Sans Vai"]
-lang_font['osmanya'] = ["Noto Sans Osmanya"]
+lang_font['vai'] = ["Noto Sans Vai","Wakor-local-fonts","Dukor-local-fonts"]
+lang_font['osmanya'] = ["Noto Sans Osmanya",'Code2001-local-fonts']
 lang_font['cherokee'] = ["Noto Sans Cherokee"]
 lang_font['armenian'] = [
 	"Noto Sans Armenian",
@@ -2660,12 +2663,14 @@ lang_font['latin'] = [
   "Zeyada",
   "Zhi Mang Xing",
   "Zilla Slab",
-  "Zilla Slab Highlight"
+  "Zilla Slab Highlight",
+  "BabelStone Roman-local-fonts"
 ]
-lang_font['latin-noto'] = ['Noto Serif','Noto Sans Mono','Noto Sans']
+lang_font['latin-noto'] = ['Noto Serif','Noto Sans Mono','Noto Sans'
+]
 
 lang_font['greek-and-coptic'] = [
-  'Noto Serif','Noto Sans Mono','Noto Sans','Tinos','Arimo','Aegean-local-fonts'
+  'Noto Serif','Noto Sans Mono','Noto Sans','Tinos','Arimo','Aegean-local-fonts',"Antinoou-local-fonts"
 ]; 
 
 lang_font['latin-ext-additional'] = [
@@ -2734,9 +2739,11 @@ lang_font['latin-ext-b'] = [
   "Ubuntu Mono",
   "Ubuntu Sans",
   "Ubuntu Sans Mono",
-  "Unbounded"
+  "Unbounded",
+  "BabelStone Roman-local-fonts"
 ] 
-
+lang_font['everson'] = ['Everson Mono-local-fonts']
+lang_font['code2000'] = ['Code2000-local-fonts']
 lang_font['latin-ext-c'] = [
   "Agbalumo",
   "Agu Display",
@@ -2750,6 +2757,7 @@ lang_font['latin-ext-c'] = [
   "Ojuju",
   "PT Serif Caption",
   "Sankofa Display",
+  "BabelStone Roman-local-fonts"
 ] 
 
 lang_font['latin-ext'] = [
@@ -3977,8 +3985,12 @@ lang_font['latin-ext'] = [
   "Zen Tokyo Zoo",
   "Zeyada",
   "Zilla Slab",
-  "Zilla Slab Highlight"
+  "Zilla Slab Highlight",
+  "BabelStone Roman-local-fonts"
+
 ];
+
+
 
 console.log('Block Hex  Skeleton 17 is loaded')
 var blockHexSkeletonWait = [];
