@@ -302,6 +302,7 @@ myFontSet[186]=['x058E','Code2000','Noto Sans Armenian']; // Armenian eternity s
 myFontSet[187]=['x1F480','Symbola','Noto Emoji','Quivira','Segoe UI Symbol']; // Skull
 
 
+
 //Astronomical Symbols
 myFontSet[188]=['x2BD3','Noto Sans Symbols 2']; // Pluto Form Two
 myFontSet[189]=['x2BD4','Noto Sans Symbols 2']; // Pluto Form Three
@@ -447,7 +448,7 @@ myFontSet[321] = ['x16F5','Noto Sans Runic','Code2000','Quivira','Everson Mono',
 myFontSet[322] = ['x16F6','Noto Sans Runic','Code2000','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛶ Franks Casket Eh
 myFontSet[323] = ['x16F7','Noto Sans Runic','Code2000','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛷ Franks Casket Ac
 myFontSet[324] = ['x16F8','Noto Sans Runic','Code2000','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛸ Franks Casket Aesc
-
+myFontSet[325]=['x058D','Code2000','Noto Sans Armenian']; // Armenian eternity sign
 var glyphDescriptions = [];
 
 // Original entries 0-104
@@ -780,6 +781,7 @@ glyphDescriptions[321] = 'Franks Casket Is - Anglo-Saxon Futhorc';
 glyphDescriptions[322] = 'Franks Casket Eh - Anglo-Saxon Futhorc';
 glyphDescriptions[323] = 'Franks Casket Ac - Anglo-Saxon Futhorc';
 glyphDescriptions[324] = 'Franks Casket Aesc - Anglo-Saxon Futhorc';
+glyphDescriptions[325]='Armenian eternity sign';
 // Place of Worship 
 
 //'xaa05;&#xaa4c' //cham om

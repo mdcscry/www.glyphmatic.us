@@ -2219,8 +2219,8 @@ ugaritic old persian runic
 
 
 .watermark-font {
-    font-family: 'Two STIX Math','Noto Sans Math Full','Noto Sans Full', 
-                 'Noto Sans Thai', 'Noto Sans Lao', 'Noto Sans Arabic','Noto Sans CJK JP';
+    font-family: 'Noto Sans Arabic','Two STIX Math','Noto Sans Math Full','Noto Sans Full', 
+                 'Noto Sans Thai', 'Noto Sans Lao','Noto Sans CJK JP','Noto Sans Khmer','Noto Sans Armenian';
     /* any other styling you want for your watermarks */
 }
 body {

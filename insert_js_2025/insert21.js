@@ -18,18 +18,19 @@ function initGrid() {
     const gridOptions = 
             [
                 [1, 1], [1, 2], [2, 1], [2, 2], [2, 4], [4, 2], [3, 3], [4, 4], [5, 5], [5, 5]
-               ,[5, 5], [10, 10], [10, 10], [10, 10], [20, 20], [20, 10],[1, 1] 
+               ,[5, 5], [10, 10], [10, 10], [10, 10] [20, 10],[1, 1] 
             ];
     
     const [rows, cols] = gridOptions[Math.floor(Math.random() * gridOptions.length)];
     
     // Spiral indices with their preferred directions
     const spiralConfig = {
-        73: 'counter',
-        159: 'either',
-        226: 'counter',
-        186: 'clock',
-        229: 'clock'
+       // 73: 'counter',
+       // 159: 'either',
+       // 226: 'counter',
+        186: 'clock', // Armenian eternity sign
+       // 229: 'clock',
+        325: 'counter'
     };
     
     const spiralIndices = Object.keys(spiralConfig).map(Number);
