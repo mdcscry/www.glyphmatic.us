@@ -137,7 +137,7 @@ function changeHtmlDisplay(){
             container[inHtmlCount].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';'+'&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
             container[inHtmlCount].className =originalViewState;
         }
-    },Math.random()*10000+5000 );
+    },Math.random()*20000+5000 );
 }
 
 function changeColor(){
@@ -160,7 +160,7 @@ function changeDropShadowSimpleB(){
         container[window.dropShadowCountB].style.textShadow=Math.round( Math.random()*100-50 )+ 'px '
                                     +Math.round( Math.random()*100-50 ) + 'px '
                                     +window.mycolors[Math.round((window.mycolors.length-1)*Math.random())];}
-    ,Math.random()*5000+5000);
+    ,Math.random()*20000+5000);
 }
 
 function changeDropShadowSimpleH(){
@@ -169,7 +169,7 @@ function changeDropShadowSimpleH(){
         container[window.dropShadowCountH].style.textShadow=Math.round( 0 ) + 'px '
                                     +Math.round( Math.random()*100-50 ) + 'px '
                                     +window.mycolors[Math.round((window.mycolors.length-1)*Math.random())];}
-    ,Math.random()*5000+5000);
+    ,Math.random()*20000+10000);
 }
 
 function changeDropShadowSimpleV(){
@@ -178,7 +178,7 @@ function changeDropShadowSimpleV(){
         container[window.dropShadowCountV].style.textShadow=Math.round( Math.random()*100-50 )+ 'px '
                                     + Math.round( 0 ) + 'px '
                                     +window.mycolors[Math.round((window.mycolors.length-1)*Math.random())];}
-    ,Math.random()*5000+5000);
+    ,Math.random()*20000+10000);
 }
 
 jsWait();

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Glyph Display - myArray</title>
+    <link rel="stylesheet" href="../css_js/glyphmatic-fonts.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+        h1 {
+            color: #4a9eff;
+        }
+        .info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #2a2a2a;
+            border-radius: 8px;
+        }
+        .glyph-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .glyph-item {
+            text-align: center;
+            padding: 15px;
+            background: #333;
+            border-radius: 4px;
+            transition: transform 0.2s;
+        }
+        .glyph-item:hover {
+            transform: scale(1.1);
+            background: #444;
+        }
+        .glyph-char {
+            font-size: 64px;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+        .glyph-info {
+            font-size: 11px;
+            color: #888;
+            font-family: monospace;
+        }
+        .glyph-decimal {
+            color: #aaa;
+        }
+        .glyph-hex {
+            color: #4a9eff;
+        }
+        .glyph-font {
+            color: #8a8;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>myArray Glyph Display</h1>
+    <div class="info">
+        <p><strong>Total Glyphs:</strong> <span id="totalCount">Loading...</span></p>
+        <p><strong>Source:</strong> Loaded from msucd_mandala.js</p>
+    </div>
+    
+    <div id="glyphDisplay" class="glyph-grid"></div>
+
+    <!-- Load your actual glyph data -->
+    <script src="../css_js/msucd_mandala.js"></script>
+    
+    <script>
+        // Wait for myArray to load
+        function displayGlyphs() {
+            if (typeof myArray === 'undefined') {
+                setTimeout(displayGlyphs, 100);
+                return;
+            }
+            
+            const container = document.getElementById('glyphDisplay');
+            const totalCount = document.getElementById('totalCount');
+            
+            // Remove duplicates
+            const uniqueGlyphs = [...new Set(myArray)];
+            totalCount.textContent = uniqueGlyphs.length + ' unique glyphs';
+            
+            // Display each glyph
+            uniqueGlyphs.forEach(decimal => {
+                const hex = decimal.toString(16).toUpperCase().padStart(4, '0');
+                const char = String.fromCodePoint(decimal);
+                
+                // Determine font family based on Unicode range
+                let fontFamily = 'Noto Sans';
+                if (decimal >= 0x0600 && decimal <= 0x06FF) {
+                    fontFamily = 'Noto Sans Arabic';
+                } else if (decimal >= 0x0900 && decimal <= 0x097F) {
+                    fontFamily = 'Noto Sans Devanagari';
+                } else if (decimal >= 0x1000 && decimal <= 0x109F) {
+                    fontFamily = 'Noto Sans Myanmar';
+                } else if (decimal >= 0x10A0 && decimal <= 0x10FF) {
+                    fontFamily = 'Noto Sans Georgian';
+                } else if (decimal >= 0x1200 && decimal <= 0x137F) {
+                    fontFamily = 'Noto Sans Ethiopic';
+                } else if (decimal >= 0x0E00 && decimal <= 0x0E7F) {
+                    fontFamily = 'Noto Sans Thai';
+                } else if (decimal >= 0x1780 && decimal <= 0x17FF) {
+                    fontFamily = 'Noto Sans Khmer';
+                } else if (decimal >= 0x0C00 && decimal <= 0x0C7F) {
+                    fontFamily = 'Noto Sans Telugu';
+                } else if (decimal >= 0x0C80 && decimal <= 0x0CFF) {
+                    fontFamily = 'Noto Sans Kannada';
+                } else if (decimal >= 0x2600 && decimal <= 0x26FF) {
+                    fontFamily = 'Noto Sans Symbols';
+                } else if (decimal >= 0x3000) {
+                    fontFamily = 'Noto Sans CJK';
+                }
+                
+                const item = document.createElement('div');
+                item.className = 'glyph-item';
+                item.innerHTML = `
+                    <div class="glyph-char" style="font-family: ${fontFamily};">${char}</div>
+                    <div class="glyph-info">
+                        <div class="glyph-hex">U+${hex}</div>
+                        <div class="glyph-decimal">${decimal}</div>
+                        <div class="glyph-font">${fontFamily}</div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        displayGlyphs();
+    </script>
+</body>
+</html>

@@ -321,10 +321,42 @@ class NavMenu {
         }
     }
     
-    /**
-     * Handle move up
-     */
+
+    /*** Handle move up*/
+
     handleMoveUp() {
+        if (this.insertIndex === 8 || this.insertIndex === 9 || this.insertIndex === 10) {
+            if (typeof divCounter === 'undefined' || typeof container === 'undefined') {
+                return;
+            }
+            
+            for (let i = 1; i <= divCounter; i++) {
+                const computed = window.getComputedStyle(container[i]);
+                let currentTop = parseFloat(computed.top);
+                
+                // If top is auto or NaN, start from 0
+                if (isNaN(currentTop)) {
+                    currentTop = 0;
+                }
+                
+                // Move up by 5vh (5% of viewport height)
+                const viewportHeight = window.innerHeight;
+                const moveAmount = viewportHeight * 0.05; // 5vh in pixels
+                const newTop = currentTop - moveAmount;
+                
+                // Disable transition for immediate movement
+                container[i].style.transition = 'none';
+                container[i].style.top = newTop + 'px';
+                
+                // Re-enable transitions after a brief delay
+                setTimeout(() => {
+                    container[i].style.transition = '';
+                }, 50);
+            }
+            return;
+        }
+        
+        // Original line-height logic for other inserts
         if (typeof divCounter === 'undefined' || typeof container === 'undefined') {
             return;
         }
@@ -344,11 +376,44 @@ class NavMenu {
             container[i].style.lineHeight = newVw + 'vw';
         }
     }
-    
+
     /**
      * Handle move down
      */
     handleMoveDown() {
+        // Insert 8, 9, 10 (mandala): move containers down in viewport
+    if (this.insertIndex === 8 || this.insertIndex === 9 || this.insertIndex === 10) {
+        if (typeof divCounter === 'undefined' || typeof container === 'undefined') {
+            return;
+        }
+        
+        for (let i = 1; i <= divCounter; i++) {
+            const computed = window.getComputedStyle(container[i]);
+            let currentTop = parseFloat(computed.top);
+            
+            // If top is auto or NaN, start from 0
+            if (isNaN(currentTop)) {
+                currentTop = 0;
+            }
+            
+            // Move down by 5vh (5% of viewport height)
+            const viewportHeight = window.innerHeight;
+            const moveAmount = viewportHeight * 0.05; // 5vh in pixels
+            const newTop = currentTop + moveAmount;
+            
+            // Disable transition for immediate movement
+            container[i].style.transition = 'none';
+            container[i].style.top = newTop + 'px';
+            
+            // Re-enable transitions after a brief delay
+            setTimeout(() => {
+                container[i].style.transition = '';
+            }, 50);
+        }
+        return;
+    }
+        
+        // Original line-height logic for other inserts
         if (typeof divCounter === 'undefined' || typeof container === 'undefined') {
             return;
         }
@@ -368,11 +433,35 @@ class NavMenu {
             container[i].style.lineHeight = newVw + 'vw';
         }
     }
-    
-    /**
-     * Handle resize
-     */
+
+    /*** Handle resize*/
+
     handleResize(factor) {
+        // Insert 8, 9, 10 (mandala): resize using vmin units
+        if (this.insertIndex === 8 || this.insertIndex === 9 || this.insertIndex === 10) {
+            if (typeof divCounter === 'undefined' || typeof container === 'undefined') {
+                return;
+            }
+            
+            for (let i = 1; i <= divCounter; i++) {
+                const computed = window.getComputedStyle(container[i]);
+                const currentSize = parseFloat(computed.fontSize);
+                const viewportMin = Math.min(window.innerWidth, window.innerHeight);
+                const currentVmin = (currentSize / viewportMin) * 100;
+                const newVmin = currentVmin * factor;
+                
+                // Disable transition for immediate resize
+                container[i].style.transition = 'none';
+                container[i].style.fontSize = newVmin + 'vmin';
+                
+                // Re-enable transitions after a brief delay
+                setTimeout(() => {
+                    container[i].style.transition = '';
+                }, 50);
+            }
+            return;
+        }
+        
         // Check for insert13's strip arrays first
         if (typeof hStrips !== 'undefined' && typeof vStrips !== 'undefined' && hStrips.length > 0) {
             // Insert13 (Braided Marquee): resize cells in strips
@@ -433,28 +522,28 @@ class NavMenu {
             }
         }
     }
-    
-    /**
-     * Get navigation color from color array
-     */
-    getNavColor() {
-        if (this.colors.length === 0) return '#ffffff';
-        return this.colors[Math.floor(Math.random() * this.colors.length)];
+        
+        /**
+         * Get navigation color from color array
+         */
+        getNavColor() {
+            if (this.colors.length === 0) return '#ffffff';
+            return this.colors[Math.floor(Math.random() * this.colors.length)];
+        }
+        
+        /**
+         * Get random color from color array
+         */
+        getRandomColor() {
+            if (this.colors.length === 0) return '#000000';
+            return this.colors[Math.floor(Math.random() * this.colors.length)];
+        }
     }
-    
-    /**
-     * Get random color from color array
-     */
-    getRandomColor() {
-        if (this.colors.length === 0) return '#000000';
-        return this.colors[Math.floor(Math.random() * this.colors.length)];
-    }
-}
 
-/**
- * Initialize navigation menu
- * Call this from your main script after colors are set
- */
-function initNavMenu(insertIndex, colors) {
-    return new NavMenu(insertIndex, colors);
-}
+    /**
+     * Initialize navigation menu
+     * Call this from your main script after colors are set
+     */
+    function initNavMenu(insertIndex, colors) {
+        return new NavMenu(insertIndex, colors);
+    }

@@ -1,46 +1,139 @@
+// Geometric Shapes Block (U+25A0 - U+25FF)
+var geometricShapes = {
+    fontFamily: 'Noto Sans',
+    glyphs: [
+        0x25A4, 0x25C9, 0x25CB, 0x25CC, 0x25CD, 0x25CE, 0x25CF, 0x25D0, 0x25D1, 0x25D2, 0x25D3,
+        0x25E0, 0x25E1, 0x25E6, 0x25EF, 0x2609,
+        0x25C9, 0x25CD, 0x25CE, 0x25EF, 0x25EF, 0x25EF, 0x25EF, 0x25EF, 0x25E6, 0x25E6, 0x25E6, 0x2600
+    ]
+};
 
+// Miscellaneous Symbols (U+2600 - U+26FF)
+var miscSymbols = {
+    fontFamily: 'Noto Sans Symbols',
+    glyphs: [
+        0x2609, 0x2606, 0x2605, 
+        0x2610, 0x2616, 0x2617, 
+        0x2723, 0x2722, 0x2724, 0x2725, 0x2726, 0x2727, 0x2729, 0x272A, 0x272B, 0x272C, 0x272D, 0x274D, 0x274B, 0x274A, 0x2749,
+        0x2609,
+        0x260A, 0x260B
+    ]
+};
 
-var myarray=[
+// Latin Extended (various blocks)
+var latinExtended = {
+    fontFamily: 'Noto Sans',
+    glyphs: [
+        0x0277, 0x0278, 0x0275, 0x0231, 0x0298, 0x02DA, 0x02D8, 0x02F8, 0x02F3, 0x0398, 0x03A6, 0x03A9, 0x03A8, 0x03B8, 0x03BF, 0x0397, 0x03D8, 0x03D5
+    ]
+};
 
-//geometric shapes
+// Cyrillic Block (U+0400 - U+04FF)
+var cyrillic = {
+    fontFamily: 'Noto Sans',
+    glyphs: [
+        0x03F4, 0x041E, 0x043E, 0x0436, 0x0416, 0x0460, 0x046A, 0x0472, 0x0473, 0x047A, 0x047B, 0x047E, 0x04E6, 0x04E8, 0x04E9, 0x04EA, 0x04FF
+    ]
+};
 
-9636,9673,9675,9676,9677,9678,9679,9680,9681,9682,9683,
-9696,9697,9702,9711,9737
-,9673,9677,9678,9711,9711,9711,9711,9711,9702,9702,9702,9728
-//Non-geometric
-,1757 //4 small rings frame
-,3792//,3792,3792,3792,3792 //4 dotted
-,3175//,3175,3175,3175,3175 //down nose ring
-,3859//,3859,3859,3859,3859,3859//fat lower ring
-,3866 //small center uppercircle
-,3868 //3 small center upper circle
-,4322//,4322,4322,4322,4322,4322 //lower base with figure 8
-,4592//fat middle ovoid
-,4428//feet base
-,4338//fat lower ovoid
-//,8576//big rectangle
-,12615 //fat flat middle ovoid
+// Arabic Block (U+0600 - U+06FF)
+var arabic = {
+    fontFamily: 'Noto Sans Arabic',
+    glyphs: [
+        0x061E, 0x066D, 0x065C,
+        0x0660, 0x0665, 0x06BA, 0x06D5, 0x06DD
+    ]
+};
 
-,10040,10039,10038,10037,10036,10035,10034,10033
-//,10032,10030,10031 //stars
-,10048,10049,10050,10051,10052,10053,10054,10055,10056,10057,10058,10059,10009,10010,10011,10012
-,10019,10018,10020,10021,10022,10023,10025,10026,10027,10028,10029,10047,10046,10045,10044,10043,10042,10041,9737
+// NKo and other African scripts
+var nkoOthers = {
+    fontFamily: '[Noto Sans NKo / Noto Sans Adlam]', // Multiple scripts, need to verify
+    glyphs: [
+        0x1D11, 0x1D12, 0x1D15, 0x1D0F, 0x1D25, 0x1D1C, 0x1D3C, 0x1D3D, 0x1D5C,
+        0x1D5C, 0x1D60, 0x1D69, 0x1D7F, 0x1DBF, 0x1DB2, 0x1DC2
+    ]
+};
 
+// General Punctuation & Symbols
+var punctuationSymbols = {
+    fontFamily: 'Noto Sans',
+    glyphs: [
+        0x2022, 0x2092, 0x20AA, 0x221E, 0x25CF, 0x25E6, 0x25AB, 0x263C, 0x2C77
+    ]
+};
 
-,9738,9739//up and down horseshoe with cirles
+// Devanagari Block (U+0900 - U+097F)
+var devanagari = {
+    fontFamily: 'Noto Sans Devanagari',
+    glyphs: [
+        0x0970, 0x0A20, 0x0B20, 0x0B66
+    ]
+};
 
-,631,632,629,561,664,730,728,850,857,858,760,755,920,934,937,936,952,959,927,984,981
-,1012,1054,1086,1078,1046,1060,1120,1130,1138,1139,1146,1147,1150,1155,1254,1256,1257,1258,1279,1505,1496,1566,1607,1645,1628
-,1632,1637,1722,1749,1757,1769,7441,7442,7443,7445,7439,7461,7460,7484,7485,7516,7506,7509
-,7508,7520,7529,7551,7582,7615,7602,7618,8226,8338,8362,8734,9679,9702,9689,9688,9643,9788,11383
-//ARIAL UNICODE
-,2416,2433,2435,2554,2592,2848,2918,3294,3339,3349
-,3360,3377,3424,3663,3664,3665,3792,4259,4363,4370,4428,4441,4439,4540,4546,4535,4601,4592,4596,8782,8791
-,8790,8812,8845,8853,8854,8855,8856,8857,8858,8859,8860,8861,8903,8914,8915,8984,9022,9055,9052,9051,9045,9450
-,9791,9784,12342,12615,12622,12664,12673,12678,12676,12685,12807,12813,20875,48505,50885,51004
+// Myanmar Block (U+1000 - U+109F)
+var myanmar = {
+    fontFamily: 'Noto Sans Myanmar',
+    glyphs: [
+         0x1040
+    ]
+};
 
+// Georgian Block (U+10A0 - U+10FF)
+var georgian = {
+    fontFamily: 'Noto Sans Georgian',
+    glyphs: [
+        0x10AB
+    ]
+};
 
-];
+// Ethiopic Block (U+1200 - U+137F)
+var ethiopic = {
+    fontFamily: 'Noto Sans Ethiopic',
+    glyphs: [
+        0x0D15, 
+        0x0D20, 0x0D31, 0x0D60, 0x0E6F
+    ]
+};
 
-//865,1758,778,1623,1617,1618,784,774,785,856,861,8432,862,863,1160,1161,1192,1193,1426,1425
-//1615,1612,1629,1427,1428,1431,1439,1455,1456,1457,1460,1461,1462,1465,1466,1468,1473,1474,1476,1771,1772,1764,860,
+// Khmer Block (U+1780 - U+17FF)
+var khmer = {
+    fontFamily: 'Noto Sans Khmer',
+    glyphs: [
+        0x10A3, 0x10A9
+    ]
+};
+
+// Telugu & Kannada Blocks
+var teluguKannada = {
+    fontFamily: 'Noto Sans Telugu, Noto Sans Kannada', // Mixed scripts
+    glyphs: [
+        0x10F2, 0x11BC, 0x11C2, 0x11F9, 0x1210,  0x224E, 
+        0x2256, 0x226C, 0x228D, 0x2295, 0x2296, 0x2297, 0x2299, 0x229A, 0x229B, 0x229C, 0x229D, 0x22C7, 0x22D2, 0x22D3, 0x2318, 0x233E, 0x235F, 0x235C, 0x235B, 0x2355, 0x24EA
+    ]
+};
+
+// Additional Symbols
+var additionalSymbols = {
+    fontFamily: 'Noto Sans JP', // CJK characters
+    glyphs: [
+        0x263F, 0x2638, 0x3036, 0x3147, 0x314E, 0x318D, 0x3194, 0x319D, 0x3207, 0x320D, 0x518B, 0xBD69, 0xC6C5, 0xC73C
+    ]
+};
+
+// Concatenate all glyph arrays
+var myArray = [].concat(
+    geometricShapes.glyphs,
+    miscSymbols.glyphs,
+    latinExtended.glyphs,
+    cyrillic.glyphs,
+    arabic.glyphs,
+    nkoOthers.glyphs,
+    punctuationSymbols.glyphs,
+    devanagari.glyphs,
+    myanmar.glyphs,
+    georgian.glyphs,
+    ethiopic.glyphs,
+    khmer.glyphs,
+    teluguKannada.glyphs,
+    additionalSymbols.glyphs
+);

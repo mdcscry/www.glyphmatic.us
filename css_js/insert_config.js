@@ -49,6 +49,33 @@ const INSERT_CONFIG = {
                 positioning: 'scattered'
             }
         },
+        4: {
+            controls: {
+                style: true,      // △STYLE button
+                html: false,       // △HTML button
+                resize: false,     // +/- Size buttons
+                moveUpDown: false // Move up/down (currently disabled globally)
+            },
+            watermarks: {
+                count: 1,
+                zIndex: 100,
+                positioning: 'top-left'
+            }
+        },   
+        5: {
+            controls: {
+                style: true,      // △STYLE button
+                html: false,       // △HTML button
+                resize: false,     // +/- Size buttons
+                moveUpDown: false // Move up/down (currently disabled globally)
+            },
+            watermarks: {
+                count: 1,
+                zIndex: 100,
+                positioning: 'top-left'
+            }
+        },          
+        
         6: {
             controls: {
                 html: true,
@@ -70,6 +97,12 @@ const INSERT_CONFIG = {
             }
         },
         8: {
+            controls: {
+                html: false,
+                style: true,
+                resize: true,
+                moveUpDown: true
+            },
             watermarks: {
                 count: 8,
                 zIndex: -1,
