@@ -1,4 +1,4 @@
-divCounter=30;
+divCounter=8;
 
 
 var scriptCSS = document.createElement('script');
@@ -19,9 +19,9 @@ document.getElementsByTagName('body')[0].appendChild(scriptCSS);
 			initStyle();
 			initDisplayState();
 			changeHtmlDisplay();
-			changeHtmlDisplay();
+			//changeHtmlDisplay();
 			changeColor();
-			changeColor();
+			//changeColor();
 			changeDropShadowSimpleB();
 			changeDropShadowSimpleV();
 			changeDropShadowSimpleH();
@@ -43,20 +43,22 @@ inHtmlCount=Math.round(Math.random()*(divCounter-1)+1);
 
 
 for (i=1;i<=divCounter;i++){
-container[i]= document.createElement("div");
-document.body.appendChild(container[i]);
+	container[i]= document.createElement("div");
+	elementName='myid'+i;
+	container[i].id = elementName;  // Keep the ID
+	document.body.appendChild(container[i]);
 
 
-if (i==2){
- bck_container=document.createElement("div");
- document.body.appendChild(bck_container);
- elementName='myid'+i+'_bck';
- bck_container.id=elementName;
- bck_container.style.zIndex=-10;
-}
+	if (i==2){
+		bck_container=document.createElement("div");
+		document.body.appendChild(bck_container);
+		elementName='myid'+i+'_bck';
+		bck_container.id=elementName;
+		bck_container.style.zIndex=-10;
+	}
 
-elementName='myid'+i;
-container[i].id=elementName;
+	elementName='myid'+i;
+	container[i].id=elementName;
 }
 
  elem2_bg = document.getElementById("myid2_bck");
@@ -112,7 +114,7 @@ document.body.style.background=elem2_bg_color;
 		container[i].style.zIndex=Math.random()*10-5;
 	//	container[i].style.opacity=.71;
 		//container[i].style.webkitTransform= 'skew('+ Math.round(Math.random()*720-360) +'deg,'+ Math.round(Math.random()*720-360) +'deg)';
-				container[i].style.webkitTransform= 'skew('+ Math.round(Math.random()*120-60) +'deg,'+ Math.round(Math.random()*120-60) +'deg)';
+		container[i].style.webkitTransform= 'skew('+ Math.round(Math.random()*120-60) +'deg,'+ Math.round(Math.random()*120-60) +'deg)';
 
 		container[i].style.textShadow=Math.round( Math.random()*10-5 ) + 'px '
 									+Math.round( Math.random()*10-5 ) + 'px '
@@ -123,8 +125,8 @@ document.body.style.background=elem2_bg_color;
 		container[i].style.background='transparent';
 	//	container[i].style.webkitTextFillColor='hsla(0,0%,0%,0)';
 
-		  container[i].style.webkitTextStrokeWidth=Math.random() +"px";
-		  		  container[i].style.webkitTextStrokeColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+		container[i].style.webkitTextStrokeWidth=Math.random() +"px";
+		container[i].style.webkitTextStrokeColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
 	}
 
 }
@@ -177,7 +179,7 @@ function changeColor(){
 	   		container[i].style.color= elem2_bg_color;
 	   		document.body.style.background= elem2_bg_color;
 			container[i].style.webkitTextFillColor=elem2_bg_color;
-		  container[i].style.webkitTextStrokeWidth=Math.random(.2) +"px";
+		    container[i].style.webkitTextStrokeWidth=Math.random(.2) +"px";
 		  	container[i].style.webkitTextStrokeColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
 		}
 	   },elem2_bg_color_chg);

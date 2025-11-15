@@ -30,7 +30,7 @@ const INSERT_CONFIG = {
                 moveUpDown: true
             },
             watermarks: {
-                count: 8,
+                count: 10,
                 zIndex: 10,
                 positioning: 'scattered'
             }
@@ -49,11 +49,17 @@ const INSERT_CONFIG = {
                 positioning: 'scattered'
             }
         },
-        5: {
+        6: {
+            controls: {
+                html: true,
+                style: true,
+                resize: true,
+                moveUpDown: true
+            },
             watermarks: {
-                count: 8,
+                count: 1,
                 zIndex: -1,
-                positioning: 'scattered'
+                positioning: 'top-left'
             }
         },
         7: {
@@ -77,11 +83,30 @@ const INSERT_CONFIG = {
                 positioning: 'scattered'
             }
         },
-        10: {
+        11: {
+            controls: {
+                style: true,      // △STYLE button
+                html: false,       // △HTML button
+                resize: false,     // +/- Size buttons
+                moveUpDown: true // Move up/down (currently disabled globally)
+            },
             watermarks: {
-                count: 8,
+                count: 1,
                 zIndex: -1,
-                positioning: 'scattered'
+                positioning: 'top-left'
+            }
+        },
+        13: {
+            controls: {
+                style: false,      // △STYLE button
+                html: true,       // △HTML button
+                resize: true,     // +/- Size buttons
+                moveUpDown: false // Move up/down (currently disabled globally)
+            },
+            watermarks: {
+                count: 1,
+                zIndex: -1,
+                positioning: 'top-left'
             }
         }
         // Add more insert-specific configs as needed

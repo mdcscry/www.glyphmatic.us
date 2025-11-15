@@ -58,16 +58,51 @@ class NavMenu {
             bottom: auto !important;
             width: 200px !important;
             height: 100vh !important;
-            background: rgba(0, 0, 0, 0.85) !important;
+            background: rgba(0, 0, 0, 1) !important;
             transition: right 0.3s ease !important;
-            z-index: 999998 !important;
-            padding: 60px 20px 20px 20px !important;
+            z-index: 2147483647 !important;
+            padding: 15px 10px 15px 10px !important;
             box-sizing: border-box !important;
             pointer-events: auto !important;
             overflow-y: auto !important;
+            isolation: isolate !important;
+            transform: translateZ(0) !important;
+            will-change: transform !important;
         `;
         document.body.appendChild(panel);
         this.elements.panel = panel;
+        
+        // Add CSS protection against insert's global DIV rules
+        const navProtection = document.createElement('style');
+        navProtection.textContent = `
+            #navPanel, #navPanel *, #navPanel div, #navPanel div.display, #navPanel div.noDisplay,
+            #navTab, #navTabContainer {
+                font-size: 14px !important;
+                line-height: 20px !important;
+                font-family: Arial, sans-serif !important;
+                animation: none !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+            #navPanel {
+                text-align: left !important;
+            }
+            #navPanel > div {
+                margin: 0 0 12px 0 !important;
+                padding: 6px 8px !important;
+                text-align: left !important;
+                background: rgba(50, 50, 50, 0.3) !important;
+                border-radius: 3px !important;
+                clear: both !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                position: relative !important;
+                top: auto !important;
+                left: auto !important;
+                height: auto !important;
+            }
+        `;
+        document.head.appendChild(navProtection);
         
         // Toggle tab - create an isolation container first
         const tabContainer = document.createElement('div');
@@ -79,7 +114,7 @@ class NavMenu {
             width: 100vw !important;
             height: 100vh !important;
             pointer-events: none !important;
-            z-index: 999999 !important;
+            z-index: 2147483647 !important;
             isolation: isolate !important;
         `;
         document.body.appendChild(tabContainer);
@@ -89,25 +124,23 @@ class NavMenu {
         tab.innerHTML = '◀';
         tab.style.cssText = `
             position: absolute !important;
-            left: calc(100vw - 80px) !important;
+            left: calc(100vw - 30px) !important;
             top: 50% !important;
             transform: translateY(-50%) !important;
-            width: 80px !important;
-            height: 120px !important;
-            background: rgba(255, 0, 0, 1) !important;
+            width: 30px !important;
+            height: 60px !important;
+            background: rgba(0, 0, 0, 0.9) !important;
             color: #ffffff !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
             cursor: pointer !important;
-            font-size: 40px !important;
-            font-weight: bold !important;
+            font-size: 20px !important;
             transition: left 0.3s ease !important;
-            border-radius: 10px 0 0 10px !important;
+            border-radius: 5px 0 0 5px !important;
             pointer-events: auto !important;
             will-change: left !important;
             isolation: isolate !important;
-            box-shadow: 0 0 20px rgba(255,0,0,0.8) !important;
         `;
         tab.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -156,39 +189,39 @@ class NavMenu {
         const controls = [
             {
                 id: 'styleBtn',
-                label: '△STYLE',
+                label: '△ STYLE',
                 controlName: 'style',
                 handler: () => this.handleStyleChange()
             },
             {
                 id: 'htmlBtn',
-                label: '△HTML',
+                label: '△ HTML',
                 controlName: 'html',
                 handler: () => this.handleHtmlToggle()
             },
             {
                 id: 'moveUpBtn',
-                label: '⊼ Move Up',
+                label: '⊼ MOVE UP',
                 controlName: 'moveUpDown',
                 handler: () => this.handleMoveUp()
             },
             {
                 id: 'moveDownBtn',
-                label: '⊻ Move Down',
+                label: '⊻ MOVE DOWN',
                 controlName: 'moveUpDown',
                 handler: () => this.handleMoveDown()
             },
             {
-                id: 'sizeDownBtn',
-                label: '− Size',
-                controlName: 'resize',
-                handler: () => this.handleResize(0.9)
-            },
-            {
                 id: 'sizeUpBtn',
-                label: '+ Size',
+                label: '+ SIZE UP',
                 controlName: 'resize',
                 handler: () => this.handleResize(1.1)
+            },
+            {
+                id: 'sizeDownBtn',
+                label: '− SIZE DOWN',
+                controlName: 'resize',
+                handler: () => this.handleResize(0.9)
             }
         ];
         
@@ -206,17 +239,33 @@ class NavMenu {
     createButton(id, label, handler) {
         const btn = document.createElement('div');
         btn.id = id;
-        btn.innerHTML = label;
+        
+        // Wrap label in span with isolated styles
+        const span = document.createElement('span');
+        span.textContent = label;
+        span.style.cssText = `
+            font-family: Arial, sans-serif !important;
+            font-size: 14px !important;
+            line-height: 14px !important;
+            color: rgb(255, 255, 255) !important;
+            display: inline-block !important;
+        `;
+        btn.appendChild(span);
+        
         btn.style.cssText = `
-            position: relative;
-            color: #ffffff;
-            font-size: 15px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            user-select: none;
-            display: block;
-            width: 100%;
-            background: rgba(255,0,0,0.2);
+            position: relative !important;
+            display: block !important;
+            height: 22px !important;
+            max-height: 22px !important;
+            min-height: 22px !important;
+            margin: 0 0 8px 0 !important;
+            padding: 4px 8px !important;
+            cursor: pointer !important;
+            user-select: none !important;
+            width: auto !important;
+            overflow: hidden !important;
+            box-sizing: border-box !important;
+            background: rgba(50, 50, 50, 0.5) !important;
         `;
         btn.addEventListener('click', handler);
         return btn;
@@ -281,7 +330,18 @@ class NavMenu {
         }
         
         for (let i = 1; i <= divCounter; i++) {
-            container[i].style.lineHeight = '24vw';
+            const computed = window.getComputedStyle(container[i]);
+            let currentLineHeight = parseFloat(computed.lineHeight);
+            
+            // If lineHeight is 'normal' or NaN, use fontSize as baseline
+            if (isNaN(currentLineHeight)) {
+                currentLineHeight = parseFloat(computed.fontSize) * 1.2;
+            }
+            
+            const viewportWidth = window.innerWidth;
+            const currentVw = (currentLineHeight / viewportWidth) * 100;
+            const newVw = currentVw - 2; // Decrease by 2vw each click
+            container[i].style.lineHeight = newVw + 'vw';
         }
     }
     
@@ -294,7 +354,18 @@ class NavMenu {
         }
         
         for (let i = 1; i <= divCounter; i++) {
-            container[i].style.lineHeight = '38vw';
+            const computed = window.getComputedStyle(container[i]);
+            let currentLineHeight = parseFloat(computed.lineHeight);
+            
+            // If lineHeight is 'normal' or NaN, use fontSize as baseline
+            if (isNaN(currentLineHeight)) {
+                currentLineHeight = parseFloat(computed.fontSize) * 1.2;
+            }
+            
+            const viewportWidth = window.innerWidth;
+            const currentVw = (currentLineHeight / viewportWidth) * 100;
+            const newVw = currentVw + 2; // Increase by 2vw each click
+            container[i].style.lineHeight = newVw + 'vw';
         }
     }
     
@@ -302,15 +373,63 @@ class NavMenu {
      * Handle resize
      */
     handleResize(factor) {
+        // Check for insert13's strip arrays first
+        if (typeof hStrips !== 'undefined' && typeof vStrips !== 'undefined' && hStrips.length > 0) {
+            // Insert13 (Braided Marquee): resize cells in strips
+            const allStrips = [...hStrips, ...vStrips];
+            allStrips.forEach(strip => {
+                const cells = strip.getElementsByTagName('div');
+                for (let i = 0; i < cells.length; i++) {
+                    if (cells[i].style.fontSize) {
+                        const currentSize = parseFloat(cells[i].style.fontSize);
+                        if (!isNaN(currentSize)) {
+                            const unit = cells[i].style.fontSize.replace(/[\d.]/g, '');
+                            cells[i].style.fontSize = (currentSize * factor) + unit;
+                        }
+                    }
+                }
+            });
+            return;
+        }
+        
         if (typeof divCounter === 'undefined' || typeof container === 'undefined') {
             return;
         }
         
         for (let i = 1; i <= divCounter; i++) {
+            // Check if this insert uses spans for font sizing (like insert12)
             const spans = container[i].getElementsByTagName('span');
-            for (let j = 0; j < spans.length; j++) {
-                const current = parseFloat(spans[j].style.fontSize);
-                spans[j].style.fontSize = (current * factor) + 'vw';
+            
+            if (spans.length > 0 && spans[0].style.fontSize) {
+                // Insert12+ style: resize spans with vw units
+                for (let j = 0; j < spans.length; j++) {
+                    const current = parseFloat(spans[j].style.fontSize);
+                    spans[j].style.fontSize = (current * factor) + 'vw';
+                }
+            } else {
+                // Check for cells/divs with inline fontSize (insert13 style)
+                const cells = container[i].getElementsByTagName('div');
+                let foundCells = false;
+                
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].style.fontSize) {
+                        const currentSize = parseFloat(cells[j].style.fontSize);
+                        if (!isNaN(currentSize)) {
+                            // Preserve the original unit (vmin, vw, px, etc)
+                            const unit = cells[j].style.fontSize.replace(/[\d.]/g, '');
+                            cells[j].style.fontSize = (currentSize * factor) + unit;
+                            foundCells = true;
+                        }
+                    }
+                }
+                
+                // If no cells found, fall back to container method (insert0-3)
+                if (!foundCells) {
+                    const computed = window.getComputedStyle(container[i]);
+                    const currentSize = parseFloat(computed.fontSize);
+                    const newSize = currentSize * factor;
+                    container[i].style.setProperty('font-size', newSize + 'px', 'important');
+                }
             }
         }
     }

@@ -55,13 +55,101 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Runic&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Andika&family=Charis+SIL&family=Gentium+Book+Plus&family=Gentium+Plus&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=IBM+Plex+Sans&family=Kiwi+Maru&family=M+PLUS+1&family=M+PLUS+1+Code&family=M+PLUS+1p&family=M+PLUS+2&family=M+PLUS+Rounded+1c&family=Murecho&family=Potta+One&family=RocknRoll+One&family=Sawarabi+Gothic&family=Train+One&display=swap');
+
 /* symbols,chinese, hebrew, telugu, malayalam, bengali, malayalam, gurmurkhi, gujarati, arabic, korean, gurmukhi, sharada
 ,cham, emoji, devanagari, marchen, vai, avestan, yi, lao, osmanya, kannada, khmer, ethiopic, armenian, georgian, thai
 cherokee, myanmar, tibetan, color emoji, music, bamum, balinse, tai tham, jain, fancy latin 
 grantha lepcha kawi limbu Meitei-Mayek modi newa phagpa siddham takri tirhuta oriya zanabazar khmer sundanese
 thai chinese korean japanese mongolian thaana warangciti javanese soyombo japanese(special) sinhala, cuneifrom, tai le
-ugaritic old persian runic SIL fonts
+ugaritic old persian runic SIL fonts KangxiRadicals
 
+
+/* Kangxi Radicals s*/
+
+.dotgothic16-regular {
+  font-family: "DotGothic16", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+.ibm-plex-sans {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.kiwi-maru-regular {
+  font-family: "Kiwi Maru", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.m-plus-rounded-1c-regular {
+  font-family: "M PLUS Rounded 1c", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+.m-plus-1 {
+  font-family: "M PLUS 1", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+.m-plus-1-code {
+  font-family: "M PLUS 1 Code", monospace;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.m-plus-1p-regular {
+  font-family: "M PLUS 1p", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+.m-plus-2 {
+  font-family: "M PLUS 2", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+.murecho {
+  font-family: "Murecho", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.potta-one-regular {
+  font-family: "Potta One", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.sawarabi-gothic-regular {
+  font-family: "Sawarabi Gothic", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.train-one-regular {
+  font-family: "Train One", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
 
 /* SIL Fonts*/
 
@@ -691,7 +779,7 @@ ugaritic old persian runic SIL fonts
 /* Kannada */
 
 .baloo-tamma-2 {
-  font-family: "Baloo Tamma 2", system-ui;
+  font-family: "Baloo Tamma 2", sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
@@ -706,9 +794,7 @@ ugaritic old persian runic SIL fonts
   font-family: "Noto Sans Kannada", sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
+  font-style: normal; 
 }
 
 .noto-serif-kannada {
@@ -1337,6 +1423,16 @@ ugaritic old persian runic SIL fonts
 }
 
 @font-face {
+    font-family: 'Noto Serif Full';
+    src: url('../tff/NotoSerif-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans Mono Full';
+    src: url('../tff/NotoSansMono-Regular.ttf') format('truetype');
+}
+
+@font-face {
     font-family: 'Noto Sans Math Full';
     src: url('../tff/NotoSansMath-Regular.ttf') format('truetype');
 }
@@ -1464,6 +1560,16 @@ ugaritic old persian runic SIL fonts
 @font-face {
     font-family: 'Lucida Sans Unicode';
     src: url('../fonts/lucidasansunicode.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Liberation Sans';
+    src: url('../fonts/LiberationSans-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Free Sans';
+    src: url('../fonts/FreeSans.otf') format('opentype');
 }
 
 @font-face {
@@ -2246,7 +2352,7 @@ ugaritic old persian runic SIL fonts
 
 .watermark-font {
     font-family: 'Noto Sans Arabic','Two STIX Math','Noto Sans Math Full','Noto Sans Full', 
-                 'Noto Sans Thai', 'Noto Sans Lao','Noto Sans CJK JP','Noto Sans Khmer','Noto Sans Armenian'
+                 'Noto Sans Thai', 'Noto Sans Lao','Noto Sans CJK JP','Noto Sans Khmer','Noto Sans Armenian',
                  'Andika';
     /* any other styling you want for your watermarks */
 }

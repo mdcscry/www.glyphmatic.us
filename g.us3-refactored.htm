@@ -274,7 +274,7 @@ function startUpMain() {
     createWatermarks(config);
     
     // Initialize navigation menu
-    initNavMenu(insertArrayRnd, mycolors);
+    setTimeout(() => initNavMenu(insertArrayRnd, mycolors), 1000);
     
     // Wait for letters to load
     jsWaitLetters();
