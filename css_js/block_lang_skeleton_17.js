@@ -170,10 +170,10 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Miao'] = ['miao'];
  block_lang['Miscellaneous Mathematical Symbols-A'] = ['math-symbola'];
  block_lang['Miscellaneous Mathematical Symbols-B'] = ['math-symbola'];
- block_lang['Miscellaneous Symbols'] = ['symbols'];
- block_lang['Miscellaneous Symbols and Arrows'] = ['symbols2-symbola'];
- block_lang['Miscellaneous Symbols and Pictographs'] = ['symbols2-symbola','bw-emoji-extra'];
- block_lang['Miscellaneous Technical'] = ['symbols'];
+ block_lang['Miscellaneous Symbols'] = ['unicode-symbol-fonts'];
+ block_lang['Miscellaneous Symbols and Arrows'] = ['symbols2-symbola','unicode-symbol-fonts'];
+ block_lang['Miscellaneous Symbols and Pictographs'] = ['symbols2','bw-emoji-extra','unicode-symbol-fonts'];
+ block_lang['Miscellaneous Technical'] = ['symbols',"unicode-symbol-fonts"];
  block_lang['Modi'] = ['modi'];
  block_lang['Modifier Tone Letters'] = ['noto-regular'];
  block_lang['Mongolian'] = ['mongolian'];
@@ -248,10 +248,10 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Mathematical Operators'] = ['math']; 
  block_lang['Supplemental Mathematical Operators'] = ['math-symbola'];
  block_lang['Supplemental Punctuation'] = ['noto-full'];
- block_lang['Supplemental Symbols and Pictographs'] = ['emoji-bw'];
+ block_lang['Supplemental Symbols and Pictographs'] = ['emoji-bw','unicode-symbol-fonts'];
  block_lang['Sutton SignWriting'] = ['signwriting'];
  block_lang['Syloti Nagri'] = ['sylotinagri'];
- block_lang['Symbols and Pictographs Extended-A'] = ['emoji-bw'];
+ block_lang['Symbols and Pictographs Extended-A'] = ['emoji-bw','unicode-symbol-fonts'];
  block_lang['Syriac'] = ['syriac'];
  block_lang['Syriac Supplement'] = ['syriac'];
  block_lang['Tagalog'] = ['tagalog'];
@@ -290,7 +290,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Chorasmian'] = ['chorasmian'];
  block_lang['Dives Akuru'] = ['dives-akuru'];
  block_lang['Khitan Small Script'] = ['khitan-small-script'];
- block_lang['Symbols for Legacy Computing'] = ['symbols2'];
+ block_lang['Symbols for Legacy Computing'] = ['symbols2-pseudo'];
  block_lang['Lisu Supplement'] = ['lisu'];
  block_lang['Tangut Supplement'] = ['tangut'];
 
@@ -321,7 +321,7 @@ block_lang['Sunuwar'] = [ "sunuwar" ]
 //block_lang['Egyptian_Hieroglyphs_Extended_A'] = [ "egyptianheiroglyphics" ]
 //block_lang['Gurung_Khema'] = [ "gurung-khema" ]
 //block_lang['Kirat_Rai'] = [ "kirat-rai" ]
-//block_lang['Symbols for Legacy Computing Supplement'] = [ "symbols2"]
+block_lang['Symbols for Legacy Computing Supplement'] = [ "pseudographica"]
 //block_lang['Ol_Onal'] = [ "ol-onal" ]
 
 //Unicode 17
@@ -330,7 +330,7 @@ block_lang['Sunuwar'] = [ "sunuwar" ]
 //block_lang['Tolong_Siki'] = [ "tolong-siki" ]
 //block_lang['Beria_Erfe'] = [ "beria-erfe" ]
 //block_lang['Tangut_Components_Supplement'] = [ "tangut" ]
-//block_lang['Miscellaneous_Symbols_Supplement'] = [ "symbols2" ]
+block_lang['Miscellaneous_Symbols_Supplement'] = [ "symbols2","pseudographica" ]
 //block_lang['Tai_Yo'] = [ "tai-yo" ]
 
 //Unicode 13
@@ -513,6 +513,12 @@ lang_font['saurashtra'] = [ "Noto Sans Saurashtra"]
 lang_font['lisu'] = ["Noto Sans Lisu"]
 lang_font['symbols'] = ["Noto Sans Symbols","Symbola-local-fonts"]
 lang_font['symbols2-pseudo'] = ["Noto Sans Symbols 2","BabelStone Pseudographica-local-fonts"]
+lang_font['pseudographica'] = ["BabelStone Pseudographica-local-fonts"]
+lang_font['unicode-symbol-fonts'] = [
+  'Symbola-local-fonts','Segoe UI Symbol-local-fonts'
+  ,'Quivira-local-otf','DejaVu Sans-local-fonts','Everson Mono-local-fonts','Noto Sans Symbols'
+  ,'Code2000-local-fonts','BabelStone Pseudographica-local-fonts'
+]
 lang_font['symbols2'] = ["Noto Sans Symbols 2"]
 lang_font['symbols2-symbola'] = ["Noto Sans Symbols 2","Symbola-local-fonts"]
 lang_font['symbols2-currency'] = ["Noto Sans","Noto Sans Mono","Noto Serif","Helvetica","Symbola-local-fonts","Rupakara-local-fonts"]
@@ -727,8 +733,14 @@ lang_font['tamil'] = [
 lang_font['noto-arabic'] = [
   "Noto Kufi Arabic",
   "Noto Naskh Arabic",
+  "Noto Sans Arabic"  
+]
+
+lang_font['noto-arabic-urdu'] = [
+  "Noto Kufi Arabic",
+  "Noto Naskh Arabic",
   "Noto Sans Arabic",
- "Noto Nastaliq Urdu"  
+  "Noto Nastaliq Urdu"  
 ]
 
 lang_font['arabic-reduced'] = [
@@ -736,12 +748,12 @@ lang_font['arabic-reduced'] = [
   "Lateef",
   "Noto Kufi Arabic",
   "Noto Naskh Arabic",
-  "Noto Nastaliq Urdu",
   "Noto Sans Arabic",
-  "Scheherazade New"   
+  "Scheherazade New",  
 ]
 
 lang_font['arabic'] = [
+  "Amiri",
   "Baloo Bhaijaan 2",
   "Beiruti",
   "Blaka",
