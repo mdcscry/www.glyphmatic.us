@@ -16,18 +16,21 @@ function jsWait() {
 function initGrid() {
     // Grid options
     gridOptions = [ [1, 1], [1, 2], [2, 1], [2, 2], [2, 4], [4, 2], [3, 3], [4, 4], [5, 5], [5, 5]
-               ,[5, 5], [10, 10], [10, 10], [10, 10], [20, 20], [20, 10],[1, 1] ];
+               ,[5, 5], [10, 10],[1, 1] ];
     
     const [rows, cols] = gridOptions[Math.floor(Math.random() * gridOptions.length)];
     
     // Pick one spiral glyph for entire rendering
-    const spiralIndices = [73,159,226,186,228]; // Cham spiral, Cyclone, Armenian Eternity, Permanent paper infinity
+    const spiralIndices = [73,159,226,186,228,328]; // Cham spiral, Cyclone, Armenian Eternity, Permanent paper infinity
     const selectedIndex = spiralIndices[Math.floor(Math.random() * spiralIndices.length)];
+    console.log('Selected sprial index:' + selectedIndex)
     const glyphCode = parseInt(myFontSet[selectedIndex][0].replace('x', ''), 16);
     
     // Armenian Eternity (186) spins counterclockwise, all others clockwise
-    const animationName = selectedIndex === 186 ? 'spinCCW' : 'spinCW';
-    
+    const animationName = (selectedIndex === 186 || 
+                selectedIndex === 325 ||
+                selectedIndex === 159 
+                ) ? 'spinCCW' : 'spinCW';
     // Pick one random font from that glyph's font set
     const fontSet = myFontSet[selectedIndex].slice(1);
     const selectedFont = fontSet[Math.floor(Math.random() * fontSet.length)];

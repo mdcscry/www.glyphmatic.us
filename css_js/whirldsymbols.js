@@ -120,6 +120,8 @@ myFontSet[46]=['x2638','Arial Unicode Ms','Code2000','Noto Sans Symbols','Quivir
 myFontSet[47]=['x0FCA','Tibetan Machine Uni','Monloam_Uni','DDC_Uchen','Kailasa','Qomolangma-Woodblock','Qomolangma-Art','Qomolangma-Edict','BabelStoneTibetan']; // Tibetan Phur-pa variant 1
 myFontSet[48]=['x0FCB','Tibetan Machine Uni','Monloam_Uni','DDC_Uchen','Kailasa','Qomolangma-Woodblock','Qomolangma-Art','Qomolangma-Edict','BabelStoneTibetan']; // Tibetan Phur-pa variant 2
 myFontSet[49]=['x0FCC','Tibetan Machine Uni','Monloam_Uni','DDC_Uchen','Kailasa','Qomolangma-Woodblock','Qomolangma-Art','Qomolangma-Edict','BabelStoneTibetan']; // Tibetan Nor-bu variant
+myFontSet[327]=['x0FCC;&#x0FC6','BabelStoneTibetan']; // Tibetan Nor-bu variant
+
 myFontSet[50]=['x262C','Arial Unicode Ms','Arial Unicode MS','Code2000','Meiryo','MS Mincho','Noto Sans Symbols','Quivira','Segoe UI Symbol','Symbola']; // Adi Shakti (Khanda)
 myFontSet[51]=['x262B','Arial Unicode Ms','Arial Unicode MS','Code2000','Meiryo','MS Mincho','Noto Sans Symbols','Quivira','Segoe UI Symbol','Symbola']; // Farsi symbol
 myFontSet[52]=['x0F15','Tibetan Machine Uni','Monloam_Uni','DDC_Uchen','Kailasa','Qomolangma-Woodblock','Qomolangma-Art','Qomolangma-Edict','BabelStoneTibetan']; // Tibetan astrological sign 1
@@ -127,7 +129,9 @@ myFontSet[53]=['x0F16','Tibetan Machine Uni','Monloam_Uni','DDC_Uchen','Kailasa'
 myFontSet[54]=['x0F17','Tibetan Machine Uni','Monloam_Uni','DDC_Uchen','Kailasa','Qomolangma-Woodblock','Qomolangma-Art','Qomolangma-Edict','BabelStoneTibetan']; // Tibetan astrological sign 3
 myFontSet[55]=['x0FC4','Tibetan Machine Uni','Monloam_Uni','DDC_Uchen','Kailasa','Qomolangma-Woodblock','Qomolangma-Art','Qomolangma-Edict','BabelStoneTibetan']; // Tibetan symbol variant 1
 myFontSet[56]=['x0FC5','Tibetan Machine Uni','Monloam_Uni','DDC_Uchen','Kailasa','Qomolangma-Woodblock','Qomolangma-Art','Qomolangma-Edict','BabelStoneTibetan']; // Tibetan symbol variant 2
-myFontSet[57]=['x0FC7','Tibetan Machine Uni','Monloam_Uni','DDC_Uchen','Kailasa','Qomolangma-Woodblock','Qomolangma-Art','Qomolangma-Edict','BabelStoneTibetan']; // Tibetan symbol variant 3
+myFontSet[326]=['x0FC7;&#x0FC6','Qomolangma-Art','BabelStoneTibetan']; // Tibetan symbol variant 3
+myFontSet[57]=['x0FC7;','Tibetan Machine Uni','Monloam_Uni','DDC_Uchen','Kailasa','Qomolangma-Woodblock','Qomolangma-Art','Qomolangma-Edict','BabelStoneTibetan']; // Tibetan symbol variant 3
+
 myFontSet[58]=['x0F13','Tibetan Machine Uni','Monloam_Uni','DDC_Uchen','Kailasa','Qomolangma-Woodblock','Qomolangma-Art','Qomolangma-Edict','BabelStoneTibetan']; // Tibetan comma/shad
 myFontSet[59]=['x0FC2','Tibetan Machine Uni','Monloam_Uni','DDC_Uchen','Kailasa','Qomolangma-Woodblock','Qomolangma-Art','Qomolangma-Edict','BabelStoneTibetan']; // Tibetan symbol variant 4
 myFontSet[60]=['x0FC3','Tibetan Machine Uni','Monloam_Uni','DDC_Uchen','Kailasa','Qomolangma-Art','Qomolangma-Edict','BabelStoneTibetan']; // Tibetan symbol variant 5
@@ -449,6 +453,7 @@ myFontSet[322] = ['x16F6','Noto Sans Runic','Code2000','Quivira','Everson Mono',
 myFontSet[323] = ['x16F7','Noto Sans Runic','Code2000','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛷ Franks Casket Ac
 myFontSet[324] = ['x16F8','Noto Sans Runic','Code2000','Quivira','Everson Mono','BabelStone Runic Byrhtferth','BabelStone Runic','BabelStone Moon Runes']; // ᛸ Franks Casket Aesc
 myFontSet[325]=['x058D','Code2000','Noto Sans Armenian']; // Armenian eternity sign
+myFontSet[328]=['x0ED1','Noto Sans Lao Looped']; // Lao number 1 spiral
 var glyphDescriptions = [];
 
 // Original entries 0-104
@@ -782,6 +787,12 @@ glyphDescriptions[322] = 'Franks Casket Eh - Anglo-Saxon Futhorc';
 glyphDescriptions[323] = 'Franks Casket Ac - Anglo-Saxon Futhorc';
 glyphDescriptions[324] = 'Franks Casket Aesc - Anglo-Saxon Futhorc';
 glyphDescriptions[325]='Armenian eternity sign';
+glyphDescriptions[326]=['Tibetan symbol 4-fold With lotus'];
+
+glyphDescriptions[327]=[' Tibetan Nor-bu variant with lotus'];
+glyphDescriptions[328]=['Lao number 1 spiral']; // 
+
+
 // Place of Worship 
 
 //'xaa05;&#xaa4c' //cham om

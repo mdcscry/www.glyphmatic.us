@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Unicode Glyph Display</title>
+		<style type="text/css">
+
+			@import url('https://fonts.googleapis.com/css2?family=Noto+Emoji&display=swap');
+
+			.noto-emoji-regular {
+				font-family: "Noto Emoji", sans-serif;
+				font-optical-sizing: auto;
+				font-weight: 900;
+				font-style: normal;
+			}
+
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				min-height: 100vh;
+				font-size: clamp(2em, 8vw, 6em);
+				padding: 20px;
+				transition: background-color 0.3s ease;
+			}
+
+			.glyph-container {
+				display: grid;
+				grid-template-columns: repeat(4, 1fr);
+				gap: 0px;
+				padding: 20%;
+				background-color: #FAFAD2;
+				width: 37.5vw;
+				height: 95vh;
+				border-radius: 25px;
+				padding: 15px;
+				overflow: hidden;
+			}
+
+			.glyph-cell {
+				display: grid;
+				justify-content: center;
+				align-items: center;
+				border-radius: 0px;
+				padding: 0px;
+				cursor: pointer;
+				transition: all 0.2s ease;
+				background: transparent;
+			}
+
+			.glyph-cell:hover {
+				transform: scale(1.05);
+			}
+
+			.glyph-cell span {
+				font-size: 1em;
+				line-height: 1;
+			}
+
+			[title] {
+				border-bottom: 0px solid rgba(255, 255, 255, 0.2);
+				border-radius: 1px;
+				position: relative;
+			}
+
+			body.touched [title] > span {
+				user-select: none;
+			}
+
+			body.touched [title]:hover > span {
+				user-select: auto
+			}
+			
+			body.touched [title]:hover:after {
+				font-size: 0.15em;
+				position: absolute;
+				top: 100%;
+				right: 0%;
+				content: attr(title);
+				border: 0px solid rgba(0, 0, 0, 0.3);
+				background-color: rgba(0, 0, 0, 0.8);
+				color: white;
+				padding: 0.2em 0.4em;
+				z-index: 1;
+				white-space: nowrap;
+				border-radius: 4px;
+			}
+
+			@font-face {
+				font-family: 'Noto Sans Full';
+				src: url('../tff/NotoSans-Regular.ttf') format('truetype');
+			}
+
+		</style>
+		<script type="text/JavaScript" src="../css_js/block_hex_no_punct_17.js"></script>
+		<script type="text/JavaScript" src="../css_js/block_hex_desc_no_punct_17.js"></script>
+		<script type="text/JavaScript" src="../css_js/block_lang_skeleton_17.js"></script>
+		<script type="text/JavaScript" src="../css_js/contrast_tester.js"></script>		
+	</head>
+	<body>
+	
+		<div class="glyph-container" id="glyphGrid">
+		</div>
+
+		<script type="text/javascript">
+
+			// TEST MODE - set to false for production
+			var TEST_MODE = false;
+			var TEST_GLYPH = null;
+			let selectedPalette = [];
+			
+			// Ancient hieroglyphic-like scripts
+			TEST_BLOCKS = ["Linear A", "Linear B Ideograms", "Linear B Syllabary",
+				"Anatolian Hieroglyphs", "Egyptian Hieroglyphs", "Phaistos Disc",
+				"Meroitic Hieroglyphs", "Cypriot Syllabary", "Cypro-Minoan", "Bamum Supplement"];
+
+			// Random off-white/neutral page background colors
+			let currentBgColor = '#8b6f47';
+
+			function generatePageBackgroundColor() {
+				const offWhites = [
+					'#f5f5f0', '#f0f0eb', '#ebe8e3', '#e8e5df', '#f5f3f0',
+					'#faf8f5', '#f9f7f4', '#f8f6f3', '#f7f5f2', '#f6f4f1',
+					'#f4f2f0', '#f3f1ee', '#f2f0ed', '#f1efec', '#f0eeeb',
+					'#FFF5EE','#FAF0E6'
+				];
+				return offWhites[Math.floor(Math.random() * offWhites.length)];
+			}
+
+			// Rich earth tone grid background colors
+			function generateGridBackgroundColor() {
+				const earthTones = [
+					'#F5DEB3', //wheat
+					'#F5F5F5', //whitesmoke
+					'#D2B48C', //tan
+					'#808000', //olive	
+					'#EEE8AA', //palegoldenrod					
+					'#FDF5E6', //oldlace
+					'#FFDEAD', //navajowhite
+					'#FFE4B5', //moccasin
+					'#FAEBD7', //antique white
+					'#FFEFD5', //papayawhip
+					'#F0E68C', //khaki
+					'#DCDCDC', //gainsboro	
+					'#BDB76B', //dark kahki
+					'#F5F5DC', //beige
+					'#FFE4C4', //bisque
+					'#FFEBCD'  //blanched almonde
+
+				];
+
+				earthTonesChoice = earthTones[Math.floor(Math.random() * earthTones.length)];
+				console.log('earthTones: ' + earthTonesChoice)
+
+				return earthTonesChoice
+			}
+
+			// Generate random earthy/vibrant color for a glyph
+			function initializePalette() {
+				const glyphColors = [
+					'#5a7a8c', // steel blue gray
+					'#4682B4', // steelblue
+					'#4a8a8f', // teal
+					'#a0714f', // rust
+					'#6b5444', // brown
+					'#B22222',  // firebrick
+					'#6B8E23', //olive drab
+					'#A0522D', //sienna
+					'#DAA520', //goldenrod
+					'#778899', // light slate gray
+					'#B8860B', //dark goldenrod
+					'#008080', //teal
+					'#D2691E', //chocolate
+					'#BE5103', //dark orange (not web safe)
+					'#CD853F', //peru
+					'#FFD700' //gold
+
+ 				];
+
+	
+				const bgColor = currentBgColor;
+				const minContrast = 1.5;
+				
+				let validColors = glyphColors.filter(color => 
+					getContrastRatio(color, bgColor) >= minContrast
+				);
+				
+				selectedPalette = validColors
+					.sort(() => Math.random() - 0.5)
+					.slice(0, 4);
+				
+				return selectedPalette;
+			}
+
+			function generateGlyphColor() {
+				return selectedPalette[Math.floor(Math.random() * selectedPalette.length)];
+			}
+
+			// Apply random palette
+			function applyPalette() {
+				let pageColor = generatePageBackgroundColor();
+				let gridColor = generateGridBackgroundColor();
+				
+				// Make sure grid and page backgrounds are never the same
+				while (pageColor === gridColor) {
+					gridColor = generateGridBackgroundColor();
+				}
+				
+				document.body.style.backgroundColor = pageColor;
+				currentBgColor = gridColor;
+			}
+
+			var cssImportRule = document.createElement('style');
+			var cssFontFamilyRule = document.createElement('style');	
+			var cssFontFaceRule = document.createElement('style');		
+			document.getElementsByTagName('body')[0].appendChild(cssImportRule);
+			document.getElementsByTagName('body')[0].appendChild(cssFontFamilyRule);
+			document.getElementsByTagName('body')[0].appendChild(cssFontFaceRule);		
+			var cssImportStyle = document.styleSheets[1];
+			var cssImportRules = cssImportStyle.cssRules;
+			var cssFontFamilyStyle = document.styleSheets[2];
+			var cssFontFamilyRules = cssFontFamilyStyle.cssRules;
+			var cssFontFaceStyle = document.styleSheets[3];
+			var cssFontFaceRules = cssFontFaceStyle.cssRules;
+
+			document.body.addEventListener('touchstart', function() {
+  				document.body.classList.add('touched');
+			});
+
+			function attach_goog_font(font) {
+				gf_prefix = '//fonts.googleapis.com/css?family='
+				font_formatted = font.replace(/ /g, "+")
+				newRule = '@import url(https:' + gf_prefix + font_formatted + ');';
+				cssImportStyle.insertRule(newRule, cssImportRules.length);	
+			}
+
+			function attach_local_font(font, directory = 'tff') {
+				const font_formatted = font.replace(/ /g, "");
+				const style = document.createElement('style');
+				let filename;
+				if (directory === 'otf') {
+					filename = `${font_formatted}-Regular.otf`;
+				} else if (directory === 'tff') {
+					filename = `${font_formatted}-Regular.ttf`;
+				} else {
+					filename = `${font_formatted}.ttf`;
+				}
+				style.textContent = `@font-face {font-family: "${font}"; src: url('/${directory}/${filename}');}`;
+				document.head.appendChild(style);
+			}
+
+			function git_the_random(seed, array) {
+				val = Math.round((array[seed].length - 1) * Math.random())
+				return(val)
+			}
+
+			function generateGlyph() {
+				if (TEST_MODE) {
+					if (Array.isArray(TEST_BLOCKS) && TEST_BLOCKS.length > 0) {
+						random_number = Math.round((TEST_BLOCKS.length - 1) * Math.random());
+						block = TEST_BLOCKS[random_number];
+					} else {
+						block = TEST_BLOCK;
+					}
+			
+					if (TEST_GLYPH) {
+						glyph = TEST_GLYPH;
+						glyph_val = block_hex[block].indexOf(glyph);
+						if (glyph_val === -1) {
+							console.error("Test glyph not found in block!");
+							glyph_val = git_the_random(block, block_hex);
+							glyph = block_hex[block][glyph_val];
+						}
+					} else {
+						glyph_val = git_the_random(block, block_hex);
+						glyph = block_hex[block][glyph_val];
+					}
+				} else {
+					random_number = Math.round((blocks.length - 1) * Math.random())
+					block = blocks[random_number] 
+					glyph_val = git_the_random(block, block_hex)				
+					glyph = block_hex[block][glyph_val]
+				}
+
+				glyph_desc = block_hex_desc[block][glyph_val].replace(/ /g, "_")
+				font_du_jour = get_more_spectacular(block)
+					
+				if (font_du_jour.split("-")[1] == 'local') {
+					const parts = font_du_jour.split("-");
+					const fontName = parts[0];
+					const directory = parts[2] || 'tff';
+					attach_local_font(fontName, directory);
+				} else {
+					attach_goog_font(font_du_jour)	
+				}	
+
+				const fontFamily = font_du_jour.split("-")[0];
+				const genericFallback = fontFamily.includes('Serif') ? 'serif' : 'sans-serif';
+				let fontStack;
+				
+				if (fontFamily.includes('Noto Sans Symbols') 
+					|| fontFamily.includes('Noto Sans Symbols 2')
+					|| fontFamily.includes('BabelStone Pseudographica')
+					|| fontFamily.includes('Quivira')
+					|| fontFamily.includes('Everson Mono')
+					|| fontFamily.includes('DejaVu')	
+					|| fontFamily.includes('Segoe')	
+					|| fontFamily.includes('Code2000')	
+					|| fontFamily.includes('Fluent')
+					|| fontFamily.includes('Open Moji')
+				) {
+					fontStack = `'${fontFamily}','Noto Emoji','Symbola','Noto Sans Symbols 2', ${genericFallback}`;
+				} else if (fontFamily.includes('Symbola')) {
+					fontStack = `'${fontFamily}','Noto Sans Symbols','Noto Sans Symbols 2','Noto Emoji','Noto Sans Math', ${genericFallback}`;
+				} else {
+					fontStack = `'${fontFamily}','Noto Sans Full', ${genericFallback}`;
+				}
+
+				return {
+					glyph: glyph,
+					desc: glyph_desc,
+					fontStack: fontStack
+				};
+			}
+
+	 		function get_more_spectacular(block) {
+				console.log('block: ' + block)
+		 		font_array = block_lang[block]
+		 		super_font_seed = Math.round((font_array.length - 1) * Math.random())
+		 		font_lookup = font_array[super_font_seed]
+		 		font_seed = Math.round((lang_font[font_lookup].length - 1) * Math.random())
+		 		font = lang_font[font_lookup][font_seed]
+	 			return(font)	
+	 		}
+
+	 		function populateGrid() {
+				const grid = document.getElementById('glyphGrid');
+				grid.innerHTML = '';
+				grid.style.backgroundColor = currentBgColor;
+				grid.style.borderColor = currentBgColor;
+
+				for (let i = 0; i < 20; i++) {
+					const glyphData = generateGlyph();
+					const glyphColor = generateGlyphColor();
+					
+					const cell = document.createElement('div');
+					cell.className = 'glyph-cell';
+					cell.title = glyphData.glyph + '-' + glyphData.desc;
+					cell.style.backgroundColor = currentBgColor;
+
+					const span = document.createElement('span');
+					span.style.fontFamily = glyphData.fontStack;
+					span.style.color = glyphColor;
+					span.innerHTML = '&#x' + glyphData.glyph + ';';
+
+					cell.appendChild(span);
+					grid.appendChild(cell);
+				}
+			}
+
+	      	function jsWait() {
+	            if (typeof blockHexWait == "undefined" ||
+	                typeof blockHexDescWait == "undefined"  ||
+	                typeof blockHexSkeletonWait == "undefined" ||
+					typeof contrastWait == "undefined"
+	            ) {
+	                window.setTimeout(jsWait, 100);
+	            } else {
+	            	applyPalette();
+					initializePalette();
+	                populateGrid();
+	            }
+	        }
+
+	        jsWait();
+
+		</script>
+
+	</body>
+
+</html>
