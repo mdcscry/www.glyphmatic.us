@@ -542,7 +542,10 @@ lang_font['ugaritic'] = [ "Noto Sans Ugaritic",'Code2001-local-fonts' ]
 lang_font['runic'] = ['Noto Sans Runic','Junicode-local-fonts',"Junicode Two Regular-local-fonts"]
 lang_font['imperialaramaic'] = [ "Noto Sans Imperial Aramaic" ]
 lang_font['inscriptionalparthian'] = [ "Noto Sans Inscriptional Parthian" ]
-lang_font['anatolianheiroglyphics'] = [ "Noto Sans Anatolian Hieroglyphs",'Anatolian-Douros-local-fonts']
+lang_font['anatolianheiroglyphics'] = [ "Noto Sans Anatolian Hieroglyphs"
+  ,'Anatolian-local-fonts'
+
+]
 lang_font['egyptianheiroglyphics'] = [ "Noto Sans Egyptian Hieroglyphs","AegyptusR-local-fonts","AegyptusB-local-fonts"]
 lang_font['georgian'] = [ 
 	"Noto Sans Georgian",

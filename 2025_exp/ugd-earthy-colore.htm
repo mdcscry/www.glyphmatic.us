@@ -108,46 +108,6 @@
 
 		<script type="text/javascript">
 
-			// Web-safe color palette (defined once)
-			const WEB_SAFE_COLORS = [
-				'#000000', '#000033', '#000066', '#000099', '#0000CC', '#0000FF',
-				'#003300', '#003333', '#003366', '#003399', '#0033CC', '#0033FF',
-				'#006600', '#006633', '#006666', '#006699', '#0066CC', '#0066FF',
-				'#009900', '#009933', '#009966', '#009999', '#0099CC', '#0099FF',
-				'#00CC00', '#00CC33', '#00CC66', '#00CC99', '#00CCCC', '#00CCFF',
-				'#00FF00', '#00FF33', '#00FF66', '#00FF99', '#00FFCC', '#00FFFF',
-				'#330000', '#330033', '#330066', '#330099', '#3300CC', '#3300FF',
-				'#333300', '#333333', '#333366', '#333399', '#3333CC', '#3333FF',
-				'#336600', '#336633', '#336666', '#336699', '#3366CC', '#3366FF',
-				'#339900', '#339933', '#339966', '#339999', '#3399CC', '#3399FF',
-				'#33CC00', '#33CC33', '#33CC66', '#33CC99', '#33CCCC', '#33CCFF',
-				'#33FF00', '#33FF33', '#33FF66', '#33FF99', '#33FFCC', '#33FFFF',
-				'#660000', '#660033', '#660066', '#660099', '#6600CC', '#6600FF',
-				'#663300', '#663333', '#663366', '#663399', '#6633CC', '#6633FF',
-				'#666600', '#666633', '#666666', '#666699', '#6666CC', '#6666FF',
-				'#669900', '#669933', '#669966', '#669999', '#6699CC', '#6699FF',
-				'#66CC00', '#66CC33', '#66CC66', '#66CC99', '#66CCCC', '#66CCFF',
-				'#66FF00', '#66FF33', '#66FF66', '#66FF99', '#66FFCC', '#66FFFF',
-				'#990000', '#990033', '#990066', '#990099', '#9900CC', '#9900FF',
-				'#993300', '#993333', '#993366', '#993399', '#9933CC', '#9933FF',
-				'#996600', '#996633', '#996666', '#996699', '#9966CC', '#9966FF',
-				'#999900', '#999933', '#999966', '#999999', '#9999CC', '#9999FF',
-				'#99CC00', '#99CC33', '#99CC66', '#99CC99', '#99CCCC', '#99CCFF',
-				'#99FF00', '#99FF33', '#99FF66', '#99FF99', '#99FFCC', '#99FFFF',
-				'#CC0000', '#CC0033', '#CC0066', '#CC0099', '#CC00CC', '#CC00FF',
-				'#CC3300', '#CC3333', '#CC3366', '#CC3399', '#CC33CC', '#CC33FF',
-				'#CC6600', '#CC6633', '#CC6666', '#CC6699', '#CC66CC', '#CC66FF',
-				'#CC9900', '#CC9933', '#CC9966', '#CC9999', '#CC99CC', '#CC99FF',
-				'#CCCC00', '#CCCC33', '#CCCC66', '#CCCC99', '#CCCCCC', '#CCCCFF',
-				'#CCFF00', '#CCFF33', '#CCFF66', '#CCFF99', '#CCFFCC', '#CCFFFF',
-				'#FF0000', '#FF0033', '#FF0066', '#FF0099', '#FF00CC', '#FF00FF',
-				'#FF3300', '#FF3333', '#FF3366', '#FF3399', '#FF33CC', '#FF33FF',
-				'#FF6600', '#FF6633', '#FF6666', '#FF6699', '#FF66CC', '#FF66FF',
-				'#FF9900', '#FF9933', '#FF9966', '#FF9999', '#FF99CC', '#FF99FF',
-				'#FFCC00', '#FFCC33', '#FFCC66', '#FFCC99', '#FFCCCC', '#FFCCFF',
-				'#FFFF00', '#FFFF33', '#FFFF66', '#FFFF99', '#FFFFCC', '#FFFFFF'
-			];
-
 			// TEST MODE - set to false for production
 			var TEST_MODE = false;
 			var TEST_GLYPH = null;
@@ -161,86 +121,69 @@
 			// Random off-white/neutral page background colors
 			let currentBgColor = '#8b6f47';
 
-			function generatePageBackgroundColor() {
-				return WEB_SAFE_COLORS[Math.floor(Math.random() * WEB_SAFE_COLORS.length)];
+			// Generate random OKLCH color
+			function generateOKLCHColor() {
+				const l = 0.3 + Math.random() * 0.6; // Lightness 30-90%
+				const c = Math.random() * 0.3; // Chroma 0-0.3 (moderate saturation)
+				const h = Math.random() * 360; // Hue 0-360
+				return `oklch(${l} ${c} ${h})`;
 			}
 
-			// Generate container background color with low contrast (~0.25) to page background
-            function generateGridBackgroundColor(pageColor) {
-                const rgb = hexToRgb(pageColor);
-                
-                // Slightly desaturate and shift brightness by ±10-15%
-                const h = rgbToHsl(rgb).h;
-                const s = rgbToHsl(rgb).s * 0.5; // Cut saturation in half
-                const l = rgbToHsl(rgb).l + (Math.random() - 0.5) * 0.2; // Vary lightness by ±10%
-                
-                return hslToHex(h, s, l);
-            }
+			// Generate page background color
+			function generatePageBackgroundColor() {
+				return generateOKLCHColor();
+			}
 
-            function hexToRgb(hex) {
-                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-                return result ? {
-                    r: parseInt(result[1], 16),
-                    g: parseInt(result[2], 16),
-                    b: parseInt(result[3], 16)
-                } : null;
-            }
+		function generateGridBackgroundColor(pageColor) {
+			// Parse OKLCH if it's in that format, otherwise convert from hex
+			let baseLightness, baseChroma, baseHue;
+			
+			if (pageColor.startsWith('oklch')) {
+				const match = pageColor.match(/oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/);
+				if (match) {
+					baseLightness = parseFloat(match[1]);
+					baseChroma = parseFloat(match[2]);
+					baseHue = parseFloat(match[3]);
+				}
+			} else {
+				// Convert hex to OKLCH (simplified - just generate new)
+				baseLightness = 0.5;
+				baseChroma = 0.1;
+				baseHue = Math.random() * 360;
+			}
 
-            function rgbToHsl(rgb) {
-                let r = rgb.r / 255;
-                let g = rgb.g / 255;
-                let b = rgb.b / 255;
-                const max = Math.max(r, g, b), min = Math.min(r, g, b);
-                let h, s, l = (max + min) / 2;
-
-                if (max === min) {
-                    h = s = 0;
-                } else {
-                    const d = max - min;
-                    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                    switch (max) {
-                        case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-                        case g: h = ((b - r) / d + 2) / 6; break;
-                        case b: h = ((r - g) / d + 4) / 6; break;
-                    }
-                }
-                return { h, s, l };
-            }
-
-            function hslToHex(h, s, l) {
-                const c = (1 - Math.abs(2 * l - 1)) * s;
-                const x = c * (1 - Math.abs((h * 6) % 2 - 1));
-                const m = l - c / 2;
-                let r = 0, g = 0, b = 0;
-                
-                if (h < 1/6) [r, g, b] = [c, x, 0];
-                else if (h < 2/6) [r, g, b] = [x, c, 0];
-                else if (h < 3/6) [r, g, b] = [0, c, x];
-                else if (h < 4/6) [r, g, b] = [0, x, c];
-                else if (h < 5/6) [r, g, b] = [x, 0, c];
-                else [r, g, b] = [c, 0, x];
-                
-                const toHex = (n) => {
-                    const hex = Math.round((n + m) * 255).toString(16);
-                    return hex.length === 1 ? '0' + hex : hex;
-                };
-                return '#' + toHex(r) + toHex(g) + toHex(b);
-            }
+			    // Slightly shift values for low contrast
+			const newL = baseLightness + (Math.random() - 0.5) * 0.2;
+			const newC = baseChroma * 0.5; // Reduce chroma
+			const newH = baseHue + (Math.random() - 0.5) * 30; // Slight hue shift
+			
+			return `oklch(${Math.max(0, Math.min(1, newL))} ${Math.max(0, newC)} ${newH})`;
+		}
 
 			// Initialize glyph palette with 4 colors that have good contrast to container
 			function initializePalette() {
 				const bgColor = currentBgColor;
 				const minContrast = 5;
-                const maxContrast = 6;
+				const maxContrast = 20;
 				
-				let validColors = WEB_SAFE_COLORS.filter(color => 
-					getContrastRatio(color, bgColor) >= minContrast
-                    && getContrastRatio(color, bgColor) <= maxContrast
-				);
+				selectedPalette = [];
+				let attempts = 0;
+				const maxAttempts = 500;
 				
-				selectedPalette = validColors
-					.sort(() => Math.random() - 0.5)
-					.slice(0, 4);
+				while (selectedPalette.length < 4 && attempts < maxAttempts) {
+					const color = generateOKLCHColor();
+					const contrast = getContrastRatio(color, bgColor);
+					
+					if (contrast >= minContrast && contrast <= maxContrast) {
+						selectedPalette.push(color);
+					}
+					attempts++;
+				}
+				
+				// Fallback if we couldn't find 4 colors
+				while (selectedPalette.length < 4) {
+					selectedPalette.push(generateOKLCHColor());
+				}
 				
 				console.log('Selected glyph palette: ' + selectedPalette);
 				return selectedPalette;

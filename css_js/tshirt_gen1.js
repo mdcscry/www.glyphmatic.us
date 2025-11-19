@@ -47,7 +47,17 @@ const ai = [
     'back propagation', 'neural net', 'agentic','hallucination','confabulation','emergent','context window'
 ];
 
-const all_commands = html.concat(css, javascript, crypto, python, git, sysadmin_commands, sql_commands, ml, ai);
+const datatypes = [
+   'BIGINT','STRING','BOOL','FLOAT', 'INT64', 'NUMERIC', 'BIGNUMERIC', 'FLOAT64', 'BYTES',
+    `<div style="white-space: pre;">[
+          {   
+                   JSON 
+        }
+]</div>`
+    ,'DATE','DATETIME','TIMESTAMP','ARRAY','STRUCT','SMALLINT','DECIMAL','CHAR','VARCHAR','ENUM','BLOB'
+];
+
+const all_commands = html.concat(css, javascript, crypto, python, git, sysadmin_commands, sql_commands, ml, ai, datatypes);
 
 $(function(){
     loadGenerator();
@@ -227,6 +237,7 @@ function getActiveCommandArray() {
         case 'python': return python;
         case 'ml': return ml;
         case 'ai': return ai;
+        case 'datatype': return datatypes;
         case 'adm': return adm;
         case 'all':
         default: return all_commands;
@@ -297,12 +308,16 @@ function applyTheme() {
     
     if (current_theme === 'white') {
         console.log("applyTheme(): Entering WHITE theme logic."); // <-- ADD THIS LOG
-        colorsToUse = ['#0066ff', '#ff0033', '#000000'];
+        colorsToUse = ['#00ffff','#FF0000','#FFA500','#ffff00'
+            ,'#00ff00','#FF66FF','#FA8072','#FF6347','#1E90FF'
+            ,'#98FB98','#BA55D3'];
         background_color = 'rgba(255, 255, 255, 0.9)';
     } else if (current_theme === 'gray') {
         console.log("applyTheme(): Entering GRAY theme logic."); // <-- ADD THIS LOG
-        colorsToUse = ['#0066ff', '#ff0033', '#000000'];
-        background_color = 'rgba(200, 200, 200, 0.9)';
+        colorsToUse = ['#00ffff','#FF0000','#ffff00'
+            ,'#00ff00','#FF66FF','#FA8072','#FF6347','#1E90FF'
+            ,'#98FB98','#BA55D3'];
+        background_color = 'rgba(140, 140, 140, 0.9)'; 
     } else { // This is the expected 'dark' or 'random' path
         console.log("applyTheme(): Entering DARK/RANDOM theme logic."); // <-- ADD THIS LOG 
      
@@ -437,7 +452,11 @@ async function generateHash(hashType) {
 }
 
 function changeFont() {
-    var font = JSON.stringify(json_fonts.items[Math.round((json_fonts.items.length-1)*Math.random())].family);
+        console.log('current_glyph_index:', current_glyph_index);
+    console.log('navGlyph:', navGlyph);
+    console.log('navGlyph[current_glyph_index]:', navGlyph[current_glyph_index]);
+    var font = json_fonts.items[Math.round((json_fonts.items.length-1)*Math.random())].family;
+      console.log('Selected font:', font);
     navGlyph[current_glyph_index].style.fontFamily = font;
 }
 
