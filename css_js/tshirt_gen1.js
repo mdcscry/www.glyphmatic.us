@@ -18,7 +18,7 @@ const taglines = [
     " for nerds who want to be geeks",
     " for nerds who geeks think are nerds",
     " for geeks who nerds think are geeks",
-    " for nerds who need better marking"
+    " for nerds who need better marketing"
 ];
 
 // Command arrays

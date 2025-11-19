@@ -56,14 +56,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Andika&family=Charis+SIL&family=Gentium+Book+Plus&family=Gentium+Plus&display=swap');
 
 @import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=IBM+Plex+Sans&family=Kiwi+Maru&family=M+PLUS+1&family=M+PLUS+1+Code&family=M+PLUS+1p&family=M+PLUS+2&family=M+PLUS+Rounded+1c&family=Murecho&family=Potta+One&family=RocknRoll+One&family=Sawarabi+Gothic&family=Train+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Anatolian+Hieroglyphs&display=swap');
+
 
 /* symbols,chinese, hebrew, telugu, malayalam, bengali, malayalam, gurmurkhi, gujarati, arabic, korean, gurmukhi, sharada
 ,cham, emoji, devanagari, marchen, vai, avestan, yi, lao, osmanya, kannada, khmer, ethiopic, armenian, georgian, thai
 cherokee, myanmar, tibetan, color emoji, music, bamum, balinse, tai tham, jain, fancy latin 
 grantha lepcha kawi limbu Meitei-Mayek modi newa phagpa siddham takri tirhuta oriya zanabazar khmer sundanese
 thai chinese korean japanese mongolian thaana warangciti javanese soyombo japanese(special) sinhala, cuneifrom, tai le
-ugaritic old persian runic SIL fonts KangxiRadicals
+ugaritic old persian runic SIL fonts KangxiRadicals AnatolianHeiro
 
+
+/* Anatolian Heiroglyphics */
+
+.noto-sans-anatolian-hieroglyphs-regular {
+  font-family: "Noto Sans Anatolian Hieroglyphs", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
 
 /* Kangxi Radicals s*/
 
@@ -1805,11 +1815,6 @@ ugaritic old persian runic SIL fonts KangxiRadicals
 }
 
 @font-face {
-    font-family: 'Anatolian';
-    src: url('../tff/NotoSansAnatolianHieroglyphs-Regular.ttf') format('truetype');
-}
-
-@font-face {
     font-family: 'Anatolian_Douros';
     src: url('/../fonts/Anatolian.ttf') format('truetype');
 }
@@ -1975,6 +1980,26 @@ ugaritic old persian runic SIL fonts KangxiRadicals
 @font-face {
     font-family: 'BabelStone Marchen'; 
     src: url('../fonts/BabelStoneMarchen.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Alphabetum'; 
+    src: url('../otf/ALPHABETUM_regular_v_15.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Titus'; 
+    src: url('TITUSCyberbitBasicRegular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'New Athena Unicode'; 
+    src: url('newathu5_5.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: ''; 
+    src: url('') format('truetype');
 }
 
 .myanmar-taungyi {
@@ -2284,10 +2309,6 @@ ugaritic old persian runic SIL fonts KangxiRadicals
 }
 .aegean {
     font-family: 'Aegean', serif;
-}
-
-.anatolian {
-    font-family: 'Anatolian', serif;
 }
 
 .anatolian-douros {

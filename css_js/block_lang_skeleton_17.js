@@ -203,7 +203,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Old Turkic'] = ['oldturkic'];
  block_lang['Optical Character Recognition'] = ['symbols2-symbola'];
  block_lang['Oriya'] = ['oriya'];
- block_lang['Ornamental Dingbats'] = ['symbols2-symbola'];
+ block_lang['Ornamental Dingbats'] = ['symbols2-symbola','everson','code2000','dejavu'];
  block_lang['Osage'] = ['osage'];
  block_lang['Osmanya'] = ['osmanya'];
  block_lang['Ottoman Siyaq Numbers'] = ['ottoman-siyaq-numbers'];
@@ -211,7 +211,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Palmyrene'] = ['palmyrene'];
  block_lang['Pau Cin Hau'] = ['pau-cin-hau'];
  block_lang['Phags-pa'] = ['phagspa'];
- block_lang['Phaistos Disc'] = ['symbols2','everson'];
+ block_lang['Phaistos Disc'] = ['symbols2-symbola','everson','alphabetum','code2001'];
  block_lang['Phoenician'] = ['phoenician'];
  block_lang['Phonetic Extensions'] = ['noto-regular'];
  block_lang['Phonetic Extensions Supplement'] = ['noto-regular'];
@@ -458,9 +458,9 @@ lang_font['adlam'] = [
 ]
 lang_font['ahom'] = [ "Noto Serif Ahom"]
 lang_font['math-symbola'] = [ "Noto Sans Math","Symbola-local-fonts"]
-lang_font['math'] = [ "Noto Sans Math"]
-lang_font['linearb'] = [ "Noto Sans Linear B",'Code2001-local-fonts','Aegean-local-fonts' ]
-lang_font['lineara'] = [ "Noto Sans Linear A" ]
+lang_font['math'] = [ "Noto Sans Math",'Two STIX Math']
+lang_font['linearb'] = [ "Noto Sans Linear B",'Code2001-local-fonts','Aegean-local-fonts','Alphabetum-local-otf' ]
+lang_font['lineara'] = [ "Noto Sans Linear A",'Alphabetum-local-otf','Code2002-local-fonts']
 
 //Before Unicode 13
 lang_font['tagalog'] = ["Noto Sans Tagalog" ]
@@ -542,7 +542,7 @@ lang_font['ugaritic'] = [ "Noto Sans Ugaritic",'Code2001-local-fonts' ]
 lang_font['runic'] = ['Noto Sans Runic','Junicode-local-fonts',"Junicode Two Regular-local-fonts"]
 lang_font['imperialaramaic'] = [ "Noto Sans Imperial Aramaic" ]
 lang_font['inscriptionalparthian'] = [ "Noto Sans Inscriptional Parthian" ]
-lang_font['anatolianheiroglyphics'] = [ "Noto Sans Anatolian Hieroglyphs"]
+lang_font['anatolianheiroglyphics'] = [ "Noto Sans Anatolian Hieroglyphs",'Anatolian-Douros-local-fonts']
 lang_font['egyptianheiroglyphics'] = [ "Noto Sans Egyptian Hieroglyphs","AegyptusR-local-fonts","AegyptusB-local-fonts"]
 lang_font['georgian'] = [ 
 	"Noto Sans Georgian",
@@ -2755,7 +2755,10 @@ lang_font['latin-ext-b'] = [
   "BabelStone Roman-local-fonts"
 ] 
 lang_font['everson'] = ['Everson Mono-local-fonts']
+lang_font['alphabetum'] = ['Alphabetum-local-otf']
 lang_font['code2000'] = ['Code2000-local-fonts']
+lang_font['code2001'] = ['Code2001-local-fonts']
+lang_font['code2002'] = ['Code2002-local-fonts']
 lang_font['latin-ext-c'] = [
   "Agbalumo",
   "Agu Display",
