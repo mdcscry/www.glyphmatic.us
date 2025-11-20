@@ -30,7 +30,9 @@ const sql_commands = ['TRUNCATE','DELETE ALL','UNION','UNION ALL','OUTER JOIN','
 const sysadmin_commands = ['#!','finger',
 '#!', '/dev/null', 'rm -rf', 'kill -9', 'cat', 'man', 'cd', 'pwd', 'find/-', 'grep', '||', '&&',
 'awk', 'chmod 777', 'tail -f', 'uptime', 'head', 'mount', 'sftp', 'scp', 'cron', 'whoami', 'history',
-'.*', '[a-zA-Z]', "perl -pe 's/perl/perl/g'", '!-1', '~/','touch','touch touch','more','ping','less',
+'.*', '[a-zA-Z]', "perl -pe 's/perl/perl/g'", '!-1', '~/',
+'touch'
+,'touch touch','more','ping','less',
 'clear','alias','sleep','who','chown','curl','shutdown','reboot','halt','ctrl-z','ctrl-c','* * * * *','|', '`whoami`'
 ];
 const git = ["rebase","commit","push -u","pull","add","init","clone","status","diff","restore","reset","checkout","merge","stash","fetch","remote","apply","cherry-pick","blame","commit-sha",
@@ -38,13 +40,17 @@ const git = ["rebase","commit","push -u","pull","add","init","clone","status","d
 const python = ['unique','factorize','get dummies','cut','pivot','melt','class','yield', 'await', 'self', 'none', 'true', 'false', 'pass', 'global', 'async', 'return', 'try', 'except', 'raise', 'del'];
 const ml = ['random forest','nearest neighbors','perceptron','P(A|B)','decision tree',
     'Semi-Supervised','unsupervised','supervised','bagging','lasso','ensemble model','kernal','boost','gradient descent','regression','boosted'];
-const adm = ['Bitrot','Fuck it, Ship it!','Onboarding','POC','High Priority',"Can't Fail",'Please Fix.',
-    'meta','Quick Question','Action Item','Bug Fix','Life is Hard.','Stochastic','Random()','Vapor Ware','Age of Evals'];
+const adm = [
+    'Bitrot','Fuck it, Ship it!','Onboarding','POC','High Priority',"Can't Fail",'Please Fix.',
+    'meta','Quick Question','Action Item','Bug Fix','Life is Hard.','Stochastic','Random()','Vapor Ware','Age of Evals',
+    'Temporally Ironic Glitch', "I'm late for a meeting!"
+];
 const ai = [
     'LLM', 'foundation model', 'transformer', 'multimodal', 'RLHF', 'self-alignment',
     'Prompt Engineer', 'CoT', 'hallucination', 'token', 'zero-shot', 'deepfake', 'guardrails',
     'emergent behavior', 'jailbreak', 'human-in-the-loop', 'agent', 'RAG', 'vector', 'embedding', 'evals',
-    'back propagation', 'neural net', 'agentic','hallucination','confabulation','emergent','context window'
+    'back propagation', 'neural net', 'agentic','hallucination','confabulation','emergent','context window',
+    'deep research'
 ];
 
 const datatypes = [
@@ -519,7 +525,7 @@ function changeBorderStyle() {
 function biggerBorder() {
     if (navGlyph[current_glyph_index]) {
         var current_padding = parseInt(navGlyph[current_glyph_index].style.padding) || 10;
-        var new_padding = Math.min(current_padding + 10, 100);
+        var new_padding = Math.min(current_padding + 10, 500);
         navGlyph[current_glyph_index].style.padding = new_padding + 'px';
     }
 }
@@ -529,6 +535,22 @@ function smallerBorder() {
         var current_padding = parseInt(navGlyph[current_glyph_index].style.padding) || 10;
         var new_padding = Math.max(current_padding - 10, 0);
         navGlyph[current_glyph_index].style.padding = new_padding + 'px';
+    }
+}
+
+function moreTopPadding() {
+    if (navGlyph[current_glyph_index]) {
+        var current_padding = parseInt(navGlyph[current_glyph_index].style.paddingTop) || 0;
+        var new_padding = Math.min(current_padding + 10);
+        navGlyph[current_glyph_index].style.paddingTop = new_padding + 'px';
+    }
+}
+
+function lessTopPadding() {
+    if (navGlyph[current_glyph_index]) {
+        var current_padding = parseInt(navGlyph[current_glyph_index].style.paddingTop) || 0;
+        var new_padding = Math.max(current_padding - 10, 0);
+        navGlyph[current_glyph_index].style.paddingTop = new_padding + 'px';
     }
 }
 
@@ -618,7 +640,15 @@ function bindEvents() {
     });
     
     document.getElementById('smallerBorderBtn').addEventListener('click', function() {
-        smallerBorder();
+         smallerBorder();
+    });
+
+    document.getElementById('morePaddingBtn').addEventListener('click', function() {
+         moreTopPadding();
+    });
+
+    document.getElementById('lessPaddingBtn').addEventListener('click', function() {
+        lessTopPadding();
     });
     
     document.getElementById('toggleMenu').addEventListener('click', function() {

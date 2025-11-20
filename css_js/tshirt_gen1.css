@@ -112,18 +112,30 @@ body {
     font-size: 12px;
 }
 
-/* Quad button row for borders */
-.button-row-quad {
-    display: flex;
-    justify-content: space-between;
+/* 2x4 Border Grid - Fixed row heights */
+.border-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 40px 40px; /* Fixed height rows */
     gap: 2px;
-    margin: 5px 0;
+    margin: 2px 0;
 }
 
-.button-row-quad button {
-    width: 23%;
-    font-size: 8px;
-    padding: 5px 2px;
+.border-grid button {
+    font-size: 10px !important;
+    padding: 2px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Make first two buttons span both rows */
+.border-grid button:nth-child(1),
+.border-grid button:nth-child(2) {
+    grid-row: span 2;
+    font-size: 13px !important;
 }
 
 /* Form Controls */

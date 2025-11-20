@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ugd-Coloré</title>
+    <style>
+			/* Emoji needs to be incuded for blocks with mixed emoji/not emoji
+			   Could have brought it in from glyphmatic.us.css but that's overkill */
+			@import url('https://fonts.googleapis.com/css2?family=Noto+Emoji&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-size: clamp(2em, 6.5vw, 7em);
+            padding: 20px;
+        }
+        
+        .glyph-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            padding: 40px;
+            width: 30vw;
+            height: 90vh;
+            border-radius: 25px;
+            overflow: hidden;
+        }
+        
+        .glyph-cell {
+            display: grid;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            cursor: pointer;
+        }
+        
+        .glyph-cell:hover {
+            transform: scale(1.05);
+        }
+        
+        .glyph-cell span {
+            font-size: 1em;
+            line-height: 1;
+        }
+        
+        body.touched [title]:hover:after {
+            font-size: 0.15em;
+            position: absolute;
+            top: 100%;
+            right: 0%;
+            content: attr(title);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.2em 0.4em;
+            z-index: 1;
+            white-space: nowrap;
+            border-radius: 4px;
+        }
+    </style>
+    
+    <!-- Data files -->
+    <script src="../css_js/block_hex_no_punct_17.js"></script>
+    <script src="../css_js/block_hex_desc_no_punct_17.js"></script>
+    <script src="../css_js/block_lang_skeleton_17.js"></script>
+    
+    <!-- Core libraries -->
+    <script src="../css_js/contrast_tester.js"></script>
+    <script src="../css_js/autofont.js"></script>
+    <script src="../css_js/colorpalette.js"></script>
+</head>
+<body>
+    <div class="glyph-container" id="glyphGrid"></div>
+    
+    <script>
+        const CONFIG = {
+            glyphCount: 20,
+            testMode: true,
+            testBlocks: ["Phaistos Disc"],
+            testGlyph: null, // or set to a specific glyph hex like "101D0"
+            morphing: true,
+            morphInterval: { min: 10000, max: 30000 }
+        };
+        
+        // Populate grid
+        function populateGrid() {
+            const grid = document.getElementById('glyphGrid');
+            grid.innerHTML = '';
+            
+            // Apply current colors
+            ColorPalette.apply(document.body, grid);
+            
+            // Generate glyphs
+            for (let i = 0; i < CONFIG.glyphCount; i++) {
+                const glyphData = AutoFont.generateGlyph(
+                    block_hex,
+                    block_hex_desc,
+                    block_lang,
+                    lang_font,
+                    CONFIG.testMode,
+                    { 
+                        blocks: CONFIG.testBlocks, 
+                        glyph: CONFIG.testGlyph 
+                    }
+                );
+                
+                const cell = document.createElement('div');
+                cell.className = 'glyph-cell';
+                cell.title = `${glyphData.glyph}-${glyphData.desc}`;
+                cell.style.backgroundColor = ColorPalette.currentGridBg;
+                
+                const span = document.createElement('span');
+                span.style.fontFamily = glyphData.fontStack;
+                span.style.color = ColorPalette.randomGlyphColor();
+                span.innerHTML = '&#x' + glyphData.glyph + ';';
+                
+                cell.appendChild(span);
+                grid.appendChild(cell);
+            }
+        }
+        
+        // Initialize when data loads
+        async function init() {
+                console.log('HTML init called');
+                console.log('AutoFont exists?', typeof AutoFont);
+            if (typeof block_hex === 'undefined' ||
+                typeof block_hex_desc === 'undefined' ||
+                typeof block_lang === 'undefined' ||
+                typeof contrastWait === 'undefined') {
+                setTimeout(init, 100);
+                return;
+            }
+            
+            await AutoFont.init(); // Wait for init to complete
+            // Initialize palette
+            ColorPalette.init();
+            
+            // Populate grid
+            populateGrid();
+            
+            // Start morphing
+            if (CONFIG.morphing) {
+                ColorPalette.startMorphing(
+                    document.body,
+                    document.getElementById('glyphGrid'),
+                    '.glyph-cell',
+                    CONFIG.morphInterval.min,
+                    CONFIG.morphInterval.max
+                );
+            }
+        }
+        
+        init();
+    </script>
+</body>
+</html>
