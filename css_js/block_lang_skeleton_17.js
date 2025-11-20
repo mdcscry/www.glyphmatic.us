@@ -2,7 +2,7 @@ block_lang =[{}]
 lang_font =[{}]
 
  block_lang['Adlam'] = ['adlam'];
- block_lang['Aegean Numbers'] = ['linearb'];
+ block_lang['Aegean Numbers'] = ['linearb','aegean'];
  block_lang['Ahom'] = ['ahom'];
  block_lang['Alchemical Symbols'] = ['symbols'];
 // block_lang['Alphabetic Presentation Forms'] = ['']; //armenian/latin/hebrew requires special processing
@@ -55,7 +55,7 @@ lang_font =[{}]
 // block_lang['Combining_Diacritical_Marks_For_Symbols'] = ['latin','latin-ext'];
  block_lang['Common Indic Number Forms'] = ['noto-devanagari'];
 // block_lang['Control_Pictures'] = ['symbols2'];
- block_lang['Coptic'] = ['coptic'];
+ block_lang['Coptic'] = ['coptic','newathena'];
  block_lang['Coptic Epact Numbers'] = ['coptic-epact','symbols2'];
  block_lang['Counting Rod Numerals'] = ['symbols2'];
  block_lang['Cuneiform'] = ['cuneiform'];
@@ -143,9 +143,11 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Lepcha'] = ['lepcha'];
  block_lang['Letterlike Symbols'] = ['noto-full'];
  block_lang['Limbu'] = ['limbu'];
- block_lang['Linear A'] = ['lineara'];
- block_lang['Linear B Ideograms'] = ['linearb'];
- block_lang['Linear B Syllabary'] = ['linearb'];
+ block_lang['Linear A'] = ['lineara','aegean'];
+ block_lang['Linear B Ideograms'] = ['linearb','everson','alphabetum'
+  ,'code2001','damase'];
+ block_lang['Linear B Syllabary'] = ['linearb','everson','alphabetum'
+  ,'code2001','damase'];
  block_lang['Lisu'] = ['lisu'];
  block_lang['Lisu Supplement'] = ['lisu'];
  block_lang['Lycian'] = ['lycian'];
@@ -459,8 +461,8 @@ lang_font['adlam'] = [
 lang_font['ahom'] = [ "Noto Serif Ahom"]
 lang_font['math-symbola'] = [ "Noto Sans Math","Symbola-local-fonts"]
 lang_font['math'] = [ "Noto Sans Math",'Two STIX Math']
-lang_font['linearb'] = [ "Noto Sans Linear B",'Code2001-local-fonts','Aegean-local-fonts','Alphabetum-local-otf' ]
-lang_font['lineara'] = [ "Noto Sans Linear A",'Alphabetum-local-otf','Code2002-local-fonts']
+lang_font['linearb'] = [ "Noto Sans Linear B"]
+lang_font['lineara'] = [ "Noto Sans Linear A"]
 
 //Before Unicode 13
 lang_font['tagalog'] = ["Noto Sans Tagalog" ]
@@ -514,10 +516,24 @@ lang_font['lisu'] = ["Noto Sans Lisu"]
 lang_font['symbols'] = ["Noto Sans Symbols","Symbola-local-fonts"]
 lang_font['symbols2-pseudo'] = ["Noto Sans Symbols 2","BabelStone Pseudographica-local-fonts"]
 lang_font['pseudographica'] = ["BabelStone Pseudographica-local-fonts"]
+lang_font['everson'] = ['Everson Mono-local-fonts']
+lang_font['alphabetum'] = ['Alphabetum-local-otf']
+lang_font['code2000'] = ['Code2000-local-fonts']
+lang_font['code2001'] = ['Code2001-local-fonts']
+lang_font['code2002'] = ['Code2002-local-fonts']
+lang_font['damase'] = ['MPH2B Damase-local-fonts']
+lang_font['aegean'] = ['Aegean-local-fonts']
+lang_font['dejavu'] = ['Deja Vu Sans-local-fonts']
+lang_font['dejavu_condensed'] = ['Deja Vu Sans Condensed-local-fonts']
+lang_font['titus'] = ['TITUS Cyberbit Basic Regular-local-fonts']
+lang_font['sun'] = ['Sun-ExtA-local-fonts']
+lang_font['symbola'] = ['Symbola-local-fonts']
+lang_font['junicode'] = ['Junicode-local-fonts']
+lang_font['newathena'] = ['NewAthena-local-fonts']
 lang_font['unicode-symbol-fonts'] = [
   'Symbola-local-fonts','Segoe UI Symbol-local-fonts'
   ,'Quivira-local-otf','DejaVu Sans-local-fonts','Everson Mono-local-fonts','Noto Sans Symbols'
-  ,'Code2000-local-fonts','BabelStone Pseudographica-local-fonts'
+  ,'Code2000-local-fonts','BabelStone Pseudographica-local-fonts','MPH2B Damase-local-fonts'
 ]
 lang_font['symbols2'] = ["Noto Sans Symbols 2"]
 lang_font['symbols2-symbola'] = ["Noto Sans Symbols 2","Symbola-local-fonts"]
@@ -543,7 +559,7 @@ lang_font['runic'] = ['Noto Sans Runic','Junicode-local-fonts',"Junicode Two Reg
 lang_font['imperialaramaic'] = [ "Noto Sans Imperial Aramaic" ]
 lang_font['inscriptionalparthian'] = [ "Noto Sans Inscriptional Parthian" ]
 lang_font['anatolianheiroglyphics'] = [ "Noto Sans Anatolian Hieroglyphs"
-  ,'Anatolian-local-fonts'
+  ,'Anatolian-local-fonts','Alphabetum-local-otf'
 
 ]
 lang_font['egyptianheiroglyphics'] = [ "Noto Sans Egyptian Hieroglyphs","AegyptusR-local-fonts","AegyptusB-local-fonts"]
@@ -2685,7 +2701,8 @@ lang_font['latin-noto'] = ['Noto Serif','Noto Sans Mono','Noto Sans'
 ]
 
 lang_font['greek-and-coptic'] = [
-  'Noto Serif','Noto Sans Mono','Noto Sans','Tinos','Arimo','Aegean-local-fonts',"Antinoou-local-fonts"
+  'Noto Serif','Noto Sans Mono','Noto Sans','Tinos','Arimo'
+  ,'Aegean-local-fonts',"Antinoou-local-fonts","New Athena-local-fonts"
 ]; 
 
 lang_font['latin-ext-additional'] = [
@@ -2757,11 +2774,7 @@ lang_font['latin-ext-b'] = [
   "Unbounded",
   "BabelStone Roman-local-fonts"
 ] 
-lang_font['everson'] = ['Everson Mono-local-fonts']
-lang_font['alphabetum'] = ['Alphabetum-local-otf']
-lang_font['code2000'] = ['Code2000-local-fonts']
-lang_font['code2001'] = ['Code2001-local-fonts']
-lang_font['code2002'] = ['Code2002-local-fonts']
+
 lang_font['latin-ext-c'] = [
   "Agbalumo",
   "Agu Display",
