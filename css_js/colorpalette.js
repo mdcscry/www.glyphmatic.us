@@ -147,19 +147,19 @@
         },
         
         // Start continuous morphing
-        startMorphing: function(pageElement, gridElement, cellSelector, minInterval = 10000, maxInterval = 30000) {
+        startMorphing: function(pageElement, gridElement, cellSelector, minInterval = 10000, maxInterval = 40000) {
             if (this.morphing) return;
             
             this.morphing = true;
             
             const scheduleNextMorph = () => {
                 const interval = minInterval + Math.random() * (maxInterval - minInterval);
-                
+                const duration = minInterval + Math.random() * (maxInterval - minInterval);
                 this.morphInterval = setTimeout(() => {
                     if (!this.morphing) return;
                     
                     const cells = cellSelector ? document.querySelectorAll(cellSelector) : null;
-                    this.morphPalette(pageElement, gridElement, cells);
+                    this.morphPalette(pageElement, gridElement, cells, duration);
                     
                     scheduleNextMorph();
                 }, interval);

@@ -29,7 +29,8 @@ const crypto = ['sha-1', 'sha-256', 'sha-384', 'sha-512', 'md5', 'sha-1-gen', 's
 const sql_commands = ['TRUNCATE','DELETE ALL','UNION','UNION ALL','OUTER JOIN','COALESCE','CONCAT','REPLACE','MIN','MAX','DROP TABLE','MERGE','ALTER TABLE','INSERT','UNION','FULL OUTER JOIN'];
 const sysadmin_commands = ['#!','finger',
 '#!', '/dev/null', 'rm -rf', 'kill -9', 'cat', 'man', 'cd', 'pwd', 'find/-', 'grep', '||', '&&',
-'awk', 'chmod 777', 'tail -f', 'uptime', 'head', 'mount', 'sftp', 'scp', 'cron', 'whoami', 'history',
+'awk', 'chmod 777', 'tail -f', 'uptime', 'head', 'mount', 'sftp', 'scp', 'cron', 
+'whoami', 'history',
 '.*', '[a-zA-Z]', "perl -pe 's/perl/perl/g'", '!-1', '~/',
 'touch'
 ,'touch touch','more','ping','less',
@@ -41,9 +42,10 @@ const python = ['unique','factorize','get dummies','cut','pivot','melt','class',
 const ml = ['random forest','nearest neighbors','perceptron','P(A|B)','decision tree',
     'Semi-Supervised','unsupervised','supervised','bagging','lasso','ensemble model','kernal','boost','gradient descent','regression','boosted'];
 const adm = [
-    'Bitrot','Fuck it, Ship it!','Onboarding','POC','High Priority',"Can't Fail",'Please Fix.',
-    'meta','Quick Question','Action Item','Bug Fix','Life is Hard.','Stochastic','Random()','Vapor Ware','Age of Evals',
-    'Temporally Ironic Glitch', "I'm late for a meeting!"
+   'Bitrot','Fuck it, Ship it!','Onboarding','POC','High Priority',"Can't Fail",'Please Fix.',
+   'meta','Quick Question','Action Item','Bug Fix','Life is Hard.','Stochastic','Random()','Vapor Ware','Age of Evals',
+   'Temporally Ironic Glitch', "I'm late for a meeting!",
+   //'Sonnet > Haiku'
 ];
 const ai = [
     'LLM', 'foundation model', 'transformer', 'multimodal', 'RLHF', 'self-alignment',
