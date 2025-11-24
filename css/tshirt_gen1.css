@@ -1,0 +1,402 @@
+/* ===================================
+   THE GENERATOR - Main Styles
+   =================================== */
+
+/* Base Styles */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    overflow: hidden;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* ===================================
+   Control Panel
+   =================================== */
+#controls {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 15px;
+    border-radius: 10px;
+    max-width: 320px;
+    border: 3px solid;
+    transition: all 0.3s ease;
+}
+
+#toggleMenu {
+    width: 30px;
+    height: 30px;
+    font-size: 24px;
+    line-height: 24px;
+    padding: 0;
+    border-radius: 50%;
+    text-align: center;
+    /* REMOVE: font-family: Arial, sans-serif; */
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid;
+    background: transparent;
+    transition: all 0.3s ease;
+    /* The button should now simply inherit its position */
+}
+
+#menuContent {
+    display: block;
+}
+
+/* Position the toggle button to the right */
+#controls .text-center {
+    display: flex;
+    justify-content: flex-end; /* Pushes content (the toggle button) to the right */
+    padding: 0 0 10px 0; /* Add some space below the toggle button */
+    margin: 0;
+}
+
+
+/* Control Buttons */
+#controls button {
+    background-color: transparent;
+    border: 2px solid;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 2px 0;
+    transition: all 0.3s ease;
+}
+
+#controls button:hover {
+    opacity: 0.8;
+}
+
+/* Full width buttons */
+#refreshBtn,
+#changeCmd,
+#downloadBtn,
+#shareBtn {
+    width: 100%;
+    margin: 2px 0;
+}
+
+/* Triple button row */
+.button-row-triple {
+    display: flex;
+    gap: 2px;
+    margin: 5px 0;
+}
+
+.button-row-triple button {
+    width: 32%;
+    font-size: 10px;
+}
+
+/* Double button row */
+.button-row-double {
+    display: flex;
+    gap: 3px;
+    margin: 5px 0;
+}
+
+.button-row-double button {
+    width: 48%;
+    font-size: 12px;
+}
+
+/* 2x4 Border Grid - Fixed row heights */
+.border-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 40px 40px; /* Fixed height rows */
+    gap: 2px;
+    margin: 2px 0;
+}
+
+.border-grid button {
+    font-size: 10px !important;
+    padding: 2px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Make first two buttons span both rows */
+.border-grid button:nth-child(1),
+.border-grid button:nth-child(2) {
+    grid-row: span 2;
+    font-size: 13px !important;
+}
+
+/* Form Controls */
+#controls select {
+    background-color: transparent;
+    border: 2px solid;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+    width: 100%;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#commandSelect {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+#bgSelect {
+    font-size: 12px;
+}
+
+#controls label {
+    font-weight: bold;
+    font-size: 18px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    margin-left: 10px;
+}
+
+#controls input[type="checkbox"] {
+    transform: scale(1.3);
+    margin-right: 12px;
+    cursor: pointer;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.form-group {
+    margin: 10px 0;
+    font-size: 12px;
+}
+
+/* ===================================
+   Tagline Section
+   =================================== */
+#tagline {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 999;
+    padding: 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-align: left;
+    line-height: 1.5;
+}
+
+#taglineText {
+    font-style: normal;
+}
+
+#manLink,
+#manLink:visited,
+#manLink:hover,
+#manLink:active,
+#manLink:focus  {
+    color: inherit;
+    
+    /* Other properties you want to ensure are inherited: */
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* ===================================
+   Man Page
+   =================================== */
+#manPage {
+    display: none;
+    position: fixed;
+    top: 50px;
+    left: 50px;
+    right: 50px;
+    bottom: 50px;
+    padding: 30px;
+    overflow-y: auto;
+    z-index: 10000;
+    border-radius: 10px;
+    border: 3px solid;
+    max-width: 500px;
+}
+
+#closeMan {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: bold;
+    background-color: transparent;
+    border: 2px solid;
+}
+
+#manPage pre {
+    white-space: pre-wrap;
+    margin: 0;
+}
+
+/* ===================================
+   Generated Glyph (default styles)
+   =================================== */
+.generated-glyph {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    white-space: nowrap;
+    font-size: 200px;
+    padding: 10px;
+    line-height: 1;
+    transition: all 0.3s ease;
+}
+
+.generated-glyph.has-break {
+    line-height: 1.4;
+    white-space: normal;
+}
+
+/* ===================================
+   Color Themes (will be applied via JS)
+   =================================== */
+
+/* White Background Theme */
+.theme-white {
+    --main-color: #0066ff;
+    --background-color: rgba(255, 255, 255, 0.9);
+    --text-color: #0066ff;
+}
+
+/* Gray Background Theme */
+.theme-gray {
+    --main-color: #ff0033;
+    --background-color: rgba(200, 200, 200, 0.9);
+    --text-color: #ff0033;
+}
+
+/* Black/Dark Background Theme */
+.theme-dark {
+    --main-color: #00ffff;
+    --background-color: rgba(0, 0, 0, 0.9);
+    --text-color: #00ffff;
+}
+
+/* Apply theme variables - FORCING VARIABLE USAGE */
+.themed-element {
+    background: var(--background-color);
+    color: var(--text-color) !important; /* <--- ADDED !important */
+    border-color: var(--main-color) !important; /* <--- ADDED !important */
+}
+
+.themed-element button {
+    color: var(--text-color) !important; /* <--- ADDED !important */
+    border-color: var(--main-color) !important; /* <--- ADDED !important */
+}
+
+.themed-element select {
+    color: var(--text-color) !important; /* <--- ADDED !important */
+    border-color: var(--main-color) !important; /* <--- ADDED !important */
+}
+
+.themed-element label {
+    color: var(--text-color);
+}
+
+.themed-element input[type="checkbox"] {
+    accent-color: var(--main-color);
+}
+
+/* ===================================
+   Utility Classes
+   =================================== */
+.hidden {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Message notification (for share button) */
+.copy-message {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 20px 40px;
+    border-radius: 10px;
+    font-size: 24px;
+    font-weight: bold;
+    z-index: 9999;
+    transition: opacity 0.5s;
+}
+
+/* ===================================
+   Responsive adjustments
+   =================================== */
+@media (max-width: 768px) {
+    #controls {
+        max-width: 280px;
+        padding: 10px;
+        top: 10px;
+        right: 10px;
+    }
+    
+    #manPage {
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+        padding: 20px;
+    }
+    
+    #tagline {
+        font-size: 14px;
+        bottom: 10px;
+        left: 10px;
+    }
+}
+
+/* Force all form elements inside the controls panel and man page to inherit the font */
+#controls button,
+#controls select,
+#controls input,
+#manPage button { 
+    font-family: inherit !important; 
+    /* !important ensures these critical elements get the dynamically set font over all defaults */
+}
+
+/* ===================================
+   Animation for fade effects
+   =================================== */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.fade-out {
+    animation: fadeOut 0.5s ease forwards;
+}
