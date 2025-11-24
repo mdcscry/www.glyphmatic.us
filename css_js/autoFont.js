@@ -97,7 +97,7 @@
         },
         
         // Build font stack with intelligent fallbacks
-        buildFontStack: function(fontDuJour) {
+        buildFontStack: function(fontDuJour) {         
             const fontFamily = fontDuJour.split('-')[0];
             const genericFallback = fontFamily.includes('Serif') ? 'serif' : 'sans-serif';
             
@@ -105,10 +105,11 @@
             const symbolFonts = [
                 'Noto Sans Symbols', 'Noto Sans Symbols 2', 'BabelStone Pseudographica',
                 'Quivira', 'Everson Mono', 'DejaVu', 'Segoe', 'Code2000',
-                'Fluent', 'Open Moji', 'Alphabetum'
+                'Fluent', 'Open Moji', 'Alphabetum','MPH2B Damase'
             ];
             
             if (symbolFonts.some(sf => fontFamily.includes(sf))) {
+                console.log('fontfamilyFallback: ' + fontfamily)
                 return `'${fontFamily}','Noto Emoji','Symbola','Noto Sans Symbols 2',${genericFallback}`;
             }
             

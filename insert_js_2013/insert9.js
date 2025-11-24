@@ -7,6 +7,25 @@ scriptCSS.src = "./css_js/standard8_mandala.js";
 document.getElementsByTagName('body')[0].appendChild(scriptCSS);
 
 
+// Combine all glyph collections into a single array for selection
+var allGlyphSources = [
+    geometricShapes,
+    miscSymbols,
+    latinExtended,
+    cyrillic,
+    arabic,
+    nkoOthers,
+    punctuationSymbols,
+    devanagari,
+    myanmar,
+    georgian,
+    ethiopic,
+    khmer,
+    teluguKannada,
+    additionalSymbols
+];
+
+
  function jsWait() {
         if (typeof signalArray =="undefined")
         {
@@ -19,13 +38,16 @@ document.getElementsByTagName('body')[0].appendChild(scriptCSS);
             initDiv();
 			initStyle();
 			initDisplayState();
+
+        // Stagger the interval starts
+		
+			//changeHtmlDisplay();
 			changeHtmlDisplay();
-			changeHtmlDisplay();
-			changeColor();
-			changeColor();
+			//changeGlyphColors();
+			changeBackgrounds();
 			//changeDropShadowSimpleB();
-			//changeDropShadowSimpleV();
-			changeDropShadowSimpleH();
+			changeDropShadowSimpleV();
+			//changeDropShadowSimpleH();
 
 
         }
@@ -61,6 +83,8 @@ container[i].id=elementName;
 }
 
  elem2_bg = document.getElementById("myid2_bck");
+ elem2_bg.style.transition = 'background-color 10s ease-in-out';
+
 
 }
 
@@ -118,51 +142,61 @@ elem2_bg.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.ran
 
 
 function initDisplayState(){
+    originalViewState="display";
+    changeViewState = "noDisplay";
 
-	 originalViewState="display";
-	 changeViewState = "noDisplay";
-
-	for (i=1;i<=divCounter;i++){
-		container[i].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
-		container[i].className = originalViewState;
-	}
+    for (i=1;i<=divCounter;i++){
+        var item = myArray[Math.floor(Math.random() * myArray.length)];
+        var randomFont = item.fonts[Math.floor(Math.random() * item.fonts.length)];
+        
+        container[i].innerHTML = '&#x' + item.glyph.toString(16) + ';';
+        container[i].style.fontFamily = randomFont;
+        container[i].className = originalViewState;
+    }
 }
 
 function changeHtmlDisplay(){
-	window.setInterval(function (){
+    window.setInterval(function (){
+        var inHtmlCount=Math.round(Math.random()*(divCounter-1)+1);
 
-		var inHtmlCount=Math.round(Math.random()*(divCounter-1)+1);
+        if(window.inHtmlCount==divCounter){window.inHtmlCount=1} else {window.inHtmlCount=window.inHtmlCount+1};
+        
+        if (container[inHtmlCount].className==originalViewState) {
+            container[inHtmlCount].className = changeViewState;
+        }
+        else {
+            var item = myArray[Math.floor(Math.random() * myArray.length)];
+            var randomFont = item.fonts[Math.floor(Math.random() * item.fonts.length)];
+            
+            container[inHtmlCount].innerHTML = '&#x' + item.glyph.toString(16) + ';';
+            container[inHtmlCount].style.fontFamily = randomFont;
+            container[inHtmlCount].style.color = mycolors[Math.floor(Math.random() * mycolors.length)]; // Change color while hidden
+            container[inHtmlCount].className = originalViewState;
+        }
 
-		if(window.inHtmlCount==divCounter){window.inHtmlCount=1} else {window.inHtmlCount=window.inHtmlCount+1};
-		if (
-		 	container[inHtmlCount].className==originalViewState) {
-			container[inHtmlCount].className =changeViewState;
-
-			}
-		else {
-
-			container[inHtmlCount].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
-			container[inHtmlCount].className =originalViewState;
-
-		}
-
-	},Math.random()*15000+15000 );
+    },Math.random()*15000+15000 );
 }
 
-function changeColor(){
-	 elem2_bg_color_chg=Math.random()*bgColChangeRate+5000;
-	 elem2_bg_color=mycolors[Math.round((mycolors.length-1)*Math.random())];
+function changeGlyphColors(){
+    window.setInterval(function(){
+        for (i=1;i<=divCounter;i++){
+            if(container[i].className === originalViewState) {
+                container[i].style.color = mycolors[Math.floor(Math.random() * mycolors.length)];
+            }
+        }
+    }, Math.random()*10000+10000); // Random between 10-20 seconds
+}
 
-	window.setInterval(function(){
-	   	 elem2_bg_color=mycolors[Math.round((mycolors.length-1)*Math.random())];
-	   	for (i=1;i<=divCounter;i++){
-	    	container[i].style.backgroundColor= elem2_bg_color;
-	    	container[i].style.background= 'transparent';
-
-	    	elem2_bg.style.backgroundColor= elem2_bg_color;
-	   		container[i].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
-		}
-	   },elem2_bg_color_chg);
+function changeBackgrounds(){
+    window.setInterval(function(){
+        var bgColor = mycolors[Math.floor(Math.random() * mycolors.length)];
+        elem2_bg.style.backgroundColor = bgColor;
+        
+        // Optional: sync container backgrounds with main bg
+        // for (i=1;i<=divCounter;i++){
+        //     container[i].style.backgroundColor = bgColor;
+        // }
+    }, Math.random()*15000+15000); // Random between 15-30 seconds
 }
 
 function changeDropShadowSimpleB(){
@@ -201,10 +235,6 @@ function changeDropShadowSimpleV(){
 		,Math.random()*5000+5000);
 
 	}
-
-
-
-
 
 jsWait();
 

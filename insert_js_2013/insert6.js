@@ -76,11 +76,11 @@ function initStyle() {
     
     for (i = 1; i <= divCounter; i++) {
         container[i].style.backgroundColor = mycolors2[Math.round((mycolors2.length - 1) * Math.random())];
-        container[i].style.textShadow = Math.round(Math.random() * -3 - 1) + 'px ' +
-            Math.round(Math.random() * 3 - 1) + 'px ' +
+        container[i].style.textShadow = Math.round(Math.random() * -5 - 2) + 'px ' +
+            Math.round(Math.random() * 5 + 2) + 'px ' +
             mycolors[Math.round((mycolors.length - 1) * Math.random())];
         container[i].style.webkitTextFillColor = mycolors2[Math.round((mycolors.length - 1) * Math.random())];
-        container[i].style.webkitTextStrokeWidth = Math.random() * 3 + 1 + "px";
+        container[i].style.webkitTextStrokeWidth = Math.random() * 1 + 1 + "px";
         container[i].style.webkitTextStrokeColor = mycolors[Math.round((mycolors.length - 1) * Math.random())];
     }
 }

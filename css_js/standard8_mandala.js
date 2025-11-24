@@ -35,11 +35,14 @@ var cssRules=cssStyle.cssRules;
 
 	/* This styles Divs generally */
 
+	console.log("insertArrayRnd:" + insertArrayRnd)
+
 	if(insertArrayRnd==9){
-			var newRule='DIV {position:absolute; top:0%; width:100%;height:100%; background:transparent; font-size: 150vmin; color:  blue; text-align:center; }';
+			console.log("we're in insertArray #9")
+			var newRule='DIV {position:absolute; top:0%; width:100%;height:100%; background:transparent;  text-align:center; vertical-align:center;}';
 			cssStyle.insertRule(newRule,cssRules.length);
 	} else if (insertArrayRnd==10){
-			var newRule='DIV {position:absolute; top:0%; left:0%; width:100%;height:100%;overflow:hidden;background:transparent; font-size: 20vmin; color:  blue; text-align:center; vertical-align: middle; }';
+			var newRule='DIV {position:absolute; top:0%; left:0%; width:100%;height:100%;background:transparent; font-size: 45vmin; text-align:center; vertical-align: middle; transform: translate(-0%, -50%);}';
 			cssStyle.insertRule(newRule,cssRules.length);
 	} else if (insertArrayRnd==8){
 			// Base DIV styles - common to all divs
@@ -67,8 +70,19 @@ for (i=1;i<=window.divCounter;i++){
 
     if(insertArrayRnd==9){
 
-        var newRule='#myid'+i+' {-' +  browserPrefix + '-transition-property: all,background,color; -' +  browserPrefix + '-transition-duration:3s, 3s,3s;background:transparent;margin:1%; text-align: center; height:100%; width:100%;left:-0%;top:-10%; font-size: 150vmin;}';
-        cssStyle.insertRule(newRule,cssRules.length);
+		var newRule='#myid'+i+' {' +
+			'-' + browserPrefix + '-transition-property: all,background,color; ' +
+			'-' + browserPrefix + '-transition-duration:3s, 3s,3s; ' +
+			'background:transparent; ' +
+			'text-align: center; ' +
+			'font-size: 300vmin; ' +
+			'position: absolute; ' +
+			'top: 0; ' +
+			'left: 50%; ' +
+			'transform: translate(-50%, -25%); ' +
+			'width: auto; ' +
+			'height: auto;}';
+		cssStyle.insertRule(newRule,cssRules.length);
 
 	} else if (insertArrayRnd==8){
 
@@ -88,17 +102,17 @@ for (i=1;i<=window.divCounter;i++){
 
 	} else { /* This would cover insert10? */
 
-        var newRule='#myid'+i+' {-' +  browserPrefix + '-transition-property: all,background,color; -' +  browserPrefix + '-transition-duration: 3s,3s,3s;  margin:15%; text-align: center; height:100%; width:100%;left:-17%;}';
+        var newRule='#myid'+i+' {-' +  browserPrefix + '-transition-property: all,background,color; -' +  browserPrefix + '-transition-duration: 3s,3s,3s;  margin:15%; text-align: center; height:100%; width:100%;left:-17%;font-size: 75vmin;}';
         cssStyle.insertRule(newRule,cssRules.length);
     }
 
 	/* This adds the display and no display rules for all mandala inserts */
 
-    var newRule='#myid'+i+'.display { -' +  browserPrefix + '-transition-property:all, background,color; -' +  browserPrefix + '-transition-duration: 21s,3s,3s; -' +  browserPrefix + '-animation-name: fadeIn; -' +  browserPrefix + '-animation-duration: 7s; -' +  browserPrefix + '-animation-timing-function: ease-out; -' +  browserPrefix + '-animation-delay: 0s; -' +  browserPrefix + '-animation-iteration-count: 1; -' +  browserPrefix + '-animation-direction: normal; -' +  browserPrefix + '-animation-play-state: running; -' +  browserPrefix + '-animation-fill-mode: both;}';
-    cssStyle.insertRule(newRule,cssRules.length);
-    
-    var newRule='#myid'+i+'.noDisplay{-' +  browserPrefix + '-transition-property:all, background,color; -' +  browserPrefix + '-transition-duration: 21s,3s,3s; -' +  browserPrefix + '-animation-name: fadeOut; -' +  browserPrefix + '-animation-duration: 7s; -' +  browserPrefix + '-animation-timing-function: ease-in; -' +  browserPrefix + '-animation-delay: 0s; -' +  browserPrefix + '-animation-iteration-count: 1; -' +  browserPrefix + '-animation-direction: normal; -' +  browserPrefix + '-animation-play-state: running; -' +  browserPrefix + '-animation-fill-mode: both;}';
-    cssStyle.insertRule(newRule,cssRules.length);
+	var newRule='#myid'+i+'.display { transition-property:all, background,color; transition-duration: 15s,3s,3s; animation-name: fadeIn; animation-duration: 7s; animation-timing-function: ease-out; animation-delay: 0s; animation-iteration-count: 1; animation-direction: normal; animation-play-state: running; animation-fill-mode: both;}';
+	cssStyle.insertRule(newRule,cssRules.length);
+
+	var newRule='#myid'+i+'.noDisplay{ transition-property:all, background,color; transition-duration: 15s,3s,3s; animation-name: fadeOut; animation-duration: 7s; animation-timing-function: ease-in; animation-delay: 0s; animation-iteration-count: 1; animation-direction: normal; animation-play-state: running; animation-fill-mode: both;}';
+	cssStyle.insertRule(newRule,cssRules.length);
 }
 
 var signalArray=[];

@@ -2,6 +2,24 @@ divCounter=12;
 
 
 
+// Combine all glyph collections into a single array for selection
+var allGlyphSources = [
+    geometricShapes,
+    miscSymbols,
+    latinExtended,
+    cyrillic,
+    arabic,
+    nkoOthers,
+    punctuationSymbols,
+    devanagari,
+    myanmar,
+    georgian,
+    ethiopic,
+    khmer,
+    teluguKannada,
+    additionalSymbols
+];
+
 var scriptCSS = document.createElement('script');
 scriptCSS.src = "./css_js/standard8_mandala.js";
 document.getElementsByTagName('body')[0].appendChild(scriptCSS);
@@ -150,56 +168,83 @@ function smoothColorChange() {
 }
 
 function initDisplayState(){
+    originalViewState="display";
+    changeViewState = "noDisplay";
 
-	 originalViewState="display";
-	 changeViewState = "noDisplay";
-
-	for (i=1;i<=divCounter;i++){
-		container[i].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';'
-		+'&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';'
-		+'&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';'
-		+'&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';'
-		+'&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';'
-		+'&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';'
-		+'&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';'
-		;
-		container[i].className = originalViewState;
-	}
-
+    for (i=1;i<=divCounter;i++){
+        var item1 = myArray[Math.floor(Math.random() * myArray.length)];
+        var item2 = myArray[Math.floor(Math.random() * myArray.length)];
+        var item3 = myArray[Math.floor(Math.random() * myArray.length)];
+        var item4 = myArray[Math.floor(Math.random() * myArray.length)];
+        var item5 = myArray[Math.floor(Math.random() * myArray.length)];
+        var item6 = myArray[Math.floor(Math.random() * myArray.length)];
+        var item7 = myArray[Math.floor(Math.random() * myArray.length)];
+        
+        var font1 = item1.fonts[Math.floor(Math.random() * item1.fonts.length)];
+        var font2 = item2.fonts[Math.floor(Math.random() * item2.fonts.length)];
+        var font3 = item3.fonts[Math.floor(Math.random() * item3.fonts.length)];
+        var font4 = item4.fonts[Math.floor(Math.random() * item4.fonts.length)];
+        var font5 = item5.fonts[Math.floor(Math.random() * item5.fonts.length)];
+        var font6 = item6.fonts[Math.floor(Math.random() * item6.fonts.length)];
+        var font7 = item7.fonts[Math.floor(Math.random() * item7.fonts.length)];
+        
+        container[i].innerHTML = 
+            '<span style="font-family:' + font1 + '">&#x' + item1.glyph.toString(16) + ';</span>' +
+            '<span style="font-family:' + font2 + '">&#x' + item2.glyph.toString(16) + ';</span>' +
+            '<span style="font-family:' + font3 + '">&#x' + item3.glyph.toString(16) + ';</span>' +
+            '<span style="font-family:' + font4 + '">&#x' + item4.glyph.toString(16) + ';</span>' +
+            '<span style="font-family:' + font5 + '">&#x' + item5.glyph.toString(16) + ';</span>' +
+            '<span style="font-family:' + font6 + '">&#x' + item6.glyph.toString(16) + ';</span>' +
+            '<span style="font-family:' + font7 + '">&#x' + item7.glyph.toString(16) + ';</span>';
+        
+        container[i].className = originalViewState;
+    }
 }
 
 function changeHtmlDisplay(){
-	window.setInterval(function (){
+    window.setInterval(function (){
 
-		var inHtmlCount=Math.round(Math.random()*(divCounter-1)+1);
+        var inHtmlCount=Math.round(Math.random()*(divCounter-1)+1);
 
-		if(window.inHtmlCount==divCounter){window.inHtmlCount=1} else {window.inHtmlCount=window.inHtmlCount+1};
-		if (
-		 container[inHtmlCount].className==originalViewState) {
-			 container[inHtmlCount].className =originalViewState;
+        if(window.inHtmlCount==divCounter){window.inHtmlCount=1} else {window.inHtmlCount=window.inHtmlCount+1};
+        
+        if (container[inHtmlCount].className==originalViewState) {
+            container[inHtmlCount].className = originalViewState;
+        }
+        else {
+            var item1 = myArray[Math.floor(Math.random() * myArray.length)];
+            var item2 = myArray[Math.floor(Math.random() * myArray.length)];
+            var item3 = myArray[Math.floor(Math.random() * myArray.length)];
+            var item4 = myArray[Math.floor(Math.random() * myArray.length)];
+            var item5 = myArray[Math.floor(Math.random() * myArray.length)];
+            var item6 = myArray[Math.floor(Math.random() * myArray.length)];
+            var item7 = myArray[Math.floor(Math.random() * myArray.length)];
+            
+            var font1 = item1.fonts[Math.floor(Math.random() * item1.fonts.length)];
+            var font2 = item2.fonts[Math.floor(Math.random() * item2.fonts.length)];
+            var font3 = item3.fonts[Math.floor(Math.random() * item3.fonts.length)];
+            var font4 = item4.fonts[Math.floor(Math.random() * item4.fonts.length)];
+            var font5 = item5.fonts[Math.floor(Math.random() * item5.fonts.length)];
+            var font6 = item6.fonts[Math.floor(Math.random() * item6.fonts.length)];
+            var font7 = item7.fonts[Math.floor(Math.random() * item7.fonts.length)];
+            
+            container[inHtmlCount].innerHTML = 
+                '<span style="font-family:' + font1 + '">&#x' + item1.glyph.toString(16) + ';</span>' +
+                '<span style="font-family:' + font2 + '">&#x' + item2.glyph.toString(16) + ';</span>' +
+                '<span style="font-family:' + font3 + '">&#x' + item3.glyph.toString(16) + ';</span>' +
+                '<span style="font-family:' + font4 + '">&#x' + item4.glyph.toString(16) + ';</span>' +
+                '<span style="font-family:' + font5 + '">&#x' + item5.glyph.toString(16) + ';</span>' +
+                '<span style="font-family:' + font6 + '">&#x' + item6.glyph.toString(16) + ';</span>' +
+                '<span style="font-family:' + font7 + '">&#x' + item7.glyph.toString(16) + ';</span>';
 
-			}
-		else {
+            if (Math.round(Math.random()*1)==0){
+                container[inHtmlCount].style.transform = 'rotate(' + Math.round(Math.random()*2)-2*90 + 'deg)';
+            }
+            
+            container[inHtmlCount].className = originalViewState;
+        }
 
-			container[inHtmlCount].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';'
-		+'&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';'
-		+'&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';'
-		+'&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';'
-		+'&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';'
-		+'&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';'
-		+'&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';'
-
-			;
-					if (Math.round(Math.random()*1)==0){
-					container[inHtmlCount].style.webkitTransform= 'rotate(' + Math.round(Math.random()*2)-2*90 + 'deg)';}
-					else{
-				//	container[inHtmlCount].style.webkitTransform='skew('+ Math.round(Math.random()*180) +'deg,'+ Math.round(Math.random()*180) +'deg)';
-				}
-			container[inHtmlCount].className =originalViewState;
-
-		}
-
-	},Math.random()*30000+15000 );
+    },Math.random()*30000+15000 );
 }
 
 function changeColor(){

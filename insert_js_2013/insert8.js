@@ -104,13 +104,19 @@ function initStyle(){
     elem2_bg.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 }
 
+
 function initDisplayState(){
     originalViewState="display";
     changeViewState = "noDisplay";
     
     for (i=1;i<=divCounter;i++){
-        container[i].innerHTML= '&#'+myArray[Math.round((myArray.length-1)*Math.random())]+';';
-        if (i<= divCounter/2) {
+        var item = myArray[Math.floor(Math.random() * myArray.length)];
+        var randomFont = item.fonts[Math.floor(Math.random() * item.fonts.length)];
+        
+        container[i].innerHTML = '&#x' + item.glyph.toString(16) + ';';
+        container[i].style.fontFamily = randomFont;
+        
+        if (i <= divCounter/2) {
             container[i].className = originalViewState;
         } else {
             container[i].className = changeViewState;
@@ -124,14 +130,23 @@ function changeHtmlDisplay(){
         
         if (container[inHtmlCount].className==originalViewState) {
             container[inHtmlCount].className =changeViewState;
-            container[inHtmlCount+(divCounter/2)].innerHTML= '&#'+myArray[Math.round((myArray.length-1)*Math.random())]+';';
+            
+            var item = myArray[Math.floor(Math.random() * myArray.length)];
+            var randomFont = item.fonts[Math.floor(Math.random() * item.fonts.length)];
+            
+            container[inHtmlCount+(divCounter/2)].innerHTML= '&#x' + item.glyph.toString(16) + ';';
+            container[inHtmlCount+(divCounter/2)].style.fontFamily = randomFont;
             container[inHtmlCount+(divCounter/2)].style.textShadow=Math.round( Math.random()*0 )+ 'px '
                             +Math.round( Math.random()*400-280 ) + 'px '
                             +mycolors[Math.round((mycolors.length-1)*Math.random())];
             container[inHtmlCount+(divCounter/2)].className =originalViewState;
         }
         else {
-            container[inHtmlCount].innerHTML= '&#'+myArray[Math.round((myArray.length-1)*Math.random())]+';';
+            var item = myArray[Math.floor(Math.random() * myArray.length)];
+            var randomFont = item.fonts[Math.floor(Math.random() * item.fonts.length)];
+            
+            container[inHtmlCount].innerHTML= '&#x' + item.glyph.toString(16) + ';';
+            container[inHtmlCount].style.fontFamily = randomFont;
             container[inHtmlCount].className =originalViewState;
             container[inHtmlCount+(divCounter/2)].className =changeViewState;
         }

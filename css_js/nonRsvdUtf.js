@@ -1,5 +1,6 @@
 // Set to null for random glyphs, or set to a specific hex codepoint to force a single glyph
-var forceGlyph = null//['2600']// ['1F480','2620'];  // Example: '262F' for yin-yang ☯, '2615' for coffee ☕
+var forceGlyph = null //['1F480','1F571','2620']
+   // ,'2620','1F571']; //['2600']// Example: '262F' for yin-yang ☯, '2615' for coffee ☕
 
 
 // Set to null for random blocks, or set to a number (0-24) to force a specific block
@@ -291,26 +292,27 @@ var glyphBlocks = [
         combining: null
     },
 
-    // {
-    //     name: "Emoji-Special",
-    //     fonts: [         
-    //     //'Quivira',
-    //     'Symbola'
-    //     , 'Segoe UI Symbol','Noto Emoji'
-    //     ,'Twitter Color Emoji','Open Moji Black'
+    {
+        name: "Emoji-Special",
+        fonts: [         
+        //'Quivira',
+        'Symbola'
+        , 'Segoe UI Symbol','Noto Emoji'
+        ,'Twitter Color Emoji','Open Moji Black'
 
-    //     ],
-    //     glyphs: [
-    //       '1F480' //skull
-    //       ,'2638' //dharma wheel
-    //       ,'1F47E' //alien
-    //       ,'1F916' //robot
-    //       ,'1F47D' //alien
-    //       //,'262F' //yin yang
-    //       ,'1F31E' //sun
-    //     ],
-    //     combining: null
-    // },
+        ],
+        glyphs: [
+         '1F571', //black skull    
+          '1F480' //skull
+        //   ,'2638' //dharma wheel
+        //   ,'1F47E' //alien
+        //   ,'1F916' //robot
+        //   ,'1F47D' //alien
+          //,'262F' //yin yang
+          //,'1F31E' //sun
+        ],
+        combining: null
+    },
 
 
     {
@@ -350,10 +352,17 @@ var glyphBlocks = [
 
 ];
 
-// Wrapper function to force glyph if needed
 function getGlyph() {
     if (forceGlyph !== null) {
         var blockIndex;
+        var selectedGlyph;
+        
+        // Handle array of glyphs
+        if (Array.isArray(forceGlyph)) {
+            selectedGlyph = forceGlyph[Math.floor(Math.random() * forceGlyph.length)];
+        } else {
+            selectedGlyph = forceGlyph;
+        }
         
         // If forceBlock is set, use it
         if (forceBlock !== null) {
@@ -361,7 +370,7 @@ function getGlyph() {
         } else {
             // Find which block contains this glyph
             for (var i = 0; i < glyphBlocks.length; i++) {
-                if (glyphBlocks[i].glyphs.indexOf(forceGlyph) !== -1) {
+                if (glyphBlocks[i].glyphs.indexOf(selectedGlyph) !== -1) {
                     blockIndex = i;
                     break;
                 }
@@ -375,7 +384,7 @@ function getGlyph() {
         
         return {
             fontFamily: randomFont,
-            glyphString: '&#x' + forceGlyph + ';'
+            glyphString: '&#x' + selectedGlyph + ';'
         };
     }
     return generateGlyphs(1);
