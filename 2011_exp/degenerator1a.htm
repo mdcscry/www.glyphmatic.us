@@ -65,9 +65,17 @@ var myarray=[
 
 //container div
 
-var containerCount=65;
+var containerCount=60;
 var containerId=[];
 document.body.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
+
+var cols = 10; // number of columns
+var rows = 6; // number of rows
+var spacing = 130; // space between items
+var gridWidth = cols * spacing;
+var gridHeight = rows * spacing;
+var startX = (window.innerWidth - gridWidth) / 2;
+var startY = (window.innerHeight - gridHeight) / 2;
 
 for (containerCounter=1;containerCounter<=containerCount;containerCounter++){
 	containerName='container' + containerCounter;
@@ -77,8 +85,14 @@ for (containerCounter=1;containerCounter<=containerCount;containerCounter++){
 	containerId[containerCounter].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 	containerId[containerCounter].style.overflow='hidden';
 	//style
-	containerId[containerCounter].style.position='relative';
-	containerId[containerCounter].style.cssFloat='left';
+	containerId[containerCounter].style.position='absolute';
+	//containerId[containerCounter].style.cssFloat='center';
+	// Grid positioning - centered horizontally and vertically
+	var row = Math.floor((containerCounter - 1) / cols);
+	var col = (containerCounter - 1) % cols;
+	containerId[containerCounter].style.left = (startX + (col * spacing)) + 'px';
+	containerId[containerCounter].style.top = (startY + (row * spacing)) + 'px';
+
 	containerId[containerCounter].style.opacity=.9;
 	containerId[containerCounter].style.width='120px';
 	containerId[containerCounter].style.textAlign='center';
@@ -100,7 +114,7 @@ for (divCounter=1;divCounter<=8;divCounter++){
 containerId[containerCounter].appendChild(divId[divCounter]);
 divId[divCounter].id=elementName;
 divId[divCounter].style.position='absolute';
-divId[divCounter].style.cssFloat='none';
+//divId[divCounter].style.cssFloat='none';
 divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
 divId[divCounter].style.opacity=.9;
 divId[divCounter].style.top=0;

@@ -56,8 +56,15 @@ var myarray=[
 
 //container div
 
-var containerCount=190;
+var containerCount=60;
 var containerId=[];
+var cols = 10; // number of columns
+var rows = 6; // number of rows
+var spacing = 130; // space between items
+var gridWidth = cols * spacing;
+var gridHeight = rows * spacing;
+var startX = (window.innerWidth - gridWidth) / 2;
+var startY = (window.innerHeight - gridHeight) / 2;
 
 for (containerCounter=1;containerCounter<=containerCount;containerCounter++){
 	containerName='container' + containerCounter;
@@ -67,11 +74,16 @@ for (containerCounter=1;containerCounter<=containerCount;containerCounter++){
 	containerId[containerCounter].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 
 	//style
-	containerId[containerCounter].style.position='relative';
-	containerId[containerCounter].style.cssFloat='left';
+	containerId[containerCounter].style.position='absolute';
+	// Grid positioning - centered horizontally and vertically
+	var row = Math.floor((containerCounter - 1) / cols);
+	var col = (containerCounter - 1) % cols;
+	containerId[containerCounter].style.left = (startX + (col * spacing)) + 'px';
+	containerId[containerCounter].style.top = (startY + (row * spacing)) + 'px';
+
 	containerId[containerCounter].style.opacity=0.3;
-	//containerId[containerCounter].style.width='75px';
-	//containerId[containerCounter].style.textAlign='center';
+	containerId[containerCounter].style.width='120px';
+	containerId[containerCounter].style.textAlign='center';
 	containerId[containerCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
 
 
