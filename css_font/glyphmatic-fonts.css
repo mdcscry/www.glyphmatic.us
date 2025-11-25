@@ -1879,6 +1879,17 @@ ugaritic old persian runic SIL fonts KangxiRadicals AnatolianHeiro
 }
 
 @font-face {
+    font-family: 'Aegyptus';
+    src: url('../fonts/Aegyptus.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Aegyptus Bold';
+    src: url('../fonts/AegyptusB.ttf') format('truetype');
+    font-weight: bold;
+}
+
+@font-face {
     font-family: 'AegyptusB';
     src: url('../fonts/AegyptusB.ttf') format('truetype');
 }
@@ -1894,12 +1905,42 @@ ugaritic old persian runic SIL fonts KangxiRadicals AnatolianHeiro
 
 @font-face {
     font-family: 'NotoEgyptian';
-    src: url('tff/NotoSansEgyptianHeiroglyphs.ttf') format('truetype');
+    src: url('../tff/NotoSansEgyptianHieroglyphs-Regular.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'Maya';
     src: url('../fonts/maya.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Anatolian';
+    src: url('../fonts/Anatolian.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Musica';
+    src: url('../fonts/Musica.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'sans';
+    src: url('../fonts/lucidasansunicode.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Vimala';
+    src: url('../fonts/Vimala.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Pustaka Bali';
+    src: url('../fonts/PustakaBali.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Kadiri';
+    src: url('../fonts/Kadiri.ttf') format('truetype');
 }
 
 @font-face {
@@ -1993,8 +2034,8 @@ ugaritic old persian runic SIL fonts KangxiRadicals AnatolianHeiro
 }
 
 @font-face {
-    font-family: 'New Athena Unicode'; 
-    src: url('newathu5_5.ttf') format('truetype');
+    font-family: 'New Athena Unicode';
+    src: url('../fonts/NewAthena.ttf') format('truetype');
 }
 
 @font-face {

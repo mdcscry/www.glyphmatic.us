@@ -1,6 +1,8 @@
 
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="refresh" content="300;url=https://glyphmatic.us/degenerator6-allcolorscircles-lg-opt.htm">
+<html><head>
+<link rel="stylesheet" href="../css_font/glyphmatic-fonts.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="refresh" content="300;url=flasher26.htm">
 <TITLE>6.DeGenerator-all colors-gratings-smallopt-round</TITLE>
 
 </head>
@@ -27,7 +29,7 @@ DIV   {
 </STYLE>
 
 
-<body style="overflow: hidden;font-family:symbola;">
+<body style="overflow: hidden;font-family:Symbola;">
 
 
 
@@ -75,7 +77,7 @@ document.body.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Mat
 
 //container div
 
-var containerCount=15;
+var containerCount=18;
 var containerId=[];
 var rotateContainer=Math.round((Math.random()*4))*90;
 var grateColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
@@ -88,7 +90,7 @@ for (containerCounter=1;containerCounter<=containerCount;containerCounter++){
 	containerId[containerCounter].innerHTML= '&#127745;';
 
 	//style
-	containerId[containerCounter].style.position='relative';
+	//containerId[containerCounter].style.position='relative';
 	containerId[containerCounter].style.cssFloat='left';
 	containerId[containerCounter].style.opacity=1;
 	containerId[containerCounter].style.width='275px';
@@ -109,7 +111,7 @@ for (divCounter=1;divCounter<=6;divCounter++){
  divId[divCounter] = document.createElement("div");
  divId[divCounter].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 
- //alert(divId[divCounter].id);
+ //console.log(divId[divCounter].id);
 containerId[containerCounter].appendChild(divId[divCounter]);
 divId[divCounter].id=elementName;
 divId[divCounter].style.position='absolute';
@@ -146,7 +148,7 @@ divId[divCounter].style.overflow='hidden';
 				  	  container.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 				  	  baseNode.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 				   } catch ( e ) {
-				      alert("Error: " + e.description + 'Value: ' + baseNode );
+				      console.log("Error: " + e.description + 'Value: ' + baseNode );
 		  			 }
 		},Math.random()*fontChangeRate);
 
@@ -161,7 +163,7 @@ divId[divCounter].style.overflow='hidden';
 						  try {
 						       node.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 						   } catch ( e ) {
-						      alert("Error: " + e.description + 'Value: ' + elementName );
+						      console.log("Error: " + e.description + 'Value: ' + elementName );
 				  			 }
 		},Math.random()*fontChangeRate);
 
@@ -174,7 +176,7 @@ divId[divCounter].style.overflow='hidden';
 						  try {
 						       node.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
 						   } catch ( e ) {
-						      alert("Error: " + e.description + 'Value: ' + elementName );
+						      console.log("Error: " + e.description + 'Value: ' + elementName );
 				  			 }
 		},Math.random()*fontChangeRate);
 
@@ -187,7 +189,7 @@ divId[divCounter].style.overflow='hidden';
 						  try {
 						       node.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 						   } catch ( e ) {
-						      alert("Error: " + e.description + 'Value: ' + node );
+						      console.log("Error: " + e.description + 'Value: ' + node );
 				  			 }
 		},Math.random()*fontChangeRate+30000);
 
@@ -200,7 +202,7 @@ divId[divCounter].style.overflow='hidden';
 								  try {
 								       node.style.webkitTransform = 'rotate(' + Math.round((Math.random()*20))*18 + 'deg)';
 								   } catch ( e ) {
-								      alert("Error: " + e.description + 'Value: ' + elementName );
+								      console.log("Error: " + e.description + 'Value: ' + elementName );
 						  			 }
 		},Math.random()*fontChangeRate);
 
@@ -211,7 +213,7 @@ divId[divCounter].style.overflow='hidden';
 		 		  try {
 		 		  	  document.body.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 		 		   } catch ( e ) {
-		 		      alert("Error: " + e.description + 'Value: ' + elementName );
+		 		      console.log("Error: " + e.description + 'Value: ' + elementName );
 		   			 }
 		},Math.random()*fontChangeRate+30000);
 

@@ -1,6 +1,8 @@
 
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="refresh" content="300;url=https://glyphmatic.us/degenerator2.htm">
+<html><head>
+<link rel="stylesheet" href="../css_font/glyphmatic-fonts.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="refresh" content="300;url=degenerator6-allcolorsagean-sepiablurpure.htm">
 <TITLE>1.DeGenerator-heiro Platform</TITLE>
 
 </head>
@@ -25,14 +27,14 @@ DIV   {
 </STYLE>
 
 
-<body style="overflow: hidden;font-family:aegyptus,musica,symbola,aroania,alexander;asea">
+<body style="overflow: hidden;font-family: Aegyptus,musica,symbola,aroania,alexander;asea">
 
 
 
 <script type="text/javascript">
 		 		  	  document.body.style.backgroundColor= 'hsla('
 + (Math.round(Math.random()*360)) + ','
-+ (Math.round(Math.random()*200))+ '%,'
++ (Math.min(100, Math.round(Math.random()*200)))+ '%,'
 + (Math.round(Math.random()*100)) + '%,'
 + (Math.random(1)+.1)
 + ')';
@@ -58,7 +60,7 @@ var toSpliceColor='hsla('
 + (Math.round(Math.random()*20)+light) + '%,'
 + (Math.random(opa)+.1	)
 + ')';
-//alert (toSpliceColor);
+//console.log(toSpliceColor);
 
 	mycolors.push(toSpliceColor);
 	}
@@ -133,7 +135,7 @@ for (divCounter=1;divCounter<1;divCounter++){
  divId[divCounter] = document.createElement("div");
  divId[divCounter].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 
- //alert(divId[divCounter].id);
+ //console.log(divId[divCounter].id);
 containerId[containerCounter].appendChild(divId[divCounter]);
 divId[divCounter].id=elementName;
 divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
@@ -159,7 +161,7 @@ divId[divCounter].style.webkitTextStrokeWidth=Math.random()*5+700 +"px";
 				node.style.webkitTextStrokeWidth=Math.random()*250+100 +"px";
 				node.style.zIndex=Math.random()*10;
 		   } catch ( e ) {
-		      alert("Error: " + e.description + 'Value: ' + elementName );
+		      console.log("Error: " + e.description + 'Value: ' + elementName );
   			 }
 
 
@@ -170,12 +172,12 @@ divId[divCounter].style.webkitTextStrokeWidth=Math.random()*5+700 +"px";
 		 		  try {
 		 		  	  document.body.style.backgroundColor= 'hsla('
 + (Math.round(Math.random()*360)) + ','
-+ (Math.round(Math.random()*200))+ '%,'
++ (Math.min(100, Math.round(Math.random()*200)))+ '%,'
 + (Math.round(Math.random()*100)) + '%,'
 + (Math.random(1)+.1)
 + ')';
 		 		   } catch ( e ) {
-		 		      alert("Error: " + e.description + 'Value body background: ' + elementName );
+		 		      console.log("Error: " + e.description + 'Value body background: ' + elementName );
 		   			 }
 		},Math.random()*fontChangeRate+30000);
 

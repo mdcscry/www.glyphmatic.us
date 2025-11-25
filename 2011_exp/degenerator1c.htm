@@ -1,6 +1,6 @@
 
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="refresh" content="300;url=https://glyphmatic.us/degenerator1c1.htm">
+<meta http-equiv="refresh" content="300;url=spiral10-symbola.htm">
 <TITLE>1.DeGenerator-BaliJavaTibet</TITLE>
 
 </head>
@@ -26,7 +26,7 @@ DIV   {
 </STYLE>
 
 
-<body style="overflow: hidden;font-family:'Tuladha Jejeg','Aksara Bali','Microsoft Himalaya',;">
+<body style="overflow: hidden;font-family:'Aksara Bali','Microsoft Himalaya';">
 
 
 
@@ -83,7 +83,7 @@ for (divCounter=1;divCounter<=8;divCounter++){
  divId[divCounter] = document.createElement("div");
  divId[divCounter].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 
- //alert(divId[divCounter].id);
+ //console.log(divId[divCounter].id);
 containerId[containerCounter].appendChild(divId[divCounter]);
 divId[divCounter].id=elementName;
 divId[divCounter].style.position='absolute';
@@ -110,7 +110,7 @@ divId[divCounter].style.top=0;
 		      node.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
 		       node.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 		   } catch ( e ) {
-		      alert("Error: " + e.description + 'Value: ' + elementName );
+		      console.log("Error: " + e.description + 'Value: ' + elementName );
   			 }
 
 
@@ -121,7 +121,7 @@ divId[divCounter].style.top=0;
 		 		  try {
 		 		  	  document.body.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 		 		   } catch ( e ) {
-		 		      alert("Error: " + e.description + 'Value body background: ' + elementName );
+		 		      console.log("Error: " + e.description + 'Value body background: ' + elementName );
 		   			 }
 		},Math.random()*fontChangeRate+30000);
 

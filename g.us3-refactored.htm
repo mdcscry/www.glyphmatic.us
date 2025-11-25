@@ -5,16 +5,16 @@
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-	<link rel="stylesheet" href="./css_js/glyphmatic-fonts.css">
+	<link rel="stylesheet" href="./css_font/glyphmatic-fonts.css">
 </head>
 
 <body onload="startUpMain()">
 
 <!-- Core scripts -->
-<script type="text/JavaScript" src="./css_js/msucd_letters.js"></script>
-<script type="text/JavaScript" src="./css_js/watermark.js"></script>
-<script type="text/JavaScript" src="./css_js/insert_config.js"></script>
-<script type="text/JavaScript" src="./css_js/nav_menu.js"></script>
+<script type="text/JavaScript" src="./js_glyph/msucd_letters.js"></script>
+<script type="text/JavaScript" src="./js_glyph/watermark.js"></script>
+<script type="text/JavaScript" src="./js_funct/insert_config.js"></script>
+<script type="text/JavaScript" src="./js_funct/nav_menu.js"></script>
 
 <script type="text/JavaScript">
 // Global variables
@@ -73,6 +73,21 @@ insertArray[22] = ['whirldsymbols-OM.js', 'flasher1-the OM'];
 insertArray[23] = ['whirldsymbols-OM.js', 'flasher1-the OM'];
 
 console.log('Insert array length:', insertArray.length);
+
+// Helper function to get the correct path for a script file
+function getScriptPath(filename) {
+    const glyphFiles = ['msucd_hangul.js', 'msucd_drop.js', 'msucd.js', 'nonRsvdUtf.js', 'geometric.js',
+                        'msucd_mandala.js', 'whirldsymbols.js', 'whirldsymbols-OM.js', 'emoji_versions_data2.js',
+                        'msucd_letters.js', 'watermark.js', 'painters.js', 'superpainters.js'];
+    const functFiles = ['insert_config.js', 'nav_menu.js'];
+
+    if (glyphFiles.includes(filename)) return './js_glyph/' + filename;
+    if (functFiles.includes(filename)) return './js_funct/' + filename;
+
+    // Fallback to old path if not found (shouldn't happen)
+    console.warn(`Unknown file ${filename}, using fallback path`);
+    return './css_js/' + filename;
+}
 
 // Get current parameter from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -144,9 +159,9 @@ if (currentIndexNum !== null && currentIndexNum >= 0 && currentIndexNum < insert
     const scriptToLoad = insertArray[currentIndexNum][0];
     console.log(`Script to load: ${scriptToLoad}`);
     const script = document.createElement('script');
-    script.src = './css_js/' + scriptToLoad;
+    script.src = getScriptPath(scriptToLoad);
     document.head.appendChild(script);
-    console.log(`✓ Loaded script: ${scriptToLoad} from css_js (index ${currentIndexNum})`);
+    console.log(`✓ Loaded script: ${scriptToLoad} (index ${currentIndexNum})`);
 } else {
     console.log('No valid parameter - loading random default script');
     const defaultIndex = Math.floor(Math.random() * insertArray.length);
@@ -155,9 +170,9 @@ if (currentIndexNum !== null && currentIndexNum >= 0 && currentIndexNum < insert
     const scriptToLoad = insertArray[defaultIndex][0];
     console.log(`Script to load: ${scriptToLoad}`);
     const script = document.createElement('script');
-    script.src = './css_js/' + scriptToLoad;
+    script.src = getScriptPath(scriptToLoad);
     document.head.appendChild(script);
-    console.log(`✓ Loaded default script: ${scriptToLoad} from css_js (index ${defaultIndex})`);
+    console.log(`✓ Loaded default script: ${scriptToLoad} (index ${defaultIndex})`);
 }
 console.log('insertArrayRnd (for watermark logic):', insertArrayRnd);
 console.log(`⏰ Next refresh in ${refreshTime} seconds to index ${nextIndex}`);

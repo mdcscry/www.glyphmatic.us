@@ -2,7 +2,7 @@ divCounter=Math.round(Math.random()*20+5);
 var innerHtmlChangeUp;
 var scriptCSS = document.createElement('script');
 //scriptCSS.src = "./spiral"+(Math.round(Math.random())+8)+".js";
-scriptCSS.src = "./css_js/spiral11.js";
+scriptCSS.src = "../js_layout/spiral11.js";
 document.getElementsByTagName('body')[0].appendChild(scriptCSS);
 
 function jsWait() {

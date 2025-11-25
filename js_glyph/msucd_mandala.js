@@ -114,13 +114,13 @@ var teluguKannada = {
 
 // Additional Symbols
 var additionalSymbols = {
-    fonts: 'Noto Sans JP', // CJK characters
+    fonts: ['Noto Sans JP'], // CJK characters
     glyphs: [
         0x263F, 0x2638, 0x3036, 0x3147, 0x314E, 0x318D, 0x3194, 0x319D, 0x3207, 0x320D, 0x518B, 0xBD69, 0xC6C5, 0xC73C
     ]
 };
 
-// Concatenate all glyph arrays
+// Concatenate all glyph arrays with font info (for glyphtester)
 var myArray = [
    ...geometricShapes.glyphs.map(g => ({glyph: g, fonts: geometricShapes.fonts})),
    ...miscSymbols.glyphs.map(g => ({glyph: g, fonts: miscSymbols.fonts})),
@@ -136,4 +136,22 @@ var myArray = [
    ...khmer.glyphs.map(g => ({glyph: g, fonts: khmer.fonts})),
    ...teluguKannada.glyphs.map(g => ({glyph: g, fonts: teluguKannada.fonts})),
    ...additionalSymbols.glyphs.map(g => ({glyph: g, fonts: additionalSymbols.fonts}))
+];
+
+// Plain array of just glyph numbers (for backwards compatibility with flashers)
+var myarray = [
+   ...geometricShapes.glyphs,
+   ...miscSymbols.glyphs,
+   ...latinExtended.glyphs,
+   ...cyrillic.glyphs,
+   ...arabic.glyphs,
+   ...nkoOthers.glyphs,
+   ...punctuationSymbols.glyphs,
+   ...devanagari.glyphs,
+   ...myanmar.glyphs,
+   ...georgian.glyphs,
+   ...ethiopic.glyphs,
+   ...khmer.glyphs,
+   ...teluguKannada.glyphs,
+   ...additionalSymbols.glyphs
 ];

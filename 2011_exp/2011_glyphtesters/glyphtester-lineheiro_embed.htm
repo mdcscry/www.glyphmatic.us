@@ -1,24 +1,145 @@
-
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
-
-
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Glyph Display - Egyptian Hieroglyphs</title>
+    <link rel="stylesheet" href="../../css_font/glyphmatic-fonts.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+        h1 {
+            color: #4a9eff;
+        }
+        .info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #2a2a2a;
+            border-radius: 8px;
+        }
+        .glyph-row {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #2a2a2a;
+            border-radius: 8px;
+        }
+        .glyph-row-header {
+            font-size: 14px;
+            color: #4a9eff;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+        .glyph-samples {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .glyph-item {
+            text-align: center;
+            padding: 15px;
+            background: #333;
+            border-radius: 4px;
+            transition: transform 0.2s;
+            min-width: 120px;
+        }
+        .glyph-item:hover {
+            transform: scale(1.1);
+            background: #444;
+        }
+        .glyph-char {
+            font-size: 64px;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+        .glyph-info {
+            font-size: 11px;
+            color: #888;
+            font-family: monospace;
+        }
+        .glyph-decimal {
+            color: #aaa;
+        }
+        .glyph-hex {
+            color: #4a9eff;
+        }
+        .glyph-font {
+            color: #8a8;
+            margin-top: 5px;
+        }
+    </style>
 </head>
-<body style="font-family:symbola123;font-size:65px;">
+<body>
+    <h1>Egyptian Hieroglyphs Glyph Display</h1>
+    <div class="info">
+        <p><strong>Total Glyphs:</strong> <span id="totalCount">Loading...</span></p>
+        <p><strong>Source:</strong> Loaded from lineheiro.js</p>
+        <p><strong>Fonts:</strong> Aegyptus, Gardiner, NotoEgyptian</p>
+        <p><strong>Note:</strong> These glyphs include Private Use Area and Egyptian Hieroglyphs</p>
+    </div>
 
-<Script type ="text/JavaScript" src="https://glyphmatic.us/css_js/lineheiro.js"></Script>
+    <div id="glyphDisplay"></div>
 
-<STYLE type="text/css">@font-face
-{
-font-family: symbola123;
-src: url(./../fontsAegyptus_0.ttf);
-}
-</STYLE>
-<script type="text/javascript">
+    <!-- Load your actual glyph data -->
+    <script src="../../js_glyph/lineheiro.js"></script>
 
-for (i=0 ; i <= myarray.length-1;i++){
- document.write("<span>" + i +" &#" + myarray[i] + " u+" + myarray[i]+";<\span><br>");
-}
-</script>
+    <script>
+        // Wait for myArray to load
+        function displayGlyphs() {
+            if (typeof myArray === 'undefined') {
+                setTimeout(displayGlyphs, 100);
+                return;
+            }
+
+            const container = document.getElementById('glyphDisplay');
+            const totalCount = document.getElementById('totalCount');
+
+            // Remove duplicates
+            const uniqueGlyphs = [...new Set(myArray)];
+            totalCount.textContent = uniqueGlyphs.length + ' unique glyphs';
+
+            // Display each glyph on its own row with all its fonts
+            uniqueGlyphs.forEach(item => {
+                const decimal = item.glyph;
+                const fonts = Array.isArray(item.fonts) ? item.fonts : [item.fonts];
+                const hex = decimal.toString(16).toUpperCase().padStart(4, '0');
+                const char = String.fromCodePoint(decimal);
+
+                // Create a row for this glyph
+                const row = document.createElement('div');
+                row.className = 'glyph-row';
+
+                // Add header with glyph info
+                const header = document.createElement('div');
+                header.className = 'glyph-row-header';
+                header.textContent = `U+${hex} (${decimal}) - ${char}`;
+                row.appendChild(header);
+
+                // Create container for font samples
+                const samples = document.createElement('div');
+                samples.className = 'glyph-samples';
+
+                // Create a display for each font
+                fonts.forEach(font => {
+                    const element = document.createElement('div');
+                    element.className = 'glyph-item';
+                    element.innerHTML = `
+                        <div class="glyph-char" style="font-family: '${font}';">${char}</div>
+                        <div class="glyph-info">
+                            <div class="glyph-font">${font}</div>
+                        </div>
+                    `;
+                    samples.appendChild(element);
+                });
+
+                row.appendChild(samples);
+                container.appendChild(row);
+            });
+        }
+
+        displayGlyphs();
+    </script>
 </body>
 </html>

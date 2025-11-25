@@ -13,7 +13,7 @@ var testGlyphIndex = null; // Change to number like 41 for peace hand
 
 // Load standardQuad.js
 var scriptCSS = document.createElement('script');
-scriptCSS.src = "./css_js/standardQuad.js";
+scriptCSS.src = "../js_layout/standardQuad.js";
 document.getElementsByTagName('body')[0].appendChild(scriptCSS);
 
 

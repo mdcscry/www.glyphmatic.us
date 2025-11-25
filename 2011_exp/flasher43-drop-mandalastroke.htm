@@ -1,5 +1,6 @@
 
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html><head>
+<link rel="stylesheet" href="../css_font/glyphmatic-fonts.css"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <title>ARIAL MS UNICODE MANDALA</title>
 
@@ -452,7 +453,7 @@ DIV   {
 <div id="myid3" ></div>
 <div id="myid1" ></div>
 <div id="myid2" >123</div>
-<Script type ="text/JavaScript" src="./css_js/msucd_mandala.js"></Script>
+<Script type ="text/JavaScript" src="../js_glyph/msucd_mandala.js"></Script>
 <script type="text/javascript">
 var elem8 = document.getElementById("myid8");
 var elem7 = document.getElementById("myid7");
@@ -610,14 +611,30 @@ elem8.style.textShadow=Math.round( 0 ) + 'px '
 var originalViewState="display";
 var changeViewState = "noDisplay";
 
-	elem1.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
-	elem2.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
-	elem3.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
-	elem4.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
-	elem5.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
-	elem6.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
-	elem7.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
-	elem8.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem1.innerHTML= '&#'+item.glyph+';';
+	elem1.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem2.innerHTML= '&#'+item.glyph+';';
+	elem2.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem3.innerHTML= '&#'+item.glyph+';';
+	elem3.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem4.innerHTML= '&#'+item.glyph+';';
+	elem4.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem5.innerHTML= '&#'+item.glyph+';';
+	elem5.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem6.innerHTML= '&#'+item.glyph+';';
+	elem6.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem7.innerHTML= '&#'+item.glyph+';';
+	elem7.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem8.innerHTML= '&#'+item.glyph+';';
+	elem8.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
 
 
 	elem1.className = originalViewState;
@@ -641,7 +658,9 @@ else {
 
 	var fontSizeInside=Math.random()*fontSizeFactorMultiple+fontSizeFactorAddOn;
 
-	elem8.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem8.innerHTML= '&#'+item.glyph+';';
+	elem8.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
 	//elem8.style.fontSize= fontSizeInside;
 
 	elem8.className =originalViewState;
@@ -657,7 +676,9 @@ else {
 
 	var fontSizeInside=Math.random()*fontSizeFactorMultiple+fontSizeFactorAddOn;
 
-	elem7.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem7.innerHTML= '&#'+item.glyph+';';
+	elem7.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
 	//elem7.style.fontSize= fontSizeInside;
 
 	elem7.className =originalViewState;
@@ -674,7 +695,9 @@ else {
 
 	var fontSizeInside=Math.random()*fontSizeFactorMultiple+fontSizeFactorAddOn;
 
-	elem6.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem6.innerHTML= '&#'+item.glyph+';';
+	elem6.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
 	//elem6.style.fontSize= fontSizeInside;
 
 	elem6.className =originalViewState;
@@ -691,7 +714,9 @@ else {
 
 	var fontSizeInside=Math.random()*fontSizeFactorMultiple+fontSizeFactorAddOn;
 
-	elem5.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem5.innerHTML= '&#'+item.glyph+';';
+	elem5.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
 	//elem5.style.fontSize= fontSizeInside;
 
 	elem5.className =originalViewState;
@@ -704,7 +729,9 @@ if (
 	elem4.className==originalViewState) {elem4.className =changeViewState;}
 
 else {
-	elem4.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem4.innerHTML= '&#'+item.glyph+';';
+	elem4.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
 	//elem4.style.fontSize= Math.random()*fontSizeFactorMultiple+fontSizeFactorAddOn;
 	elem4.className =originalViewState;
 }
@@ -716,7 +743,9 @@ if (
 	elem3.className==originalViewState) {elem3.className =changeViewState;}
 
 else {
-	elem3.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem3.innerHTML= '&#'+item.glyph+';';
+	elem3.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
 	//elem3.style.fontSize= Math.random()*fontSizeFactorMultiple+fontSizeFactorAddOn;
 	elem3.className =originalViewState;
 }
@@ -728,7 +757,9 @@ if (
 	elem2.className==originalViewState) {elem2.className =changeViewState;}
 
 else {
-	elem2.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem2.innerHTML= '&#'+item.glyph+';';
+	elem2.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
 	//elem2.style.fontSize= Math.random()*fontSizeFactorMultiple+fontSizeFactorAddOn;
 	elem2.className =originalViewState;
 }
@@ -743,7 +774,9 @@ else {
 
 	var fontSizeInside=Math.random()*fontSizeFactorMultiple+fontSizeFactorAddOn;
 
-	elem1.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
+	var item = myArray[Math.round((myArray.length-1)*Math.random())];
+	elem1.innerHTML= '&#'+item.glyph+';';
+	elem1.style.fontFamily = item.fonts[Math.floor(Math.random()*item.fonts.length)];
 	//elem1.style.fontSize= fontSizeInside;
 
 	elem1.className =originalViewState;

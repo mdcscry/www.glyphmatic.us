@@ -3,7 +3,7 @@
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-	<link rel="stylesheet" href="./css_js/glyphmatic-fonts.css">
+	<link rel="stylesheet" href="./css_font/glyphmatic-fonts.css">
 </head>
 
 
@@ -14,8 +14,8 @@
 <body onload="startUpNav()">
 
 
-<Script type ="text/JavaScript" src="./css_js/msucd_letters.js"></Script>
-<Script type ="text/JavaScript" src="./css_js/watermark.js"></Script>
+<Script type ="text/JavaScript" src="./js_glyph/msucd_letters.js"></Script>
+<Script type ="text/JavaScript" src="./js_glyph/watermark.js"></Script>
 <Script type ="text/JavaScript">
 var myValidationArray=[];
 var myFontSet=[];
@@ -27,7 +27,7 @@ var tenHit=0;
 var browserPrefix;
 
 if (ua.indexOf("AppleWebKit")>0){browserPrefix='webkit';browseWidth=50;} else if (ua.indexOf("msie")>0){browserPrefix='msie';} else {browserPrefix='moz';browseWidth=22;}
-//alert(browseWidth);
+//console.log(browseWidth);
 
 console.log('=== Script Started ===');
 
@@ -58,6 +58,21 @@ console.log('=== Script Started ===');
  //insertArray[24]=['whirldsymbols-OM.js','flasher1-the OM']; 
  
  console.log('Insert array length:', insertArray.length);
+
+// Helper function to get the correct path for a script file
+function getScriptPath(filename) {
+    const glyphFiles = ['msucd_hangul.js', 'msucd_drop.js', 'msucd.js', 'nonRsvdUtf.js', 'geometric.js',
+                        'msucd_mandala.js', 'whirldsymbols.js', 'whirldsymbols-OM.js', 'emoji_versions_data2.js',
+                        'msucd_letters.js', 'watermark.js', 'painters.js', 'superpainters.js'];
+    const functFiles = ['insert_config.js', 'nav_menu.js'];
+
+    if (glyphFiles.includes(filename)) return './js_glyph/' + filename;
+    if (functFiles.includes(filename)) return './js_funct/' + filename;
+
+    // Fallback to old path if not found (shouldn't happen)
+    console.warn(`Unknown file ${filename}, using fallback path`);
+    return './css_js/' + filename;
+}
 
 // Get current parameter from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -154,10 +169,9 @@ if (currentIndexNum !== null && currentIndexNum >= 0 && currentIndexNum < insert
 	const scriptToLoad = insertArray[currentIndexNum][0];
 	console.log(`Script to load: ${scriptToLoad}`);
 	const script = document.createElement('script');
-	// These scripts come from css_js, not the insert directories
-	script.src = './css_js/' + scriptToLoad;
+	script.src = getScriptPath(scriptToLoad);
 	document.head.appendChild(script);
-	console.log(`✓ Loaded script: ${scriptToLoad} from css_js (index ${currentIndexNum})`);
+	console.log(`✓ Loaded script: ${scriptToLoad} (index ${currentIndexNum})`);
 } else {
 	// Default behavior if no valid parameter
 	console.log('No valid parameter - loading random default script');
@@ -167,10 +181,9 @@ if (currentIndexNum !== null && currentIndexNum >= 0 && currentIndexNum < insert
 	const scriptToLoad = insertArray[defaultIndex][0];
 	console.log(`Script to load: ${scriptToLoad}`);
 	const script = document.createElement('script');
-	// These scripts also come from css_js
-	script.src = './css_js/' + scriptToLoad;
+	script.src = getScriptPath(scriptToLoad);
 	document.head.appendChild(script);
-	console.log(`✓ Loaded default script: ${scriptToLoad} from css_js (index ${defaultIndex})`);
+	console.log(`✓ Loaded default script: ${scriptToLoad} (index ${defaultIndex})`);
 }
 console.log('insertArrayRnd (for watermark logic):', insertArrayRnd);
 console.log(`⏰ Next refresh in ${refreshTime} seconds to index ${nextIndex}`);
@@ -220,7 +233,7 @@ function setColor(hue,sat,light,opa){
 	+ (Math.round(Math.random()*20)+light) + '%,'
 	+ (Math.random(opa)+.6	)
 	+ ')';
-	//alert (toSpliceColor);
+	//console.log(toSpliceColor);
 
 	mycolors.push(toSpliceColor);
 	}

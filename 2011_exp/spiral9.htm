@@ -1,6 +1,8 @@
 
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="refresh" content="300;url=https://glyphmatic.us/spiral10-symbola.htm">
+<html><head>
+<link rel="stylesheet" href="../css_font/glyphmatic-fonts.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="refresh" content="300;url=degenerator2.htm">
 <TITLE>Diamonds</TITLE>
 
 </head>
@@ -459,7 +461,9 @@ var animationPlayState=50000;
 
 //spiral function
 
-var cssAnimation = document.styleSheets[0];
+var styleElement = document.createElement('style');
+document.head.appendChild(styleElement);
+var cssAnimation = styleElement.sheet;
 var cssRules=cssAnimation.cssRules;
 
 
@@ -480,10 +484,10 @@ var animationPercentArr = [];
 var populateCounter=1;
 for (populatePercentArray=1000;populatePercentArray>=1;populatePercentArray--){
     animationPercentArr[populatePercentArray]=populateCounter/10;
-//alert(populatePercentArray);
+//console.log(populatePercentArray);
 populateCounter=populateCounter+1;
 }
-//alert(animiationPercentArr[1]);
+//console.log(animiationPercentArr[1]);
 for (i = 1000; i >= 1; i--) {
 
     angle = i/10 ;
@@ -512,7 +516,7 @@ var innerRule=innerRule + animationPercentArr[i] +'% { left:' + x +'%; top:' + y
 }
 var newRule=newRulePrefix + innerRule + newRuleSuffix;
 if (cssAnimationCounter==1){
-//alert (newRule);
+//console.log(newRule);
 }
 cssAnimation.insertRule(newRule,length);
 

@@ -1,6 +1,8 @@
 
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="refresh" content="300;url=https://glyphmatic.us/degenerator13-allcolorsticks.htm">
+<html><head>
+<link rel="stylesheet" href="../css_font/glyphmatic-fonts.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="refresh" content="300;url=flasher28.htm">
 <TITLE>6.DeGenerator-aegean-sepia lgoptopt-large</TITLE>
 
 </head>
@@ -27,8 +29,7 @@ DIV   {
 </STYLE>
 
 
-<body style="overflow: hidden;font-family:Quivira,'Arial Unicode MS','Akshar Unicode',Code2000,Symbola,'Microsoft New Tai Lue'
-,'Tuladha Jejeg','MPH 2B Damase','Arial Unicode MS','Lanna Unicode UI',Sun-ExtA;">
+<body style="overflow: hidden;font-family:Quivira,'Arial Unicode MS','Akshar Unicode',Code2000,Symbola,'MPH 2B Damase','Arial Unicode MS','Lanna Unicode UI',Sun-ExtA;">
 
 
 
@@ -87,8 +88,9 @@ for (containerCounter=1;containerCounter<=containerCount;containerCounter++){
 
 	//style
 	containerId[containerCounter].style.position='absolute';
-	containerId[containerCounter].style.top='40%';
-	containerId[containerCounter].style.left='35%';
+	containerId[containerCounter].style.top='50%';
+	containerId[containerCounter].style.left='50%';
+	containerId[containerCounter].style.transform='translate(-50%, -50%)';
 	//containerId[containerCounter].style.cssFloat='left';
 	//containerId[containerCounter].style.opacity=.9;
 	containerId[containerCounter].style.width='400px';
@@ -113,7 +115,7 @@ for (divCounter=1;divCounter<=divCount;divCounter++){
  divId[divCounter] = document.createElement("div");
  divId[divCounter].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 
- //alert(divId[divCounter].id);
+ //console.log(divId[divCounter].id);
 containerId[containerCounter].appendChild(divId[divCounter]);
 divId[divCounter].id=elementName;
 divId[divCounter].style.position='absolute';
@@ -172,7 +174,7 @@ divId[divCounter].style.webkitFilter= 'grayscale('+ Math.round(Math.random()*200
 				  	  //container.style.zIndex=Math.round(Math.random()*(containerCount-1)+1);
 
 				   } catch ( e ) {
-	//			      alert("Error: " + e.description + 'Value container: ' + containerElementName + 'basenode: ' + baseElementName  );
+	//			      console.log("Error: " + e.description + 'Value container: ' + containerElementName + 'basenode: ' + baseElementName  );
 		  			 }
 		},Math.random()*fontChangeRate);
 
@@ -188,7 +190,7 @@ divId[divCounter].style.webkitFilter= 'grayscale('+ Math.round(Math.random()*200
 						  try {
 						      // node.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
 						   } catch ( e ) {
-						      //alert("Error: " + e.description + 'Value node color: ' + elementName );
+						      //console.log("Error: " + e.description + 'Value node color: ' + elementName );
 				  			 }
 		},Math.random()*fontChangeRate +10000);
 
@@ -205,7 +207,7 @@ divId[divCounter].style.webkitFilter= 'grayscale('+ Math.round(Math.random()*200
 		  // node.style.width= Math.round(Math.random()*75) + '%';
 		  // node.style.left=Math.round(Math.random()*50) +'%';
 								   } catch ( e ) {
-								      //alert("Error: " + e.description + 'Value skew rotation: ' + elementName );
+								      //console.log("Error: " + e.description + 'Value skew rotation: ' + elementName );
 				  			 }
 			},fontChangeRate+3000);
 
@@ -216,7 +218,7 @@ divId[divCounter].style.webkitFilter= 'grayscale('+ Math.round(Math.random()*200
 		 		  try {
 		 		  	  document.body.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 		 		   } catch ( e ) {
-		 		      alert("Error: " + e.description + 'Value body background: ' + elementName );
+		 		      console.log("Error: " + e.description + 'Value body background: ' + elementName );
 		   			 }
 		},Math.random()*fontChangeRate+20000);
 

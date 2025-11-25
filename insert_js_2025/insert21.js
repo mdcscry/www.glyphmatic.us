@@ -2,7 +2,7 @@
 divCounter = Math.round(Math.random() * 20 + 5);
 
 var scriptCSS = document.createElement('script');
-scriptCSS.src = "./css_js/whirldsymbols.js";
+scriptCSS.src = "../js_glyph/whirldsymbols.js";
 document.getElementsByTagName('body')[0].appendChild(scriptCSS);
 
 function jsWait() {

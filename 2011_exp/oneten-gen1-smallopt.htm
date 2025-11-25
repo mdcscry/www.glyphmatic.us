@@ -1,6 +1,6 @@
 
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="refresh" content="300;url=https://glyphmatic.us/oneten-gen1-smallopt-whole.htm">
+<meta http-equiv="refresh" content="300;url=flasher5.htm">
 <TITLE>1.10-gen1-smallopt</TITLE>
 
 </head>
@@ -27,8 +27,8 @@ DIV   {
 </STYLE>
 
 
-<body style="font-weight:900;font-family:'Microsoft New Tai Lue','Quivira','Code2000','Arial Unicode MS','DejaVu Sans','Aksara Bali','Code2001'
-,'Lanna Unicode UI','ZH Mono','Tuladha Jejeg','Siddhanta';">
+<body style="font-weight:900;font-family:'Quivira','Code2000','Arial Unicode MS','DejaVu Sans','Aksara Bali','Code2001'
+,'Lanna Unicode UI','ZH Mono','Siddhanta';">
 
 
 
@@ -68,7 +68,7 @@ langArray[24]=['UnifiedIdeographs','Suzhou_numerals',12295,19968,20108,19977,222
 langArray[19]=['Tai Xuan Jing','Numerals_in_Unicode#Japanese_and_Korean_numerals','Symbola,Quivira',119648,119649,119650,119651,119652,119653,119654,119655,119656,119657,119658,119659,119660,119661,119662,119663,119664,119665];
 langArray[27]=['Balinese','Numerals_in_Unicode#Balinese_numerals','Aksara Bali', 6992,6993,6994,6995,6996,6997,6998,6999,7000,7001];
 langArray[28]=['Osmanya','Osmanya','Code2001',66720,66721,66722,66723,66724,66725,66726,66727,66728,66729];
-langArray[29]=['New Tai Lue','','Microsoft New Tai Lue',6608,6609,6610,6611,6612,6613,6614,6615,6616,6617];
+langArray[29]=['New Tai Lue','',6608,6609,6610,6611,6612,6613,6614,6615,6616,6617];
 langArray[30]=['Nko','','DejaVu Sans',1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994];
 
 //var langMasterArray=[langArray[0],langArray[1],langArray[2]];
@@ -117,14 +117,14 @@ for (divCounter=1;divCounter<=1;divCounter++){
 //for (divCounter=4;divCounter>=1;divCounter--){
  elementName=containerName + '-div'+divCounter;
  divId[divCounter] = document.createElement("div");
- //alert(containerCounter);
+ //console.log(containerCounter);
  divId[divCounter].innerHTML= '&#'+ langArray[containerCounter][3] + ';';
 
 
 //var langMasterArray=[langArray[0],langArray[1],langArray[2]];
 
 
- //alert(divId[divCounter].id);
+ //console.log(divId[divCounter].id);
 containerId[containerCounter].appendChild(divId[divCounter]);
 divId[divCounter].id=elementName;
 divId[divCounter].style.position='relative';
@@ -169,7 +169,7 @@ divId[divCounter].style.textAlign='center';
 				  	 // container.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 				  	 // baseNode.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 				   } catch ( e ) {
-				      alert("Error: " + e.description + 'containerValue: ' + container + 'baseNodeValue:' + baseNode );
+				      console.log("Error: " + e.description + 'containerValue: ' + container + 'baseNodeValue:' + baseNode );
 		  			 }
 		},Math.random()*fontChangeRate);
 
@@ -178,12 +178,12 @@ divId[divCounter].style.textAlign='center';
 //////////////////////Node HTML
 		window.setInterval(function(){
 						rndDivContainer=Math.round(Math.random()*(containerCount-1)+1);
-						//alert(rndDivContainer);
+						//console.log(rndDivContainer);
 						rndDivChild=1;
 						 elementName='container' + rndDivContainer+ '-div'+ rndDivChild;
 						 node=document.getElementById(elementName);
 						 newRndGlyph= Math.round((langArray[rndDivContainer].length-4) * Math.random())+3;
-						 //alert(rndDivContainer + ' ' +newRndGlyph);
+						 //console.log(rndDivContainer + ' ' +newRndGlyph);
 						  try {
 
 						  	if (rndDivContainer !=1) {
@@ -193,7 +193,7 @@ divId[divCounter].style.textAlign='center';
 								}
 
 						   } catch ( e ) {
-						      alert("Error: " + e.description + 'Node Html Value: ' + node
+						      console.log("Error: " + e.description + 'Node Html Value: ' + node
 						      + '<br>containerCount:'+ containerCount
 						      + '<br>elementName:' +elementName
 						      + ' langArray:' +langArray[containerCounter-1][0]);
@@ -211,7 +211,7 @@ divId[divCounter].style.textAlign='center';
 						  try {
 						       node.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
 						   } catch ( e ) {
-						      alert("Error: " + e.description + 'Node Color Value: ' + elementName );
+						      console.log("Error: " + e.description + 'Node Color Value: ' + elementName );
 				  			 }
 		},Math.random()*fontChangeRate);
 
@@ -226,7 +226,7 @@ divId[divCounter].style.textAlign='center';
 						  try {
 						       node.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 						   } catch ( e ) {
-						      alert("Error: " + e.description + 'Node Background Color Value: ' + node );
+						      console.log("Error: " + e.description + 'Node Background Color Value: ' + node );
 				  			 }
 		},Math.random()*fontChangeRate+10000);
 
@@ -235,7 +235,7 @@ divId[divCounter].style.textAlign='center';
 		 		  try {
 		 		  	  document.body.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 		 		   } catch ( e ) {
-		 		      alert("Error: " + e.description + 'Body Background Value: ' + 'body' );
+		 		      console.log("Error: " + e.description + 'Body Background Value: ' + 'body' );
 		   			 }
 		},Math.random()*fontChangeRate+20000);
 

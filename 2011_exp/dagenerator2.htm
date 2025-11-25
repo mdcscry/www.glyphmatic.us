@@ -1,7 +1,7 @@
 
 <html><head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<link rel="stylesheet" href="./css_js/glyphmatic-fonts.css">
+	<link rel="stylesheet" href="../css_font/glyphmatic-fonts.css">
 
 <TITLE>2.DaGenerator-box_elements</TITLE>
 
@@ -59,7 +59,7 @@ for (divCounter=1;divCounter<=15000;divCounter++){
  divId[divCounter] = document.createElement("div");
  divId[divCounter].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
  divId[divCounter].id=elementName;
- //alert(divId[divCounter].id);
+ //console.log(divId[divCounter].id);
 container.appendChild(divId[divCounter]);
 divId[divCounter].style.position='relative';
 divId[divCounter].style.cssFloat='left';
@@ -73,7 +73,7 @@ divId[divCounter].style.cssFloat='left';
 		  try {
 		      divId[rndDiv].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
 		   } catch ( e ) {
-		      alert("Error: " + e.description + 'Value: ' + rndDiv );
+		      console.log("Error: " + e.description + 'Value: ' + rndDiv );
            }
 		}
 		},Math.random()*fontChangeRate+1500);
@@ -83,11 +83,11 @@ divId[divCounter].style.cssFloat='left';
 
 	for (intervLoop=1;intervLoop<=100;intervLoop++){
 		rndDiv=Math.round(Math.random()*14999+1);
-		//alert(rndDiv);
+		//console.log(rndDiv);
 		  try {
 		      divId[rndDiv].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 		   } catch ( e ) {
-		      alert("Error: " + e.description + 'Value: ' + rndDiv );
+		      console.log("Error: " + e.description + 'Value: ' + rndDiv );
            }
 		}
 		},Math.random()*fontChangeRate+2000);

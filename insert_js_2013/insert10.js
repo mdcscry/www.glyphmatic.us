@@ -21,7 +21,7 @@ var allGlyphSources = [
 ];
 
 var scriptCSS = document.createElement('script');
-scriptCSS.src = "./css_js/standard8_mandala.js";
+scriptCSS.src = "../js_layout/standard8_mandala.js";
 document.getElementsByTagName('body')[0].appendChild(scriptCSS);
 
 console.log('should be adding the body style')

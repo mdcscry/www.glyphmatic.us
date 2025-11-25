@@ -1,7 +1,7 @@
 divCounter=2;
 
 var scriptCSS = document.createElement('script');
-scriptCSS.src = "./css_js/standard8_blur.js";
+scriptCSS.src = "../js_layout/standard8_blur.js";
 document.getElementsByTagName('body')[0].appendChild(scriptCSS);
 
 function jsWait() {

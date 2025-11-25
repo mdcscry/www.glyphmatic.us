@@ -1,5 +1,6 @@
 
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html><head>
+<link rel="stylesheet" href="../css_font/glyphmatic-fonts.css"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <TITLE>Spiral SuperPainters</TITLE>
 
@@ -394,7 +395,7 @@ DIV   {
 <div id="myid1" ></div>
 <div id="myid2" ></div>
 
-<Script type ="text/JavaScript" src="./css_js/superpainters.js"></Script>
+<Script type ="text/JavaScript" src="../js_glyph/superpainters.js"></Script>
 <script type="text/javascript">
 var elem8 = document.getElementById("myid8");
 var elem7 = document.getElementById("myid7");
@@ -417,7 +418,9 @@ var animationPlayState=21000;
 changeColor();
 //spiral function
 
-var cssAnimation = document.styleSheets[0];
+var styleElement = document.createElement('style');
+document.head.appendChild(styleElement);
+var cssAnimation = styleElement.sheet;
 var cssRules=cssAnimation.cssRules;
 
 var newRuleSuffix = '}';

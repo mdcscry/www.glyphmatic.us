@@ -1,6 +1,6 @@
 
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" href="./css_js/glyphmatic-fonts.css">
+<link rel="stylesheet" href="../css_font/glyphmatic-fonts.css">
 <TITLE>7.DaGenerator-cuneiform</TITLE>
 
 </head>
@@ -59,7 +59,7 @@ for (divCounter=1;divCounter<=numDiv;divCounter++){
  divId[divCounter] = document.createElement("div");
  divId[divCounter].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
  divId[divCounter].id=elementName;
- //alert(divId[divCounter].id);
+ //console.log(divId[divCounter].id);
 container.appendChild(divId[divCounter]);
 divId[divCounter].style.position='relative';
 divId[divCounter].style.cssFloat='left';
@@ -85,12 +85,12 @@ divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.rand
 
 	for (intervLoop=1;intervLoop<=2000;intervLoop++){
 		rndDiv=Math.round(Math.random()*(numDiv-1)+1);
-		//alert(rndDiv);
+		//console.log(rndDiv);
 
 		  try {
 		      divId[rndDiv].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
 		   } catch ( e ) {
-		      alert("Error: " + e.description + 'Value: ' + rndDiv );
+		      console.log("Error: " + e.description + 'Value: ' + rndDiv );
    }
 
 		}
@@ -99,7 +99,7 @@ divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.rand
 
 var angle=1080;
 var angle_value=(Math.random()*(angle/10000))+1 ;
-//alert(angle_value);
+//console.log(angle_value);
 
 
 

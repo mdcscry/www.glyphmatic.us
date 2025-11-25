@@ -1,6 +1,8 @@
 
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="refresh" content="300;url=https://glyphmatic.us/degenerator2.htm">
+<html><head>
+<link rel="stylesheet" href="../css_font/glyphmatic-fonts.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="refresh" content="300;url=degenerator6-allcolorsagean-sepia-lgopt180.htm">
 <TITLE>1.DeGenerator-Byzantine</TITLE>
 
 </head>
@@ -24,7 +26,7 @@ DIV   {
 </STYLE>
 
 
-<body style="overflow: hidden;font-family:musica,symbola,aroania,alexander;asea">
+<body style="overflow: hidden;font-family:musica,symbola;">
 
 
 
@@ -49,7 +51,7 @@ var toSpliceColor='hsla('
 + (Math.round(Math.random()*20)+light) + '%,'
 + (Math.random(opa)-.3	)
 + ')';
-//alert (toSpliceColor);
+//console.log(toSpliceColor);
 
 	mycolors.push(toSpliceColor);
 	}
@@ -103,7 +105,7 @@ for (divCounter=1;divCounter<=8;divCounter++){
  divId[divCounter] = document.createElement("div");
  divId[divCounter].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 
- //alert(divId[divCounter].id);
+ //console.log(divId[divCounter].id);
 containerId[containerCounter].appendChild(divId[divCounter]);
 divId[divCounter].id=elementName;
 //divId[divCounter].style.position='absolute';
@@ -129,7 +131,7 @@ divId[divCounter].style.top=0;
 		      node.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
 		       node.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 		   } catch ( e ) {
-		      alert("Error: " + e.description + 'Value: ' + elementName );
+		      console.log("Error: " + e.description + 'Value: ' + elementName );
   			 }
 
 
@@ -140,7 +142,7 @@ divId[divCounter].style.top=0;
 		 		  try {
 		 		  	  document.body.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 		 		   } catch ( e ) {
-		 		      alert("Error: " + e.description + 'Value body background: ' + elementName );
+		 		      console.log("Error: " + e.description + 'Value body background: ' + elementName );
 		   			 }
 		},Math.random()*fontChangeRate+30000);
 

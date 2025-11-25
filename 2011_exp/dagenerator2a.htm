@@ -1,7 +1,7 @@
 
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="refresh" content="300;url=https://glyphmatic.us/dagenerator3.htm">
-<link rel="stylesheet" href="./css_js/glyphmatic-fonts.css">
+<meta http-equiv="refresh" content="300;url=degenerator1a.htm">
+<link rel="stylesheet" href="../css_font/glyphmatic-fonts.css">
 <TITLE>2a.DaGenerator-box_elements</TITLE>
 
 </head>
@@ -63,7 +63,7 @@ for (divCounter=1;divCounter<=divCount;divCounter++){
  divId[divCounter] = document.createElement("div");
  divId[divCounter].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
  divId[divCounter].id=elementName;
- //alert(divId[divCounter].id);
+ //console.log(divId[divCounter].id);
 container.appendChild(divId[divCounter]);
 divId[divCounter].style.position='relative';
 divId[divCounter].style.cssFloat='left';
@@ -92,7 +92,7 @@ divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.rand
 			  divId[rndDiv].style.webkitTextStrokeWidth=Math.round(Math.random()*20) +"px";
   			  divId[rndDiv].style.webkitTextStrokeColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
 		   } catch ( e ) {
-		      alert("Error: " + e.description + 'Value1: ' + rndDiv );
+		      console.log("Error: " + e.description + 'Value1: ' + rndDiv );
            }
 		}
 		},Math.random()*fontChangeRate+1500);
@@ -102,7 +102,7 @@ divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.rand
 
 	for (intervLoop=1;intervLoop<=2;intervLoop++){
 		rndDiv=Math.round(Math.random()*(divCount-1))+1;
-		//alert(rndDiv);
+		//console.log(rndDiv);
 		  try {
 		      divId[rndDiv].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 		        divId[rndDiv].style.webkitTextFillColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
@@ -110,7 +110,7 @@ divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.rand
   				divId[rndDiv].style.webkitTextStrokeColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
 		      divId[rndDiv].style.webkitTransform = 'rotate(' + Math.round(Math.random()*4)*90 + 'deg)';
 		   } catch ( e ) {
-		      alert("Error: " + e.description + 'Value2: ' + rndDiv );
+		      console.log("Error: " + e.description + 'Value2: ' + rndDiv );
            }
 		}
 		},Math.random()*fontChangeRate+10000);
@@ -120,7 +120,7 @@ divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.rand
 
 		 	for (intervLoop=1;intervLoop<=2;intervLoop++){
 		 		rndDiv=Math.round(Math.random()*(divCount-1))+1;
-		 		//alert(rndDiv);
+		 		//console.log(rndDiv);
 		 		  try {
 		 		      divId[rndDiv].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 		 		        divId[rndDiv].style.webkitTextFillColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
@@ -128,7 +128,7 @@ divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.rand
 		   				divId[rndDiv].style.webkitTextStrokeColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
 		 		      divId[rndDiv].style.webkitTransform = 'rotate(' + Math.round(Math.random()*4)*90 + 'deg)';
 		 		   } catch ( e ) {
-		 		      alert("Error: " + e.description + 'Value2: ' + rndDiv );
+		 		      console.log("Error: " + e.description + 'Value2: ' + rndDiv );
 		            }
 		 		}
 		},Math.random()*fontChangeRate+100000);
@@ -138,12 +138,12 @@ divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.rand
 
 			for (intervLoop=1;intervLoop<=2;intervLoop++){
 				rndDiv=Math.round(Math.random()*(divCount-1))+1;
-				//alert(rndDiv);
+				//console.log(rndDiv);
 				  try {
 
 				      divId[rndDiv].style.webkitTransform = 'rotateX(' + Math.round(Math.random()*4)*90 + 'deg)';
 				   } catch ( e ) {
-				      alert("Error: " + e.description + 'Value2: ' + rndDiv );
+				      console.log("Error: " + e.description + 'Value2: ' + rndDiv );
 		           }
 				}
 		},Math.random()*fontChangeRate+10000);
@@ -152,12 +152,12 @@ divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.rand
 
 					for (intervLoop=1;intervLoop<=2;intervLoop++){
 						rndDiv=Math.round(Math.random()*(divCount-1))+1;
-						//alert(rndDiv);
+						//console.log(rndDiv);
 						  try {
 
 						      divId[rndDiv].style.webkitTransform = 'rotateY(' + Math.round(Math.random()*4)*90 + 'deg)';
 						   } catch ( e ) {
-						      alert("Error: " + e.description + 'Value2: ' + rndDiv );
+						      console.log("Error: " + e.description + 'Value2: ' + rndDiv );
 				           }
 						}
 		},Math.random()*fontChangeRate+10000);
@@ -166,12 +166,12 @@ divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.rand
 
 							for (intervLoop=1;intervLoop<=2;intervLoop++){
 								rndDiv=Math.round(Math.random()*(divCount-1))+1;
-								//alert(rndDiv);
+								//console.log(rndDiv);
 								  try {
 
 								      divId[rndDiv].style.webkitTransform = 'rotateZ(' + Math.round(Math.random()*4)*90 + 'deg)';
 								   } catch ( e ) {
-								      alert("Error: " + e.description + 'Value2: ' + rndDiv );
+								      console.log("Error: " + e.description + 'Value2: ' + rndDiv );
 						           }
 								}
 		},Math.random()*fontChangeRate+100000);

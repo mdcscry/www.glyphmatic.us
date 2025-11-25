@@ -1,7 +1,7 @@
 
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="refresh" content="300;url=https://glyphmatic.us/f2-diff.htm">
-<link rel="stylesheet" href="./css_js/glyphmatic-fonts.css">
+<meta http-equiv="refresh" content="300;url=flasher.htm">
+<link rel="stylesheet" href="../css_font/glyphmatic-fonts.css">
 <TITLE>2.bullseye-gen1-circles-smallopt</TITLE>
 
 </head>
@@ -94,7 +94,7 @@ for (divCounter=1;divCounter<=7;divCounter++){
  divId[divCounter] = document.createElement("div");
  divId[divCounter].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 
- //alert(divId[divCounter].id);
+ //console.log(divId[divCounter].id);
 containerId[containerCounter].appendChild(divId[divCounter]);
 divId[divCounter].id=elementName;
 divId[divCounter].style.position='absolute';
@@ -136,7 +136,7 @@ divId[divCounter].style.borderStyle='solid';
 				  	  container.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 				  	  baseNode.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 				   } catch ( e ) {
-				      alert("Error: " + e.description + 'containerValue: ' + container + 'baseNodeValue:' + baseNode );
+				      console.log("Error: " + e.description + 'containerValue: ' + container + 'baseNodeValue:' + baseNode );
 		  			 }
 		},Math.random()*fontChangeRate);
 
@@ -151,7 +151,7 @@ divId[divCounter].style.borderStyle='solid';
 						  try {
 						       node.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 						   } catch ( e ) {
-						      alert("Error: " + e.description + 'Value: ' + node );
+						      console.log("Error: " + e.description + 'Value: ' + node );
 				  			 }
 		},Math.random()*fontChangeRate+10000);
 
@@ -164,7 +164,7 @@ divId[divCounter].style.borderStyle='solid';
 						  try {
 						       node.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
 						   } catch ( e ) {
-						      alert("Error: " + e.description + 'Value: ' + node );
+						      console.log("Error: " + e.description + 'Value: ' + node );
 				  			 }
 		},Math.random()*fontChangeRate);
 
@@ -179,7 +179,7 @@ divId[divCounter].style.borderStyle='solid';
 						  try {
 						       node.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 						   } catch ( e ) {
-						      alert("Error: " + e.description + 'Value: ' + node );
+						      console.log("Error: " + e.description + 'Value: ' + node );
 				  			 }
 		},Math.random()*fontChangeRate+10000);
 
@@ -192,9 +192,9 @@ divId[divCounter].style.borderStyle='solid';
 						 node=document.getElementById(elementName);
 						  try {
 						       node.style.borderColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
-						       //alert ('Value: ' + elementName);
+						       //console.log('Value: ' + elementName);
 						   } catch ( e ) {
-						      alert("Error: " + e.description + 'Value: ' + elementName );
+						      console.log("Error: " + e.description + 'Value: ' + elementName );
 				  			 }
 		},Math.random()*fontChangeRate+10000);
 
@@ -207,9 +207,9 @@ divId[divCounter].style.borderStyle='solid';
 						 node=document.getElementById(elementName);
 						  try {
 						       node.style.borderWidth= Math.random()*300+'px';
-						       //alert ('Value: ' + elementName);
+						       //console.log('Value: ' + elementName);
 						   } catch ( e ) {
-						      alert("Error: " + e.description + 'Value: ' + elementName );
+						      console.log("Error: " + e.description + 'Value: ' + elementName );
 				  			 }
 		},Math.random()*fontChangeRate+10000);
 
@@ -218,7 +218,7 @@ divId[divCounter].style.borderStyle='solid';
 		 		  try {
 		 		  	  document.body.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 		 		   } catch ( e ) {
-		 		      alert("Error: " + e.description + 'Value: ' + 'body' );
+		 		      console.log("Error: " + e.description + 'Value: ' + 'body' );
 		   			 }
 		},Math.random()*fontChangeRate+20000);
 

@@ -1,6 +1,8 @@
 
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="refresh" content="300;url=https://glyphmatic.us/spiral9.htm">
+<html><head>
+<link rel="stylesheet" href="../css_font/glyphmatic-fonts.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="refresh" content="300;url=degenerator-all-circle-glyphs.htm">
 <TITLE>s7.Coordinated Spiral</TITLE>
 
 </head>
@@ -450,7 +452,9 @@ var animationPlayState=50000;
 
 //spiral function
 
-var cssAnimation = document.styleSheets[0];
+var styleElement = document.createElement('style');
+document.head.appendChild(styleElement);
+var cssAnimation = styleElement.sheet;
 var cssRules=cssAnimation.cssRules;
 
 var newRuleSuffix = '}';

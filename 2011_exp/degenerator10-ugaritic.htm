@@ -1,6 +1,8 @@
 
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="refresh" content="300;url=https://glyphmatic.us/degenerator11-allcolorssticks.htm">
+<html><head>
+<link rel="stylesheet" href="../css_font/glyphmatic-fonts.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="refresh" content="300;url=flasher27l-anatolian-hsla.htm">
 <TITLE>6.DeGenerator-ugaritic</TITLE>
 
 </head>
@@ -27,8 +29,7 @@ DIV   {
 </STYLE>
 
 
-<body style="overflow: hidden;font-family:Aegean,Quivira,'Arial Unicode MS','Akshar Unicode',Code2000,Symbola,'Microsoft New Tai Lue'
-,'Tuladha Jejeg','MPH 2B Damase','Arial Unicode MS','Lanna Unicode UI',Sun-ExtA;">
+<body style="overflow: hidden;font-family:Aegean,Quivira,'Arial Unicode MS','Akshar Unicode',Code2000,Symbola,'MPH 2B Damase','Arial Unicode MS','Lanna Unicode UI',Sun-ExtA;">
 
 
 
@@ -56,7 +57,7 @@ var toSpliceColor='hsla('
 + (Math.round(Math.random()*20)+light) + '%,'
 + (Math.random(opa)+.6	)
 + ')';
-//alert (toSpliceColor);
+//console.log(toSpliceColor);
 
 mycolors.splice(1,0,toSpliceColor);
 }
@@ -121,7 +122,7 @@ for (divCounter=1;divCounter<=divCount;divCounter++){
  divId[divCounter] = document.createElement("div");
  divId[divCounter].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 
- //alert(divId[divCounter].id);
+ //console.log(divId[divCounter].id);
 containerId[containerCounter].appendChild(divId[divCounter]);
 divId[divCounter].id=elementName;
 divId[divCounter].style.position='absolute';
@@ -179,7 +180,7 @@ divId[divCounter].style.textShadow=Math.round(Math.random()*100 + 100) + 'px '
 				  	  containerId[containerCounter].style.width=Math.round(Math.random()*75+15) +'%)';
 					  containerId[containerCounter].style.height=Math.round(Math.random()*75+15) +'%)';
 				   } catch ( e ) {
-	//			      alert("Error: " + e.description + 'Value container: ' + containerElementName + 'basenode: ' + baseElementName  );
+	//			      console.log("Error: " + e.description + 'Value container: ' + containerElementName + 'basenode: ' + baseElementName  );
 		  			 }
 		},Math.random()*fontChangeRate);
 
@@ -196,7 +197,7 @@ divId[divCounter].style.textShadow=Math.round(Math.random()*100 + 100) + 'px '
 													+ mycolors[Math.round((mycolors.length-1)*Math.random())];
 
 						   } catch ( e ) {
-							  //alert("Error: " + e.description + 'Drop Shadow Value: ' + elementName );
+							  //console.log("Error: " + e.description + 'Drop Shadow Value: ' + elementName );
 							 }
 },Math.random()*20000);
 
@@ -216,7 +217,7 @@ divId[divCounter].style.textShadow=Math.round(Math.random()*100 + 100) + 'px '
 								//node.style.webkitFilter= 'blur('+ Math.round(Math.random()*200) +'px)';
 								node.style.opacity=Math.random();
 						   } catch ( e ) {
-						      //alert("Error: " + e.description + 'Value node html: ' + elementName );
+						      //console.log("Error: " + e.description + 'Value node html: ' + elementName );
 				  			 }
 		},Math.random()*fontChangeRate+10000);
 
@@ -229,7 +230,7 @@ divId[divCounter].style.textShadow=Math.round(Math.random()*100 + 100) + 'px '
 						  try {
 						       node.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
 						   } catch ( e ) {
-						      //alert("Error: " + e.description + 'Value node color: ' + elementName );
+						      //console.log("Error: " + e.description + 'Value node color: ' + elementName );
 				  			 }
 		},Math.random()*fontChangeRate +10000);
 
@@ -242,7 +243,7 @@ divId[divCounter].style.textShadow=Math.round(Math.random()*100 + 100) + 'px '
 						  try {
 						       node.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 						   } catch ( e ) {
-						      //alert("Error: " + e.description + 'Value node background color: ' + node );
+						      //console.log("Error: " + e.description + 'Value node background color: ' + node );
 				  			 }
 		},Math.random()*fontChangeRate+10000);
 
@@ -259,7 +260,7 @@ divId[divCounter].style.textShadow=Math.round(Math.random()*100 + 100) + 'px '
 		   node.style.width= Math.round(Math.random()*75) + '%';
 		   node.style.left=Math.round(Math.random()*50) +'%';
 								   } catch ( e ) {
-								      //alert("Error: " + e.description + 'Value skew rotation: ' + elementName );
+								      //console.log("Error: " + e.description + 'Value skew rotation: ' + elementName );
 				  			 }
 			},fontChangeRate+4000);
 
@@ -275,7 +276,7 @@ divId[divCounter].style.textShadow=Math.round(Math.random()*100 + 100) + 'px '
 		  // node.style.width= Math.round(Math.random()*75) + '%';
 		  // node.style.left=Math.round(Math.random()*50) +'%';
 								   } catch ( e ) {
-								      //alert("Error: " + e.description + 'Value skew rotation: ' + elementName );
+								      //console.log("Error: " + e.description + 'Value skew rotation: ' + elementName );
 				  			 }
 			},fontChangeRate+3000);
 
@@ -286,7 +287,7 @@ divId[divCounter].style.textShadow=Math.round(Math.random()*100 + 100) + 'px '
 		 		  try {
 		 		  	  document.body.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 		 		   } catch ( e ) {
-		 		      alert("Error: " + e.description + 'Value body background: ' + elementName );
+		 		      console.log("Error: " + e.description + 'Value body background: ' + elementName );
 		   			 }
 		},Math.random()*fontChangeRate+20000);
 

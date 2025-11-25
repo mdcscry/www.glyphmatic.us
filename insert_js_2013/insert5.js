@@ -55,7 +55,7 @@ var toSpliceColor='hsla('
 + (Math.round(Math.random()*20)+light) + '%,'
 + (Math.random(opa)+.6	)
 + ')';
-//alert (toSpliceColor);
+//console.log(toSpliceColor);
 
 mycolors.splice(1,0,toSpliceColor);
 }
@@ -123,7 +123,7 @@ function initDiv(){
 			divId[divCounter] = document.createElement("div");
 			divId[divCounter].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 
-			//alert(divId[divCounter].id);
+			//console.log(divId[divCounter].id);
 			divId[divCounter].id=elementName;
 			containerId[containerCounter].appendChild(divId[divCounter]);
 		}
@@ -187,7 +187,7 @@ function changeColor(){
 				  	  baseNode.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.random())];
 				  	  //container.innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 				   } catch ( e ) {
-				      alert("Error: " + e.description + 'Value container: ' + containerElementName+'||'+ baseElementName);
+				      console.log("Error: " + e.description + 'Value container: ' + containerElementName+'||'+ baseElementName);
 		  			 }
 		},Math.random()*fontChangeRate+20000);
 }
@@ -214,7 +214,7 @@ function changeSkewRotation(){
 		   node.style.width= Math.round(Math.random()*75) + '%';
 		   node.style.left=Math.round(Math.random()*50) +'%';
 								   } catch ( e ) {
-								      alert("Error: " + e.description + 'Value skew rotation: ' + node );
+								      console.log("Error: " + e.description + 'Value skew rotation: ' + node );
 				  			 }
 			},Math.random()*20000+5000);
 }

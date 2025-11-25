@@ -1,8 +1,8 @@
 
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" href="./css_js/glyphmatic-fonts.css">
-<meta http-equiv="refresh" content="300;url=https://glyphmatic.us/dagenerator2a.htm">
+<link rel="stylesheet" href="../css_font/glyphmatic-fonts.css">
+<meta http-equiv="refresh" content="300;url=degenerator1.htm">
 <TITLE>1.DaGenerator-only ms unicode glyphs</TITLE>
 
 </head>
@@ -67,7 +67,7 @@ for (divCounter=1;divCounter<=40000;divCounter++){
  divId[divCounter] = document.createElement("div");
  divId[divCounter].innerHTML= '&#'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
  divId[divCounter].id=elementName;
- //alert(divId[divCounter].id);
+ //console.log(divId[divCounter].id);
 container.appendChild(divId[divCounter]);
 divId[divCounter].style.position='relative';
 divId[divCounter].style.cssFloat='left';
@@ -78,12 +78,12 @@ divId[divCounter].style.color= mycolors[Math.round((mycolors.length-1)*Math.rand
 
 	for (intervLoop=1;intervLoop<=2000;intervLoop++){
 		rndDiv=Math.round(Math.random()*39999+1);
-		//alert(rndDiv);
+		//console.log(rndDiv);
 
 		  try {
 		      divId[rndDiv].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
 		   } catch ( e ) {
-		      alert("Error: " + e.description + 'Value: ' + rndDiv );
+		      console.log("Error: " + e.description + 'Value: ' + rndDiv );
    }
 
 		}

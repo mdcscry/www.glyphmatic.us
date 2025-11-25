@@ -2,7 +2,7 @@ divCounter=Math.round(Math.random()*100+10);
 
 
 var scriptCSS = document.createElement('script');
-scriptCSS.src = "./css_js/standard8_retro.js";
+scriptCSS.src = "../js_layout/standard8_retro.js";
 document.getElementsByTagName('body')[0].appendChild(scriptCSS);
 
 

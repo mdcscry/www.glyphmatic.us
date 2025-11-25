@@ -596,7 +596,7 @@ async function downloadPNG() {
         
     } catch (error) {
         console.error('Download failed:', error);
-        alert('Download failed - check console for details');
+        console.log('Download failed - check console for details');
     }
 }
 

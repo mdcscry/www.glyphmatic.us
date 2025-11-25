@@ -95,7 +95,7 @@ for (divCounter=1;divCounter<=8;divCounter++){
  divId[divCounter] = document.createElement("div");
  divId[divCounter].innerHTML= '&#x'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
 
- //alert(divId[divCounter].id);
+ //console.log(divId[divCounter].id);
 containerId[containerCounter].appendChild(divId[divCounter]);
 divId[divCounter].id=elementName;
 divId[divCounter].style.position='absolute';
@@ -123,7 +123,7 @@ divId[divCounter].style.backgroundColor='transparent';
 		      node.innerHTML= '&#x'+myarray[Math.round((myarray.length-1)*Math.random())]+';';
               //node.innerHTML= '&#x0021';
 		   } catch ( e ) {
-		      alert("Error: " + e.description + 'Value: ' + elementName );
+		      console.log("Error: " + e.description + 'Value: ' + elementName );
   			 }
 
 
