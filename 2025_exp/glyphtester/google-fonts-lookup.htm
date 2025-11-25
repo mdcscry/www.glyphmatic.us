@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../../js_glyph/google_font_range_coverage.js"></script>
+    <title>Google Fonts Coverage Lookup</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #00ffcc;
+            border-bottom: 1px solid #00ffcc;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #ffcc00;
+            margin-top: 30px;
+        }
+        .section {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #00ffcc;
+            color: #1a1a1a;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #00ddaa;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        input[type="text"] {
+            background: #333;
+            border: 1px solid #555;
+            color: #e0e0e0;
+            padding: 12px;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            border-radius: 4px;
+            width: 200px;
+            margin-right: 10px;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #00ffcc;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            background: #333;
+            border: 1px solid #555;
+            color: #e0e0e0;
+            padding: 12px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #00ffcc;
+        }
+        .success {
+            color: #00ffcc;
+        }
+        .error {
+            color: #ff4444;
+        }
+        #results {
+            margin-top: 15px;
+        }
+        .result-section {
+            margin-bottom: 20px;
+        }
+        .result-section h3 {
+            color: #00ffcc;
+            margin-bottom: 10px;
+        }
+        .font-count {
+            color: #ffcc00;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .glyph-preview {
+            font-size: 48px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #333;
+            display: inline-block;
+            border-radius: 4px;
+        }
+        .font-tester {
+            margin-top: 20px;
+        }
+        .font-samples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .glyph-sample {
+            text-align: center;
+            padding: 10px;
+            background-color: #3a3a3a;
+            border-radius: 3px;
+            min-width: 100px;
+            border: 2px solid transparent;
+        }
+        .glyph-char {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .font-name {
+            font-size: 11px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Fonts Coverage Lookup</h1>
+
+    <div class="section">
+        <h2>Search for Glyph Coverage</h2>
+        <p>Enter a codepoint in hex (e.g., 0F00, U+0F00, 0x0F00) to find fonts that cover it.</p>
+        <input type="text" id="codepointInput" placeholder="e.g., 0F00 or U+0F00">
+        <button onclick="searchCodepoint()">Search</button>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        let loadedFonts = new Set();
+
+        function attachGoogleFont(fontFamily) {
+            if (loadedFonts.has(fontFamily)) {
+                return;
+            }
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontFamily)}`;
+            document.head.appendChild(link);
+            loadedFonts.add(fontFamily);
+        }
+
+        function parseCodepointInput(input) {
+            // Clean up input
+            let hex = input.trim().toUpperCase();
+
+            // Remove common prefixes
+            hex = hex.replace(/^U\+/, '');
+            hex = hex.replace(/^0X/, '');
+
+            // Parse as hex
+            const codepoint = parseInt(hex, 16);
+
+            if (isNaN(codepoint) || codepoint < 0 || codepoint > 0x10FFFF) {
+                return null;
+            }
+
+            return codepoint;
+        }
+
+        function searchCodepoint() {
+            const input = document.getElementById('codepointInput').value;
+            const resultsDiv = document.getElementById('results');
+
+            const codepoint = parseCodepointInput(input);
+
+            if (codepoint === null) {
+                resultsDiv.innerHTML = `<span class="error">Invalid codepoint. Use hex format: 0F00, U+0F00, or 0x0F00</span>`;
+                return;
+            }
+
+            if (typeof coverageData === 'undefined' || Object.keys(coverageData).length === 0) {
+                resultsDiv.innerHTML = `<span class="error">No coverage data loaded. Make sure google_font_range_coverage.js is loaded.</span>`;
+                return;
+            }
+
+            // Find matching fonts
+            const matches = [];
+
+            for (const [fontName, data] of Object.entries(coverageData)) {
+                for (const [start, end] of data.ranges) {
+                    if (codepoint >= start && codepoint <= end) {
+                        matches.push({
+                            name: fontName,
+                            url: data.url
+                        });
+                        break;
+                    }
+                }
+            }
+
+            // Build output
+            const glyphChar = String.fromCodePoint(codepoint);
+            const hexStr = codepoint.toString(16).toUpperCase().padStart(4, '0');
+
+            let html = `
+                <div class="glyph-preview" id="glyphPreview">${glyphChar}</div>
+                <p>Codepoint: U+${hexStr} (decimal: ${codepoint})</p>
+                <p class="font-count">Found ${matches.length} fonts with coverage</p>
+            `;
+
+            if (matches.length > 0) {
+                // Generate @import statements
+                const imports = matches.map(m =>
+                    `@import url('${m.url}');`
+                ).join('\n');
+
+                // Generate font-family list
+                const families = matches.map(m => `"${m.name}"`).join(',\n  ');
+
+                html += `
+                    <div class="result-section">
+                        <h3>@import statements:</h3>
+                        <textarea readonly style="height: 150px;">${imports}</textarea>
+                    </div>
+                    <div class="result-section">
+                        <h3>font-family declarations:</h3>
+                        <textarea readonly style="height: 150px;">font-family:
+  ${families};</textarea>
+                    </div>
+                `;
+
+                // Add font tester section
+                html += `
+                    <div class="font-tester">
+                        <h3 style="color: #00ffcc;">Font Tester - Live Rendering</h3>
+                        <div class="font-samples" id="fontSamples"></div>
+                    </div>
+                `;
+            } else {
+                html += `<p class="error">No Google Fonts found with coverage for this codepoint.</p>`;
+            }
+
+            resultsDiv.innerHTML = html;
+
+            // Load fonts and render samples
+            if (matches.length > 0) {
+                renderFontSamples(matches, glyphChar, codepoint);
+            }
+        }
+
+        function renderFontSamples(matches, glyphChar, codepoint) {
+            const samplesDiv = document.getElementById('fontSamples');
+            if (!samplesDiv) return;
+
+            // Load all fonts first
+            matches.forEach(match => {
+                attachGoogleFont(match.name);
+            });
+
+            // Render samples after a short delay to allow fonts to load
+            setTimeout(() => {
+                samplesDiv.innerHTML = '';
+
+                matches.forEach(match => {
+                    const sample = document.createElement('div');
+                    sample.className = 'glyph-sample';
+
+                    const charSpan = document.createElement('span');
+                    charSpan.className = 'glyph-char';
+                    charSpan.style.fontFamily = `"${match.name}"`;
+                    charSpan.textContent = glyphChar;
+
+                    const fontLabel = document.createElement('div');
+                    fontLabel.className = 'font-name';
+                    fontLabel.textContent = match.name;
+
+                    sample.appendChild(charSpan);
+                    sample.appendChild(fontLabel);
+                    samplesDiv.appendChild(sample);
+                });
+            }, 500);
+        }
+
+        // Allow Enter key to trigger search
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('codepointInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    searchCodepoint();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

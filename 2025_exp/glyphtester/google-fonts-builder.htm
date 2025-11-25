@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Fonts Coverage Builder</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #00ffcc;
+            border-bottom: 1px solid #00ffcc;
+            padding-bottom: 10px;
+        }
+        .section {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #00ffcc;
+            color: #1a1a1a;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #00ddaa;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            background: #333;
+            border: 1px solid #555;
+            color: #e0e0e0;
+            padding: 12px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #00ffcc;
+        }
+        #status {
+            background: #333;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            min-height: 50px;
+            white-space: pre-wrap;
+            font-size: 14px;
+        }
+        #status.working {
+            border-left: 4px solid #ffcc00;
+        }
+        #status.done {
+            border-left: 4px solid #00ffcc;
+        }
+        #status.error {
+            border-left: 4px solid #ff4444;
+        }
+        #jsonOutput {
+            margin-top: 15px;
+        }
+        #jsonOutput h3 {
+            color: #00ffcc;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Fonts Coverage Database Builder</h1>
+
+    <div class="section">
+        <p>Fetches all Google Fonts, parses their unicode-range coverage, and outputs JSON for use in the lookup tool.</p>
+        <button id="initBtn" onclick="initializeCoverage()">Build Database</button>
+        <button id="cancelBtn" onclick="cancelFetch()" disabled>Cancel</button>
+        <button id="downloadBtn" onclick="downloadJson()" style="display:none;">Download JSON</button>
+        <div id="status"></div>
+        <div id="jsonOutput" style="display:none;">
+            <h3>Coverage JSON (copy this):</h3>
+            <textarea id="jsonTextarea" readonly></textarea>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = `https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPEC-k91wzgVIMm9CZSJIINd-WKmR2Wmo`;
+
+        let coverageData = {};
+        let cancelRequested = false;
+
+        // Parse unicode-range like "U+0000-00FF" or "U+0F00" into [start, end] pairs
+        function parseUnicodeRange(rangeStr) {
+            const ranges = [];
+            const parts = rangeStr.split(',').map(s => s.trim());
+
+            for (const part of parts) {
+                // Match patterns like U+0000-00FF or U+0F00 or U+0??0
+                const match = part.match(/U\+([0-9A-Fa-f?]+)(?:-([0-9A-Fa-f]+))?/);
+                if (match) {
+                    let startStr = match[1];
+                    let endStr = match[2];
+
+                    // Handle wildcard ranges like U+0??0
+                    if (startStr.includes('?')) {
+                        const startHex = startStr.replace(/\?/g, '0');
+                        const endHex = startStr.replace(/\?/g, 'F');
+                        ranges.push([parseInt(startHex, 16), parseInt(endHex, 16)]);
+                    } else {
+                        const start = parseInt(startStr, 16);
+                        const end = endStr ? parseInt(endStr, 16) : start;
+                        ranges.push([start, end]);
+                    }
+                }
+            }
+            return ranges;
+        }
+
+        // Merge overlapping/adjacent ranges for cleaner data
+        function mergeRanges(ranges) {
+            if (ranges.length === 0) return [];
+
+            // Sort by start
+            ranges.sort((a, b) => a[0] - b[0]);
+
+            const merged = [ranges[0]];
+            for (let i = 1; i < ranges.length; i++) {
+                const last = merged[merged.length - 1];
+                const current = ranges[i];
+
+                if (current[0] <= last[1] + 1) {
+                    // Overlapping or adjacent, merge
+                    last[1] = Math.max(last[1], current[1]);
+                } else {
+                    merged.push(current);
+                }
+            }
+            return merged;
+        }
+
+        // Fetch CSS for a font and extract unicode-range
+        async function fetchFontCoverage(fontFamily) {
+            const cssUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontFamily)}`;
+
+            try {
+                const response = await fetch(cssUrl, {
+                    headers: {
+                        // Modern user-agent to get woff2
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                    }
+                });
+
+                if (!response.ok) {
+                    return null;
+                }
+
+                const css = await response.text();
+
+                // Extract all unicode-range values
+                const rangeMatches = css.matchAll(/unicode-range:\s*([^;]+);/g);
+                let allRanges = [];
+
+                for (const match of rangeMatches) {
+                    const parsed = parseUnicodeRange(match[1]);
+                    allRanges = allRanges.concat(parsed);
+                }
+
+                if (allRanges.length === 0) {
+                    return null;
+                }
+
+                return {
+                    url: cssUrl,
+                    ranges: mergeRanges(allRanges)
+                };
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function updateStatus(message, className = '') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = className;
+        }
+
+        function appendStatus(message) {
+            const status = document.getElementById('status');
+            status.textContent += '\n' + message;
+        }
+
+        async function initializeCoverage() {
+            const initBtn = document.getElementById('initBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+
+            initBtn.disabled = true;
+            cancelBtn.disabled = false;
+            downloadBtn.style.display = 'none';
+            cancelRequested = false;
+            coverageData = {};
+
+            updateStatus('Fetching font list from Google Fonts API...', 'working');
+
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const fonts = data.items;
+
+                updateStatus(`Found ${fonts.length} fonts. Fetching coverage data...\n`, 'working');
+
+                let processed = 0;
+                let successful = 0;
+                let failed = 0;
+
+                for (const font of fonts) {
+                    if (cancelRequested) {
+                        appendStatus('\n⚠️ Cancelled by user.');
+                        break;
+                    }
+
+                    const family = font.family;
+                    const coverage = await fetchFontCoverage(family);
+
+                    processed++;
+
+                    if (coverage) {
+                        coverageData[family] = coverage;
+                        successful++;
+                    } else {
+                        failed++;
+                    }
+
+                    // Update progress every 10 fonts
+                    if (processed % 10 === 0 || processed === fonts.length) {
+                        updateStatus(
+                            `Found ${fonts.length} fonts. Fetching coverage data...\n` +
+                            `Progress: ${processed}/${fonts.length} (${Math.round(processed/fonts.length*100)}%)\n` +
+                            `✓ ${successful} successful | ✗ ${failed} failed/no-range`,
+                            'working'
+                        );
+                    }
+
+                    // Small delay to avoid rate limiting
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                }
+
+                // Done - output JSON
+                const jsonStr = JSON.stringify(coverageData, null, 2);
+                document.getElementById('jsonTextarea').value = jsonStr;
+                document.getElementById('jsonOutput').style.display = 'block';
+                downloadBtn.style.display = 'inline-block';
+
+                updateStatus(
+                    `✓ Complete!\n` +
+                    `Total fonts processed: ${processed}\n` +
+                    `Fonts with coverage data: ${successful}\n` +
+                    `Fonts without range data: ${failed}\n\n` +
+                    `JSON is ready below. Copy and save it for future use.`,
+                    'done'
+                );
+
+            } catch (e) {
+                updateStatus(`Error: ${e.message}`, 'error');
+            }
+
+            initBtn.disabled = false;
+            cancelBtn.disabled = true;
+        }
+
+        function cancelFetch() {
+            cancelRequested = true;
+            document.getElementById('cancelBtn').disabled = true;
+        }
+
+        function downloadJson() {
+            const jsonStr = document.getElementById('jsonTextarea').value;
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'google-fonts-coverage.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
