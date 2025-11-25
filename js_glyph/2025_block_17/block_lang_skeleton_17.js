@@ -1,6 +1,6 @@
 block_lang =[{}]
 lang_font =[{}]
-
+ block_lang['Egyptian Hieroglyphs Extended-A']=['egyptianheiroglyphics'];
  block_lang['Adlam'] = ['adlam'];
  block_lang['Aegean Numbers'] = ['linearb','aegean'];
  block_lang['Ahom'] = ['ahom'];
@@ -562,7 +562,7 @@ lang_font['anatolianheiroglyphics'] = [ "Noto Sans Anatolian Hieroglyphs"
   ,'Anatolian-local-fonts','Alphabetum-local-otf'
 
 ]
-lang_font['egyptianheiroglyphics'] = [ "Noto Sans Egyptian Hieroglyphs","AegyptusR-local-fonts","AegyptusB-local-fonts"]
+lang_font['egyptianheiroglyphics'] = [ "Noto Sans Egyptian Hieroglyphs","AegyptusR-local-fonts","AegyptusB-local-fonts",'Aegyptus-local-fonts','Gardiner-local-fonts']
 lang_font['georgian'] = [ 
 	"Noto Sans Georgian",
 	"Noto Serif Georgian"       
