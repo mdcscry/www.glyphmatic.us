@@ -1,0 +1,1028 @@
+{
+  "flasher.htm": {
+    "title": "",
+    "layout": "quad-table",
+    "transforms": [],
+    "colorScheme": "limited-palette"
+  },
+  "flasher1.htm": {
+    "title": "",
+    "layout": "unknown",
+    "transforms": [],
+    "colorScheme": "multi-color"
+  },
+  "flasher13.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [],
+    "colorScheme": "multi-color"
+  },
+  "flasher14.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [],
+    "colorScheme": "multi-color"
+  },
+  "flasher15.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [],
+    "colorScheme": "multi-color"
+  },
+  "flasher16.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "saturate"
+    ],
+    "colorScheme": "multi-color"
+  },
+  "flasher17.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [],
+    "colorScheme": "multi-color"
+  },
+  "flasher2.htm": {
+    "title": "",
+    "layout": "unknown",
+    "transforms": [],
+    "colorScheme": "multi-color"
+  },
+  "flasher21.htm": {
+    "title": "",
+    "layout": "unknown",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "multi-color"
+  },
+  "flasher22.htm": {
+    "title": "",
+    "layout": "unknown",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "multi-color"
+  },
+  "flasher23.htm": {
+    "title": "",
+    "layout": "unknown",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher24.htm": {
+    "title": "Box Drawer",
+    "layout": "unknown",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher25.htm": {
+    "title": "Spots",
+    "layout": "unknown",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher25a.htm": {
+    "title": "Spots",
+    "layout": "unknown",
+    "transforms": [
+      "blur"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher26.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateZ",
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher27.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "rotateZ",
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher27a.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "rotateZ",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher27b.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "rotateZ",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher27c.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "rotateZ",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher27d-cuni.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "rotateZ",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher27d-hsla.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "rotateZ",
+      "opacity"
+    ],
+    "colorScheme": "hsla"
+  },
+  "flasher27d-hsla1.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "rotateZ",
+      "opacity"
+    ],
+    "colorScheme": "hsla"
+  },
+  "flasher27d-maya.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "rotateZ",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher27d-org.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "rotateZ",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher27d.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "rotateZ",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher27e-hsla.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "opacity"
+    ],
+    "colorScheme": "hsla"
+  },
+  "flasher27f-hsla.htm": {
+    "title": "Vai tripper",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "opacity"
+    ],
+    "colorScheme": "hsla"
+  },
+  "flasher27g-hsla.htm": {
+    "title": "Emoji tripper",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "opacity"
+    ],
+    "colorScheme": "hsla"
+  },
+  "flasher27h-hsla.htm": {
+    "title": "Aegyptus tripper",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "opacity"
+    ],
+    "colorScheme": "hsla"
+  },
+  "flasher27i-hsla.htm": {
+    "title": "Cuneiform tripper",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "opacity"
+    ],
+    "colorScheme": "hsla"
+  },
+  "flasher27j-vai-hsla.htm": {
+    "title": "Vai tripper",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "opacity"
+    ],
+    "colorScheme": "hsla"
+  },
+  "flasher27k-diacrit-hsla.htm": {
+    "title": "Diacrit tripper",
+    "layout": "unknown",
+    "transforms": [
+      "rotateX",
+      "rotateY"
+    ],
+    "colorScheme": "hsla"
+  },
+  "flasher27l-anatolian-hsla.htm": {
+    "title": "Anatolian tripper",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "opacity"
+    ],
+    "colorScheme": "hsla"
+  },
+  "flasher27m-creteminoan-hsla.htm": {
+    "title": "Crete Minoan tripper",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "opacity"
+    ],
+    "colorScheme": "hsla"
+  },
+  "flasher27m-sym-hsla.htm": {
+    "title": "Symbola tripper",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "opacity"
+    ],
+    "colorScheme": "hsla"
+  },
+  "flasher28.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "rotateZ",
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "multi-color"
+  },
+  "flasher29-new_selection.htm": {
+    "title": "Animated Mandalelectrick-new selection",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "rotateZ",
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher29.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateX",
+      "rotateY",
+      "rotateZ",
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher3.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [],
+    "colorScheme": "multi-color"
+  },
+  "flasher30-display.htm": {
+    "title": "Pure Slow Single Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher30.htm": {
+    "title": "Pure Slow Single Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher31.htm": {
+    "title": "Background Still attached full screen fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher32.htm": {
+    "title": "Fader with Background Fix Explosion",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher33.htm": {
+    "title": " Explosion limited color palette starts white and orange",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher34-aegean-rotate.htm": {
+    "title": "Mandalelectrick-aegean-rotate + transform",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateZ",
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher34-aegean.htm": {
+    "title": "Mandalelectrick-new selection",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateZ",
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher34-new_selection.htm": {
+    "title": "Mandalelectrick-new selection",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher34-triangles.htm": {
+    "title": "Mandalelectrick-triangles",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "multi-color"
+  },
+  "flasher34.htm": {
+    "title": "Mandalelectrick",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "multi-color"
+  },
+  "flasher34_ff.htm": {
+    "title": "Mandalelectrick",
+    "layout": "fullscreen",
+    "transforms": [],
+    "colorScheme": "unknown"
+  },
+  "flasher34a-arabic.htm": {
+    "title": "Mandalelectrick-arabic-all googlefonts",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher34a-yi-code2000.htm": {
+    "title": "Mandalelectrick",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher34a-yi.htm": {
+    "title": "Mandalelectrick-Yi",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher35-aegeanheiro-out1.htm": {
+    "title": "Rectangle fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher35-arabic-ayesha1.htm": {
+    "title": "Ayesha Little Kid",
+    "layout": "unknown",
+    "transforms": [
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher35-arabic-nouri1.htm": {
+    "title": "Nouri Little Kid",
+    "layout": "unknown",
+    "transforms": [
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher35-braille-out1.htm": {
+    "title": "Full Old Persian Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher35-fullarabic-glagotrans-out1.htm": {
+    "title": "Full Arabic Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher35-fullarabic-out1.htm": {
+    "title": "Full Arabic Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher35-fullarabic-urdu-out1.htm": {
+    "title": "Full Arabic Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher35-fullarabic-urdutrans-out1.htm": {
+    "title": "Full Arabic Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher35-fulltelugu-out1.htm": {
+    "title": "Telugu Syllables Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher35-miscsym-out1.htm": {
+    "title": "Full Old Persian Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher35-mph.htm": {
+    "title": "All Colors Mandala Explos-ian mph",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher35-telugu-amrutha.htm": {
+    "title": "Telugu Syllables Scattered Fader",
+    "layout": "unknown",
+    "transforms": [
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher35-telugu-amrutha1.htm": {
+    "title": "Telugu Syllables Scattered Fader",
+    "layout": "unknown",
+    "transforms": [
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher35-telugu-amrutha1big.htm": {
+    "title": "Amrutha Little Kid",
+    "layout": "unknown",
+    "transforms": [
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher35.htm": {
+    "title": "All Colors Mandala Explos-ian starts white and orange",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher36.htm": {
+    "title": "Symbola Mandalelectrick",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher37.htm": {
+    "title": "Sun-exta Mandalelectrick",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher38-code2000.htm": {
+    "title": "Code 2000 Mandalelectrick",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher38.htm": {
+    "title": "Quivera Mandalelectrick",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher39-fullarabic-out1.htm": {
+    "title": "Full Arabic Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher39-fullarabic-out3.htm": {
+    "title": "Full Arabic Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateZ",
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher39-maya-out.htm": {
+    "title": "Maya Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher39-maya-out1.htm": {
+    "title": "Maya Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher39-maya-out2.htm": {
+    "title": "Maya Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher39-maya-out3.htm": {
+    "title": "Maya Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateZ",
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher39-maya.htm": {
+    "title": "Maya Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher39-mph-out.htm": {
+    "title": "MPH Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher39-mph.htm": {
+    "title": "MPH Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher39-sun-minout3.htm": {
+    "title": "Sun Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateZ",
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher39-sun-out3.htm": {
+    "title": "Sun Scattered Fader",
+    "layout": "fullscreen",
+    "transforms": [
+      "rotateZ",
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher39.htm": {
+    "title": "ARIAL MS UNICODE MANDALA",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher4.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [],
+    "colorScheme": "multi-color"
+  },
+  "flasher40.htm": {
+    "title": "ARIAL MS UNICODE MANDALA",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher41.htm": {
+    "title": "ARIAL MS UNICODE MANDALA",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher42.htm": {
+    "title": "ARIAL MS UNICODE MANDALA",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher43-drop-hangul-side-gray.htm": {
+    "title": "UNICODE MANDALA",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "multi-color"
+  },
+  "flasher43-drop-hangul-side-graycol.htm": {
+    "title": "UNICODE MANDALA",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "multi-color"
+  },
+  "flasher43-drop-hangul-side-grayprimcol.htm": {
+    "title": "UNICODE MANDALA",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "multi-color"
+  },
+  "flasher43-drop-hangul-side.htm": {
+    "title": "UNICODE MANDALA",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher43-drop-hangul.htm": {
+    "title": "UNICODE MANDALA",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher43-drop-mandala.htm": {
+    "title": "UNICODE MANDALA",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher43-drop-mandalastroke.htm": {
+    "title": "ARIAL MS UNICODE MANDALA",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher43-drop.htm": {
+    "title": "MANDALA",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher43.htm": {
+    "title": "ARIAL MS UNICODE MANDALA",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher44.htm": {
+    "title": "44.Asian Circles",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher45.htm": {
+    "title": "45.Asian Circles Bold",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher45arabic.htm": {
+    "title": "48.Arabic  Bold",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher46.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher47.htm": {
+    "title": "HUGE BLOCK",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher49-new_selection.htm": {
+    "title": "All Colors New Selection Explos",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher49-new_weird_latin.htm": {
+    "title": "All Colors Latin Explos",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher49-new_weird_latin_newselection.htm": {
+    "title": "49.All Colors Explos-latin new selection",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "unknown"
+  },
+  "flasher5.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur"
+    ],
+    "colorScheme": "multi-color"
+  },
+  "flasher6.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur"
+    ],
+    "colorScheme": "multi-color"
+  },
+  "flasher7.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur"
+    ],
+    "colorScheme": "multi-color"
+  },
+  "flasher8.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [],
+    "colorScheme": "limited-palette"
+  },
+  "flasher9a.htm": {
+    "title": "",
+    "layout": "unknown",
+    "transforms": [],
+    "colorScheme": "limited-palette"
+  },
+  "flasher9b.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher9c.htm": {
+    "title": "",
+    "layout": "fullscreen",
+    "transforms": [
+      "blur",
+      "opacity"
+    ],
+    "colorScheme": "limited-palette"
+  },
+  "flasher_hsla.htm": {
+    "title": "",
+    "layout": "quad-table",
+    "transforms": [],
+    "colorScheme": "hsla"
+  },
+  "flasher_hsla_maya.htm": {
+    "title": "",
+    "layout": "quad-table",
+    "transforms": [],
+    "colorScheme": "hsla"
+  },
+  "flasher_hsla_mph.htm": {
+    "title": "",
+    "layout": "quad-table",
+    "transforms": [],
+    "colorScheme": "hsla"
+  }
+}
