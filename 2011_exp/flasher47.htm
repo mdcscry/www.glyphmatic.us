@@ -389,7 +389,7 @@ DIV   {
       -webkit-transition-property: background-color,color;
       -webkit-transition-duration: 1s,1s;
         padding:0px;
-		margin:0px;l
+		margin:0px;
 
 	 	text-align: center;
 	 	height:1px;
@@ -625,8 +625,8 @@ var elem1 = document.getElementById("myid1");
 var elem2_bg = document.getElementById("myid2_bck");
 
 var textChangeRate1=25000;
-var bgColChangeRate=200000;
-var fontChangeRate=80000;
+var bgColChangeRate=20000;
+var fontChangeRate=8000;
 var fontSizeFactorMultiple=400;
 var fontSizeFactorAddOn=2200;
 var animationPlayState=75000;
@@ -660,17 +660,17 @@ function changeColor(){
 	window.setInterval(function(){
 		elem5.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())]; },Math.random()*fontChangeRate+50000);
 	window.setInterval(function(){
-		elem6.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())]; },Math.random()*fontChangeRate+50000);
+		elem6.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())]; },Math.random()*fontChangeRate+30000);
 	window.setInterval(function(){
 		elem7.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())]; },Math.random()*fontChangeRate+50000);
 	window.setInterval(function(){
-		elem8.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())]; },Math.random()*fontChangeRate+50000);
+		elem8.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())]; },Math.random()*fontChangeRate+20000);
 	window.setInterval(function(){
 		elem9.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())]; },Math.random()*fontChangeRate+50000);
 	window.setInterval(function(){
 		elem10.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())]; },Math.random()*fontChangeRate+50000);
 	window.setInterval(function(){
-		elem11.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())]; },Math.random()*fontChangeRate+50000);
+		elem11.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())]; },Math.random()*fontChangeRate+1000);
 	window.setInterval(function(){
 		elem12.style.color= mycolors[Math.round((mycolors.length-1)*Math.random())]; },Math.random()*fontChangeRate+50000);
 
