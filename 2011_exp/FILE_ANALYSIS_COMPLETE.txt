@@ -1,0 +1,1839 @@
+COMPREHENSIVE ANALYSIS OF 202 HTML FILES IN /Users/mcryer/Documents/www.glyphmatic.us/2011_exp/
+Generated on 2025-11-25
+=====================================================================================================
+
+SUMMARY STATISTICS:
+- Total files analyzed: 202
+- flasher series: 95 files
+- degenerator series: 62 files
+- dagenerator series: 7 files
+- spiral series: 7 files
+- bullseye series: 5 files
+- f-series: 6 files
+- DeGenerator: 1 file
+- s6-series: 2 files
+- heiro series: 1 file
+- oneten series: 1 file
+- hiragana: 1 file
+- misc: 14 files
+
+DETAILED FILE-BY-FILE ANALYSIS:
+=====================================================================================================
+
+FILENAME: DeGenerator-all-circle-glyphs.htm
+TITLE: 2.DeGenerator-all circle glyphs
+GLYPH_SET: Circle symbols/glyphs
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: DeGenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: bullseye-gen1-circles-smallopt.htm
+TITLE: 2.bullseye-gen1-circles-smallopt
+GLYPH_SET: Circle symbols/glyphs
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: bullseye
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: bullseye-gen1-smallopt.htm
+TITLE: bullseye-gen1-smallopt
+GLYPH_SET: ,10625
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: bullseye
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: bullseye-gen2-circles-smalloptmoving.htm
+TITLE: 2.bullseye-gen1-circles-smallopt
+GLYPH_SET: Circle symbols/glyphs
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: bullseye
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: bullseye-gen2-triangles-smalloptmoving.htm
+TITLE: 3.bullseye-gen1-triangles-smallopt
+GLYPH_SET: Triangle symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: bullseye
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: dagenerator1.htm
+TITLE: 1.DaGenerator-only ms unicode glyphs
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: standard colors
+SERIES: dagenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: dagenerator2.htm
+TITLE: 2.DaGenerator-box_elements
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: standard colors
+SERIES: dagenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: dagenerator2a.htm
+TITLE: 2a.DaGenerator-box_elements
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: rotating
+EFFECTS: shadows
+SERIES: dagenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: dagenerator3.htm
+TITLE: 3.DaGenerator-tiny block elements
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: standard colors
+SERIES: dagenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: dagenerator4.htm
+TITLE: 4.DaGenerator-tiny block elements
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: standard colors
+SERIES: dagenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: dagenerator5.htm
+TITLE: 5.DaGenerator-cuneiform
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: standard colors
+SERIES: dagenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: dagenerator6.htm
+TITLE: 6.DaGenerator-cuneiform 2 glyphs 2 colors
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: standard colors
+SERIES: dagenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: dagenerator7.htm
+TITLE: 7.DaGenerator-cuneiform
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: standard colors
+SERIES: dagenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degen10-1.htm
+TITLE: DeGenerator-Ugaritic
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1.htm
+TITLE: 1.DeGenerator
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator10-allcolorsagean-sepiadesat-lgopt180.htm
+TITLE: 6.DeGenerator-aegean-sepia lgoptopt-large
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, sepia, blur, opacity, desaturated, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator10-ugaritic.htm
+TITLE: 6.DeGenerator-ugaritic
+GLYPH_SET: Ugaritic
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator11-allcolorssticks.htm
+TITLE: 6.DeGenerator-aegean-sepia lgoptopt-large
+GLYPH_SET: Stick/line figures
+ANIMATION: moving/morphing
+EFFECTS: HSLA, sepia, opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator11-allcolorsstickssepiadesat-lgopt180.htm
+TITLE: 6.DeGenerator-aegean-sepia lgoptopt-large
+GLYPH_SET: Stick/line figures
+ANIMATION: moving/morphing
+EFFECTS: HSLA, sepia, blur, opacity, desaturated, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator12-allcolorssticks.htm
+TITLE: 6.DeGenerator-aegean-sepia lgoptopt-large
+GLYPH_SET: Stick/line figures
+ANIMATION: moving/morphing
+EFFECTS: sepia, blur, opacity, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator13-allcolorssticks.htm
+TITLE: 6.DeGenerator-aegean-sepia lgoptopt-large
+GLYPH_SET: Stick/line figures
+ANIMATION: moving/morphing
+EFFECTS: sepia, opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1a.htm
+TITLE: 1.DeGenerator
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1b.htm
+TITLE: 1.DeGenerator-Syllabic
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1b1.htm
+TITLE: 1.DeGenerator-Kangxi Radicals
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1b2.htm
+TITLE: 1.DeGenerator-CJK Radicals
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1b3.htm
+TITLE: 1.DeGenerator-MPH
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1b4.htm
+TITLE: 1.DeGenerator-MPH-glago
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1c.htm
+TITLE: 1.DeGenerator-BaliJavaTibet
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1c1.htm
+TITLE: 1.DeGenerator-MPH
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1d.htm
+TITLE: 1.DeGenerator-Byzantine
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1e-byzcolor-column.htm
+TITLE: 1.DeGenerator-Byzantine
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1e-byzcolor.htm
+TITLE: 1.DeGenerator-Byzantine
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1e-heirocolor-freq.htm
+TITLE: 1.DeGenerator-heiro Platform
+GLYPH_SET: Egyptian Hieroglyphs
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1e-heirocolor.htm
+TITLE: 1.DeGenerator-heiro Platform
+GLYPH_SET: Egyptian Hieroglyphs
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1e-heirocolor6.htm
+TITLE: 1.DeGenerator-heiro Platform
+GLYPH_SET: Egyptian Hieroglyphs
+ANIMATION: moving/morphing
+EFFECTS: HSLA
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1e-heirocolor6lg.htm
+TITLE: 1.DeGenerator-heiro Platform
+GLYPH_SET: Egyptian Hieroglyphs
+ANIMATION: moving/morphing
+EFFECTS: HSLA
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator1e.htm
+TITLE: 1.DeGenerator-Byzantine
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator2.htm
+TITLE: 2.DeGenerator-all circle glyphs
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator3.htm
+TITLE: 3.DeGenerator-BIG circles
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator4.htm
+TITLE: 4.DeGenerator-all circle glyphs Big Screen
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator5-aegean.htm
+TITLE: 5.DeGenerator-gratings
+GLYPH_SET: Aegean Numbers
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator5-gratings.htm
+TITLE: 5.DeGenerator-gratings
+GLYPH_SET: Line/grating symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-1contallcolorsagean-sepiablur-lgopt180.htm
+TITLE: 6.DeGenerator-aegean-sepia lgoptopt-large
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: sepia, blur, opacity, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorsagean-lgopt180.htm
+TITLE: 6.DeGenerator-aegean-lgoptopt-round
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorsagean-sepia-lgopt180.htm
+TITLE: 6.DeGenerator-aegean-sepia lgoptopt-large
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: sepia, blur, opacity, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorsagean-sepiablur-lgopt180.htm
+TITLE: 6.DeGenerator-aegean-sepia lgoptopt-large
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: sepia, blur, opacity, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorsagean-sepiablur-pure_blur_orig.htm
+TITLE: 6.DeGenerator-aegean-sepia lgoptopt-large
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: sepia, blur, opacity, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorsagean-sepiablurpure.htm
+TITLE: 6.DeGenerator-aegean-sepia lgoptopt-large
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: sepia, blur, opacity, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorsagean-smallopt.htm
+TITLE: 6.DeGenerator-greengratings-smallopt-round
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorsagean-smallopt180.htm
+TITLE: 6.DeGenerator-greengratings-smallopt-round
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorsagean-supersat-lgopt180.htm
+TITLE: 6.DeGenerator-aegean-supersat lgoptopt-large
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity, super-saturated, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorsallgratings-smallopt.htm
+TITLE: 6.DeGenerator-all colors-gratings-smallopt-round
+GLYPH_SET: ,10625
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorsbalijavatibet-supersat-lgopt180.htm
+TITLE: 6.DeGenerator-aegean-supersat lgoptopt-large
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity, super-saturated, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorsbalijavatibet-supersat6-lgopt180.htm
+TITLE: 6.DeGenerator-aegean-supersat lgoptopt-large
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity, super-saturated, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorscircles-lg-opt.htm
+TITLE: 6.DeGenerator-all-colors-circles-lg-opt
+GLYPH_SET: Circle symbols/glyphs
+ANIMATION: fading/flashing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorsgratings-lg-opt.htm
+TITLE: 6.DeGenerator-all-colors-gratings-lg-opt
+GLYPH_SET: ,10625
+ANIMATION: fading/flashing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorsgratings-smallopt-code2000.htm
+TITLE: 6.DeGenerator-greengratings-smallopt-round
+GLYPH_SET: ,10625
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorsgratings-smallopt.htm
+TITLE: 6.DeGenerator-all colors-gratings-smallopt-round
+GLYPH_SET: ,127745, ,10625
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-allcolorsyllabic-smallopt180.htm
+TITLE: 6.DeGenerator-greengratings-smallopt-round
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-greengratings-smallopt.htm
+TITLE: 6.DeGenerator-greengratings-smallopt-round
+GLYPH_SET: ,10625
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator6-greengratings.htm
+TITLE: 5.DeGenerator-greengratings
+GLYPH_SET: ,10625
+ANIMATION: moving/morphing
+EFFECTS: HSLA, opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator7-allcolorsallgratings_lg-smallopt-trans.htm
+TITLE: 6.DeGenerator-all colors-gratings-smallopt-round
+GLYPH_SET: Line/grating symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, opacity, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator7-allcolorsallgratings_lg-smallopt.htm
+TITLE: 6.DeGenerator-all colors-gratings-smallopt-round
+GLYPH_SET: Line/grating symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator7-allcolorsquivira_lg-smallopt-trans.htm
+TITLE: 6.DeGenerator-all colors-gratings-smallopt-round
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, opacity, shadows
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator8-allcolorsaegean-smallopt.htm
+TITLE: 8.DeGenerator-all colors-aegean-smallopt-round
+GLYPH_SET: Aegean Numbers
+ANIMATION: moving/morphing
+EFFECTS: HSLA, opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator8-allcolorstriangles-smallopt.htm
+TITLE: 8.DeGenerator-all colors-aegean-smallopt-round
+GLYPH_SET: Triangle symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator9-allcolorsaegean-lg-opt.htm
+TITLE: 9.DeGenerator-all-colors-aegean-lg-opt
+GLYPH_SET: Aegean Numbers
+ANIMATION: fading/flashing
+EFFECTS: HSLA, opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: degenerator9-small_multiple_glyph_aegean.htm
+TITLE: 9.DeGenerator-all-colors-aegean-lg-opt
+GLYPH_SET: Aegean Numbers
+ANIMATION: fading/flashing
+EFFECTS: HSLA, opacity
+SERIES: degenerator
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: f2-diff.htm
+TITLE: Spiral Painter
+GLYPH_SET: MS Unicode mix (varied symbols)
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: f-series
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: f2-diff2.htm
+TITLE: Spiral Painter
+GLYPH_SET: Aegean Numbers (10100-10133)
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: f-series
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: f2-diff3.htm
+TITLE: Spiral Painter
+GLYPH_SET: Aegean Numbers (10100-10133)
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: f-series
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: f2.htm
+TITLE: Spiral Painter
+GLYPH_SET: Aegean Numbers (10100-10133)
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: f-series
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: f2xyz.htm
+TITLE: F2. MS Unicode Spiral Painter
+GLYPH_SET: Aegean Numbers (10100-10133)
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: f-series
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: f3.htm
+TITLE: Spiral SuperPainters
+GLYPH_SET: Aegean Numbers (10100-10133)
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: f-series
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: standard colors
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher1.htm
+TITLE: No title
+GLYPH_SET: with optical
+ANIMATION: moving/morphing
+EFFECTS: standard colors
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher13.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher14.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher15.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher16.htm
+TITLE: No title
+GLYPH_SET: cuneiform
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher17.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher2.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher21.htm
+TITLE: No title
+GLYPH_SET: cuneiform
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher22.htm
+TITLE: No title
+GLYPH_SET: cuneiform, with optical
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher23.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher24.htm
+TITLE: Box Drawer
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher25.htm
+TITLE: Spots
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher25a.htm
+TITLE: Spots
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher26.htm
+TITLE: No title
+GLYPH_SET: smiley faces, right of way, cross shadow circle
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher27.htm
+TITLE: No title
+GLYPH_SET: smiley faces, right of way, cross shadow circle
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher27a.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher27b.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher27c.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher27d-cuni.htm
+TITLE: No title
+GLYPH_SET: Cuneiform
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher27d-hsla.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: HSLA color studies
+NOTES: 
+--
+FILENAME: flasher27d-hsla1.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: HSLA color studies
+NOTES: 
+--
+FILENAME: flasher27d-maya.htm
+TITLE: No title
+GLYPH_SET: Mayan numerals
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Mayan numerals
+NOTES: 
+--
+FILENAME: flasher27d-org.htm
+TITLE: No title
+GLYPH_SET: smiley faces
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher27d.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher27e-hsla.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: HSLA color studies
+NOTES: 
+--
+FILENAME: flasher27f-hsla.htm
+TITLE: Vai tripper
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: HSLA color studies
+NOTES: 
+--
+FILENAME: flasher27g-hsla.htm
+TITLE: Emoji tripper
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: HSLA color studies
+NOTES: 
+--
+FILENAME: flasher27h-hsla.htm
+TITLE: Aegyptus tripper
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: HSLA color studies
+NOTES: 
+--
+FILENAME: flasher27i-hsla.htm
+TITLE: Cuneiform tripper
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: HSLA color studies
+NOTES: 
+--
+FILENAME: flasher27j-vai-hsla.htm
+TITLE: Vai tripper
+GLYPH_SET: Vai script
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: HSLA color studies
+NOTES: 
+--
+FILENAME: flasher27k-diacrit-hsla.htm
+TITLE: Diacrit tripper
+GLYPH_SET: Diacritical marks
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, shadows
+SERIES: flasher
+SUBSERIES: HSLA color studies
+NOTES: 
+--
+FILENAME: flasher27l-anatolian-hsla.htm
+TITLE: Anatolian tripper
+GLYPH_SET: Anatolian hieroglyphs
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: HSLA color studies
+NOTES: 
+--
+FILENAME: flasher27m-creteminoan-hsla.htm
+TITLE: Crete Minoan tripper
+GLYPH_SET: Cretan/Minoan
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: HSLA color studies
+NOTES: 
+--
+FILENAME: flasher27m-sym-hsla.htm
+TITLE: Symbola tripper
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: HSLA color studies
+NOTES: 
+--
+FILENAME: flasher28.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher29-new_selection.htm
+TITLE: Animated Mandalelectrick-new selection
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: New glyph selection, Version 29
+NOTES: 
+--
+FILENAME: flasher29.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher3.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher30-display.htm
+TITLE: Pure Slow Single Fader
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: Version 30
+NOTES: 
+--
+FILENAME: flasher30.htm
+TITLE: Pure Slow Single Fader
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher31.htm
+TITLE: Background Still attached full screen fader
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher32.htm
+TITLE: Fader with Background Fix Explosion
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher33.htm
+TITLE: Explosion limited color palette starts white and orange
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher34-aegean-rotate.htm
+TITLE: Mandalelectrick-aegean-rotate + transform
+GLYPH_SET: Aegean Numbers
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: Version 34
+NOTES: 
+--
+FILENAME: flasher34-aegean.htm
+TITLE: Mandalelectrick-new selection
+GLYPH_SET: Aegean Numbers
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: Version 34
+NOTES: 
+--
+FILENAME: flasher34-new_selection.htm
+TITLE: Mandalelectrick-new selection
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: New glyph selection, Version 34
+NOTES: 
+--
+FILENAME: flasher34-triangles.htm
+TITLE: Mandalelectrick-triangles
+GLYPH_SET: Triangle symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: Version 34
+NOTES: 
+--
+FILENAME: flasher34.htm
+TITLE: Mandalelectrick
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher34_ff.htm
+TITLE: Mandalelectrick
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: fading/flashing
+EFFECTS: blur, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher34a-arabic.htm
+TITLE: Mandalelectrick-arabic-all googlefonts
+GLYPH_SET: Arabic script
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: Arabic variations
+NOTES: 
+--
+FILENAME: flasher34a-yi-code2000.htm
+TITLE: Mandalelectrick
+GLYPH_SET: Yi syllables
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher34a-yi.htm
+TITLE: Mandalelectrick-Yi
+GLYPH_SET: Yi syllables
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher35-aegeanheiro-out1.htm
+TITLE: Rectangle fader
+GLYPH_SET: Egyptian Hieroglyphs
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Outlier/output version, Version 35
+NOTES: 
+--
+FILENAME: flasher35-arabic-ayesha1.htm
+TITLE: Ayesha Little Kid
+GLYPH_SET: Various symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Arabic variations, Version 35
+NOTES: 
+--
+FILENAME: flasher35-arabic-nouri1.htm
+TITLE: Nouri Little Kid
+GLYPH_SET: Various symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Arabic variations, Version 35
+NOTES: 
+--
+FILENAME: flasher35-braille-out1.htm
+TITLE: Full Old Persian Scattered Fader
+GLYPH_SET: Braille patterns
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Outlier/output version, Version 35
+NOTES: 
+--
+FILENAME: flasher35-fullarabic-glagotrans-out1.htm
+TITLE: Full Arabic Scattered Fader
+GLYPH_SET: Arabic script
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Arabic variations, Outlier/output version, Version 35
+NOTES: 
+--
+FILENAME: flasher35-fullarabic-out1.htm
+TITLE: Full Arabic Scattered Fader
+GLYPH_SET: Arabic script
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Arabic variations, Outlier/output version, Version 35
+NOTES: 
+--
+FILENAME: flasher35-fullarabic-urdu-out1.htm
+TITLE: Full Arabic Scattered Fader
+GLYPH_SET: Arabic script
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Arabic variations, Outlier/output version, Version 35
+NOTES: 
+--
+FILENAME: flasher35-fullarabic-urdutrans-out1.htm
+TITLE: Full Arabic Scattered Fader
+GLYPH_SET: Arabic script
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Arabic variations, Outlier/output version, Version 35
+NOTES: 
+--
+FILENAME: flasher35-fulltelugu-out1.htm
+TITLE: Telugu Syllables Scattered Fader
+GLYPH_SET: Telugu script
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Outlier/output version, Version 35
+NOTES: 
+--
+FILENAME: flasher35-miscsym-out1.htm
+TITLE: Full Old Persian Scattered Fader
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Outlier/output version, Version 35
+NOTES: 
+--
+FILENAME: flasher35-mph.htm
+TITLE: All Colors Mandala Explos-ian mph
+GLYPH_SET: Meroitic/Phoenician/Historical
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: Version 35
+NOTES: 
+--
+FILENAME: flasher35-telugu-amrutha.htm
+TITLE: Telugu Syllables Scattered Fader
+GLYPH_SET: Telugu script
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Version 35
+NOTES: 
+--
+FILENAME: flasher35-telugu-amrutha1.htm
+TITLE: Telugu Syllables Scattered Fader
+GLYPH_SET: Various symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Version 35
+NOTES: 
+--
+FILENAME: flasher35-telugu-amrutha1big.htm
+TITLE: Amrutha Little Kid
+GLYPH_SET: Various symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Version 35
+NOTES: 
+--
+FILENAME: flasher35.htm
+TITLE: All Colors Mandala Explos-ian starts white and orange
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher36.htm
+TITLE: Symbola Mandalelectrick
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher37.htm
+TITLE: Sun-exta Mandalelectrick
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher38-code2000.htm
+TITLE: Code 2000 Mandalelectrick
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: Version 38
+NOTES: 
+--
+FILENAME: flasher38.htm
+TITLE: Quivera Mandalelectrick
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher39-fullarabic-out1.htm
+TITLE: Full Arabic Scattered Fader
+GLYPH_SET: Arabic script
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Arabic variations, Outlier/output version, Version 39
+NOTES: 
+--
+FILENAME: flasher39-fullarabic-out3.htm
+TITLE: Full Arabic Scattered Fader
+GLYPH_SET: Arabic script
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: Arabic variations, Outlier/output version, Version 39
+NOTES: 
+--
+FILENAME: flasher39-maya-out.htm
+TITLE: Maya Scattered Fader
+GLYPH_SET: Mayan numerals
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Mayan numerals, Version 39
+NOTES: 
+--
+FILENAME: flasher39-maya-out1.htm
+TITLE: Maya Scattered Fader
+GLYPH_SET: Mayan numerals
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Mayan numerals, Outlier/output version, Version 39
+NOTES: 
+--
+FILENAME: flasher39-maya-out2.htm
+TITLE: Maya Scattered Fader
+GLYPH_SET: Mayan numerals
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Mayan numerals, Outlier/output version, Version 39
+NOTES: 
+--
+FILENAME: flasher39-maya-out3.htm
+TITLE: Maya Scattered Fader
+GLYPH_SET: Mayan numerals
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: Mayan numerals, Outlier/output version, Version 39
+NOTES: 
+--
+FILENAME: flasher39-maya.htm
+TITLE: Maya Scattered Fader
+GLYPH_SET: Mayan numerals
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: Mayan numerals, Version 39
+NOTES: 
+--
+FILENAME: flasher39-mph-out.htm
+TITLE: MPH Scattered Fader
+GLYPH_SET: Meroitic/Phoenician/Historical
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Version 39
+NOTES: 
+--
+FILENAME: flasher39-mph.htm
+TITLE: MPH Scattered Fader
+GLYPH_SET: Meroitic/Phoenician/Historical
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Version 39
+NOTES: 
+--
+FILENAME: flasher39-sun-minout3.htm
+TITLE: Sun Scattered Fader
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: Outlier/output version, Version 39
+NOTES: 
+--
+FILENAME: flasher39-sun-out3.htm
+TITLE: Sun Scattered Fader
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: Outlier/output version, Version 39
+NOTES: 
+--
+FILENAME: flasher39.htm
+TITLE: ARIAL MS UNICODE MANDALA
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher4.htm
+TITLE: No title
+GLYPH_SET: with optical
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher40.htm
+TITLE: ARIAL MS UNICODE MANDALA
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher41.htm
+TITLE: ARIAL MS UNICODE MANDALA
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher42.htm
+TITLE: ARIAL MS UNICODE MANDALA
+GLYPH_SET: 4 small rings frame, ,3792,3792,3792,3792, ,3175,3175,3175,3175, ,3859,3859,3859,3859,3859, small center uppercircle
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher43-drop-hangul-side-gray.htm
+TITLE: UNICODE MANDALA
+GLYPH_SET: MS Unicode mix (varied symbols)
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Drop shadow effects, Version 43
+NOTES: 
+--
+FILENAME: flasher43-drop-hangul-side-graycol.htm
+TITLE: UNICODE MANDALA
+GLYPH_SET: MS Unicode mix (varied symbols)
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Drop shadow effects, Version 43
+NOTES: 
+--
+FILENAME: flasher43-drop-hangul-side-grayprimcol.htm
+TITLE: UNICODE MANDALA
+GLYPH_SET: MS Unicode mix (varied symbols)
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Drop shadow effects, Version 43
+NOTES: 
+--
+FILENAME: flasher43-drop-hangul-side.htm
+TITLE: UNICODE MANDALA
+GLYPH_SET: MS Unicode mix (varied symbols)
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Drop shadow effects, Version 43
+NOTES: 
+--
+FILENAME: flasher43-drop-hangul.htm
+TITLE: UNICODE MANDALA
+GLYPH_SET: MS Unicode mix (varied symbols)
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Drop shadow effects, Version 43
+NOTES: 
+--
+FILENAME: flasher43-drop-mandala.htm
+TITLE: UNICODE MANDALA
+GLYPH_SET: MS Unicode mix (varied symbols)
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Drop shadow effects, Version 43
+NOTES: 
+--
+FILENAME: flasher43-drop-mandalastroke.htm
+TITLE: ARIAL MS UNICODE MANDALA
+GLYPH_SET: MS Unicode mix (varied symbols)
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Drop shadow effects, Version 43
+NOTES: 
+--
+FILENAME: flasher43-drop.htm
+TITLE: MANDALA
+GLYPH_SET: MS Unicode mix (varied symbols)
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, shadows, CSS filters
+SERIES: flasher
+SUBSERIES: Drop shadow effects, Version 43
+NOTES: 
+--
+FILENAME: flasher43.htm
+TITLE: ARIAL MS UNICODE MANDALA
+GLYPH_SET: 4 small rings frame, ,3792,3792,3792,3792, ,3175,3175,3175,3175, ,3859,3859,3859,3859,3859, small center uppercircle
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher44.htm
+TITLE: 44.Asian Circles
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher45.htm
+TITLE: 45.Asian Circles Bold
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher45arabic.htm
+TITLE: 48.Arabic  Bold
+GLYPH_SET: Arabic script
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: Arabic variations
+NOTES: 
+--
+FILENAME: flasher46.htm
+TITLE: No title
+GLYPH_SET: with optical
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher47.htm
+TITLE: HUGE BLOCK
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher49-new_selection.htm
+TITLE: All Colors New Selection Explos
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: New glyph selection, Version 49
+NOTES: 
+--
+FILENAME: flasher49-new_weird_latin.htm
+TITLE: All Colors Latin Explos
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: HSLA, blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: Weird Latin characters, Version 49
+NOTES: 
+--
+FILENAME: flasher49-new_weird_latin_newselection.htm
+TITLE: 49.All Colors Explos-latin new selection
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: Weird Latin characters, Version 49
+NOTES: 
+--
+FILENAME: flasher5.htm
+TITLE: No title
+GLYPH_SET: with optical
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher6.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher7.htm
+TITLE: No title
+GLYPH_SET: with optical
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher8.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher9a.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: complex-timed-fading
+EFFECTS: opacity
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher9b.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher9c.htm
+TITLE: No title
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: flasher
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: flasher_hsla.htm
+TITLE: No title
+GLYPH_SET: with optical
+ANIMATION: fading/flashing
+EFFECTS: HSLA
+SERIES: flasher
+SUBSERIES: HSLA color studies
+NOTES: 
+--
+FILENAME: flasher_hsla_maya.htm
+TITLE: No title
+GLYPH_SET: Mayan numerals
+ANIMATION: fading/flashing
+EFFECTS: HSLA
+SERIES: flasher
+SUBSERIES: HSLA color studies, Mayan numerals
+NOTES: 
+--
+FILENAME: flasher_hsla_mph.htm
+TITLE: No title
+GLYPH_SET: Meroitic/Phoenician/Historical
+ANIMATION: fading/flashing
+EFFECTS: HSLA
+SERIES: flasher
+SUBSERIES: HSLA color studies
+NOTES: 
+--
+FILENAME: heiro-gen1-smallopt.htm
+TITLE: 1.bullseye-gen1-grating-smallopt
+GLYPH_SET: Egyptian Hieroglyphs
+ANIMATION: moving/morphing
+EFFECTS: opacity, shadows
+SERIES: heiro
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: hiragana.htm
+TITLE: Ikeda
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: static-display
+EFFECTS: HSLA, shadows
+SERIES: hiragana
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: oneten-gen1-smallopt.htm
+TITLE: 1.10-gen1-smallopt
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: opacity
+SERIES: oneten
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: s6-asianbold.htm
+TITLE: s6.Asian Bold Spiral
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: s6-series
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: s6-interro.htm
+TITLE: Interrobang Spiral
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: moving/morphing
+EFFECTS: blur, opacity, CSS filters
+SERIES: s6-series
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: spiral1.htm
+TITLE: 48.Arabic  Bold Spiral
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: spiral
+EFFECTS: blur, opacity, CSS filters
+SERIES: spiral
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: spiral10-symbola.htm
+TITLE: 10.Spiral-symbola smallopt
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: spiral
+EFFECTS: blur, opacity, CSS filters
+SERIES: spiral
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: spiral2.htm
+TITLE: 48.Arabic  Bold Spiral
+GLYPH_SET: with optical
+ANIMATION: spiral
+EFFECTS: blur, opacity, CSS filters
+SERIES: spiral
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: spiral3.htm
+TITLE: 48.Arabic  Bold Spiral
+GLYPH_SET: with optical
+ANIMATION: spiral
+EFFECTS: blur, opacity, CSS filters
+SERIES: spiral
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: spiral4.htm
+TITLE: 48.Arabic  Bold Spiral
+GLYPH_SET: with optical
+ANIMATION: spiral
+EFFECTS: blur, opacity, CSS filters
+SERIES: spiral
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: spiral5.htm
+TITLE: s6.Asian Bold Spiral
+GLYPH_SET: with optical
+ANIMATION: spiral
+EFFECTS: blur, opacity, CSS filters
+SERIES: spiral
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: spiral8.htm
+TITLE: s7.Coordinated Spiral
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: spiral
+EFFECTS: blur, opacity, CSS filters
+SERIES: spiral
+SUBSERIES: base
+NOTES: 
+--
+FILENAME: spiral9.htm
+TITLE: Diamonds
+GLYPH_SET: Mixed Unicode symbols
+ANIMATION: spiral
+EFFECTS: blur, opacity, CSS filters
+SERIES: spiral
+SUBSERIES: base
+NOTES: 
