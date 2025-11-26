@@ -20,13 +20,16 @@ body {
     position: fixed;
     top: 20px;
     right: 20px;
+    bottom: 20px;
     z-index: 1000;
     background: rgba(0, 0, 0, 0.9);
     padding: 15px;
     border-radius: 10px;
     max-width: 320px;
+    max-height: calc(100vh - 40px);
     border: 3px solid;
     transition: all 0.3s ease;
+    overflow-y: auto;
 }
 
 #toggleMenu {
@@ -172,6 +175,83 @@ body {
     cursor: pointer;
 }
 
+#controls input[type="text"],
+#customTextInput {
+    background: black !important;
+    background-color: black !important;
+    color: var(--text-color) !important;
+    border: 2px solid;
+    border-color: var(--main-color) !important;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    width: 100% !important;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+#controls input[type="text"]:focus,
+#customTextInput:focus {
+    background: black !important;
+    background-color: black !important;
+    color: var(--text-color) !important;
+    outline: none;
+}
+
+#controls input[type="text"]::placeholder,
+#customTextInput::placeholder {
+    color: rgba(255, 255, 255, 0.3) !important;
+}
+
+#customTextWrapper {
+    width: 100%;
+}
+
+#customTextWrapper label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#commandBrowserWrapper {
+    width: 100%;
+}
+
+#commandBrowserWrapper label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#commandBrowser {
+    width: 100% !important;
+    height: 150px !important;
+    max-height: 150px !important;
+    background-color: black !important;
+    color: var(--text-color) !important;
+    border: 2px solid;
+    border-color: var(--main-color) !important;
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+#commandBrowser option {
+    background-color: black;
+    color: var(--text-color);
+    padding: 4px;
+}
+
+#commandBrowser option:hover,
+#commandBrowser option:focus {
+    background-color: var(--main-color) !important;
+    color: black !important;
+}
+
 .checkbox-wrapper {
     display: flex;
     gap: 15px;
@@ -234,7 +314,8 @@ body {
     z-index: 10000;
     border-radius: 10px;
     border: 3px solid;
-    max-width: 500px;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
 #closeMan {

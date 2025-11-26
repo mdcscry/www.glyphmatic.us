@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extended-A Page Tester</title>
+    
+    <!-- Load the hieroglyph data -->
+    <script src="../../js_glyph/2025_block_17/block_hex_heiro_a.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #2a2a2a;
+            border-radius: 5px;
+        }
+        
+        .control-row {
+            margin-bottom: 10px;
+        }
+        
+        label {
+            margin-right: 10px;
+            font-weight: bold;
+            display: inline-block;
+            min-width: 100px;
+        }
+        
+        select, input {
+            padding: 8px;
+            margin-right: 15px;
+            font-size: 14px;
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            border: 1px solid #555;
+            border-radius: 3px;
+        }
+        
+        input[type="text"] {
+            width: 100px;
+            font-family: monospace;
+        }
+        
+        button {
+            padding: 8px 16px;
+            font-size: 14px;
+            background-color: #4a9eff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #3a8eef;
+        }
+        
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+        
+        .info-box {
+            background-color: #2a3a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4a9eff;
+        }
+        
+        .info-box h3 {
+            margin-top: 0;
+            color: #4a9eff;
+        }
+        
+        .warning {
+            background-color: #3a2a2a;
+            border-left-color: #ff9944;
+        }
+        
+        .glyph-grid {
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            grid-template-rows: repeat(16, 1fr);
+            grid-auto-flow: column;
+            gap: 2px;
+            background-color: #2a2a2a;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 1200px;
+        }
+        
+        .glyph-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #3a3a3a;
+            border: 1px solid #4a4a4a;
+            position: relative;
+            min-height: 50px;
+        }
+        
+        .glyph-cell:hover {
+            background-color: #4a4a4a;
+            border-color: #6a6a6a;
+        }
+        
+        .glyph-char {
+            font-size: 32px;
+            font-family: 'Aegyptus';
+        }
+        
+        .glyph-code {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 8px;
+            color: #888;
+            font-family: monospace;
+        }
+        
+        .empty-cell {
+            background-color: #2a2a2a;
+            border-style: dashed;
+        }
+        
+        .last-glyph {
+            border: 3px solid #ff9944;
+            background-color: #4a3a2a;
+        }
+        
+        .page-header {
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .page-header h2 {
+            margin: 0 0 10px 0;
+            color: #4a9eff;
+        }
+        
+        .page-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            font-size: 14px;
+        }
+        
+        .stat-item {
+            background-color: #3a3a3a;
+            padding: 10px;
+            border-radius: 3px;
+        }
+        
+        .stat-label {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .stat-value {
+            color: #4a9eff;
+            font-weight: bold;
+            font-family: monospace;
+        }
+        
+        @font-face {
+            font-family: 'Aegyptus';
+            src: url('../../fonts/Aegyptus.ttf');
+        }
+    </style>
+</head>
+<body>
+    <h1>Extended-A Page Tester</h1>
+    
+    <div class="info-box">
+        <h3>Instructions</h3>
+        <p><strong>Goal:</strong> Find where each PDF page's glyphs are mapped in Aegyptus's PUA block.</p>
+        <p><strong>Method:</strong> For each page, adjust the PUA start point until the last highlighted glyph matches the last glyph shown in your PDF.</p>
+        <p><strong>The last glyph in each grid is highlighted in orange</strong> - this should match the last glyph on the corresponding PDF page.</p>
+    </div>
+    
+    <div class="controls">
+        <div class="control-row">
+            <label for="pageSelect">PDF Page:</label>
+            <select id="pageSelect">
+                <!-- Will be populated by JavaScript -->
+            </select>
+            <button id="prevPage">← Previous</button>
+            <button id="nextPage">Next →</button>
+        </div>
+        
+        <div class="control-row">
+            <label for="puaStart">PUA Start:</label>
+            <input type="text" id="puaStart" placeholder="F3000" maxlength="6">
+            <button id="updatePUA">Update Display</button>
+            <button id="savePUA">Save This Mapping</button>
+        </div>
+    </div>
+    
+    <div class="page-header" id="pageHeader">
+        <!-- Will be populated by JavaScript -->
+    </div>
+    
+    <div id="glyphGrid" class="glyph-grid">
+        <!-- Will be populated by JavaScript -->
+    </div>
+    
+    <div class="info-box warning" style="margin-top: 20px;">
+        <h3>Notes</h3>
+        <ul>
+            <li>Page 1 starts at F3000 (confirmed)</li>
+            <li>We're off by ~38 glyphs total, so PUA start points won't be simple +100 increments</li>
+            <li>The extra glyphs might be variants, rotations, or Douros's additions</li>
+            <li>When you find the correct PUA start for a page, click "Save This Mapping"</li>
+        </ul>
+    </div>
+
+    <script>
+        let currentPage = 0;
+        const savedMappings = {};
+        
+        function initializePage() {
+            const pageSelect = document.getElementById('pageSelect');
+            
+            // Populate page selector
+            for (let i = 0; i < hieroglyphPages.length; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `Page ${i + 1} (${hieroglyphPages[i].length} glyphs)`;
+                pageSelect.appendChild(option);
+            }
+            
+            // Set up event listeners
+            pageSelect.addEventListener('change', function() {
+                currentPage = parseInt(this.value);
+                loadPage(currentPage);
+            });
+            
+            document.getElementById('prevPage').addEventListener('click', function() {
+                if (currentPage > 0) {
+                    currentPage--;
+                    pageSelect.value = currentPage;
+                    loadPage(currentPage);
+                }
+            });
+            
+            document.getElementById('nextPage').addEventListener('click', function() {
+                if (currentPage < hieroglyphPages.length - 1) {
+                    currentPage++;
+                    pageSelect.value = currentPage;
+                    loadPage(currentPage);
+                }
+            });
+            
+            document.getElementById('updatePUA').addEventListener('click', function() {
+                const puaInput = document.getElementById('puaStart').value.trim().toUpperCase();
+                if (/^[0-9A-F]{5,6}$/.test(puaInput)) {
+                    puaStartPoints[currentPage] = puaInput;
+                    loadPage(currentPage);
+                } else {
+                    alert('Invalid PUA codepoint. Use format like F3000 or 10ABCD');
+                }
+            });
+            
+            document.getElementById('savePUA').addEventListener('click', function() {
+                const puaValue = document.getElementById('puaStart').value.trim().toUpperCase();
+                if (/^[0-9A-F]{5,6}$/.test(puaValue)) {
+                    savedMappings[currentPage] = puaValue;
+                    puaStartPoints[currentPage] = puaValue;
+                    alert(`Saved: Page ${currentPage + 1} → PUA ${puaValue}\n\nMappings saved: ${Object.keys(savedMappings).length}/16`);
+                    console.log('Current mappings:', savedMappings);
+                } else {
+                    alert('Invalid PUA codepoint. Use format like F3000');
+                }
+            });
+            
+            // Load first page
+            loadPage(0);
+        }
+        
+        function loadPage(pageIndex) {
+            const glyphs = hieroglyphPages[pageIndex];
+            const puaStart = puaStartPoints[pageIndex];
+            const puaStartNum = parseInt(puaStart, 16);
+            
+            // Update PUA input
+            document.getElementById('puaStart').value = puaStart;
+            
+            // Update page header
+            updatePageHeader(pageIndex, glyphs, puaStart);
+            
+            // Generate grid
+            const grid = document.getElementById('glyphGrid');
+            grid.innerHTML = '';
+            
+            glyphs.forEach((unicodeHex, index) => {
+                const cell = document.createElement('div');
+                cell.className = 'glyph-cell';
+                
+                // Calculate PUA codepoint for this glyph
+                const puaCodepoint = puaStartNum + index;
+                const puaHex = puaCodepoint.toString(16).toUpperCase();
+                
+                // Create the character using PUA codepoint
+                const char = String.fromCodePoint(puaCodepoint);
+                
+                const charSpan = document.createElement('span');
+                charSpan.className = 'glyph-char';
+                charSpan.textContent = char;
+                charSpan.title = `Unicode: U+${unicodeHex}\nPUA: U+${puaHex}`;
+                
+                const codeSpan = document.createElement('span');
+                codeSpan.className = 'glyph-code';
+                codeSpan.textContent = unicodeHex.slice(-4);
+                
+                cell.appendChild(charSpan);
+                cell.appendChild(codeSpan);
+                
+                // Highlight last glyph
+                if (index === glyphs.length - 1) {
+                    cell.classList.add('last-glyph');
+                    cell.title += '\n*** LAST GLYPH - CHECK PDF ***';
+                }
+                
+                grid.appendChild(cell);
+            });
+            
+            // Add empty cells for page 16
+            if (pageIndex === 15) {
+                const emptyCells = 256 - glyphs.length;
+                for (let i = 0; i < emptyCells; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'glyph-cell empty-cell';
+                    cell.title = 'Empty (not in Unicode)';
+                    grid.appendChild(cell);
+                }
+            }
+            
+            // Update button states
+            document.getElementById('prevPage').disabled = (pageIndex === 0);
+            document.getElementById('nextPage').disabled = (pageIndex === hieroglyphPages.length - 1);
+        }
+        
+        function updatePageHeader(pageIndex, glyphs, puaStart) {
+            const header = document.getElementById('pageHeader');
+            const firstUnicode = glyphs[0];
+            const lastUnicode = glyphs[glyphs.length - 1];
+            const puaStartNum = parseInt(puaStart, 16);
+            const puaEnd = (puaStartNum + glyphs.length - 1).toString(16).toUpperCase();
+            
+            header.innerHTML = `
+                <h2>Page ${pageIndex + 1} of 16</h2>
+                <div class="page-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Unicode Range</div>
+                        <div class="stat-value">U+${firstUnicode} - U+${lastUnicode}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Glyph Count</div>
+                        <div class="stat-value">${glyphs.length} glyphs</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">PUA Range (Aegyptus)</div>
+                        <div class="stat-value">U+${puaStart} - U+${puaEnd}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Mapping Status</div>
+                        <div class="stat-value">${savedMappings[pageIndex] ? '✓ Saved' : 'Not saved'}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Wait for data file to load
+        function checkDataLoaded() {
+            if (typeof hieroglyphPages !== 'undefined' && 
+                typeof puaStartPoints !== 'undefined') {
+                initializePage();
+            } else {
+                setTimeout(checkDataLoaded, 100);
+            }
+        }
+        
+        checkDataLoaded();
+    </script>
+</body>
+</html>

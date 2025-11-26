@@ -233,7 +233,14 @@ function generateRandomColors() {
 
 function getActiveCommandArray() {
     var command_type = document.getElementById('commandSelect').value;
-    
+    var browser_wrapper = document.getElementById('commandBrowserWrapper');
+    var command_browser = document.getElementById('commandBrowser');
+
+    // If browse mode is active and a command is selected, return just that command
+    if (browser_wrapper.style.display !== 'none' && command_browser.value) {
+        return [command_browser.value];
+    }
+
     switch(command_type) {
         case 'html': return html;
         case 'css': return css;
@@ -247,8 +254,49 @@ function getActiveCommandArray() {
         case 'ai': return ai;
         case 'datatype': return datatypes;
         case 'adm': return adm;
+        case 'custom':
+            var custom_text = document.getElementById('customTextInput').value.trim();
+            return custom_text ? [custom_text] : ['Enter text above'];
         case 'all':
         default: return all_commands;
+    }
+}
+
+function populateCommandBrowser() {
+    var command_type = document.getElementById('commandSelect').value;
+    var command_browser = document.getElementById('commandBrowser');
+    var command_array = [];
+
+    // Get the appropriate command array based on type
+    switch(command_type) {
+        case 'html': command_array = html; break;
+        case 'css': command_array = css; break;
+        case 'javascript': command_array = javascript; break;
+        case 'crypto': command_array = crypto; break;
+        case 'sql': command_array = sql_commands; break;
+        case 'sysadmin': command_array = sysadmin_commands; break;
+        case 'git': command_array = git; break;
+        case 'python': command_array = python; break;
+        case 'ml': command_array = ml; break;
+        case 'ai': command_array = ai; break;
+        case 'datatype': command_array = datatypes; break;
+        case 'adm': command_array = adm; break;
+        case 'all': command_array = all_commands; break;
+        default: command_array = all_commands; break;
+    }
+
+    // Clear and populate dropdown
+    command_browser.innerHTML = '';
+    command_array.forEach(function(cmd) {
+        var option = document.createElement('option');
+        option.value = cmd;
+        option.textContent = cmd;
+        command_browser.appendChild(option);
+    });
+
+    // Select first item by default
+    if (command_array.length > 0) {
+        command_browser.selectedIndex = 0;
     }
 }
 
@@ -469,21 +517,21 @@ function changeFont() {
 }
 
 function changeFontStyle() {
-    var stroke_color = 'hsl(' + Math.floor(Math.random() * 360) + ', ' + 
-                      Math.floor(Math.random() * 100) + '%, ' + 
-                      Math.floor(Math.random() * 100) + '%)';
-    var fill_color = 'hsl(' + Math.floor(Math.random() * 360) + ', ' + 
-                    Math.floor(Math.random() * 100) + '%, ' + 
-                    Math.floor(Math.random() * 100) + '%)';
-    var shadow_color = 'hsl(' + (180 + Math.floor(Math.random() * 60)) + ', ' + 
-                      (60 + Math.floor(Math.random() * 40)) + '%, ' + 
-                      (40 + Math.floor(Math.random() * 40)) + '%)';
+    var stroke_color = 'hsl(' + Math.floor(Math.random() * 360) + ', ' +
+                      (60 + Math.floor(Math.random() * 40)) + '%, ' +
+                      (30 + Math.floor(Math.random() * 50)) + '%)';
+    var fill_color = 'hsl(' + Math.floor(Math.random() * 360) + ', ' +
+                    (60 + Math.floor(Math.random() * 40)) + '%, ' +
+                    (30 + Math.floor(Math.random() * 50)) + '%)';
+    var shadow_color = 'hsl(' + Math.floor(Math.random() * 360) + ', ' +
+                      (60 + Math.floor(Math.random() * 40)) + '%, ' +
+                      (30 + Math.floor(Math.random() * 50)) + '%)';
     
     var offset_x = Math.floor(Math.random() * 20) - 10;
     var offset_y = Math.floor(Math.random() * 20) - 10;
-    var blur = Math.floor(Math.random() * 15) + 5;
-    
-    navGlyph[current_glyph_index].style.webkitTextStrokeWidth = (Math.floor(Math.random() * 5) + 1) + 'px';
+    var blur = Math.floor(Math.random() * 20);
+
+    navGlyph[current_glyph_index].style.webkitTextStrokeWidth = Math.floor(Math.random() * 6) + 'px';
     navGlyph[current_glyph_index].style.webkitTextStrokeColor = stroke_color;
     navGlyph[current_glyph_index].style.webkitTextFillColor = fill_color;
     navGlyph[current_glyph_index].style.textShadow = offset_x + 'px ' + offset_y + 'px ' + blur + 'px ' + shadow_color;
@@ -518,9 +566,13 @@ function changeBorderStyle() {
         var border_styles = ['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset'];
         var new_style = border_styles[Math.floor(Math.random() * border_styles.length)];
         var new_width = (Math.floor(Math.random() * 50) + 1) + 'px';
-        var new_color = getContrastingBorderColor();
-        
-        navGlyph[current_glyph_index].style.border = new_width + ' ' + new_style + ' ' + new_color;
+
+        // Extract current border color
+        var current_border = navGlyph[current_glyph_index].style.border;
+        var color_match = current_border.match(/rgb\([^)]+\)|#[0-9a-f]{6}|#[0-9a-f]{3}|[a-z]+$/i);
+        var current_color = color_match ? color_match[0] : 'black';
+
+        navGlyph[current_glyph_index].style.border = new_width + ' ' + new_style + ' ' + current_color;
     }
 }
 
@@ -688,6 +740,51 @@ function bindEvents() {
     });
     
     document.getElementById('commandSelect').addEventListener('change', function() {
+        // Show/hide custom text input based on selection
+        var custom_wrapper = document.getElementById('customTextWrapper');
+        var browser_wrapper = document.getElementById('commandBrowserWrapper');
+
+        if (this.value === 'custom') {
+            custom_wrapper.style.display = 'block';
+        } else {
+            custom_wrapper.style.display = 'none';
+        }
+
+        // If browse mode is active, update the dropdown with new command type
+        if (browser_wrapper.style.display !== 'none') {
+            populateCommandBrowser();
+        }
+
+        changeCommand();
+    });
+
+    // Browse Commands button
+    document.getElementById('browseCmdBtn').addEventListener('click', function() {
+        var browser_wrapper = document.getElementById('commandBrowserWrapper');
+        var custom_wrapper = document.getElementById('customTextWrapper');
+
+        // Toggle browse mode
+        if (browser_wrapper.style.display === 'none') {
+            // Show browser, hide custom text if visible
+            browser_wrapper.style.display = 'block';
+            if (document.getElementById('commandSelect').value !== 'custom') {
+                custom_wrapper.style.display = 'none';
+            }
+            populateCommandBrowser();
+            changeCommand(); // Generate with first command
+        } else {
+            // Hide browser
+            browser_wrapper.style.display = 'none';
+        }
+    });
+
+    // Command browser selection change
+    document.getElementById('commandBrowser').addEventListener('change', function() {
+        changeCommand();
+    });
+
+    // Double-click on command browser to apply
+    document.getElementById('commandBrowser').addEventListener('dblclick', function() {
         changeCommand();
     });
     
@@ -705,6 +802,13 @@ function bindEvents() {
             navGlyph[current_glyph_index].style.padding = Math.max(current_padding - 20, 3) + 'px';
         }
         navGlyph[current_glyph_index].innerHTML = current_text;
+    });
+
+    // Custom text input event listener - refresh on Enter key
+    document.getElementById('customTextInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && document.getElementById('commandSelect').value === 'custom') {
+            changeCommand();
+        }
     });
 
     document.getElementById('downloadBtn').addEventListener('click', function() {
