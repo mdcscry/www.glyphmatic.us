@@ -205,12 +205,32 @@ function createGlyph() {
 
 function applyRandomStyling() {
     var mycolors = generateRandomColors();
-    
+
     // Apply colors and effects
     navGlyph[current_glyph_index].style.color = mycolors[Math.round((mycolors.length-1)*Math.random())];
-    navGlyph[current_glyph_index].style.textShadow = Math.round(Math.random()*5-1) + 'px ' +
-                                                      Math.round(Math.random()*5-1) + 'px ' +
-                                                      mycolors[Math.round((mycolors.length-1)*Math.random())];
+
+    // Create a distinct shadow - either much darker or much lighter
+    var shadowStyle = Math.random() < 0.7 ? 'dark' : 'light';
+    var shadowColor;
+    if (shadowStyle === 'dark') {
+        // Dark shadow (traditional)
+        var shadowHue = Math.round(Math.random() * 360);
+        shadowColor = 'hsla(' + shadowHue + ',' + (20 + Math.round(Math.random() * 40)) + '%,' + (5 + Math.round(Math.random() * 20)) + '%,0.8)';
+    } else {
+        // Light glow/highlight
+        var shadowHue = Math.round(Math.random() * 360);
+        shadowColor = 'hsla(' + shadowHue + ',' + (50 + Math.round(Math.random() * 50)) + '%,' + (75 + Math.round(Math.random() * 20)) + '%,0.9)';
+    }
+
+    // Ensure shadow has both horizontal and vertical offset (no purely vertical/horizontal shadows)
+    var shadowX = Math.random() < 0.5 ?
+                  Math.round(Math.random() * 3 + 1) :  // 1 to 4px
+                  Math.round(Math.random() * 3 + 1) * -1; // -1 to -4px
+    var shadowY = Math.random() < 0.5 ?
+                  Math.round(Math.random() * 3 + 1) :
+                  Math.round(Math.random() * 3 + 1) * -1;
+
+    navGlyph[current_glyph_index].style.textShadow = shadowX + 'px ' + shadowY + 'px ' + shadowColor;
     navGlyph[current_glyph_index].style.webkitTextFillColor = mycolors[Math.round((mycolors.length-1)*Math.random())];
     navGlyph[current_glyph_index].style.webkitTextStrokeWidth = Math.round(Math.random()*3-1) + "px";
     navGlyph[current_glyph_index].style.webkitTextStrokeColor = mycolors[Math.round((mycolors.length-1)*Math.random())];
@@ -218,16 +238,78 @@ function applyRandomStyling() {
 
 function generateRandomColors() {
     var mycolors = [];
-    var colNum = 5;
-    
-    for (var i = 0; i < colNum; i++) {
-        var hue = Math.round(Math.random() * 360);
-        var sat = Math.round(Math.random() * 100);
-        var light = Math.round(Math.random() * 80 + 20);
-        var color = 'hsla(' + hue + ',' + sat + '%,' + light + '%,1)';
-        mycolors.push(color);
+
+    // Pure color palette - high saturation, vibrant
+    var pureColors = ['#00ffff','#FF0000','#FFA500','#ffff00','#00ff00',
+                      '#FF66FF','#1E90FF','#FF1493','#00FF7F','#FF4500'];
+
+    // Decide on palette style
+    var styleRoll = Math.random();
+
+    if (styleRoll < 0.3) {
+        // 30% chance: Pure colors only (1-2 pure colors + harmonious support colors)
+        var pureCount = 1 + Math.floor(Math.random() * 2); // 1 or 2 pure colors
+        for (var i = 0; i < pureCount; i++) {
+            mycolors.push(pureColors[Math.floor(Math.random() * pureColors.length)]);
+        }
+
+        // Fill the rest with harmonious support colors (desaturated or lighter/darker)
+        var baseHue = Math.round(Math.random() * 360);
+        while (mycolors.length < 5) {
+            var sat = 30 + Math.round(Math.random() * 40); // 30-70% saturation
+            var light = 30 + Math.round(Math.random() * 50); // 30-80% lightness
+            mycolors.push('hsla(' + baseHue + ',' + sat + '%,' + light + '%,1)');
+            baseHue = (baseHue + 30) % 360; // shift hue slightly
+        }
+
+    } else if (styleRoll < 0.6) {
+        // 30% chance: Harmonious scheme (analogous, complementary, triadic)
+        var baseHue = Math.round(Math.random() * 360);
+        var schemes = ['analogous', 'complementary', 'triadic'];
+        var scheme = schemes[Math.floor(Math.random() * schemes.length)];
+
+        if (scheme === 'analogous') {
+            // Colors close on the wheel
+            for (var i = 0; i < 5; i++) {
+                var hue = (baseHue + (i * 25 - 50) + 360) % 360;
+                var sat = 60 + Math.round(Math.random() * 35);
+                var light = 40 + Math.round(Math.random() * 40);
+                mycolors.push('hsla(' + hue + ',' + sat + '%,' + light + '%,1)');
+            }
+        } else if (scheme === 'complementary') {
+            var hues = [baseHue, (baseHue + 180) % 360];
+            for (var i = 0; i < 5; i++) {
+                var hue = hues[i % 2];
+                var sat = 55 + Math.round(Math.random() * 40);
+                var light = 35 + Math.round(Math.random() * 45);
+                mycolors.push('hsla(' + hue + ',' + sat + '%,' + light + '%,1)');
+            }
+        } else { // triadic
+            var hues = [baseHue, (baseHue + 120) % 360, (baseHue + 240) % 360];
+            for (var i = 0; i < 5; i++) {
+                var hue = hues[i % 3];
+                var sat = 60 + Math.round(Math.random() * 35);
+                var light = 40 + Math.round(Math.random() * 40);
+                mycolors.push('hsla(' + hue + ',' + sat + '%,' + light + '%,1)');
+            }
+        }
+
+    } else {
+        // 40% chance: Monochromatic with varying saturation/lightness
+        var baseHue = Math.round(Math.random() * 360);
+
+        // Sometimes include one pure color as accent
+        if (Math.random() < 0.4) {
+            mycolors.push(pureColors[Math.floor(Math.random() * pureColors.length)]);
+        }
+
+        while (mycolors.length < 5) {
+            var sat = 40 + Math.round(Math.random() * 60);
+            var light = 25 + Math.round(Math.random() * 60);
+            mycolors.push('hsla(' + baseHue + ',' + sat + '%,' + light + '%,1)');
+        }
     }
-    
+
     return mycolors;
 }
 
