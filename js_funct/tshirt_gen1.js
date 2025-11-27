@@ -490,7 +490,12 @@ async function generateHash(hashType) {
             hashHex = sha512(randomData);
             break;
         case 'md5':
-            hashHex = md5(randomData);
+            if (typeof md5 === 'function') {
+                hashHex = md5(randomData);
+            } else {
+                console.error('md5 library not loaded');
+                hashHex = sha256(randomData); // Fallback to sha256
+            }
             break;
         default:
             hashHex = sha256(randomData);
@@ -867,14 +872,14 @@ function saveStateToURL() {
         lh: navGlyph[current_glyph_index].style.lineHeight
     };
     
-    window.location.hash = btoa(JSON.stringify(state)).replace(/=/g, '');
+    window.location.hash = btoa(encodeURIComponent(JSON.stringify(state))).replace(/=/g, '');
 }
 
 function loadStateFromURL() {
     if (window.location.hash) {
         try {
             var hash = window.location.hash.substring(1);
-            var state = JSON.parse(atob(hash));
+            var state = JSON.parse(decodeURIComponent(atob(hash)));
             
             navGlyph[current_glyph_index].style.fontFamily = '"' + state.f + '"';
             navGlyph[current_glyph_index].style.fontSize = state.fs;

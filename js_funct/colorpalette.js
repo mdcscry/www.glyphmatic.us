@@ -5,10 +5,76 @@
 (function(global) {
     'use strict';
     
+    // Fixed color palettes
+    const FIXED_PALETTES = {
+        black_lightgray: {
+            name: 'Black & Light Gray',
+            bodyBg: '#000000',
+            bodyColor: 'darkgray',
+            glyphColors: ['white', 'white', 'white', 'white'],
+            footerColors: null,  // Use fixed colors
+            footerUnicode: 'red',
+            footerGlyphmatic: 'darkgray',
+            tableBorder: '#110c11',
+            titleBorder: 'rgba(0, 0, 0, 0.2)',
+            rowBorder: 'red',
+            useBoxMuller: false
+        },
+        brown: {
+            name: 'Brown Earth',
+            bodyBg: '#86796C',
+            bodyColor: '#2a2520',
+            glyphColors: ['linen', 'ivory', 'beige', 'blanchedalmond', '#D9D0C8', '#B3A291', '#4B3218', '#332211', '#26190C'],
+            footerColors: ['linen', 'ivory', 'beige', 'blanchedalmond', '#D9D0C8', '#B3A291', '#4B3218', '#332211', '#26190C'],  // Random from these
+            tableBorder: null,  // Random from footerColors
+            titleBorder: '#86796C',
+            rowBorder: null,  // Random from footerColors
+            useBoxMuller: true
+        },
+        white_teal_red: {
+            name: 'White with Teal & Red',
+            bodyBg: '#ffffff',
+            bodyColor: '#000000',
+            // Box-Muller clusters around middle, so put common grays in middle, sporadic red/teal at edges
+            // Darker grays for better contrast on white: #8A8A8A, #7A7A7A, #6A6A6A
+            glyphColors: ['#CD5C5C', '#96cdcd', '#CD5C5C', '#96cdcd', '#7A7A7A', '#7A7A7A', '#6A6A6A', '#6A6A6A', '#96cdcd', '#CD5C5C', '#96cdcd', '#CD5C5C'],
+            footerColors: ['#CD5C5C', '#96cdcd','#CD5C5C', '#96cdcd', '#7A7A7A', '#7A7A7A', '#6A6A6A', '#6A6A6A', '#96cdcd', '#CD5C5C', '#96cdcd', '#CD5C5C'],
+            tableBorder: null,  // Random from footerColors
+            titleBorder: 'white',
+            rowBorder: null,  // Random from footerColors
+            useBoxMuller: true
+        },
+        white_primary: {
+            name: 'White & Primary Colors',
+            bodyBg: '#ffffff',
+            bodyColor: '#000000',
+            // Classic primary colors - duplicates in array provide weighting (from auto3-font.htm)
+            glyphColors: ['red', 'red', 'blue', 'green', 'orange', 'purple', 'gold', 'gold','blue'],
+            footerColors: ['red', 'red', 'blue', 'green', 'orange', 'purple', 'gold', 'gold','blue'],
+            tableBorder: null,  // Random from footerColors
+            titleBorder: 'white',
+            rowBorder: null,  // Random from footerColors
+            useBoxMuller: false
+        },
+        silver_lightgray: {
+            name: 'Silver & Light Gray',
+            bodyBg: 'Gainsboro',
+            bodyColor: 'DarkSlateGray',
+            // Box-Muller clusters around middle, so put common silvers in middle, sporadic red/teal at edges
+            glyphColors: ['darkpurple', 'darkblue', 'darkpurple', 'darkblue', 'DarkSlateGray', 'DarkSlateGray', 'DarkSlateGray', 'DarkSlateGray', 'darkblue', 'darkpurple', 'darkblue', 'darkpurple'],
+            footerColors: ['darkpurple', 'darkblue', 'DarkSlateGray', 'DarkSlateGray', 'darkblue', 'DarkSlateGray', 'DarkSlateGray', 'DarkSlateGray', 'DarkSlateGray', 'DarkSlateGray', 'darkblue', 'darkpurple'],
+            tableBorder: null,  // Random from footerColors
+            titleBorder: 'Gainsboro',
+            rowBorder: null,  // Random from footerColors
+            useBoxMuller: true
+        }
+    };
+
     const ColorPalette = {
         currentPageBg: null,
         currentGridBg: null,
         currentGlyphColors: [],
+        currentPalette: null,
         morphing: false,
         morphInterval: null,
         
@@ -186,9 +252,121 @@
             }
             console.warn('getContrastRatio not found, returning default');
             return 5;
+        },
+
+        // === Fixed Palette Methods ===
+
+        // Select a random fixed palette
+        selectRandomPalette: function() {
+            const paletteKeys = Object.keys(FIXED_PALETTES);
+            const randomKey = paletteKeys[Math.floor(Math.random() * paletteKeys.length)];
+            this.currentPalette = FIXED_PALETTES[randomKey];
+            console.log('Selected palette:', this.currentPalette.name);
+            return this.currentPalette;
+        },
+
+        // Get random glyph color from current palette (using Box-Muller if specified)
+        randomPaletteGlyphColor: function() {
+            if (!this.currentPalette || !this.currentPalette.glyphColors) {
+                return '#000000';
+            }
+
+            const colors = this.currentPalette.glyphColors;
+            let index;
+
+            if (this.currentPalette.useBoxMuller && typeof randn_bm === 'function') {
+                // Use Box-Muller for sporadic/natural distribution
+                index = Math.floor(randn_bm() * colors.length);
+            } else {
+                // Use uniform random distribution
+                index = Math.floor(Math.random() * colors.length);
+            }
+
+            return colors[index];
+        },
+
+        // Get random color from footer palette using Box-Muller if specified
+        _getRandomFooterColor: function() {
+            if (!this.currentPalette || !this.currentPalette.footerColors) {
+                return null;
+            }
+
+            const colors = this.currentPalette.footerColors;
+            let index;
+
+            if (this.currentPalette.useBoxMuller && typeof randn_bm === 'function') {
+                // Use Box-Muller for sporadic/natural distribution
+                index = Math.floor(randn_bm() * colors.length);
+            } else {
+                // Use uniform random distribution
+                index = Math.floor(Math.random() * colors.length);
+            }
+
+            return colors[index];
+        },
+
+        // Apply title border color dynamically via CSS
+        _applyTitleBorder: function(titleBorderColor) {
+            // Find or create style element for title borders
+            let styleEl = document.getElementById('palette-title-border');
+            if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = 'palette-title-border';
+                document.head.appendChild(styleEl);
+            }
+            styleEl.textContent = `[title] { border-bottom-color: ${titleBorderColor} !important; }`;
+        },
+
+        // Apply fixed palette to page elements
+        applyFixedPalette: function(bodyElement, tableElement, footerUnicodeElement, footerGlyphmatiElement, rowBorderElement) {
+            if (!this.currentPalette) {
+                console.warn('No palette selected, selecting random palette');
+                this.selectRandomPalette();
+            }
+
+            const p = this.currentPalette;
+
+            // Apply body styles
+            if (bodyElement) {
+                bodyElement.style.backgroundColor = p.bodyBg;
+                bodyElement.style.color = p.bodyColor;
+            }
+
+            // Apply table border (random or fixed)
+            if (tableElement) {
+                const borderColor = p.tableBorder || this._getRandomFooterColor();
+                tableElement.style.borderBottomColor = borderColor;
+            }
+
+            // Apply footer colors (random or fixed)
+            if (footerUnicodeElement) {
+                const color = p.footerColors ? this._getRandomFooterColor() : p.footerUnicode;
+                footerUnicodeElement.style.color = color;
+            }
+            if (footerGlyphmatiElement) {
+                const color = p.footerColors ? this._getRandomFooterColor() : p.footerGlyphmatic;
+                footerGlyphmatiElement.style.color = color;
+            }
+
+            // Apply row border color if element provided
+            if (rowBorderElement) {
+                const borderColor = p.rowBorder || this._getRandomFooterColor();
+                // Apply to TD elements inside the TR (since CSS rule targets tr.border_bottom td)
+                const tds = rowBorderElement.querySelectorAll('td');
+                tds.forEach(td => {
+                    td.style.borderBottomColor = borderColor;
+                });
+            }
+
+            // Apply title border color
+            if (p.titleBorder) {
+                this._applyTitleBorder(p.titleBorder);
+            }
+
+            console.log('Applied fixed palette:', p.name);
         }
     };
-    
+
     // Export
     global.ColorPalette = ColorPalette;
     console.log('ColorPalette loaded');

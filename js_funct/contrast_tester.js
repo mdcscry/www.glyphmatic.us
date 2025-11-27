@@ -146,5 +146,20 @@ function getLuminance(rgb) {
 	return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
+/**
+ * Box-Muller transform for Gaussian-distributed random numbers
+ * Returns a value between 0 and 1 with normal distribution
+ * Creates more natural/sporadic color selection than uniform random
+ */
+function randn_bm() {
+	let u = 0, v = 0;
+	while(u === 0) u = Math.random(); // Converting [0,1) to (0,1)
+	while(v === 0) v = Math.random();
+	let num = Math.sqrt(-4.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+	num = num / 10.0 + 0.5; // Translate to 0 -> 1
+	if (num > 1 || num < 0) return randn_bm(); // resample between 0 and 1
+	return num;
+}
+
 console.log('contrastWait.js is loaded');
 var contrastWait = [];

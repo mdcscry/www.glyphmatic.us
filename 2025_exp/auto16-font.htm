@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>The Macroglyph - U16</title>
+		<style type="text/css">
+
+			/* Emoji needs to be incuded for blocks with mixed emoji/not emoji
+			   Could have brought it in from glyphmatic.us.css but that's overkill */
+			@import url('https://fonts.googleapis.com/css2?family=Noto+Emoji&display=swap');
+
+			table {
+				border-bottom:50px solid #110c11;
+				border-radius:20px;
+				max-height: 90vh;
+				height: 75%;
+			}
+
+			div {
+				display: inline;
+				height: .1em;
+			}
+
+			tr {
+				height: 1em;
+				overflow: hidden;
+				vertical-align: middle;
+			}
+
+			td {
+				height: 1em;
+				overflow: hidden;
+				vertical-align: middle;
+			}
+
+			tr.border_bottom td {
+  				border-bottom:1pt dotted transparent;
+			}
+
+			[title] {
+				border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+				border-radius:1px;
+				position: relative;
+			}
+			body.touched [title] > * {
+				user-select: none;
+			}
+			body.touched [title]:hover > * {
+				user-select: auto
+			}
+			body.touched [title]:hover:after {
+				font-size:.12em;
+				position: absolute;
+				top: 100%;
+				right: 0%;
+				content: attr(title);
+				border: 1px solid rgba(0, 0, 0, 0.2);
+				background-color: white;
+				color: black;
+				padding: 0.1em;
+				z-index: 1;
+			}
+
+			body { background-color: black; color: white; }
+
+			/* google fonts @import version doesn't have complete coverage */
+			@font-face {
+				font-family: 'Noto Sans Full';
+				src: url('../tff/NotoSans-Regular.ttf') format('truetype');
+			}
+
+		</style>
+		<!-- Core libraries -->
+		<script src="../js_funct/contrast_tester.js"></script>
+		<script src="../js_funct/colorpalette.js"></script>
+		<script src="../js_funct/autoFont.js"></script>
+
+		<!-- Data files loaded dynamically based on variant selection -->
+		<script type="text/javascript">
+			// Define available data variants
+			const DATA_VARIANTS = [
+				{
+					name: 'full',
+					hex: '../js_glyph/2025_block_17/block_hex_17.js',
+					desc: '../js_glyph/2025_block_17/block_hex_desc_17.js',
+					footerText: 'Unicode',
+					footerFont: 'Noto Sans Mono'
+				},
+				{
+					name: 'no_punct',
+					hex: '../js_glyph/2025_block_17/block_hex_no_punct_17.js',
+					desc: '../js_glyph/2025_block_17/block_hex_desc_no_punct_17.js',
+					footerText: 'Unicode Letters Numbers and Symbols',
+					footerFont: 'Noto Serif Mono'
+				}
+			];
+
+			// Skeleton file (shared across variants)
+			const SKELETON_FILE = '../js_glyph/2025_block_17/block_lang_skeleton_17.js';
+
+			// Randomly select a variant
+			const selectedVariant = DATA_VARIANTS[Math.floor(Math.random() * DATA_VARIANTS.length)];
+			console.log('Selected data variant:', selectedVariant.name);
+
+			// Load scripts dynamically
+			function loadScript(src) {
+				const script = document.createElement('script');
+				script.src = src;
+				script.type = 'text/javascript';
+				document.head.appendChild(script);
+			}
+
+			// Load selected variant files
+			loadScript(selectedVariant.hex);
+			loadScript(selectedVariant.desc);
+			loadScript(SKELETON_FILE);
+		</script>
+	</head>
+	<body style="overflow: hidden;font-size: 3.75em;display: inline;">
+
+		<table id="tab" align='center' width=90%>
+			<tr>
+				<TD id="row1" style="text-align:center" colspan=2>
+				</TD>
+			</tr>
+			<tr>
+				<TD id="row2" style="text-align:center" colspan=2>
+			</tr>
+			<tr>
+				<TD id="row3" style="text-align:center" colspan=2>
+				</TD>
+			</tr>
+			<tr class="border_bottom">
+				<TD id="row4" style="text-align:center" colspan=2>
+				</TD>
+			</tr>
+			<tr>
+				<TD id="row5" style="text-align:center" colspan=2>
+				</TD>
+			</tr>
+			<tr>
+				<td style='text-align:left;'>
+					<div id="footerLeft" style="font-size:.35em;"></div>
+				</td>
+				<td style="text-align:right;">
+					<div style="font-size:.35em;font-family:'Noto Sans Mono';"> glyphmatic.us</div>
+				</td>
+			</tr>
+		</table>
+
+	</body>
+
+	<script type="text/javascript">
+
+		// SINGLE GLYPH TEST MODE
+		const CONFIG = {
+			testMode: false,
+			testGlyph: '1F937',
+			testBlocks: ["Supplemental Symbols and Pictographs"]
+		};
+
+		document.body.addEventListener('touchstart', function() {
+  			document.body.classList.add('touched');
+		});
+
+	 	function spectacular(start, numberOfGlyphs) {
+			let spansString = '';
+
+			for (let i = start; i <= start + numberOfGlyphs; i++) {
+				const glyphData = AutoFont.generateGlyph(
+					block_hex,
+					block_hex_desc,
+					block_lang,
+					lang_font,
+					CONFIG.testMode,
+					{
+						blocks: CONFIG.testBlocks,
+						glyph: CONFIG.testGlyph
+					}
+				);
+
+				// Get random color from palette
+				const glyphColor = ColorPalette.randomPaletteGlyphColor();
+
+				spansString += `<td><span id="sid${i}" style="font-family: ${glyphData.fontStack}; color: ${glyphColor};" title="${glyphData.glyph}-${glyphData.desc}">&#x${glyphData.glyph};</span></td>`;
+			}
+			return spansString;
+		}
+
+	    async function init() {
+            if (typeof blockHexWait == "undefined" ||
+                typeof blockHexDescWait == "undefined"  ||
+                typeof blockHexSkeletonWait == "undefined"
+            ) {
+                window.setTimeout(init, 100);
+            } else {
+					await AutoFont.init();
+
+					// Apply variant-specific footer text and font
+					const footerLeft = document.getElementById('footerLeft');
+					if (footerLeft) {
+						// Show test mode info if enabled, otherwise show variant text
+						if (CONFIG.testMode) {
+							const blockText = CONFIG.testBlocks.length > 1
+								? `Blocks: ${CONFIG.testBlocks.join(', ')}`
+								: `Block: ${CONFIG.testBlocks[0]}`;
+							const glyphText = CONFIG.testGlyph ? ` - Glyph: ${CONFIG.testGlyph}` : '';
+							footerLeft.textContent = `Test Mode - ${blockText}${glyphText}`;
+						} else {
+							footerLeft.textContent = selectedVariant.footerText;
+						}
+						footerLeft.style.fontFamily = `'${selectedVariant.footerFont}'`;
+					}
+
+					// Select and apply random color palette
+					ColorPalette.selectRandomPalette();
+					ColorPalette.applyFixedPalette(
+						document.body,
+						document.querySelector('table'),
+						footerLeft,
+						document.querySelector('tr:last-child td:last-child div'),
+						document.querySelector('tr.border_bottom')
+					);
+
+                    const numberOfGlyphs = 20;
+                    document.getElementById('row1').innerHTML = spectacular(0, numberOfGlyphs - 1);
+                    document.getElementById('row2').innerHTML = spectacular(numberOfGlyphs, numberOfGlyphs - 1);
+                    document.getElementById('row3').innerHTML = spectacular(numberOfGlyphs * 2, numberOfGlyphs - 1);
+                    document.getElementById('row4').innerHTML = spectacular(numberOfGlyphs * 3, numberOfGlyphs - 1);
+                    document.getElementById('row5').innerHTML = spectacular(numberOfGlyphs * 4, numberOfGlyphs - 1);
+            }
+        }
+
+        init();
+
+	</script>
+
+</html>

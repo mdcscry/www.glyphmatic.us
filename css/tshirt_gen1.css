@@ -20,7 +20,6 @@ body {
     position: fixed;
     top: 20px;
     right: 20px;
-    bottom: 20px;
     z-index: 1000;
     background: rgba(0, 0, 0, 0.9);
     padding: 15px;
@@ -60,6 +59,7 @@ body {
 #controls .text-center {
     display: flex;
     justify-content: flex-end; /* Pushes content (the toggle button) to the right */
+    align-items: flex-start; /* Prevent button from stretching vertically */
     padding: 0 0 10px 0; /* Add some space below the toggle button */
     margin: 0;
 }
@@ -328,6 +328,10 @@ body {
     font-weight: bold;
     background-color: transparent;
     border: 2px solid;
+    display: block !important;
+    width: fit-content !important;
+    height: fit-content !important;
+    flex: none !important;
 }
 
 #manPage pre {

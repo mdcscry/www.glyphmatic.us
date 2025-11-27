@@ -109,7 +109,7 @@
             ];
             
             if (symbolFonts.some(sf => fontFamily.includes(sf))) {
-                console.log('fontfamilyFallback: ' + fontfamily)
+                console.log('fontfamilyFallback: ' + fontFamily)
                 return `'${fontFamily}','Noto Emoji','Symbola','Noto Sans Symbols 2',${genericFallback}`;
             }
             
