@@ -71,6 +71,8 @@ insertArray[20] = ['whirldsymbols.js', 'Spirals'];
 insertArray[21] = ['whirldsymbols.js', 'Spirals'];
 insertArray[22] = ['whirldsymbols-OM.js', 'flasher1-the OM'];
 insertArray[23] = ['whirldsymbols-OM.js', 'flasher1-the OM'];
+//insertArray[24] = ['whirldsymbols.js', 'Masked-Dissolve']; // ready but not yet enabled
+insertArray[25] = ['none', 'Macroglyph']; // insert25.js loads its own data
 
 console.log('Insert array length:', insertArray.length);
 
@@ -80,6 +82,9 @@ function getScriptPath(filename) {
                         'msucd_mandala.js', 'whirldsymbols.js', 'whirldsymbols-OM.js', 'emoji_versions_data2.js',
                         'msucd_letters.js', 'watermark.js', 'painters.js', 'superpainters.js'];
     const functFiles = ['insert_config.js', 'nav_menu.js'];
+
+    // Special cases - inserts that load their own data
+    if (filename === 'none') return null;
 
     if (glyphFiles.includes(filename)) return './js_glyph/' + filename;
     if (functFiles.includes(filename)) return './js_funct/' + filename;
@@ -158,10 +163,15 @@ if (currentIndexNum !== null && currentIndexNum >= 0 && currentIndexNum < insert
     insertArrayRnd = currentIndexNum;
     const scriptToLoad = insertArray[currentIndexNum][0];
     console.log(`Script to load: ${scriptToLoad}`);
-    const script = document.createElement('script');
-    script.src = getScriptPath(scriptToLoad);
-    document.head.appendChild(script);
-    console.log(`✓ Loaded script: ${scriptToLoad} (index ${currentIndexNum})`);
+    const scriptPath = getScriptPath(scriptToLoad);
+    if (scriptPath) {
+        const script = document.createElement('script');
+        script.src = scriptPath;
+        document.head.appendChild(script);
+        console.log(`✓ Loaded script: ${scriptToLoad} (index ${currentIndexNum})`);
+    } else {
+        console.log(`⊘ Insert ${currentIndexNum} loads its own data - skipping glyph file load`);
+    }
 } else {
     console.log('No valid parameter - loading random default script');
     const defaultIndex = Math.floor(Math.random() * insertArray.length);
@@ -169,13 +179,28 @@ if (currentIndexNum !== null && currentIndexNum >= 0 && currentIndexNum < insert
     console.log('Default index selected:', defaultIndex);
     const scriptToLoad = insertArray[defaultIndex][0];
     console.log(`Script to load: ${scriptToLoad}`);
-    const script = document.createElement('script');
-    script.src = getScriptPath(scriptToLoad);
-    document.head.appendChild(script);
-    console.log(`✓ Loaded default script: ${scriptToLoad} (index ${defaultIndex})`);
+    const scriptPath = getScriptPath(scriptToLoad);
+    if (scriptPath) {
+        const script = document.createElement('script');
+        script.src = scriptPath;
+        document.head.appendChild(script);
+        console.log(`✓ Loaded default script: ${scriptToLoad} (index ${defaultIndex})`);
+    } else {
+        console.log(`⊘ Insert ${defaultIndex} loads its own data - skipping glyph file load`);
+    }
 }
 console.log('insertArrayRnd (for watermark logic):', insertArrayRnd);
 console.log(`⏰ Next refresh in ${refreshTime} seconds to index ${nextIndex}`);
+
+// Set dynamic page title
+const insertDescription = insertArray[insertArrayRnd] && insertArray[insertArrayRnd][1]
+    ? insertArray[insertArrayRnd][1]
+    : null;
+document.title = insertDescription
+    ? `glyphmatic.us — ${insertDescription}`
+    : 'glyphmatic.us';
+console.log('Page title set to:', document.title);
+
 console.log('=== Script Complete ===');
 
 // Body styling
