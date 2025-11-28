@@ -141,7 +141,20 @@ const INSERT_CONFIG = {
                 zIndex: -1,
                 positioning: 'top-left'
             }
-        }
+        },
+        23: {
+            controls: {
+                style: false,      // △STYLE button
+                html: true,       // △HTML button
+                resize: true,     // +/- Size buttons
+                moveUpDown: false // Move up/down (currently disabled globally)
+            },
+            watermarks: {
+                count: 0,
+                zIndex: -1,
+                positioning: 'hidden'
+            }
+        }        
         // Add more insert-specific configs as needed
         // Example for disabling controls on a specific insert:
         // 16: {

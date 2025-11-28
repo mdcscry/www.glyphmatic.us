@@ -1,183 +1,185 @@
-// Spinning Spirals Insert
-divCounter = Math.round(Math.random() * 20 + 5);
+// Configuration
+var divCounter = 4;
+var glyphsPerDiv = 20;
+var baseFontSize = '12vw';
 
+var container = [];
+var mycolors = [];
+var mycolors2 = [];
+
+// Test mode - set to glyph index to display only that glyph, or null for random
+var testGlyphIndex = null; // Change to number like 41 for peace hand
+
+
+// Load standardQuad.js
 var scriptCSS = document.createElement('script');
-scriptCSS.src = "../js_glyph/whirldsymbols.js";
+scriptCSS.src = "../js_layout/standardQuad.js";
 document.getElementsByTagName('body')[0].appendChild(scriptCSS);
 
+
+// Wait for all required signals
 function jsWait() {
-    if (typeof myFontSet == "undefined") {
+    if (typeof whirldArraySignal == "undefined" || 
+        typeof msucdArraySignal == "undefined" || 
+        typeof signalArray == "undefined") {
         window.setTimeout(jsWait, 100);
     } else {
-        initGrid();
+        initDiv();
+        initStyle();
+        initContent();
+        startTimers();
     }
 }
 
-function initGrid() {
-    // Grid options
-    const gridOptions = 
-            [
-                [1, 1], [1, 2], [2, 2], [2, 4]
-               ,[4, 2], [3, 3], [4, 4], [5, 5], [5, 5]
-               ,[5, 5], [5, 10], [10, 10], [1, 1] 
-            ];
-    
-    const [rows, cols] = gridOptions[Math.floor(Math.random() * gridOptions.length)];
-    
-    // Spiral indices with their preferred directions
-    const spiralConfig = {
-        73: 'counter',
-        159: 'either',
-        226: 'counter',
-        186: 'clock', // Armenian eternity sign
-        229: 'clock',
-        325: 'counter',
-        328: 'counter'
-    };
-    
-    const spiralIndices = Object.keys(spiralConfig).map(Number);
-    const selectedIndex = spiralIndices[Math.floor(Math.random() * spiralIndices.length)];
-    
-    // Determine spin direction based on spiral's preference
-    const direction = spiralConfig[selectedIndex];
-    let isClockwise;
-    
-    if (direction === 'counter') {
-        isClockwise = false;
-    } else if (direction === 'clock') {
-        isClockwise = true;
-    } else { // 'either'
-        isClockwise = Math.random() > 0.5;
+function initDiv() {
+    for (var i = 1; i <= divCounter; i++) {
+        container[i] = document.createElement("div");
+        document.body.appendChild(container[i]);
+        container[i].id = 'myid' + i;
+        container[i].className = 'display';
     }
-    
-    console.log('Selected spiral:', selectedIndex, 'Direction:', direction, 'Clockwise:', isClockwise);
-    
-    const glyphCode = parseInt(myFontSet[selectedIndex][0].replace('x', ''), 16);
-    
-    // Pick one random font from that glyph's font set
-    const fontSet = myFontSet[selectedIndex].slice(1);
-    const selectedFont = fontSet[Math.floor(Math.random() * fontSet.length)];
-    
-    // Random spin duration
-    const spinDuration = Math.floor(Math.random() * 3) + 3; // 3-5 seconds
-    const animationName = isClockwise ? 'spinCW' : 'spinCCW';
-    
-    // Generate OKLCH color palette
-    function generateOklchPalette(colNum) {
-        const mycolors = [];
-        const baseHue = Math.floor(Math.random() * 360);
-        const baseChroma = 0.15 + Math.random() * 0.15;
-        
-        for (let i = 0; i < colNum; i++) {
-            const lightness = Math.floor(Math.random() * 90) + 10;
-            const opacity = Math.random() * 0.3 + 0.6;
-            const color = `oklch(${lightness}% ${baseChroma.toFixed(2)} ${baseHue} / ${opacity.toFixed(2)})`;
-            mycolors.push(color);
-        }
-        
-        return mycolors;
-    }
-    
-    const colors = generateOklchPalette(20);
-    const backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-    const gridLineColor = backgroundColor;
-    
-    // Ensure spiral color has enough contrast with background
-    let spiralColor;
-    const bgLightness = parseInt(backgroundColor.match(/oklch\((\d+)%/)[1]);
-    
-    // Pick a color with sufficient lightness difference
-    do {
-        spiralColor = colors[Math.floor(Math.random() * colors.length)];
-        const spiralLightness = parseInt(spiralColor.match(/oklch\((\d+)%/)[1]);
-        if (Math.abs(bgLightness - spiralLightness) > 30) break;
-    } while (true);
-    
-    // Random 3D effects (uniform for all spirals)
-    const strokeWidth = Math.floor(Math.random() * 5) + 2; // 2-6px
-    const strokeColor = colors[Math.floor(Math.random() * colors.length)];
-    const shadowOffsetX = Math.floor(Math.random() * 5) - 1; // -5 to 5px
-    const shadowOffsetY = Math.floor(Math.random() * 5) - 1;
-    const shadowBlur = Math.floor(Math.random() * 0) + 1; // 3-10px
-    const shadowColor = colors[Math.floor(Math.random() * colors.length)];
-    const textShadow = `${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px ${shadowColor}, ${shadowOffsetX*2}px ${shadowOffsetY*2}px ${shadowBlur*2}px ${shadowColor}`;
-    
-    // Set body styles
-    document.body.style.margin = '0';
-    document.body.style.padding = '0';
-    document.body.style.overflow = 'hidden';
-    document.body.style.backgroundColor = backgroundColor;
-    
-    // Create background grid (static colored boxes)
-    const backgroundGrid = document.createElement('div');
-    backgroundGrid.style.position = 'fixed';
-    backgroundGrid.style.top = '0';
-    backgroundGrid.style.left = '0';
-    backgroundGrid.style.width = '100vw';
-    backgroundGrid.style.height = '100vh';
-    backgroundGrid.style.display = 'grid';
-    backgroundGrid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-    backgroundGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-    backgroundGrid.style.gap = '3px';
-    backgroundGrid.style.zIndex = '0';
-    document.body.appendChild(backgroundGrid);
-    
-    // Create foreground grid (spinning glyphs)
-    const foregroundGrid = document.createElement('div');
-    foregroundGrid.style.position = 'fixed';
-    foregroundGrid.style.top = '0';
-    foregroundGrid.style.left = '0';
-    foregroundGrid.style.width = '100vw';
-    foregroundGrid.style.height = '100vh';
-    foregroundGrid.style.display = 'grid';
-    foregroundGrid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-    foregroundGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-    foregroundGrid.style.gap = '3px';
-    foregroundGrid.style.zIndex = '1';
-    foregroundGrid.style.pointerEvents = 'none';
-    document.body.appendChild(foregroundGrid);
-    
-    // Create grid cells
-    for (let i = 0; i < rows * cols; i++) {
-        // Background cell (static colored box)
-        const bgCell = document.createElement('div');
-        bgCell.style.backgroundColor = gridLineColor;
-        bgCell.style.borderRadius = '8px';
-        bgCell.style.animation = 'none';
-        backgroundGrid.appendChild(bgCell);
-        
-        // Foreground cell (spinning glyph)
-        const fgCell = document.createElement('div');
-        fgCell.innerHTML = '&#' + glyphCode + ';';
-        fgCell.style.display = 'flex';
-        fgCell.style.alignItems = 'center';
-        fgCell.style.justifyContent = 'center';
-        fgCell.style.backgroundColor = 'transparent';
-        fgCell.style.color = spiralColor;
-        fgCell.style.fontSize = `${Math.min(80 / rows, 80 / cols)}vmin`;
-        fgCell.style.fontFamily = selectedFont;
-        fgCell.style.lineHeight = '1';
-        fgCell.style.webkitTextFillColor = spiralColor;
-        fgCell.style.webkitTextStroke = `${strokeWidth}px ${strokeColor}`;
-        fgCell.style.textShadow = textShadow;
-        fgCell.style.animation = `${animationName} ${spinDuration}s linear infinite`;
-        
-        foregroundGrid.appendChild(fgCell);
-    }
-    
-    // Add rotation animations
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes spinCW {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        @keyframes spinCCW {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(-360deg); }
-        }
-    `;
-    document.head.appendChild(style);
 }
 
+function initStyle() {
+    mycolors = [];
+    mycolors2 = [];
+    
+    // Generate primary color palette
+    for (var i = 0; i < 8; i++) {
+        var hue = Math.round(Math.random() * 360);
+        var sat = Math.round(Math.random() * 80) + 1;
+        var light = Math.round(Math.random() * 70) + 10;
+        var alpha = Math.random() + 0.1;
+        mycolors.push('hsla(' + hue + ',' + sat + '%,' + light + '%,' + alpha + ')');
+    }
+    
+    // Generate secondary color palette
+    var baseHue = Math.round(Math.random() * 360);
+    for (var i = 0; i < 50; i++) {
+        var hue = Math.round(baseHue + Math.random() * 40 - 20);
+        var sat = Math.round(Math.random() * 80) + 1;
+        var light = Math.round(Math.random() * 100);
+        var alpha = Math.random() + 0.1;
+        mycolors2.push('hsla(' + hue + ',' + sat + '%,' + light + '%,' + alpha + ')');
+    }
+    
+    // Apply styles to containers
+    for (var i = 1; i <= divCounter; i++) {
+        container[i].style.backgroundColor = mycolors2[Math.floor(Math.random() * mycolors2.length)];
+        container[i].style.color = mycolors[Math.floor(Math.random() * mycolors.length)];
+        container[i].style.textShadow = 
+            Math.round(Math.random() * 2 - 1) + 'px ' +
+            Math.round(Math.random() * 3 - 1) + 'px ' +
+            mycolors2[Math.floor(Math.random() * mycolors2.length)];
+        container[i].style.webkitTextFillColor = mycolors2[Math.floor(Math.random() * mycolors2.length)];
+        container[i].style.webkitTextStrokeWidth = (Math.random() * 2) + "px";
+        container[i].style.webkitTextStrokeColor = mycolors[Math.floor(Math.random() * mycolors.length)];
+    }
+}
+
+function initContent() {
+    for (var i = 1; i <= divCounter; i++) {
+        container[i].innerHTML = '';
+        for (var sp = 1; sp <= glyphsPerDiv; sp++) {
+            var span = document.createElement("span");
+            container[i].appendChild(span);
+            span.id = 'span' + i + '_' + sp;
+            span.style.fontSize = baseFontSize;
+            span.style.paddingRight = '2vw';
+            setRandomGlyph(span);
+        }
+    }
+}
+
+function setRandomGlyph(spanElement) {
+    var glyphIndex;
+    
+    if (testGlyphIndex !== null) {
+        glyphIndex = testGlyphIndex;
+    } else {
+        // Keep trying until we find a valid glyph
+        do {
+            glyphIndex = Math.floor(Math.random() * myFontSet.length);
+        } while (!myFontSet[glyphIndex]);
+    }
+    
+    var codepoint = myFontSet[glyphIndex][0];
+    var fontList = myFontSet[glyphIndex].slice(1);
+    var randomFont = fontList[Math.floor(Math.random() * fontList.length)];
+    
+    spanElement.style.fontFamily = randomFont;
+    spanElement.innerHTML = parseCodepoint(codepoint);
+    
+    // Generate class names
+    var fontClassName = randomFont.toLowerCase().replace(/\s+/g, '-');
+    var codepointClass = codepoint.split(';')[0].replace('x', '').toLowerCase();
+    codepointClass = 'u' + codepointClass; // u30aa instead of x30aa
+
+    // Apply both classes
+    spanElement.className = fontClassName + ' ' + codepointClass;
+ 
+    // Tooltip
+    var description = glyphDescriptions[glyphIndex] || 'Unknown glyph';
+    var cpDisplay = codepoint.indexOf(';') > -1 ? 'Composite' : 'U+' + codepoint.replace('x','');
+    spanElement.title = description + ' (' + cpDisplay + ') — ' + randomFont;
+}
+
+
+function parseCodepoint(cp) {
+    // Handle composite characters: 'x05D9;&#x05B0;...'
+    if (cp.indexOf(';') > -1) {
+        var parts = cp.split(';');
+        var output = '&#' + parts[0] + ';';
+        for (var i = 1; i < parts.length; i++) {
+            if (parts[i]) output += parts[i] + ';';
+        }
+        return output;
+    }
+    // Handle hex: 'xFDFD'
+    else if (cp.charAt(0) === 'x') {
+        return '&#' + cp + ';';
+    }
+    // Handle decimal: '9767'
+    else {
+        return '&#' + cp + ';';
+    }
+}
+
+function startTimers() {
+    // Glyph swap timer (35-88 seconds)
+    window.setInterval(function() {
+        var rndContainer = Math.floor(Math.random() * divCounter) + 1;
+        var rndSpan = Math.floor(Math.random() * glyphsPerDiv) + 1;
+        var spanId = 'span' + rndContainer + '_' + rndSpan;
+        var spanElement = document.getElementById(spanId);
+        if (spanElement) {
+            setRandomGlyph(spanElement);
+        }
+    }, Math.random() * 53000 + 35000);
+    
+    // Background color timer
+    window.setInterval(function() {
+        var rndDiv = Math.floor(Math.random() * divCounter) + 1;
+        container[rndDiv].style.backgroundColor = mycolors2[Math.floor(Math.random() * mycolors2.length)];
+    }, Math.random() * 10000 + 5000);
+    
+    // Text color timer
+    window.setInterval(function() {
+        var rndDiv = Math.floor(Math.random() * divCounter) + 1;
+        container[rndDiv].style.color = mycolors2[Math.floor(Math.random() * mycolors2.length)];
+    }, Math.random() * 10000 + 5000);
+}
+
+// Manual refresh function for nav
+function changeHtmlDisplayInline() {
+    var rndContainer = Math.floor(Math.random() * divCounter) + 1;
+    for (var sp = 1; sp <= glyphsPerDiv; sp++) {
+        var spanId = 'span' + rndContainer + '_' + sp;
+        var spanElement = document.getElementById(spanId);
+        if (spanElement) {
+            setRandomGlyph(spanElement);
+        }
+    }
+}
+console.log('insert22.js loaded');
 jsWait();

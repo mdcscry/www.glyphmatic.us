@@ -15,25 +15,52 @@ function jsWait() {
 
 function initGrid() {
     // Grid options
-    gridOptions = [ [1, 1], [1, 2], [2, 1], [2, 2], [2, 4], [4, 2], [3, 3], [4, 4], [5, 5], [5, 5]
-               ,[5, 5], [10, 10],[1, 1] ];
+    const gridOptions = 
+            [
+                [1, 1], [1, 2], [2, 2], [2, 4]
+               ,[4, 2], [3, 3], [4, 4], [5, 5], [5, 5]
+               ,[5, 5], [5, 10], [10, 10], [1, 1] 
+            ];
     
     const [rows, cols] = gridOptions[Math.floor(Math.random() * gridOptions.length)];
     
-    // Pick one spiral glyph for entire rendering
-    const spiralIndices = [73,159,226,186,228,328]; // Cham spiral, Cyclone, Armenian Eternity, Permanent paper infinity
+    // Spiral indices with their preferred directions
+    const spiralConfig = {
+        73: 'counter',
+        159: 'either',
+        226: 'counter',
+        186: 'clock', // Armenian eternity sign
+        229: 'clock',
+        325: 'counter',
+        328: 'counter'
+    };
+    
+    const spiralIndices = Object.keys(spiralConfig).map(Number);
     const selectedIndex = spiralIndices[Math.floor(Math.random() * spiralIndices.length)];
-    console.log('Selected sprial index:' + selectedIndex)
+    
+    // Determine spin direction based on spiral's preference
+    const direction = spiralConfig[selectedIndex];
+    let isClockwise;
+    
+    if (direction === 'counter') {
+        isClockwise = false;
+    } else if (direction === 'clock') {
+        isClockwise = true;
+    } else { // 'either'
+        isClockwise = Math.random() > 0.5;
+    }
+    
+    console.log('Selected spiral:', selectedIndex, 'Direction:', direction, 'Clockwise:', isClockwise);
+    
     const glyphCode = parseInt(myFontSet[selectedIndex][0].replace('x', ''), 16);
     
-    // Armenian Eternity (186) spins counterclockwise, all others clockwise
-    const animationName = (selectedIndex === 186 || 
-                selectedIndex === 325 ||
-                selectedIndex === 159 
-                ) ? 'spinCCW' : 'spinCW';
     // Pick one random font from that glyph's font set
     const fontSet = myFontSet[selectedIndex].slice(1);
     const selectedFont = fontSet[Math.floor(Math.random() * fontSet.length)];
+    
+    // Random spin duration
+    const spinDuration = Math.floor(Math.random() * 3) + 3; // 3-5 seconds
+    const animationName = isClockwise ? 'spinCW' : 'spinCCW';
     
     // Generate OKLCH color palette
     function generateOklchPalette(colNum) {
@@ -55,9 +82,6 @@ function initGrid() {
     const backgroundColor = colors[Math.floor(Math.random() * colors.length)];
     const gridLineColor = backgroundColor;
     
-    // Random spin duration
-    const spinDuration = Math.floor(Math.random() * 3) + 3; // 3-5 seconds
-    
     // Ensure spiral color has enough contrast with background
     let spiralColor;
     const bgLightness = parseInt(backgroundColor.match(/oklch\((\d+)%/)[1]);
@@ -70,11 +94,11 @@ function initGrid() {
     } while (true);
     
     // Random 3D effects (uniform for all spirals)
-    const strokeWidth = Math.floor(Math.random() * 5) + 6;
+    const strokeWidth = Math.floor(Math.random() * 5) + 2; // 2-6px
     const strokeColor = colors[Math.floor(Math.random() * colors.length)];
-    const shadowOffsetX = Math.floor(Math.random() * 3+2) - 2;
-    const shadowOffsetY = Math.floor(Math.random() * 3+2) - 2;
-    const shadowBlur = Math.floor(Math.random() * 2) + 1;
+    const shadowOffsetX = Math.floor(Math.random() * 5) - 1; // -5 to 5px
+    const shadowOffsetY = Math.floor(Math.random() * 5) - 1;
+    const shadowBlur = Math.floor(Math.random() * 0) + 1; // 3-10px
     const shadowColor = colors[Math.floor(Math.random() * colors.length)];
     const textShadow = `${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px ${shadowColor}, ${shadowOffsetX*2}px ${shadowOffsetY*2}px ${shadowBlur*2}px ${shadowColor}`;
     
@@ -133,24 +157,24 @@ function initGrid() {
         fgCell.style.fontSize = `${Math.min(80 / rows, 80 / cols)}vmin`;
         fgCell.style.fontFamily = selectedFont;
         fgCell.style.lineHeight = '1';
-        fgCell.style.webkitTextFillColor = spiralColor;     
+        fgCell.style.webkitTextFillColor = spiralColor;
         fgCell.style.webkitTextStroke = `${strokeWidth}px ${strokeColor}`;
         fgCell.style.textShadow = textShadow;
         fgCell.style.animation = `${animationName} ${spinDuration}s linear infinite`;
         
         foregroundGrid.appendChild(fgCell);
     }
-
+    
     // Add rotation animations
     const style = document.createElement('style');
     style.textContent = `
         @keyframes spinCW {
             from { transform: rotate(0deg); }
-            to { transform: rotate(-360deg); }
+            to { transform: rotate(360deg); }
         }
         @keyframes spinCCW {
             from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            to { transform: rotate(-360deg); }
         }
     `;
     document.head.appendChild(style);
