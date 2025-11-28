@@ -14,6 +14,7 @@ var currentScheme; // 'A' or 'B'
 var schemeColors = {};
 var maskCounter = 0; // Track unique mask IDs
 let glyphStylesLookup;
+var descriptionLabel;
 
 // Wait for signals
 function jsWait() {
@@ -134,6 +135,9 @@ function createMask() {
 
     console.log('Mask glyph:', glyphDescriptions[maskIndex], maskFont, needsRotation ? '(rotated -90°)' : '', 'clipId:', clipId,
                 'Style:', { size: currentMaskSize, y: currentMaskYPosition, x: currentMaskXPosition });
+
+    // Update description label
+    updateDescriptionLabel(maskIndex);
 
     // Calculate center point for rotation in pixels.
     // This assumes currentMaskXPosition and currentMaskYPosition are percentage strings (e.g., "50%", "70%").
@@ -339,6 +343,97 @@ function parseCodepoint(cp) {
     }
     else {
         return '&#' + cp + ';';
+    }
+}
+
+// Contrast helper functions
+function colorToRgb(color) {
+    if (color.startsWith('hsl')) {
+        return hslToRgb(color);
+    }
+    return null;
+}
+
+function hslToRgb(hslString) {
+    var match = hslString.match(/hsla?\((\d+),\s*(\d+)%,\s*(\d+)%/);
+    if (!match) return null;
+
+    var h = parseInt(match[1]) / 360;
+    var s = parseInt(match[2]) / 100;
+    var l = parseInt(match[3]) / 100;
+
+    var r, g, b;
+    if (s === 0) {
+        r = g = b = l;
+    } else {
+        var hue2rgb = function(p, q, t) {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1/6) return p + (q - p) * 6 * t;
+            if (t < 1/2) return q;
+            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            return p;
+        };
+        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        var p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+    }
+
+    return {
+        r: Math.round(r * 255),
+        g: Math.round(g * 255),
+        b: Math.round(b * 255)
+    };
+}
+
+function getLuminance(rgb) {
+    var vals = [rgb.r, rgb.g, rgb.b].map(function(val) {
+        val = val / 255;
+        return val <= 0.03928 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * vals[0] + 0.7152 * vals[1] + 0.0722 * vals[2];
+}
+
+function getContrastingTextColor(backgroundColor) {
+    var rgb = colorToRgb(backgroundColor);
+    if (!rgb) return '#FFFFFF';
+
+    var luminance = getLuminance(rgb);
+    return luminance > 0.5 ? '#000000' : '#FFFFFF';
+}
+
+function createDescriptionLabel() {
+    descriptionLabel = document.createElement('div');
+    descriptionLabel.id = 'glyphDescription';
+    descriptionLabel.style.position = 'fixed';
+    descriptionLabel.style.bottom = '2vw';
+    descriptionLabel.style.right = '2vw';
+    descriptionLabel.style.fontFamily = '"Noto Sans Mono", monospace';
+    descriptionLabel.style.fontSize = '1.5vw';
+    descriptionLabel.style.padding = '0.5vw';
+    descriptionLabel.style.zIndex = '1000';
+    descriptionLabel.style.transition = 'color 0.5s ease';
+    descriptionLabel.style.textAlign = 'right';
+    document.body.appendChild(descriptionLabel);
+}
+
+function updateDescriptionLabel(maskIndex) {
+    if (!descriptionLabel) {
+        createDescriptionLabel();
+    }
+
+    descriptionLabel.textContent = glyphDescriptions[maskIndex] || 'Unknown Om';
+
+    // Choose color based on scheme
+    if (currentScheme === 'A') {
+        // Scheme A: Use contrasting color (white on dark background)
+        descriptionLabel.style.color = getContrastingTextColor(schemeColors.backgroundColor);
+    } else {
+        // Scheme B: Use a color from the narrow hue range
+        var hue = schemeColors.baseHue + (Math.random() * schemeColors.hueRange - schemeColors.hueRange / 2);
+        descriptionLabel.style.color = `hsl(${hue}, ${schemeColors.saturation}%, ${schemeColors.brightness}%)`;
     }
 }
 
