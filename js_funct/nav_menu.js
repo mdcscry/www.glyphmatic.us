@@ -4,6 +4,7 @@
  */
 
 class NavMenu {
+
     constructor(insertIndex, colors) {
         this.insertIndex = insertIndex;
         this.colors = colors || [];
@@ -31,6 +32,8 @@ class NavMenu {
         this.createSlideOutPanel();
         this.createControls();
         this.applyControlVisibility();
+        this.createDescription();
+        this.applyRandomMenuFont();
     }
     
     /**
@@ -69,6 +72,7 @@ class NavMenu {
             transform: translateZ(0) !important;
             will-change: transform !important;
         `;
+        panel.style.fontFamily = 'Arial, sans-serif'; // Set a default that can be overridden
         document.body.appendChild(panel);
         this.elements.panel = panel;
         
@@ -78,8 +82,7 @@ class NavMenu {
             #navPanel, #navPanel *, #navPanel div, #navPanel div.display, #navPanel div.noDisplay,
             #navTab, #navTabContainer {
                 font-size: 14px !important;
-                line-height: 20px !important;
-                font-family: Arial, sans-serif !important;
+                line-height: 20px !important; /* font-family removed from here */
                 animation: none !important;
                 opacity: 1 !important;
                 visibility: visible !important;
@@ -91,8 +94,8 @@ class NavMenu {
                 margin: 0 0 12px 0 !important;
                 padding: 6px 8px !important;
                 text-align: left !important;
-                background: rgba(50, 50, 50, 0.3) !important;
-                border-radius: 3px !important;
+                background: transparent !important;
+                border-radius: 0 !important;
                 clear: both !important;
                 width: 100% !important;
                 box-sizing: border-box !important;
@@ -243,8 +246,7 @@ class NavMenu {
         // Wrap label in span with isolated styles
         const span = document.createElement('span');
         span.textContent = label;
-        span.style.cssText = `
-            font-family: Arial, sans-serif !important;
+        span.style.cssText = ` /* font-family removed from here */
             font-size: 14px !important;
             line-height: 14px !important;
             color: rgb(255, 255, 255) !important;
@@ -265,12 +267,42 @@ class NavMenu {
             width: auto !important;
             overflow: hidden !important;
             box-sizing: border-box !important;
-            background: rgba(50, 50, 50, 0.5) !important;
+            background: transparent !important;
         `;
         btn.addEventListener('click', handler);
         return btn;
     }
     
+    /**
+     * Create description element at the bottom of the panel
+     */
+    createDescription() {
+        if (!this.config.description) return;
+
+        const descDiv = document.createElement('div');
+        descDiv.id = 'insertDescription';
+        descDiv.style.cssText = `
+            position: relative !important;
+            display: block !important;
+            margin: 50px 0 0 0 !important;
+            padding: 8px !important;
+            font-size: 12px !important;
+            line-height: 16px !important;
+            color: #ffffff !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            text-align: left !important;
+            word-wrap: break-word !important;
+            box-sizing: border-box !important;
+        `;
+        descDiv.textContent = this.config.description;
+
+        // Insert at the end of the panel (after controls)
+        this.elements.panel.appendChild(descDiv);
+        this.elements.description = descDiv;
+    }
+
     /**
      * Apply visibility based on config
      */
@@ -538,6 +570,41 @@ class NavMenu {
             if (this.colors.length === 0) return '#000000';
             return this.colors[Math.floor(Math.random() * this.colors.length)];
         }
+    
+    /**
+     * Applies a random monospace font to the menu using FontUtility.
+     */
+    applyRandomMenuFont() {
+        if (typeof FontUtility === 'undefined') {
+            console.error('FontUtility is not loaded. Cannot apply random menu font.');
+            return;
+        }
+
+        // Load monospace fonts (does nothing if already loaded)
+        FontUtility.loadMonospaceFonts();
+
+        // Get a random monospace font from the hardcoded list
+        const randomFont = FontUtility.getRandomMonospaceFont();
+
+        if (randomFont) {
+            const fontCss = randomFont.includes(' ') ? `"${randomFont}"` : randomFont;
+            console.log('Applying font to nav menu:', fontCss);
+
+            // Apply to panel with !important to override any conflicting styles
+            if (this.elements.panel) {
+                this.elements.panel.style.setProperty('font-family', fontCss, 'important');
+            }
+            if (this.elements.tab) {
+                this.elements.tab.style.setProperty('font-family', fontCss, 'important');
+            }
+
+            // Also apply to all buttons/spans in the panel
+            const allElements = this.elements.panel.querySelectorAll('div, span');
+            allElements.forEach(el => {
+                el.style.setProperty('font-family', fontCss, 'important');
+            });
+        }
+    }
     }
 
     /**

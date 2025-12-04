@@ -34,11 +34,29 @@ DIV   {
 
 var fontChangeRate=200;
 
+var mycolors = [];
+const colNum = 3; // Number of color variations to generate per call
 
+/**
+ * Generate a flexible color palette using HSLA values.
+ * This replaces the old hardcoded array.
+ */
+function setColor(hue, sat, light, opa) {
+    for (let colorCounter = 1; colorCounter <= colNum; colorCounter++) {
+        const toSpliceColor = 'hsla(' +
+            Math.round(40 * Math.random() + hue - 20) + ',' +
+            Math.round(20 * Math.random() + sat - 20) + '%,' +
+            (Math.round(Math.random() * 20) + light) + '%,' +
+            (Math.random() * opa + .6) +
+            ')';
+        mycolors.push(toSpliceColor);
+    }
+}
 
-var mycolors=[ '#FF0000','#BF3030','#A60000','#FF4040','#FF7373','ED002F','#B22D47','#9A001E','#F63E62','#F66F89','#FF5C00','#BF6430','#A63C00','#FF8540','#FFA573','#FF9C00','#BF8830','#A66500','#FFB540','#FFC973'];
-
-
+// Generate the color palette
+for (let i = 0; i < 12; i++) {
+    setColor(Math.round(Math.random() * 340), Math.round(Math.random() * 1800), Math.round(Math.random() * 80), 1);
+}
 
 // Double line box drawing elements  
 const myarray = [

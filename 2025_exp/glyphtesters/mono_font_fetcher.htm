@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monospace Font Fetcher - Glyphmatic Utility</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #00ffff;
+            border-bottom: 2px solid #00ffff;
+            padding-bottom: 10px;
+        }
+        .controls {
+            background: #2a2a2a;
+            padding: 15px;
+            border: 1px solid #00ff00;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #00ffff;
+        }
+        .info {
+            background: #2a2a2a;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffff00;
+        }
+        #arrayOutput {
+            background: #000;
+            color: #00ff00;
+            padding: 20px;
+            border: 2px solid #00ff00;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .status {
+            color: #ffff00;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .error {
+            color: #ff0000;
+        }
+        .success {
+            color: #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <h1>Monospace Font Fetcher Utility</h1>
+
+    <div class="info">
+        <p><strong>Purpose:</strong> This utility fetches all monospaced fonts from Google Fonts API, applies the exclusion rules from tshirt_gen1.js, and displays them as a JavaScript array that you can copy and paste into font_utility.js.</p>
+    </div>
+
+    <div class="controls">
+        <button id="fetchBtn">Fetch Monospace Fonts</button>
+        <button id="copyBtn" style="display:none;">Copy Array to Clipboard</button>
+        <div class="status" id="status"></div>
+    </div>
+
+    <div id="arrayOutput"></div>
+
+    <script>
+        let monoFontsArray = [];
+        const API_KEY = 'AIzaSyBPEC-k91wzgVIMm9CZSJIINd-WKmR2Wmo';
+        const API_URL = `https://www.googleapis.com/webfonts/v1/webfonts?key=${API_KEY}`;
+
+        // Exclusion rules from tshirt_gen1.js
+        const excludeKeywords = [
+            'barcode', 'material icons', 'material symbols', 'jacqard',
+            'wavefont', 'flow', 'yarndings', 'guides', 'redacted', 'charted'
+        ];
+        const excludeSpecificFonts = [
+            'Sixtyfour', 'Workbench', 'Monofett', 'Martian Mono SemiExpanded', 'Sixtyfour Convergence'
+        ];
+
+        document.getElementById('fetchBtn').addEventListener('click', fetchMonospaceFonts);
+        document.getElementById('copyBtn').addEventListener('click', copyToClipboard);
+
+        async function fetchMonospaceFonts() {
+            const statusEl = document.getElementById('status');
+            const outputEl = document.getElementById('arrayOutput');
+            const copyBtn = document.getElementById('copyBtn');
+
+            statusEl.textContent = 'Fetching fonts from Google Fonts API...';
+            statusEl.className = 'status';
+            outputEl.textContent = '';
+            copyBtn.style.display = 'none';
+
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error(`API request failed with status: ${response.status}`);
+                }
+
+                const json = await response.json();
+                statusEl.textContent = `Received ${json.items.length} fonts. Filtering...`;
+
+                // Apply filters: monospace category + exclusion rules
+                const filteredFonts = json.items.filter(font => {
+                    // Must be monospace
+                    if (font.category !== 'monospace') {
+                        return false;
+                    }
+
+                    const fontName = font.family.toLowerCase();
+
+                    // Check keyword exclusions
+                    const isKeywordExcluded = excludeKeywords.some(keyword =>
+                        fontName.includes(keyword)
+                    );
+
+                    // Check specific font name exclusions
+                    const isSpecificFontExcluded = excludeSpecificFonts.includes(font.family);
+
+                    return !isKeywordExcluded && !isSpecificFontExcluded;
+                });
+
+                monoFontsArray = filteredFonts.map(font => font.family);
+
+                // Display the array in proper JavaScript format
+                const arrayString = formatArrayForJS(monoFontsArray);
+                outputEl.textContent = arrayString;
+
+                statusEl.textContent = `✓ Success! Found ${monoFontsArray.length} monospace fonts after filtering.`;
+                statusEl.className = 'status success';
+                copyBtn.style.display = 'inline-block';
+
+            } catch (error) {
+                statusEl.textContent = `✗ Error: ${error.message}`;
+                statusEl.className = 'status error';
+                console.error('Fetch error:', error);
+            }
+        }
+
+        function formatArrayForJS(fontsArray) {
+            let output = '// Monospace fonts from Google Fonts (excluding barcode/icon fonts)\n';
+            output += '// Generated: ' + new Date().toISOString() + '\n';
+            output += '// Total fonts: ' + fontsArray.length + '\n\n';
+            output += 'const MONOSPACE_FONTS = [\n';
+
+            fontsArray.forEach((font, index) => {
+                const comma = index < fontsArray.length - 1 ? ',' : '';
+                output += `    '${font}'${comma}\n`;
+            });
+
+            output += '];\n';
+            return output;
+        }
+
+        function copyToClipboard() {
+            const outputEl = document.getElementById('arrayOutput');
+            const statusEl = document.getElementById('status');
+
+            navigator.clipboard.writeText(outputEl.textContent).then(() => {
+                statusEl.textContent = '✓ Array copied to clipboard! Ready to paste into font_utility.js';
+                statusEl.className = 'status success';
+            }).catch(err => {
+                statusEl.textContent = '✗ Failed to copy: ' + err.message;
+                statusEl.className = 'status error';
+            });
+        }
+    </script>
+</body>
+</html>

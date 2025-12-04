@@ -33,7 +33,7 @@ const sysadmin_commands = ['#!','finger',
 'whoami', 'history',
 '.*', '[a-zA-Z]', "perl -pe 's/perl/perl/g'", '!-1', '~/',
 'touch'
-,'touch touch','more','ping','less',
+,'touch touch','more','ping','less','Sudo','Exit 1',
 'clear','alias','sleep','who','chown','curl','shutdown','reboot','halt','ctrl-z','ctrl-c','* * * * *','|', '`whoami`'
 ];
 const git = ["rebase","commit","push -u","pull","add","init","clone","status","diff","restore","reset","checkout","merge","stash","fetch","remote","apply","cherry-pick","blame","commit-sha",
@@ -44,7 +44,7 @@ const ml = ['random forest','nearest neighbors','perceptron','P(A|B)','decision 
 const adm = [
    'Bitrot','Fuck it, Ship it!','Onboarding','POC','High Priority',"Can't Fail",'Please Fix.',
    'meta','Quick Question','Action Item','Bug Fix','Life is Hard.','Stochastic','Random()','Vapor Ware','Age of Evals',
-   'Temporally Ironic Glitch', "I'm late for a meeting!",
+   'Temporally Ironic Glitch', "I'm late for a meeting!","NaN"
    //'Sonnet > Haiku'
 ];
 const ai = [
@@ -116,6 +116,9 @@ function loadGenerator() {
                 }
             }
         }
+
+        // Load monospace fonts for menu using FontUtility
+        FontUtility.loadMonospaceFonts();
 
         createGlyph();
         bindEvents();
@@ -495,21 +498,8 @@ function applyTheme() {
 }
 
 function applyRandomMenuFont() {
-    if (!json_fonts) return;
-    
-    // Filter for monospace fonts only
-    var mono_fonts = json_fonts.items.filter(function(font) {
-        return font.category === 'monospace';
-    });
-
-    var selectedFontFamily;
-    if (mono_fonts.length > 0) {
-        // 1. Get the raw string value (e.g., "Inconsolata" or "Courier New")
-        selectedFontFamily = mono_fonts[Math.round((mono_fonts.length-1)*Math.random())].family;
-    } else {
-        // 1. Get the raw string value from the full list
-        selectedFontFamily = json_fonts.items[Math.round((json_fonts.items.length-1)*Math.random())].family;
-    }
+    // Use FontUtility to get a random monospace font (no filtering needed!)
+    var selectedFontFamily = FontUtility.getRandomMonospaceFont();
     
     // 2. Format the string for CSS: wrap in quotes if it contains spaces.
     // This is the clean replacement for the incorrect JSON.stringify()

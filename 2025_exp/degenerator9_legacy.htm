@@ -30,7 +30,6 @@
 
 
     // --- Utility functions for random values ---
-    // This function now returns the globally selected themeColor
     function getRandomColor() {
         return themeColor;
     }
@@ -184,13 +183,13 @@
             charSpan.style.webkitTextStrokeColor = 'transparent';
             } else {
             // Applying your specific stroke width logic (1px to ~3.99px)
-            charSpan.style.webkitTextFillColor=getRandomColor3();
-            charSpan.style.webkitTextStrokeWidth = (Math.random() * 10 + 5) + "px"; 
-            charSpan.style.webkitTextStrokeColor = getRandomColor2(); // Use themeColor for stroke color
+            charSpan.style.webkitTextFillColor=getRandomColor3(); // Use themeColor for stroke color
+            charSpan.style.webkitTextStrokeWidth = (Math.random() * 3 + 1) + "px"; 
+            charSpan.style.webkitTextStrokeColor = getRandomColor2();
             }
 
             // 30% chance for noise on the glyph (AFTER stroke logic)
-            if (Math.random() < 0.20) {
+            if (Math.random() < 0.90) {
                 charSpan.classList.add('noise-glyph');
                 charSpan.style.setProperty('--glyph-noise-gradient', getRandomNoiseGradient());
                 charSpan.style.webkitTextFillColor = 'transparent'; // Override fill to show noise
