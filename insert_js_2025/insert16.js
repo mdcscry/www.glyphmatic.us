@@ -44,7 +44,7 @@
         '"Noto Color Emoji"',
         '"Noto Emoji"',
         '"Open Moji 0"',
-        '"Segoe Emoji"',
+        '"Segoe UI Emoji"',
         '"Twitter Color Emoji"',
         '"Open Moji Black"',
         '"Emoji Two"',
@@ -56,6 +56,9 @@
         '"TossfaceOTF"',
         '"WhatsApp Emoji"'
     ];
+
+    // Track manually selected font (null = random mode)
+    let selectedFont = null;
 
     // Convert emoji to hex sequence (for exclusion matching in flavor 2)
     function emojiToHexSequence(emoji) {
@@ -123,16 +126,95 @@
     }
 
     function setEmojiFont(fontName) {
+        console.log(`🎨 setEmojiFont called with: "${fontName}"`);
+        const cleanFontName = fontName.replace(/['"]/g, '');
+        // Keep quotes in the value and add fallback, like the glyphtester does
+        const fontFamilyValue = `"${cleanFontName}", sans-serif`;
+        console.log(`🧹 Setting font-family to: ${fontFamilyValue}`);
+
+        // Lock to this font for future morphs
+        selectedFont = fontName;
+        console.log(`🔒 Font locked to: ${fontName}`);
+
         const allEmojiSpans = document.querySelectorAll('.emoji-content');
-        allEmojiSpans.forEach(span => {
-            span.style.fontFamily = fontName;
+        console.log(`📝 Found ${allEmojiSpans.length} emoji spans to update`);
+
+        allEmojiSpans.forEach((span, index) => {
+            span.style.fontFamily = fontFamilyValue;
+            // Update tooltip to reflect new font
+            if (flavorConfig.hasFontSwitching) {
+                const dataHex = span.getAttribute('data-hex');
+                const versionMatch = dataHex?.match(/\[(.+?)\]$/);
+                const version = versionMatch ? versionMatch[1] : 'unknown';
+                span.setAttribute('data-tooltip', `${cleanFontName} [${version}]`);
+            }
+
+            // Log the first emoji to verify the font is being applied
+            if (index === 0) {
+                const computedFont = window.getComputedStyle(span).fontFamily;
+                console.log(`✨ First emoji font-family set to: "${span.style.fontFamily}"`);
+                console.log(`💻 Computed font-family: "${computedFont}"`);
+            }
         });
     }
 
     function setRandomFonts() {
+        // Unlock font - return to random mode (no exclusions)
+        selectedFont = null;
+        console.log(`🔓 Font unlocked - random mode enabled (no exclusions)`);
+
         const allEmojiSpans = document.querySelectorAll('.emoji-content');
         allEmojiSpans.forEach(span => {
-            span.style.fontFamily = getRandomFont();
+            const randomFont = getRandomFont();
+            const cleanFontName = randomFont.replace(/['"]/g, '');
+            const fontFamilyValue = `"${cleanFontName}", sans-serif`;
+            span.style.fontFamily = fontFamilyValue;
+            // Update tooltip to reflect new font
+            if (flavorConfig.hasFontSwitching) {
+                const dataHex = span.getAttribute('data-hex');
+                const versionMatch = dataHex?.match(/\[(.+?)\]$/);
+                const version = versionMatch ? versionMatch[1] : 'unknown';
+                span.setAttribute('data-tooltip', `${cleanFontName} [${version}]`);
+            }
+        });
+    }
+
+    function setRandomFontsWithExclusion() {
+        // Unlock font - return to random mode WITH exclusion checking
+        selectedFont = null;
+        console.log(`🔓 Font unlocked - random mode with exclusions enabled`);
+
+        const allEmojiSpans = document.querySelectorAll('.emoji-content');
+        allEmojiSpans.forEach(span => {
+            const emoji = span.textContent;
+            const dataHex = span.getAttribute('data-hex');
+            const versionMatch = dataHex?.match(/\[(.+?)\]$/);
+            const version = versionMatch ? versionMatch[1] : 'unknown';
+
+            // Try to find a valid font for this emoji
+            let validFont = null;
+            let attempts = 0;
+            const maxAttempts = 50;
+
+            while (!validFont && attempts < maxAttempts) {
+                const randomFont = getRandomFont();
+                if (!isEmojiExcluded(emoji, randomFont, version)) {
+                    validFont = randomFont;
+                } else {
+                    attempts++;
+                }
+            }
+
+            // Fall back to Apple Color Emoji if no valid font found
+            if (!validFont) {
+                validFont = '"Apple Color Emoji"';
+                console.warn(`⚠️ No valid font found for ${emoji}, using fallback`);
+            }
+
+            const cleanFontName = validFont.replace(/['"]/g, '');
+            const fontFamilyValue = `"${cleanFontName}", sans-serif`;
+            span.style.fontFamily = fontFamilyValue;
+            span.setAttribute('data-tooltip', `${cleanFontName} [${version}]`);
         });
     }
 
@@ -323,11 +405,21 @@
 
             if (flavorConfig.hasFontSwitching) {
                 // Flavor 2: Use font switching logic
-                const combo = getRandomValidCombo();
+                let combo;
+                if (selectedFont) {
+                    // Use the locked font, but get a new random emoji
+                    const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
+                    const emojiObj = remainingEmojis.splice(poolIndex, 1)[0];
+                    combo = {emoji: emojiObj.emoji, font: selectedFont, version: emojiObj.version};
+                } else {
+                    // Random mode - pick random emoji + font combo
+                    combo = getRandomValidCombo();
+                }
+                const cleanFontName = combo.font.replace(/['"]/g, '');
                 span.textContent = combo.emoji;
-                span.setAttribute('data-tooltip', `${combo.font.replace(/['"]/g, '')} [${combo.version}]`);
+                span.setAttribute('data-tooltip', `${cleanFontName} [${combo.version}]`);
                 span.setAttribute('data-hex', emojiToHex(combo.emoji));
-                span.style.fontFamily = combo.font;
+                span.style.fontFamily = `"${cleanFontName}", sans-serif`;
             } else {
                 // Flavors 0 & 1: Simple random selection
                 const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
@@ -395,10 +487,11 @@
                 if (flavorConfig.hasFontSwitching) {
                     // Flavor 2: Use font switching logic
                     const combo = getRandomValidCombo();
+                    const cleanFontName = combo.font.replace(/['"]/g, '');
                     emojiContentSpan.textContent = combo.emoji;
-                    emojiContentSpan.setAttribute('data-tooltip', `${combo.font.replace(/['"]/g, '')} [${combo.version}]`);
+                    emojiContentSpan.setAttribute('data-tooltip', `${cleanFontName} [${combo.version}]`);
                     emojiContentSpan.setAttribute('data-hex', `${emojiToHex(combo.emoji)} [${combo.version}]`);
-                    emojiContentSpan.style.fontFamily = combo.font;
+                    emojiContentSpan.style.fontFamily = `"${cleanFontName}", sans-serif`;
                 } else {
                     // Flavors 0 & 1: Simple random selection
                     const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
@@ -424,9 +517,18 @@
         window.addEventListener('keydown', (e) => {
             if (e.key === '1') setEmojiFont('"Apple Color Emoji"');
             if (e.key === '2') setEmojiFont('"Noto Color Emoji"');
-            if (e.key === '3') setEmojiFont('"OpenMoji"');
-            if (e.key === '4') setEmojiFont('"Segoe UI Emoji"');
+            if (e.key === '3') setEmojiFont('"Open Moji 0"');
+            if (e.key === '4') setEmojiFont('"Segoe Emoji"');
+            if (e.key === '5') setEmojiFont('"Twitter Color Emoji"');
+            if (e.key === '6') setEmojiFont('"Open Moji Black"');
+            if (e.key === '7') setEmojiFont('"Emoji Two"');
+            if (e.key === '8') setEmojiFont('"Blobmoji"');
+            if (e.key === '9') setEmojiFont('"WhatsApp Emoji"');
+            if (e.key === '0') setEmojiFont('"Fluent Emoji INV HC"');
+            if (e.key === 't' || e.key === 'T') setEmojiFont('"TossfaceOTF"');
+            if (e.key === 'b' || e.key === 'B') setEmojiFont('"Noto Emoji"');
             if (e.key === 'r' || e.key === 'R') setRandomFonts();
+            if (e.key === 'e' || e.key === 'E') setRandomFontsWithExclusion();
         });
     }
 
@@ -441,7 +543,7 @@
         } else {
             console.log("✅ Signals ready → initializing emoji grid");
             if (flavorConfig.hasFontSwitching) {
-                console.log("🎨 Font controls: Press 1-4 to switch fonts, R for random");
+                console.log("🎨 Font controls: Press 1-0, b to switch fonts | R for random | E for random with exclusions");
             }
             injectStyle(embeddedCss);
             initContent();

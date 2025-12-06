@@ -1484,7 +1484,7 @@ ugaritic old persian runic SIL fonts KangxiRadicals AnatolianHeiro
 
 @font-face {
     font-family: 'Fluent Emoji HC';
-    src: url('../fonts/FluenEmojiHC.ttf') format('truetype');
+    src: url('../fonts/FluentEmojiHC.ttf') format('truetype');
 }
 
 @font-face {
