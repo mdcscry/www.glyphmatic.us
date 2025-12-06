@@ -23,11 +23,11 @@ function startDagenVisualization(flavor) {
     // 3: Singlefast Small (was insert30) - 15px, white bg, double-line chars, 1 interval, mycolors
 
     // Random font size for flavors 0 and 1
-    const randomFontSize = Math.floor(Math.random() * (200 - 40 + 1)) + 40;
+    const randomFontSize = Math.floor(Math.random() * 161) + 40; // 40px to 200px
 
     const flavorConfig = {
         fontSize: (FLAVOR === 0 || FLAVOR === 1) ? randomFontSize : 15,
-        background: (FLAVOR === 2 || FLAVOR === 3) ? '#FFFFFF' : null,
+        background: (FLAVOR === 2 || FLAVOR === 3) ? '#FFFFFF' : '#000000',
         speed: (FLAVOR === 0 || FLAVOR === 2) ? 'doublefast' : 'singlefast',
         charArray: (FLAVOR === 0 || FLAVOR === 2) ? 'single-line' : 'double-line',
         colorMode: (FLAVOR === 1) ? 'palette' : 'mycolors'
@@ -104,36 +104,54 @@ function startDagenVisualization(flavor) {
 
     const myarray = (flavorConfig.charArray === 'single-line') ? singleLineArray : doubleLineArray;
 
-    // 3-Color Palette System (only for flavor 1)
+    // --- New OKLCH Palette Generation ---
     let palette = [];
 
-    function setPalette() {
-        if (typeof mycolors !== 'undefined' && mycolors.length >= 3) {
-            const shuffled = [...mycolors].sort(() => 0.5 - Math.random());
-            palette = shuffled.slice(0, 3);
-        } else {
-            palette = ['#FF0000', '#00FF00', '#0000FF'];
-            console.warn('DaGenerator: `mycolors` array not found or too small. Using fallback palette.');
-        }
-    }
+    function generateHarmoniousPalette() {
+        const newPalette = [];
+        const harmonyTypes = ["analogous", "triadic", "complementary"];
+        const harmony = harmonyTypes[Math.floor(Math.random() * harmonyTypes.length)];
+        const baseHue = Math.random() * 360;
 
-    function getRandomPaletteColor() {
-        if (palette.length === 0) setPalette();
-        return palette[Math.floor(Math.random() * palette.length)];
+        let hues = [baseHue];
+        if (harmony === "analogous") {
+            hues.push((baseHue + 30) % 360);
+            hues.push((baseHue - 30 + 360) % 360);
+        } else if (harmony === "triadic") {
+            hues.push((baseHue + 120) % 360);
+            hues.push((baseHue + 240) % 360);
+        } else { // complementary
+            hues.push((baseHue + 180) % 360);
+            hues.push((baseHue + Math.random() * 60 - 30 + 360) % 360); // Third color is a variant
+        }
+
+        const baseChroma = Math.random() * 0.08 + 0.12; // Vibrant but not garish
+        const baseLightness = Math.random() * 20 + 45; // 45-65% range
+
+        for (let i = 0; i < 3; i++) {
+            const l = baseLightness + (Math.random() * 20 - 10); // +/- 10 lightness
+            const c = baseChroma + (Math.random() * 0.04 - 0.02); // +/- 0.02 chroma
+            newPalette.push(`oklch(${l.toFixed(1)}% ${c.toFixed(3)} ${hues[i].toFixed(1)})`);
+        }
+        
+        // For white background flavors, add white to the palette to create negative space
+        if (flavorConfig.background === '#FFFFFF') {
+            newPalette.push('#FFFFFF');
+        } else {
+            // For dark background flavors, add black to the palette
+            newPalette.push('#000000');
+        }
+
+        console.log(`DaGenerator: Generated new ${harmony} palette:`, newPalette);
+        palette = newPalette;
     }
 
     function getRandomColor() {
-        if (flavorConfig.colorMode === 'palette') {
-            return getRandomPaletteColor();
-        } else {
-            return mycolors[Math.round((mycolors.length - 1) * Math.random())];
-        }
+        return palette[Math.floor(Math.random() * palette.length)];
     }
 
-    // Initialize palette if needed
-    if (flavorConfig.colorMode === 'palette') {
-        setPalette();
-    }
+    // Generate the initial palette for this visualization instance
+    generateHarmoniousPalette();
 
     // Create wrapper and characters
     const wrapper = document.createElement('div');
@@ -188,7 +206,7 @@ function startDagenVisualization(flavor) {
 
     // Palette refresh interval (only for flavor 1)
     if (flavorConfig.colorMode === 'palette') {
-        const paletteInterval = window.setInterval(setPalette, 60000);
+        const paletteInterval = window.setInterval(generateHarmoniousPalette, 15000);
         dagenIntervalIds.push(paletteInterval);
     }
 }
