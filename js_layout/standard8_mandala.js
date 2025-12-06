@@ -43,7 +43,7 @@ var cssRules=cssStyle.cssRules;
 			cssStyle.insertRule(newRule,cssRules.length);
 	} else if (insertArrayRnd==10){
 			var newRule='DIV:not(.watermark-font) {position:absolute; top:0%; left:0%; width:100%;height:100%;background:transparent; font-size: 45vmin; text-align:center; vertical-align: middle; transform: translate(-0%, -45%);}';
-			cssStyle.insertRule(newRule,cssRules.length);
+				cssStyle.insertRule(newRule,cssRules.length);
 	} else if (insertArrayRnd==8){
 			// Base DIV styles - common to all divs
 			var newRule = 'DIV {' +
@@ -108,10 +108,10 @@ for (i=1;i<=window.divCounter;i++){
 
 	/* This adds the display and no display rules for all mandala inserts */
 
-	var newRule='#myid'+i+'.display { transition-property:all, background,color; transition-duration: 15s,3s,3s; animation-name: fadeIn; animation-duration: 7s; animation-timing-function: ease-out; animation-delay: 0s; animation-iteration-count: 1; animation-direction: normal; animation-play-state: running; animation-fill-mode: both;}';
+	var newRule='#myid'+i+'.display { transition-property:all, background,color; transition-duration: 3s,3s,3s; animation-name: fadeIn; animation-duration: 8s; animation-timing-function: ease-out; animation-delay: 0s; animation-iteration-count: 1; animation-direction: normal; animation-play-state: running; animation-fill-mode: both;}';
 	cssStyle.insertRule(newRule,cssRules.length);
 
-	var newRule='#myid'+i+'.noDisplay{ transition-property:all, background,color; transition-duration: 15s,3s,3s; animation-name: fadeOut; animation-duration: 7s; animation-timing-function: ease-in; animation-delay: 0s; animation-iteration-count: 1; animation-direction: normal; animation-play-state: running; animation-fill-mode: both;}';
+	var newRule='#myid'+i+'.noDisplay{ transition-property:all, background,color; transition-duration: 3s,3s,3s; animation-name: fadeOut; animation-duration: 8s; animation-timing-function: ease-in; animation-delay: 0s; animation-iteration-count: 1; animation-direction: normal; animation-play-state: running; animation-fill-mode: both;}';
 	cssStyle.insertRule(newRule,cssRules.length);
 }
 

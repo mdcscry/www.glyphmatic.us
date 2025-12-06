@@ -1,4 +1,4 @@
-divCounter=6;
+divCounter=20;
 
 
 
@@ -41,15 +41,10 @@ var allGlyphSources = [
 
         // Stagger the interval starts
 		
-			//changeHtmlDisplay();
-			changeHtmlDisplay();
-			//changeGlyphColors();
+			// Start the two independent, offset timers for odd and even glyphs
+			changeOddGlyphs();
+			setTimeout(changeEvenGlyphs, 2000); // Offset the start of the even timer by 2 seconds
 			changeBackgrounds();
-			//changeDropShadowSimpleB();
-			changeDropShadowSimpleV();
-			//changeDropShadowSimpleH();
-
-
         }
     }
 
@@ -61,7 +56,8 @@ container=[];
 dropShadowCountB=Math.round(Math.random()*(divCounter-1)+1);
 dropShadowCountH=Math.round(Math.random()*(divCounter-1)+1);
 dropShadowCountV=Math.round(Math.random()*(divCounter-1)+1);
-inHtmlCount=Math.round(Math.random()*(divCounter-1)+1);
+oddGlyphCount = divCounter % 2 === 0 ? divCounter - 1 : divCounter; // Start at highest odd number
+evenGlyphCount = divCounter % 2 === 0 ? divCounter : divCounter - 1; // Start at highest even number
 
 
 
@@ -90,9 +86,11 @@ container[i].id=elementName;
 
 function initStyle(){
 
-	bgColChangeRate=100000;
-	animationPlayState=50000;
+	// bgColChangeRate=100000;
+	// animationPlayState=50000;
 
+    bgColChangeRate=1000;
+	animationPlayState=5000;
 var mycolors=[];
 var colNum=6;
 
@@ -127,13 +125,9 @@ elem2_bg.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.ran
 	for (i=1;i<=divCounter;i++){
 		container[i].style.position='fixed';
 		container[i].style.top='-500px';
-		container[i].style.zIndex=1;
+		// container[i].style.zIndex=i; // We will now use translateZ instead of z-index for layering
 		container[i].style.opacity=.71;
 		container[i].style.color=mycolors[Math.round((mycolors.length-1)*Math.random())];
-
-		container[i].style.textShadow=Math.round( 0 ) + 'px '
-									+Math.round( Math.random()*10-5 ) + 'px '
-									+ mycolors[Math.round((mycolors.length-1)*Math.random())];
 
 	}
 
@@ -144,47 +138,75 @@ elem2_bg.style.backgroundColor= mycolors[Math.round((mycolors.length-1)*Math.ran
 function initDisplayState(){
     originalViewState="display";
     changeViewState = "noDisplay";
+    const shadowClasses = ['shadow-bi', 'shadow-h', 'shadow-v', 'shadow-none'];
 
+    // Initialize each container with a starting depth (translateZ)
     for (i=1;i<=divCounter;i++){
         var item = myArray[Math.floor(Math.random() * myArray.length)];
         var randomFont = item.fonts[Math.floor(Math.random() * item.fonts.length)];
+        // Assign a random shadow class on initialization
+        const randomShadowClass = shadowClasses[Math.floor(Math.random() * shadowClasses.length)];
         
         container[i].innerHTML = '&#x' + item.glyph.toString(16) + ';';
         container[i].style.fontFamily = randomFont;
-        container[i].className = originalViewState;
+        // Combine the view state class with a shadow class
+        container[i].className = `${originalViewState} ${randomShadowClass}`;
     }
 }
 
-function changeHtmlDisplay(){
+function changeOddGlyphs(){
     window.setInterval(function (){
-        var inHtmlCount=Math.round(Math.random()*(divCounter-1)+1);
-
-        if(window.inHtmlCount==divCounter){window.inHtmlCount=1} else {window.inHtmlCount=window.inHtmlCount+1};
+        // Decrement the odd counter by 2
+        if(oddGlyphCount < 1){
+            oddGlyphCount = divCounter % 2 === 0 ? divCounter - 1 : divCounter; // Reset to highest odd
+        } else {
+            oddGlyphCount -= 2;
+        }
         
-        if (container[inHtmlCount].className==originalViewState) {
-            container[inHtmlCount].className = changeViewState;
-        }
-        else {
-            var item = myArray[Math.floor(Math.random() * myArray.length)];
-            var randomFont = item.fonts[Math.floor(Math.random() * item.fonts.length)];
-            
-            container[inHtmlCount].innerHTML = '&#x' + item.glyph.toString(16) + ';';
-            container[inHtmlCount].style.fontFamily = randomFont;
-            container[inHtmlCount].style.color = mycolors[Math.floor(Math.random() * mycolors.length)]; // Change color while hidden
-            container[inHtmlCount].className = originalViewState;
+        // Ensure we don't go to index 0 or less
+        if (oddGlyphCount > 0) {
+            updateGlyph(container[oddGlyphCount]);
         }
 
-    },Math.random()*15000+15000 );
+    }, Math.random() * 4000 + 4000);
 }
 
-function changeGlyphColors(){
-    window.setInterval(function(){
-        for (i=1;i<=divCounter;i++){
-            if(container[i].className === originalViewState) {
-                container[i].style.color = mycolors[Math.floor(Math.random() * mycolors.length)];
-            }
+function changeEvenGlyphs(){
+    window.setInterval(function (){
+        // Decrement the even counter by 2
+        if(evenGlyphCount < 2){
+            evenGlyphCount = divCounter % 2 === 0 ? divCounter : divCounter - 1; // Reset to highest even
+        } else {
+            evenGlyphCount -= 2;
         }
-    }, Math.random()*10000+10000); // Random between 10-20 seconds
+
+        // Ensure we don't go to index 0 or less
+        if (evenGlyphCount > 0) {
+            updateGlyph(container[evenGlyphCount]);
+        }
+
+    }, Math.random() * 4000 + 4000);
+}
+
+function updateGlyph(currentElement) {
+    const shadowClasses = ['shadow-bi', 'shadow-h', 'shadow-v', 'shadow-none'];
+    const randomShadowClass = shadowClasses[Math.floor(Math.random() * shadowClasses.length)];
+
+    // Check if the element is currently visible by looking for the originalViewState class
+    if (currentElement.classList.contains(originalViewState)) {
+        // Hide the element by replacing its classes
+        currentElement.className = `${changeViewState} ${randomShadowClass}`;
+    } else {
+        // If hidden, update its content and prepare it to be shown
+        var item = myArray[Math.floor(Math.random() * myArray.length)];
+        var randomFont = item.fonts[Math.floor(Math.random() * item.fonts.length)];
+        
+        currentElement.innerHTML = '&#x' + item.glyph.toString(16) + ';';
+        currentElement.style.fontFamily = randomFont;
+        currentElement.style.color = mycolors[Math.floor(Math.random() * mycolors.length)]; // Change color while hidden
+        // Show the element with its new shadow class
+        currentElement.className = `${originalViewState} ${randomShadowClass}`;
+    }
 }
 
 function changeBackgrounds(){
@@ -199,49 +221,4 @@ function changeBackgrounds(){
     }, Math.random()*15000+15000); // Random between 15-30 seconds
 }
 
-function changeDropShadowSimpleB(){
-
-		window.setInterval(function(){
-			if(window.dropShadowCountB==divCounter){window.dropShadowCountB=1} else {window.dropShadowCountB=window.dropShadowCountB+1};
-			container[window.dropShadowCountB].style.textShadow=Math.round( Math.random()*10-5 )+ 'px '
-										+Math.round( Math.random()*10-5 ) + 'px '
-										+mycolors[Math.round((mycolors.length-1)*Math.random())];}
-		,Math.random()*5000+5000);
-	}
-
-function changeDropShadowSimpleH(){
-
-		window.setInterval(function(){
-			if(window.dropShadowCountH==divCounter){window.dropShadowCountH=1} else {window.dropShadowCountH=window.dropShadowCountH+1};
-			container[window.dropShadowCountH].style.textShadow=Math.round( 0 ) + 'px '
-										+Math.round( Math.random()*10-5 ) + 'px '
-										+mycolors[Math.round((mycolors.length-1)*Math.random())];
-
-
-										}
-
-			//container[inHtmlCount].style.webkitTransform= 'skew('+ Math.round(Math.random()*180) +'deg,'+ Math.round(Math.random()*0) +'deg)';
-		,Math.random()*5000+5000);
-	}
-
-function changeDropShadowSimpleV(){
-
-		window.setInterval(function(){
-			if(window.dropShadowCountV==divCounter){window.dropShadowCountV=1} else {window.dropShadowCountV=window.dropShadowCountV+1};
-			container[window.dropShadowCountV].style.textShadow=Math.round( Math.random()*10-5 )+ 'px '
-										+ Math.round( 0 ) + 'px '
-										+mycolors[Math.round((mycolors.length-1)*Math.random())];}
-			//container[inHtmlCount].style.webkitTransform= 'skew('+ Math.round(Math.random()*180) +'deg,'+ Math.round(Math.random()*0) +'deg)';
-		,Math.random()*5000+5000);
-
-	}
-
 jsWait();
-
-
-
-
-
-
-
-
