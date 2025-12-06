@@ -44,7 +44,7 @@
         '"Noto Color Emoji"',
         '"Noto Emoji"',
         '"Open Moji 0"',
-        '"Segoe UI Emoji"',
+        '"Segoe Emoji"',
         '"Twitter Color Emoji"',
         '"Open Moji Black"',
         '"Emoji Two"',

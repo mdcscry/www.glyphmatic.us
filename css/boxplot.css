@@ -52,7 +52,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transform: translateY(-60%);
             background-color: rgba(0,0,0,0);
             mix-blend-mode: normal;
             opacity: 1;
@@ -65,12 +64,13 @@
             font-size: 40vw;
             line-height: 1;
             position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             pointer-events: none; /* Allows clicks to pass through */
-            
+
             display: inline-block; /* Essential for border and padding to apply correctly */
             box-sizing: border-box; /* Include padding and border in the element's total width and height */
-
-             transform: translateY(50%); /* Push glyphs down 10% */
 
             /* Default and transition properties for new effects */
             border: 0px solid transparent; /* default */
