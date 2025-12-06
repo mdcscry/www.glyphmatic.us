@@ -2,7 +2,6 @@
  * Insert 16: Emoji Grid - Multi-Flavor Edition
  * Consolidates 3 emoji exploration variants into one file with random flavor selection
  * Randomly selects one of 3 flavor configurations on page load
- * Making a change to get a redeploy.  Browser isn't picking up the new file?
  */
 
 (function() {
@@ -525,9 +524,12 @@
             if (e.key === '7') setEmojiFont('"Emoji Two"');
             if (e.key === '8') setEmojiFont('"Blobmoji"');
             if (e.key === '9') setEmojiFont('"WhatsApp Emoji"');
-            if (e.key === '0') setEmojiFont('"Fluent Emoji INV HC"');
+            if (e.key === '0') setEmojiFont('"Fluent Emoji HC"');
             if (e.key === 't' || e.key === 'T') setEmojiFont('"TossfaceOTF"');
             if (e.key === 'b' || e.key === 'B') setEmojiFont('"Noto Emoji"');
+            if (e.key === 'f' || e.key === 'F') setEmojiFont('"Fluent Emoji Flat"');    
+            if (e.key === 'l' || e.key === 'L') setEmojiFont('"Fluent Emoji INV HC"');  
+            if (e.key === 'c' || e.key === 'C') setEmojiFont('"Fluent Emoji Color"');                            
             if (e.key === 'r' || e.key === 'R') setRandomFonts();
             if (e.key === 'e' || e.key === 'E') setRandomFontsWithExclusion();
         });

@@ -1,557 +1,339 @@
 /**
- * Insert 16: Emoji Grid - Multi-Flavor Edition
- * Consolidates 3 emoji exploration variants into one file with random flavor selection
- * Randomly selects one of 3 flavor configurations on page load
- * Making a change to get a redeploy.  Browser isn't picking up the new file?
+ * Insert 28: DeGenerator Legacy 9 - Multi-Flavor Edition
+ * Consolidates 4 variants into one file with random flavor selection
+ * Randomly selects one of 4 flavor configurations on page load.
+ * Keyboard controls (0-3) allow switching between flavors.
  */
 
-(function() {
-    // === FLAVOR SELECTION ===
-    const FLAVOR = Math.floor(Math.random() * 3);
+// Store interval IDs to clear them on flavor change
+let intervalIds = [];
 
+function startVisualization(flavor) {
+    // Clear previous intervals and wrapper
+    intervalIds.forEach(clearInterval);
+    intervalIds = [];
+    document.getElementById('degen9-wrapper')?.remove();
+
+    const FLAVOR = flavor;
     // Flavor configurations:
-    // 0: 10x10 grid, vibrant pastels (50-60% L), larger emojis, no font switching (original insert16)
-    // 1: 5x5 grid, very light pastels (90-100% L), largest emojis, no font switching (was insert17)
-    // 2: 10x10 grid, vibrant pastels (50-60% L), smaller emojis, WITH font switching (was insert19)
+    // 0: myarray, all-direction shadows, borders (original insert28)
+    // 1: allMoireSymbols, all-direction shadows, borders (was insert31)
+    // 2: allMoireCircleSquareSymbols, all-direction shadows, no borders (was insert32)
+    // 3: allMoireCircleSymbols, vertical-only shadows, no borders (was insert33)
 
     const flavorConfig = {
-        gridSize: [10, 5, 10][FLAVOR],
-        fontSize: [
-            'min(10rem, 8vh, 5rem)',
-            'min(16vh, 10rem)',
-            'min(7vh, 5rem)'
+        glyphArray: [
+            'myarray',
+            'allMoireSymbols',
+            'allMoireCircleSquareSymbols',
+            'allMoireCircleSymbols'
         ][FLAVOR],
-        lineHeight: [1.75, 1.5, 1][FLAVOR],
-        cellWidth: [10, 20, 10][FLAVOR],
-        cellHeight: [10, 20, 10][FLAVOR],
-        pastelLightness: (FLAVOR === 1) ? [90, 100] : [50, 60],
-        pastelSaturation: (FLAVOR === 1) ? [50, 100] : [90, 100],
-        hasFontSwitching: (FLAVOR === 2),
-        flipTiming: (FLAVOR === 1) ? [40000, 8000] : [45000, 5000],
-        initialDelay: (FLAVOR === 1) ? [30000, 7000] : [80000, 5000]
+        shadowMode: (FLAVOR === 3) ? 'vertical' : 'all',
+        hasBorders: (FLAVOR === 0 || FLAVOR === 1),
+        hasExtraCSS: (FLAVOR === 2 || FLAVOR === 3)
     };
 
-    console.log(`Emoji Grid: Selected FLAVOR ${FLAVOR}`);
+    console.log(`DeGenerator 9 Legacy: Selected FLAVOR ${FLAVOR}`);
     console.log('Config:', flavorConfig);
 
-    // === SHARED STATE ===
-    var allEmojis = [];
-    var remainingEmojis = [];
-    let globalBodyBgColor = '';
-
-    // === FONT SWITCHING (Flavor 2 only) ===
-    const emojiFonts = [
-        '"Apple Color Emoji"',
-        '"Noto Color Emoji"',
-        '"Noto Emoji"',
-        '"Open Moji 0"',
-        '"Segoe Emoji"',
-        '"Twitter Color Emoji"',
-        '"Open Moji Black"',
-        '"Emoji Two"',
-        '"Fluent Emoji Color"',
-        '"Fluent Emoji Flat"',
-        '"Fluent Emoji HC"',
-        '"Fluent Emoji INV HC"',
-        '"Blobmoji"',
-        '"TossfaceOTF"',
-        '"WhatsApp Emoji"'
-    ];
-
-    // Track manually selected font (null = random mode)
-    let selectedFont = null;
-
-    // Convert emoji to hex sequence (for exclusion matching in flavor 2)
-    function emojiToHexSequence(emoji) {
-        const codePoints = [];
-        for (const char of emoji) {
-            const cp = char.codePointAt(0);
-            if (cp !== undefined) {
-                codePoints.push(cp.toString(16).toUpperCase());
+        // --- CSS Injection (insert-specific styles only) ---
+        const style = document.createElement('style');
+        let styleContent = `
+            #degen9-wrapper {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                overflow: hidden;
+                z-index: -1;
             }
-        }
-        return codePoints.join('-');
-    }
+        `;
 
-    // Check if emoji is excluded for a given font (flavor 2 only)
-    function isEmojiExcluded(emoji, fontName, version) {
-        if (!flavorConfig.hasFontSwitching) return false;
-
-        const cleanFont = fontName.replace(/['"]/g, '');
-        const exclusions = exclude_emoji_font[cleanFont];
-
-        if (!exclusions) return false;
-
-        // Check block exclusion
-        if (exclusions.blocks?.includes(version)) {
-            console.log(`🚫 BLOCK excluded: ${emoji} [${version}] from ${cleanFont}`);
-            return true;
-        }
-
-        // Check sequence exclusion
-        const emojiHex = emojiToHexSequence(emoji);
-        if (exclusions.sequences?.includes(emojiHex)) {
-            console.log(`🚫 SEQUENCE excluded: ${emoji} (${emojiHex}) from ${cleanFont}`);
-            return true;
-        }
-
-        return false;
-    }
-
-    // Pick a valid random emoji-font combination (flavor 2 only)
-    function getRandomValidCombo() {
-        let attempts = 0;
-        const maxAttempts = 50000;
-
-        while (attempts < maxAttempts) {
-            const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
-            const emojiObj = remainingEmojis[poolIndex];
-            const font = emojiFonts[Math.floor(Math.random() * emojiFonts.length)];
-
-            if (!isEmojiExcluded(emojiObj.emoji, font, emojiObj.version)) {
-                remainingEmojis.splice(poolIndex, 1);
-                console.log(`✅ ${emojiObj.emoji} (${emojiToHexSequence(emojiObj.emoji)}) [${emojiObj.version}] in ${font}`);
-                return {emoji: emojiObj.emoji, font, version: emojiObj.version};
+        // Add extra CSS for flavors 2 and 3 (no borders)
+        if (flavorConfig.hasExtraCSS) {
+            styleContent += `
+            .layer > span {
+                padding: 0 !important;
+                margin: 0 !important;
+                line-height: 1 !important;
+                display: inline-block !important;
+                overflow: visible !important;
+                box-sizing: border-box !important;
             }
-
-            console.log(`❌ Rejected: ${emojiObj.emoji} (${emojiToHexSequence(emojiObj.emoji)}) [${emojiObj.version}] in ${font}`);
-            attempts++;
+            `;
         }
 
-        const emojiObj = remainingEmojis.splice(0, 1)[0] || {emoji: '❓', version: 'unknown'};
-        return {emoji: emojiObj.emoji, font: '"Apple Color Emoji"', version: emojiObj.version};
-    }
+        style.textContent = styleContent;
+        document.head.appendChild(style);
 
-    function getRandomFont() {
-        return emojiFonts[Math.floor(Math.random() * emojiFonts.length)];
-    }
+        // --- Main Logic ---
+        const wrapper = document.createElement('div');
+        wrapper.id = 'degen9-wrapper';
+        document.body.appendChild(wrapper);
 
-    function setEmojiFont(fontName) {
-        console.log(`🎨 setEmojiFont called with: "${fontName}"`);
-        const cleanFontName = fontName.replace(/['"]/g, '');
-        // Keep quotes in the value and add fallback, like the glyphtester does
-        const fontFamilyValue = `"${cleanFontName}", sans-serif`;
-        console.log(`🧹 Setting font-family to: ${fontFamilyValue}`);
+        const leftBlock = document.createElement('div');
+        leftBlock.id = 'leftBlock';
+        leftBlock.className = 'main-block';
+        wrapper.appendChild(leftBlock);
 
-        // Lock to this font for future morphs
-        selectedFont = fontName;
-        console.log(`🔒 Font locked to: ${fontName}`);
+        const rightBlock = document.createElement('div');
+        rightBlock.id = 'rightBlock';
+        rightBlock.className = 'main-block';
+        wrapper.appendChild(rightBlock);
 
-        const allEmojiSpans = document.querySelectorAll('.emoji-content');
-        console.log(`📝 Found ${allEmojiSpans.length} emoji spans to update`);
+        let allLayers = [];
+        let themeColor, themeColor2, themeColor3;
+        const fontChangeRate = 6000;
 
-        allEmojiSpans.forEach((span, index) => {
-            span.style.fontFamily = fontFamilyValue;
-            // Update tooltip to reflect new font
-            if (flavorConfig.hasFontSwitching) {
-                const dataHex = span.getAttribute('data-hex');
-                const versionMatch = dataHex?.match(/\[(.+?)\]$/);
-                const version = versionMatch ? versionMatch[1] : 'unknown';
-                span.setAttribute('data-tooltip', `${cleanFontName} [${version}]`);
+        function getRandomColor() { return themeColor; }
+        function getRandomColor2() { return themeColor2; }
+        function getRandomColor3() { return themeColor3; }
+
+        function getRandomRGBAColor(minAlpha = 0.01, maxAlpha = 0.1) {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            const a = (Math.random() * (maxAlpha - minAlpha)) + minAlpha;
+            return `rgba(${r},${g},${b},${a.toFixed(2)})`;
+        }
+
+        function getRandomNoiseGradient() {
+            const fromAngle = Math.floor(Math.random() * 360);
+            const opacity1 = (Math.random() * 0.2 + 0.15).toFixed(4);
+            const stopAngle = (Math.random() * 0.001 + 0.0005).toFixed(6);
+
+            return `repeating-conic-gradient(from ${fromAngle}deg,
+                rgba(255, 255, 255, 0) 0deg ${stopAngle}deg,
+                rgba(255, 255, 255, ${opacity1}) ${stopAngle}deg ${(stopAngle * 2).toFixed(6)}deg)`;
+        }
+
+        function getRandomRadialGradient() {
+            const centerX = Math.floor(Math.random() * 100);
+            const centerY = Math.floor(Math.random() * 100);
+            const color1 = getRandomRGBAColor(0.3, 0.6);
+            const color2 = getRandomRGBAColor(0.2, 0.5);
+            const color3 = getRandomRGBAColor(0.1, 0.4);
+
+            return `radial-gradient(circle at ${centerX}% ${centerY}%, ${color1}, ${color2}, ${color3})`;
+        }
+
+        function getRandomBlendMode() {
+            if (typeof mixBlendModes === 'undefined' || mixBlendModes.length === 0) {
+                return 'normal';
+            }
+            return mixBlendModes[Math.floor(Math.random() * mixBlendModes.length)];
+        }
+
+        function getRandomBorderStyle() {
+            const styles = ['solid', 'dashed', 'double'];
+            return styles[Math.floor(Math.random() * styles.length)];
+        }
+
+        function getRandomBorderWidth(max = 10) {
+            return Math.floor(Math.random() * (max + 1)) + 'px';
+        }
+
+        function getRandomShadow() {
+            if (Math.random() < 0.6) {
+                return 'none';
             }
 
-            // Log the first emoji to verify the font is being applied
-            if (index === 0) {
-                const computedFont = window.getComputedStyle(span).fontFamily;
-                console.log(`✨ First emoji font-family set to: "${span.style.fontFamily}"`);
-                console.log(`💻 Computed font-family: "${computedFont}"`);
-            }
-        });
-    }
-
-    function setRandomFonts() {
-        // Unlock font - return to random mode (no exclusions)
-        selectedFont = null;
-        console.log(`🔓 Font unlocked - random mode enabled (no exclusions)`);
-
-        const allEmojiSpans = document.querySelectorAll('.emoji-content');
-        allEmojiSpans.forEach(span => {
-            const randomFont = getRandomFont();
-            const cleanFontName = randomFont.replace(/['"]/g, '');
-            const fontFamilyValue = `"${cleanFontName}", sans-serif`;
-            span.style.fontFamily = fontFamilyValue;
-            // Update tooltip to reflect new font
-            if (flavorConfig.hasFontSwitching) {
-                const dataHex = span.getAttribute('data-hex');
-                const versionMatch = dataHex?.match(/\[(.+?)\]$/);
-                const version = versionMatch ? versionMatch[1] : 'unknown';
-                span.setAttribute('data-tooltip', `${cleanFontName} [${version}]`);
-            }
-        });
-    }
-
-    function setRandomFontsWithExclusion() {
-        // Unlock font - return to random mode WITH exclusion checking
-        selectedFont = null;
-        console.log(`🔓 Font unlocked - random mode with exclusions enabled`);
-
-        const allEmojiSpans = document.querySelectorAll('.emoji-content');
-        allEmojiSpans.forEach(span => {
-            const emoji = span.textContent;
-            const dataHex = span.getAttribute('data-hex');
-            const versionMatch = dataHex?.match(/\[(.+?)\]$/);
-            const version = versionMatch ? versionMatch[1] : 'unknown';
-
-            // Try to find a valid font for this emoji
-            let validFont = null;
-            let attempts = 0;
-            const maxAttempts = 50;
-
-            while (!validFont && attempts < maxAttempts) {
-                const randomFont = getRandomFont();
-                if (!isEmojiExcluded(emoji, randomFont, version)) {
-                    validFont = randomFont;
-                } else {
-                    attempts++;
-                }
-            }
-
-            // Fall back to Apple Color Emoji if no valid font found
-            if (!validFont) {
-                validFont = '"Apple Color Emoji"';
-                console.warn(`⚠️ No valid font found for ${emoji}, using fallback`);
-            }
-
-            const cleanFontName = validFont.replace(/['"]/g, '');
-            const fontFamilyValue = `"${cleanFontName}", sans-serif`;
-            span.style.fontFamily = fontFamilyValue;
-            span.setAttribute('data-tooltip', `${cleanFontName} [${version}]`);
-        });
-    }
-
-    // === HEX CONVERSION (for tooltips) ===
-    function emojiToHex(emoji) {
-        const codePoints = [];
-        for (const char of emoji) {
-            codePoints.push(char.codePointAt(0).toString(16).toUpperCase().padStart(4, '0'));
-        }
-        return codePoints.map(cp => `U+${cp}`).join(' ');
-    }
-
-    // === CONTENT INITIALIZATION ===
-    function initContent() {
-        const emojiArrays = [
-            emoji_zwj_v1_0,
-            emoji_zwj_v2_0,
-            emoji_zwj_v3_0,
-            emoji_zwj_v4_0,
-            emoji_zwj_v5_0,
-            emoji_zwj_v11_0,
-            emoji_zwj_v12_0,
-            emoji_zwj_v12_1,
-            emoji_zwj_v13_0,
-            emoji_zwj_v13_1,
-            emoji_zwj_v14_0,
-            emoji_zwj_v15_0,
-            emoji_zwj_v15_1,
-            emoji_zwj_v16_0,
-        ];
-
-        if (flavorConfig.hasFontSwitching) {
-            // Flavor 2: Store emojis with version info
-            const emojiVersions = {
-                'v1_0': emoji_zwj_v1_0,
-                'v2_0': emoji_zwj_v2_0,
-                'v3_0': emoji_zwj_v3_0,
-                'v4_0': emoji_zwj_v4_0,
-                'v5_0': emoji_zwj_v5_0,
-                'v11_0': emoji_zwj_v11_0,
-                'v12_0': emoji_zwj_v12_0,
-                'v12_1': emoji_zwj_v12_1,
-                'v13_0': emoji_zwj_v13_0,
-                'v13_1': emoji_zwj_v13_1,
-                'v14_0': emoji_zwj_v14_0,
-                'v15_0': emoji_zwj_v15_0,
-                'v15_1': emoji_zwj_v15_1,
-                'v16_0': emoji_zwj_v16_0,
-            };
-
-            for (const [version, emojiArray] of Object.entries(emojiVersions)) {
-                if (Array.isArray(emojiArray)) {
-                    emojiArray.forEach(emoji => {
-                        allEmojis.push({emoji, version});
-                    });
-                }
-            }
-            console.log(`✅ Loaded ${allEmojis.length} total emojis with version tags`);
-        } else {
-            // Flavors 0 & 1: Simple emoji array
-            emojiArrays.forEach(arr => {
-                if (Array.isArray(arr)) allEmojis = allEmojis.concat(arr);
-            });
-            console.log(`✅ Loaded ${allEmojis.length} total emojis`);
-        }
-
-        if (allEmojis.length === 0) {
-            console.warn("No emoji data found.");
-            return;
-        }
-
-        remainingEmojis = [...allEmojis];
-    }
-
-    // === CSS INJECTION ===
-    const embeddedCss = `
-        *, *::before, *::after { box-sizing: border-box; }
-        html, body {
-            height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            display: flex; justify-content: center; align-items: center;
-        }
-        #emojiGrid {
-            display: flex; flex-wrap: wrap; width: 100%; height: 100%;
-            border: 25px solid; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .grid-cell {
-            width: ${flavorConfig.cellWidth}%; height: ${flavorConfig.cellHeight}%;
-            display: flex; justify-content: center; align-items: center;
-            line-height: ${flavorConfig.lineHeight}; border: 3px solid;
-            background-color: transparent; perspective: 1000px; border-radius: 8px;
-            position: relative;
-        }
-        .emoji-content {
-            display: block;
-            font-size: ${flavorConfig.fontSize};
-            line-height: 1 !important;
-            opacity: 1;
-            transform: rotateY(0deg) scale(1);
-            transform-style: preserve-3d;
-            backface-visibility: hidden;
-            transition: none;
-            cursor: pointer;
-            position: relative;
-        }
-        /* Tooltip styling */
-        .emoji-content::after {
-            content: attr(${flavorConfig.hasFontSwitching ? 'data-tooltip' : 'data-hex'});
-            position: fixed;
-            top: ${flavorConfig.hasFontSwitching ? '50%' : '10px'};
-            left: 50%;
-            transform: translate${flavorConfig.hasFontSwitching ? '(-50%, -50%)' : 'X(-50%)'};
-            background: rgba(0, 0, 0, 0.95);
-            color: white;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: ${flavorConfig.hasFontSwitching ? '12px' : '14px'};
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-            z-index: ${flavorConfig.hasFontSwitching ? '8' : '10000'};
-            font-family: ${flavorConfig.hasFontSwitching ? 'Noto Sans, sans-serif' : 'monospace'};
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            ${flavorConfig.hasFontSwitching ? 'text-align: center;' : ''}
-        }
-        .emoji-content:hover::after {
-            opacity: 1;
-        }
-        ${flavorConfig.hasFontSwitching ? '.emoji-content:hover { z-index: 9; }' : ''}
-        @keyframes fade-out-twist {
-            0% { opacity: 1; transform: rotateY(0deg) scale(1); }
-            100% { opacity: 0; transform: rotateY(180deg) scale(0.7); }
-        }
-        @keyframes fade-in-twist {
-            0% { opacity: 0; transform: rotateY(180deg) scale(0.7); }
-            100% { opacity: 1; transform: rotateY(360deg) scale(1); }
-        }
-        .emoji-content.is-fading-out { animation: fade-out-twist 4s ease-in-out forwards; }
-        .emoji-content.is-fading-in  { animation: fade-in-twist 2s ease-in-out forwards; }
-    `;
-
-    function injectStyle(css) {
-        const s = document.createElement('style');
-        s.textContent = css;
-        document.head.appendChild(s);
-    }
-
-    // === COLOR UTILITIES ===
-    function getRandomPastelColor() {
-        const hue = Math.floor(Math.random() * 360);
-        const saturation = Math.floor(Math.random() * (flavorConfig.pastelSaturation[1] - flavorConfig.pastelSaturation[0])) + flavorConfig.pastelSaturation[0];
-        const lightness = Math.floor(Math.random() * (flavorConfig.pastelLightness[1] - flavorConfig.pastelLightness[0])) + flavorConfig.pastelLightness[0];
-        return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-    }
-
-    function getRandomMainColor() {
-        const hue = Math.floor(Math.random() * 360);
-        const saturation = Math.floor(Math.random() * 40) + 60;
-        const lightness = Math.floor(Math.random() * 30) + 60;
-        return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-    }
-
-    // === FLIP ANIMATION ===
-    function flipCell(span) {
-        if (flavorConfig.hasFontSwitching) {
-            console.log("We're flipping");
-        }
-
-        span.classList.remove('is-fading-in', 'is-fading-out');
-        span.style.removeProperty('transform');
-        span.style.removeProperty('opacity');
-
-        span.classList.add('is-fading-out');
-
-        const handleOut = (e) => {
-            if (e.animationName !== 'fade-out-twist') return;
-            span.removeEventListener('animationend', handleOut);
-            span.classList.remove('is-fading-out');
-
-            // Check if pool is empty, reset if needed
-            if (remainingEmojis.length === 0) {
-                remainingEmojis = [...allEmojis];
-                console.log("🔄 Pool exhausted - resetting with all emojis");
-            }
-
-            if (flavorConfig.hasFontSwitching) {
-                // Flavor 2: Use font switching logic
-                let combo;
-                if (selectedFont) {
-                    // Use the locked font, but get a new random emoji
-                    const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
-                    const emojiObj = remainingEmojis.splice(poolIndex, 1)[0];
-                    combo = {emoji: emojiObj.emoji, font: selectedFont, version: emojiObj.version};
-                } else {
-                    // Random mode - pick random emoji + font combo
-                    combo = getRandomValidCombo();
-                }
-                const cleanFontName = combo.font.replace(/['"]/g, '');
-                span.textContent = combo.emoji;
-                span.setAttribute('data-tooltip', `${cleanFontName} [${combo.version}]`);
-                span.setAttribute('data-hex', emojiToHex(combo.emoji));
-                span.style.fontFamily = `"${cleanFontName}", sans-serif`;
+            // Shadow mode based on flavor
+            let offsetX, offsetY;
+            if (flavorConfig.shadowMode === 'vertical') {
+                // Vertical-only shadows (flavor 3)
+                offsetX = 0;
+                offsetY = Math.floor(Math.random() * 100) - 50;
             } else {
-                // Flavors 0 & 1: Simple random selection
-                const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
-                const newEmoji = remainingEmojis.splice(poolIndex, 1)[0];
-                span.textContent = newEmoji;
-                span.setAttribute('data-hex', emojiToHex(newEmoji));
+                // All-direction shadows (flavors 0, 1, 2)
+                offsetX = Math.floor(Math.random() * 100) - 50;
+                offsetY = Math.floor(Math.random() * 100) - 50;
             }
 
-            span.style.transform = 'rotateY(180deg) scale(0.7)';
-            span.style.opacity = '0';
-            void span.offsetWidth;
-            span.classList.add('is-fading-in');
+            const blur = Math.floor(Math.random() * 5);
+            return `${offsetX}px ${offsetY}px ${blur}px ${getRandomColor2()}`;
+        }
 
-            const handleIn = (e2) => {
-                if (e2.animationName !== 'fade-in-twist') return;
-                span.removeEventListener('animationend', handleIn);
-                span.classList.remove('is-fading-in');
-                span.style.removeProperty('transform');
-                span.style.removeProperty('opacity');
-                setTimeout(() => flipCell(span),
-                    Math.random() * flavorConfig.flipTiming[0] + flavorConfig.flipTiming[1]);
-            };
-            span.addEventListener('animationend', handleIn);
-        };
-        span.addEventListener('animationend', handleOut);
-    }
+        function createAndAddLayer(parentBlock) {
+            const layerDiv = document.createElement("div");
+            layerDiv.className = "layer";
 
-    // === GRID INITIALIZATION ===
-    function initGrid() {
-        const grid = document.createElement('div');
-        grid.id = 'emojiGrid';
-        document.body.appendChild(grid);
-        const emojiGrid = document.getElementById('emojiGrid');
-        const bodyElement = document.body;
+            const charSpan = document.createElement("span");
+            layerDiv.appendChild(charSpan);
 
-        console.log(`Total emojis in pool: ${allEmojis.length}`);
+            parentBlock.appendChild(layerDiv);
+            allLayers.push(layerDiv);
+            updateLayer(layerDiv);
+            return layerDiv;
+        }
 
-        if (allEmojis.length === 0) {
-            emojiGrid.textContent = "No ZWJ emojis found in the provided data for the target versions.";
-            emojiGrid.style.justifyContent = 'center';
-            emojiGrid.style.alignItems = 'center';
-            emojiGrid.style.fontSize = '1.5em';
-        } else {
-            globalBodyBgColor = getRandomMainColor();
-            bodyElement.style.backgroundColor = globalBodyBgColor;
+        function updateLayer(layerElement) {
+            // Layer background
+            if (Math.random() < 0.4) {
+                layerElement.style.background = getRandomRadialGradient();
+            } else {
+                layerElement.style.backgroundColor = getRandomRGBAColor();
+                layerElement.style.background = '';
+            }
 
-            emojiGrid.style.borderColor = getRandomMainColor();
-            emojiGrid.style.zIndex = 100;
-            emojiGrid.style.position = 'absolute';
-            const gridSize = flavorConfig.gridSize;
-            const totalCells = gridSize * gridSize;
+            layerElement.style.mixBlendMode = getRandomBlendMode();
+            layerElement.style.opacity = .95;
+            layerElement.style.border = 'none';
 
-            for (let i = 0; i < totalCells; i++) {
-                const cell = document.createElement('div');
-                cell.classList.add('grid-cell');
+            const charSpan = layerElement.querySelector('span');
+            if (charSpan) {
+                charSpan.style.color = getRandomColor();
+                charSpan.style.mixBlendMode = getRandomBlendMode();
 
-                const emojiContentSpan = document.createElement('span');
-                emojiContentSpan.classList.add('emoji-content');
-
-                // Check if pool is empty, reset if needed
-                if (remainingEmojis.length === 0) {
-                    remainingEmojis = [...allEmojis];
-                }
-
-                if (flavorConfig.hasFontSwitching) {
-                    // Flavor 2: Use font switching logic
-                    const combo = getRandomValidCombo();
-                    const cleanFontName = combo.font.replace(/['"]/g, '');
-                    emojiContentSpan.textContent = combo.emoji;
-                    emojiContentSpan.setAttribute('data-tooltip', `${cleanFontName} [${combo.version}]`);
-                    emojiContentSpan.setAttribute('data-hex', `${emojiToHex(combo.emoji)} [${combo.version}]`);
-                    emojiContentSpan.style.fontFamily = `"${cleanFontName}", sans-serif`;
+                // Border logic based on flavor
+                if (flavorConfig.hasBorders) {
+                    // Flavors 0 and 1: Sometimes add borders
+                    if (Math.random() < 0.975) {
+                        charSpan.style.border = 'none';
+                    } else {
+                        const borderWidth = getRandomBorderWidth(100);
+                        const borderStyle = getRandomBorderStyle();
+                        const borderColor = getRandomColor3();
+                        charSpan.style.border = `${borderWidth} ${borderStyle} ${borderColor}`;
+                    }
                 } else {
-                    // Flavors 0 & 1: Simple random selection
-                    const poolIndex = Math.floor(Math.random() * remainingEmojis.length);
-                    const initialEmoji = remainingEmojis.splice(poolIndex, 1)[0];
-                    emojiContentSpan.textContent = initialEmoji;
-                    emojiContentSpan.setAttribute('data-hex', emojiToHex(initialEmoji));
+                    // Flavors 2 and 3: Never add borders
+                    charSpan.style.border = 'none';
                 }
 
-                cell.style.backgroundColor = getRandomPastelColor();
-                cell.style.borderColor = globalBodyBgColor;
+                // Text stroke
+                if (Math.random() < 0.1) {
+                    charSpan.style.webkitTextStrokeWidth = '0px';
+                    charSpan.style.webkitTextStrokeColor = 'transparent';
+                } else {
+                    charSpan.style.webkitTextFillColor = getRandomColor3();
+                    charSpan.style.webkitTextStrokeWidth = (Math.random() * 3 + 1) + "px";
+                    charSpan.style.webkitTextStrokeColor = getRandomColor2();
+                }
 
-                cell.appendChild(emojiContentSpan);
-                emojiGrid.appendChild(cell);
+                // Noise gradient (90% chance)
+                if (Math.random() < 0.90) {
+                    charSpan.classList.add('noise-glyph');
+                    charSpan.style.setProperty('--glyph-noise-gradient', getRandomNoiseGradient());
+                    charSpan.style.webkitTextFillColor = 'transparent';
+                } else {
+                    charSpan.classList.remove('noise-glyph');
+                }
 
-                const initialAnimationDelay = (Math.random() * flavorConfig.initialDelay[0]) + flavorConfig.initialDelay[1];
-                setTimeout(() => flipCell(emojiContentSpan), initialAnimationDelay);
+                // Text shadow
+                charSpan.style.textShadow = getRandomShadow();
+
+                // Change character (50% chance) - Use the appropriate glyph array based on flavor
+                if (Math.random() < 0.5) {
+                    let glyphArray;
+
+                    // Select glyph array based on flavor
+                    switch (flavorConfig.glyphArray) {
+                        case 'myarray':
+                            glyphArray = typeof myarray !== 'undefined' ? myarray : null;
+                            break;
+                        case 'allMoireSymbols':
+                            glyphArray = typeof allMoireSymbols !== 'undefined' ? allMoireSymbols : null;
+                            break;
+                        case 'allMoireCircleSquareSymbols':
+                            glyphArray = typeof allMoireCircleSquareSymbols !== 'undefined' ? allMoireCircleSquareSymbols : null;
+                            break;
+                        case 'allMoireCircleSymbols':
+                            glyphArray = typeof allMoireCircleSymbols !== 'undefined' ? allMoireCircleSymbols : null;
+                            break;
+                        default:
+                            glyphArray = null;
+                    }
+
+                    if (glyphArray && glyphArray.length > 0) {
+                        const randomGlyphHex = glyphArray[Math.round((glyphArray.length - 1) * Math.random())];
+                        charSpan.innerHTML = `&#x${randomGlyphHex};`;
+                        layerElement.title = `Glyph HEX: ${randomGlyphHex}`;
+                    }
+                }
             }
         }
-    }
 
-    // === KEYBOARD SHORTCUTS (Flavor 2 only) ===
-    if (flavorConfig.hasFontSwitching) {
+        function setupDynamicBlocks() {
+            leftBlock.innerHTML = '';
+            rightBlock.innerHTML = '';
+            allLayers = [];
+
+            if (typeof mycolors === 'undefined' || mycolors.length === 0) {
+                themeColor = '#000000';
+                themeColor2 = '#000000';
+                themeColor3 = '#000000';
+                document.body.style.backgroundColor = themeColor;
+                return;
+            }
+
+            themeColor = mycolors[Math.round((mycolors.length - 1) * Math.random())];
+            themeColor2 = mycolors[Math.round((mycolors.length - 1) * Math.random())];
+            themeColor3 = mycolors[Math.round((mycolors.length - 1) * Math.random())];
+            document.body.style.backgroundColor = themeColor;
+
+            const numLayersLeft = Math.floor(Math.random() * (20 - 5 + 1)) + 5;
+            for (let i = 0; i < numLayersLeft; i++) {
+                createAndAddLayer(leftBlock);
+            }
+
+            const numLayersRight = Math.floor(Math.random() * (20 - 5 + 1)) + 5;
+            for (let i = 0; i < numLayersRight; i++) {
+                createAndAddLayer(rightBlock);
+            }
+        }
+
+        // Initial setup
+        setupDynamicBlocks();
+
+        // Main update interval
+        window.setInterval(function() {
+            if (allLayers.length > 0) {
+                const randomLayerIndex = Math.floor(Math.random() * allLayers.length);
+                updateLayer(allLayers[randomLayerIndex]);
+            }
+        }, fontChangeRate);
+
+        // Change theme color
+        window.setInterval(function() {
+            if (typeof mycolors === 'undefined' || mycolors.length === 0) {
+                return;
+            }
+            themeColor = mycolors[Math.round((mycolors.length - 1) * Math.random())];
+            document.body.style.backgroundColor = themeColor;
+        }, fontChangeRate * 20);
+
+        // Regenerate all layers
+        window.setInterval(function() {
+            setupDynamicBlocks();
+        }, fontChangeRate * 20);
+}
+
+function init() {
+    // --- Load CSS ---
+    const cssLink = document.createElement('link');
+    cssLink.rel = 'stylesheet';
+    cssLink.href = '../css/boxplot.css';
+    document.head.appendChild(cssLink);
+
+    // --- Load Dependencies ---
+    const script = document.createElement('script');
+    script.src = '../js_glyph/boxplot.js?v=' + Date.now();
+    script.onload = () => {
+        console.log('DeGenerator 9 Legacy: Dependencies loaded.');
+        // Start with a random flavor
+        startVisualization(Math.floor(Math.random() * 4));
+
+        // Add keyboard listeners
         window.addEventListener('keydown', (e) => {
-            if (e.key === '1') setEmojiFont('"Apple Color Emoji"');
-            if (e.key === '2') setEmojiFont('"Noto Color Emoji"');
-            if (e.key === '3') setEmojiFont('"Open Moji 0"');
-            if (e.key === '4') setEmojiFont('"Segoe Emoji"');
-            if (e.key === '5') setEmojiFont('"Twitter Color Emoji"');
-            if (e.key === '6') setEmojiFont('"Open Moji Black"');
-            if (e.key === '7') setEmojiFont('"Emoji Two"');
-            if (e.key === '8') setEmojiFont('"Blobmoji"');
-            if (e.key === '9') setEmojiFont('"WhatsApp Emoji"');
-            if (e.key === '0') setEmojiFont('"Fluent Emoji INV HC"');
-            if (e.key === 't' || e.key === 'T') setEmojiFont('"TossfaceOTF"');
-            if (e.key === 'b' || e.key === 'B') setEmojiFont('"Noto Emoji"');
-            if (e.key === 'r' || e.key === 'R') setRandomFonts();
-            if (e.key === 'e' || e.key === 'E') setRandomFontsWithExclusion();
-        });
-    }
-
-    // === WAIT FOR SIGNALS ===
-    function jsWait() {
-        const signalsReady =
-            typeof emojiSequenceArraySignal !== 'undefined' &&
-            typeof msucdArraySignal !== 'undefined';
-
-        if (!signalsReady) {
-            setTimeout(jsWait, 100);
-        } else {
-            console.log("✅ Signals ready → initializing emoji grid");
-            if (flavorConfig.hasFontSwitching) {
-                console.log("🎨 Font controls: Press 1-0, b to switch fonts | R for random | E for random with exclusions");
+            if (['0', '1', '2', '3'].includes(e.key)) {
+                startVisualization(parseInt(e.key, 10));
             }
-            injectStyle(embeddedCss);
-            initContent();
-            initGrid();
-        }
-    }
+        });
+    };
+    document.head.appendChild(script);
+}
 
-    console.log("insert16.js loaded — waiting for emojiSequenceArraySignal + msucdArraySignal");
-    jsWait();
-})();
+init();

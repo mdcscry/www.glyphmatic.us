@@ -164,19 +164,14 @@ const INSERT_CONFIG = {
         12: { description: 'Quad grid displaying multi-font Unicode glyphs with hover tooltips showing codepoints and font names, featuring periodic glyph/font/color swaps.' },
         14: { description: 'SVG masked dissolve with multi-glyph layers fading in and out within a shared mask shape that periodically changes to reveal different Unicode symbols.' },
         15: { description: 'Braided marquee featuring scrolling horizontal and vertical strips in a grid pattern using z-index weaving and OKLCH color harmony schemes.' },
-        16: { description: '10x10 emoji grid displaying ZWJ sequences with pastel backgrounds and 3D twist fade animations cycling through Unicode emoji versions.' },
-        17: { description: '5x5 emoji grid with larger cells showing ZWJ sequences, pastel backgrounds, and slower twist fade animations for a more contemplative viewing experience.' },
+        16: { description: 'Emoji grid displaying ZWJ sequences with various backgrounds and 3D twist fade animations cycling through Unicode emoji versions. Uses keyboard to shift through emojis in flavor 3' },
+        17: { description: 'DeGenerator Legacy 9: Split-screen with radial gradient backgrounds that cross-fade while displaying box-drawing glyphs with webkit text strokes, shadows, and occasional borders.' },
         18: { description: 'Astronomical orbital animation with classical planets, trans-Neptunian objects, Uranian symbols, and asteroids rotating around a pulsing sun with randomized orbit speeds.' },
-        19: { description: '10x10 emoji grid with font-aware rendering that intelligently excludes problematic emoji-font combinations and displays hover tooltips showing current font and Unicode version.' },
+        19: { description: 'DaGenerator Doublefast: Fills screen with 15,000 box-drawing double-line characters that change colors and shapes independently on separate fast timers.' },
         20: { description: 'Spinning spirals grid with random OKLCH color palettes, configurable grid layouts (1x1 to 10x10), and directional rotation based on spiral symbol characteristics.' },
         21: { description: 'Quad layout with 20 glyphs per quadrant featuring multi-font Unicode rendering with class-based styling and periodic background/text color changes.' },
         22: { description: 'Similar to insert 21 - Quad grid displaying font-styled Unicode glyphs with class names derived from codepoints and fonts for CSS targeting.' },
         24: { description: 'DeGenerator Legacy 1: Displays 1000 overlapping Symbols2 block characters (U+1FB00-1FBCA) with 8 child layers per container, creating a dense mosaic with color-changing intervals.' },
-        25: { description: 'DaGenerator Doublefast: Fills screen with 15,000 box-drawing double-line characters that change colors and shapes independently on separate fast timers.' },
-        27: { description: 'DeGenerator Legacy 8: Split-screen layout with layered box-drawing glyphs using CSS blend modes and staggered fade-ins for each layer.' },
-        28: { description: 'DeGenerator Legacy 9: Split-screen with radial gradient backgrounds that cross-fade while displaying box-drawing glyphs with webkit text strokes, shadows, and occasional borders.' },
-        29: { description: 'DaGenerator Doublefast Corrected: White background version with 15,000 box-drawing double-line characters that slowly appear through color changes.' },
-        30: { description: 'DaGenerator Singlefast Corrected: White background with box-drawing double-line characters, using a single interval to simultaneously change colors and characters.' }
     }
 };
 
