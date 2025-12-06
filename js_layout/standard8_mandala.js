@@ -42,7 +42,7 @@ var cssRules=cssStyle.cssRules;
 			var newRule='DIV {position:absolute; top:0%; width:100%;height:100%; background:transparent;  text-align:center; vertical-align:center;}';
 			cssStyle.insertRule(newRule,cssRules.length);
 	} else if (insertArrayRnd==10){
-			var newRule='DIV {position:absolute; top:0%; left:0%; width:100%;height:100%;background:transparent; font-size: 45vmin; text-align:center; vertical-align: middle; transform: translate(-0%, 0%);}';
+			var newRule='DIV:not(.watermark-font) {position:absolute; top:0%; left:0%; width:100%;height:100%;background:transparent; font-size: 45vmin; text-align:center; vertical-align: middle; transform: translate(-0%, -45%);}';
 			cssStyle.insertRule(newRule,cssRules.length);
 	} else if (insertArrayRnd==8){
 			// Base DIV styles - common to all divs
