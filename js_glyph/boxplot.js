@@ -140,7 +140,98 @@ var mycolors = [
         '231d','231e','231f','2324','2325','232f','2338','234a','2351','2348','2385',
         '2387','238d','238e','23ca','23cb','23cc','23e2','23e4','23e5','23d9','23da','23db'
     ]
+    var oghamBlock = [
+        '1680','1681','1682','1683','1684','1685',
+        '1686','1687','1688','1689','168A','169A',
+        '1699','1697'
+   ]
 
+    var oghamBlockMoire = [
+        '1699','169A','1685','1689','168A'
+   ]
+
+
+    var legacyComputingArrayMoire = [ 
+        '1FB8C','1FB8D','1FB8E',
+        '1FB90','1FB91','1FB92','1FB94','1FB98','1FB99','1FB9C','1FB9D','1FB9E','1FB9F'
+
+    ]
+
+    var geometricShapesMoire = [
+        '25A4','25A5','25A6','25A7','25A8','25A9'
+    ]
+
+    var blockElementsMoire = [
+        '2593'
+    ]
+
+    var dominoTilesMoire = [
+        '1F030','1F062'
+    ]    
+
+
+    var blockElementsCircleSquareMoire = [
+        '2591',
+        '2592'
+    ];  
+
+    var blockElementsCirclesMoire = [
+        '2591',
+        '2592',
+        '22EE','22EF','22F0','22F1'
+        ,'25CB','25CC','25CD','25CE','25E6','25EF'
+        ,'26EC'
+        ,'283F','2807','281B','283F'
+        ,'29DD','29BE','2A00'
+        ,'10AF1'//,'10AF2','10AF3',
+        ,'1F900','1F902'
+        ,'1F784','1F785','1F786','1F787','1F788','1F789','1F78A','1F78B'
+        ,'1E85A','1E85B','1E8A8','1E8B9','1E8BC','1E83C','1E8CB'
+        ,'1E2C7'
+        ,'16B3B'
+        ,'16800','16801','16857','1687A','16884','1687C','1688C','168D0'//bamum supplement
+        ,'168E0','168E2','16895','1695A','169FB' //bamum supplement
+        ,'1BC60','1BC5C','1BC95','1BC95'
+        //,'16EB8' //font
+        //,'16D42' //font
+        // ,'1E2A3','1E295' //font        
+
+
+
+    ]
+
+    var countingRodNumeralsHexArrayMoire = [
+        '1D364','1D36D'
+    ];
+
+    var supplementalMathematicalOperatorsMoire = [
+        '2A68','2A69'
+    ];  
+    
+    var copticMoire = [
+        '2CB6','2CB7','2CBC','2CBD'
+    ];
+
+
+    var yiJingHexagramMoire = [
+        '4DC0', '4DC1', '4DC2', '4DC3', '4DC4', '4DC5', '4DC6', '4DC7'//,
+       //  '4DC8', '4DC9', '4DCA', '4DCB', '4DCC', '4DCD', '4DCE', '4DCF'
+    ];
+    
+    var taiXuanJingSymbolsMoire = [
+        '1D300', '1D301', '1D302', '1D303', '1D304', '1D305', '1D306', '1D307'//,
+      //   '1D308', '1D309', '1D30A', '1D30B', '1D30C', '1D30D', '1D30E', '1D30F',
+
+    ];
+
+    var egyptianHeiroMoire = [
+        '13281','13282','13208','13401','13402','13403','13406','13407',
+        '13409','1340B','1340C','133FD','133FF',
+    ];    
+
+    var mahJongTilesMoire = [
+        '1F018','1F006','1F021','1F02B'
+    ]; 
 
     var myarray = 
     legacyComputingArray
@@ -154,3 +245,28 @@ var mycolors = [
     .concat(miscellaneousMathematicalSymbolsA)  
     .concat(miscellaneousMathematicalSymbolsB)   
     .concat(miscellaneaousTechnicalBlock) 
+
+
+
+    var allMoireSymbols = [
+        ...oghamBlockMoire,
+        ...legacyComputingArrayMoire,
+        ...geometricShapesMoire,
+        ...blockElementsMoire,
+        ...countingRodNumeralsHexArrayMoire,
+        ...supplementalMathematicalOperatorsMoire,
+        ...copticMoire,
+        ...yiJingHexagramMoire,
+        ...taiXuanJingSymbolsMoire,
+        ...egyptianHeiroMoire,
+        ...dominoTilesMoire, 
+        ...mahJongTilesMoire    
+    ];
+
+    var allMoireCircleSymbols = [
+         ...blockElementsCirclesMoire,
+    ];
+
+    var allMoireCircleSquareSymbols = [
+         ...blockElementsCircleSquareMoire,
+    ];

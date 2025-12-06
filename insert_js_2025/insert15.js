@@ -1,387 +1,157 @@
-console.log('INSERT15 TOP');
+/**
+ * Insert 27: DeGenerator Legacy 8
+ * Based on 2025_exp/degenerator8_legacy.htm
+ */
 
-// insert15.js - Braided Marquee
-var divCounter = 0; // Compatibility with nav
-var GRID_SIZE = Math.floor(Math.random() * 10) + 15;
-var STRIP_SIZE = 100 / GRID_SIZE;
-var BASE_SPEED = 0.01 + Math.random() * 0.02;
-var FONT_SIZE = Math.floor(Math.random() * 2) + 4;
-console.log('font size: ' + FONT_SIZE)
+function createDegenerator8() {
+    // --- Dependencies ---
+    const dependencies = [
+        '../js_glyph/boxplot.js'
+    ];
 
-var mycolors = [];
-var mycolors2 = [];
-var hStrips = [];
-var vStrips = [];
-var selectedPattern;
+    let loadedCount = 0;
 
-// Z-patterns
-var zPatterns = [
-    {
-        name: 'vertical_on_top_evens',
-        h: function(i) { return i % 2 === 0 ? 2 : 1; },
-        v: function(i) { return i % 2 === 0 ? 1 : 2; }
-    },
-    {
-        name: 'horizontal_on_top_evens',
-        h: function(i) { return i % 2 === 0 ? 1 : 2; },
-        v: function(i) { return i % 2 === 0 ? 2 : 1; }
-    },
-    {
-        name: 'peak_middle',
-        h: function(i) { return i < GRID_SIZE/2 ? i * 2 : (GRID_SIZE - i) * 2; },
-        v: function(i) { return i < GRID_SIZE/2 ? i * 2 + 1 : (GRID_SIZE - i) * 2 + 1; }
-    },
-    {
-        name: 'palindromic_3',
-        h: function(i) { return [1, 2, 3, 2][i % 4]; },
-        v: function(i) { return [2, 3, 1, 3][i % 4]; }
-    },
-    {
-        name: 'diagonal_cascade',
-        h: function(i) { return (i * 2) % 5 + 1; },
-        v: function(i) { return (i * 2 + 1) % 5 + 1; }
-    }
-];
-
-function jsWait() {
-    if (typeof whirldArraySignal == "undefined" || 
-        typeof msucdArraySignal == "undefined") {
-        window.setTimeout(jsWait, 100);
-    } else {
-        console.log('SIGNALS READY, STARTING INSERT15');
-        selectedPattern = zPatterns[Math.floor(Math.random() * zPatterns.length)];
-        initStyle();
-        initBraid();
-        startAnimation();
-    }
-}
-
-
-function initStyle() {
-    mycolors = []; // Clear previous colors
-    mycolors2 = [];
-
-    const totalColorsToGenerate = 12; // Still generating 12 colors
-
-    // --- 1. Pick a base hue and a harmony type ---
-    const baseHue = Math.random() * 360;
-    const harmonyTypes = ["complementary", "triadic", "analogous", "splitComplementary", "tetradic"];
-    const harmony = harmonyTypes[Math.floor(Math.random() * harmonyTypes.length)];
-
-    // Determine core hue angles based on harmony
-    let hues = [];
-    switch (harmony) {
-        case "complementary":
-            hues = [baseHue, (baseHue + 180) % 360];
-            break;
-        case "triadic":
-            hues = [baseHue, (baseHue + 120) % 360, (baseHue + 240) % 360];
-            break;
-        case "analogous":
-            // Slightly spread analogous hues, sorted for consistency
-            hues = [baseHue, (baseHue + 15) % 360, (baseHue - 15 + 360) % 360];
-            hues = hues.map(h => (h + 360) % 360).sort((a, b) => a - b);
-            break;
-        case "splitComplementary":
-            hues = [baseHue, (baseHue + 150) % 360, (baseHue + 210) % 360];
-            break;
-        case "tetradic":
-            // Square (90 degree separation)
-            hues = [baseHue, (baseHue + 90) % 360, (baseHue + 180) % 360, (baseHue + 270) % 360];
-            break;
-    }
-
-    // --- 2. Define ranges for Lightness and Chroma to match the provided image's aesthetic ---
-
-    // --- mycolors (the vertical strips): DARK and MUTED ---
-    const stripLightnessMean = Math.random() * 15 + 30; // Center lightness 30-45% (Darker than background)
-    const stripLightnessJitter = 8; // +/- 8% from the mean
-
-    const stripChromaMean = Math.random() * 0.06 + 0.06; // Center chroma 0.06-0.12 (Muted but has color)
-    const stripChromaJitter = 0.03; // +/- 0.03 from the mean
-
-    // --- mycolors2 (the glyphs/text): LIGHTER and somewhat more VIBRANT to stand out ---
-    const glyphLightnessMean = Math.random() * 20 + 60; // Center lightness 60-80% (Distinctly lighter than strips)
-    const glyphLightnessJitter = 10; // +/- 10% from the mean
-
-    const glyphChromaMean = Math.random() * 0.1 + 0.12; // Center chroma 0.12-0.22 (More saturated to pop)
-    const glyphChromaJitter = 0.05; // +/- 0.05 from the mean
-
-    // --- 3. Build mycolors and mycolors2 arrays ---
-    for (let i = 0; i < totalColorsToGenerate; i++) {
-        const hueBase = hues[i % hues.length];
-
-        // Apply a very small hue jitter to make each instance unique but still harmonious
-        let hue = hueBase + (Math.random() * 4 - 2); // +/- 2 degrees, extremely subtle
-
-        // Generate lightness and chroma for mycolors (strips)
-        let stripL = stripLightnessMean + (Math.random() * stripLightnessJitter * 2 - stripLightnessJitter);
-        let stripC = stripChromaMean + (Math.random() * stripChromaJitter * 2 - stripChromaJitter);
-
-        // Clamp values for mycolors (strips)
-        stripL = Math.min(50, Math.max(25, stripL)); // Keep strips in a dark-medium range
-        stripC = Math.min(0.20, Math.max(0.03, stripC)); // Muted to slightly-saturated
-        hue = (hue + 360) % 360; // Ensure hue is always positive and within 0-360
-
-        // Push primary color to mycolors
-        mycolors.push(`oklch(${stripL.toFixed(1)}% ${stripC.toFixed(2)} ${hue.toFixed(1)})`);
-
-        // Generate lightness and chroma for mycolors2 (glyphs)
-        let glyphL = glyphLightnessMean + (Math.random() * glyphLightnessJitter * 2 - glyphLightnessJitter);
-        let glyphC = glyphChromaMean + (Math.random() * glyphChromaJitter * 2 - glyphChromaJitter);
-
-        // Clamp glyph values
-        const clampedGlyphL = Math.min(85, Math.max(55, glyphL)); // Glyphs should be light-to-medium bright
-        const clampedGlyphC = Math.min(0.30, Math.max(0.08, glyphC)); // Visible to somewhat vibrant chroma
-
-        mycolors2.push(`oklch(${clampedGlyphL.toFixed(1)}% ${clampedGlyphC.toFixed(2)} ${hue.toFixed(1)})`);
-    }
-
-    // --- 4. Generate a very DARK, muted background and a LIGHT text color ---
-    const bgHue = hues[Math.floor(Math.random() * hues.length)]; // Base on one of the predominant palette hues
-
-    // The canvas background should be very dark and muted.
-    const canvasBgLightness = Math.random() * 10 + 10; // Very dark background L (10-20%)
-    const canvasBgChroma = Math.random() * 0.02 + 0.01; // Very muted (0.01-0.03)
-
-    // The global text color should be very light and desaturated for readability.
-    const globalTextColorLightness = Math.random() * 10 + 85; // Very light text L (85-95%)
-    const globalTextColorChroma = Math.random() * 0.01;      // Extremely muted, near grayscale
-
-    const backgroundColor = `oklch(${canvasBgLightness.toFixed(1)}% ${canvasBgChroma.toFixed(2)} ${bgHue.toFixed(1)})`;
-    const textColor = `oklch(${globalTextColorLightness.toFixed(1)}% ${globalTextColorChroma.toFixed(2)} ${bgHue.toFixed(1)})`;
-
-    // Apply styles to the body
-    document.body.style.backgroundColor = backgroundColor;
-    document.body.style.color = textColor;
-
-    // Log for debugging/information
-    console.log("Harmony:", harmony);
-    console.log("🎨 Generated mycolors (all 12, strips - now DARK):", mycolors);
-    console.log("🎨 Generated mycolors2 (all 12, glyphs - now LIGHT):", mycolors2);
-    console.log("🌈 Background Color (canvas - now DARK):", backgroundColor);
-    console.log("📖 Text Color (global - now LIGHT):", textColor);
-}
-
-function getRandomGlyph() {
-    var glyphIndex = Math.floor(Math.random() * myFontSet.length);
-    if (!myFontSet[glyphIndex]) {
-        glyphIndex = Math.floor(Math.random() * myFontSet.length);
-    }
-    
-    var codepoint = myFontSet[glyphIndex][0];
-    var fontList = myFontSet[glyphIndex].slice(1);
-    var randomFont = fontList[Math.floor(Math.random() * fontList.length)];
-    
-    return {
-        char: parseCodepoint(codepoint),
-        font: randomFont
-    };
-}
-
-function parseCodepoint(cp) {
-    if (cp.indexOf(';') > -1) {
-        var parts = cp.split(';');
-        var output = '&#' + parts[0] + ';';
-        for (var i = 1; i < parts.length; i++) {
-            if (parts[i]) output += parts[i] + ';';
-        }
-        return output;
-    } else if (cp.charAt(0) === 'x') {
-        return '&#' + cp + ';';
-    } else {
-        return '&#' + cp + ';';
-    }
-}
-
-function initBraid() {
-    // Clear body but keep nav elements
-    console.log('initBraid START');
-    console.log('GRID_SIZE:', GRID_SIZE);
-    var navElements = ['spanNavColor', 'spanNavHTML', 'spanNavSizeDown', 'spanNavSizeUp'];
-    var savedNavs = {};
-    navElements.forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el) savedNavs[id] = el;
-    });
-    
-    // Also save glyphmatic divs
-    var glyphDivs = [];
-    for (var i = 1; i <= 8; i++) {
-        var el = document.getElementById('glyphmatic' + i);
-        if (el) glyphDivs.push(el);
-    }
-    
-    document.body.innerHTML = '';
-    
-    // Restore nav
-    Object.keys(savedNavs).forEach(function(id) {
-        document.body.appendChild(savedNavs[id]);
-    });
-    glyphDivs.forEach(function(el) {
-        document.body.appendChild(el);
-    });
-    
-    // Create horizontal strips
-    for (var row = 0; row < GRID_SIZE; row++) {
-        var strip = document.createElement('div');
-        strip.style.position = 'absolute';
-        strip.style.display = 'flex';
-        strip.style.flexDirection = 'row';
-        strip.style.height = STRIP_SIZE + 'vh';
-        strip.style.top = (row * STRIP_SIZE) + 'vh';
-        strip.style.left = '0';
-        strip.style.zIndex = selectedPattern.h(row);
-        
-        var colorIdx = Math.floor(Math.random() * mycolors.length);
-        
-        var glyphCount = GRID_SIZE + 10;
-        for (var col = 0; col < glyphCount; col++) {
-            var cell = document.createElement('div');
-            cell.style.flexShrink = '0';
-            cell.style.width = STRIP_SIZE + 'vw';
-            cell.style.height = STRIP_SIZE + 'vh';
-            cell.style.display = 'flex';
-            cell.style.alignItems = 'center';
-            cell.style.justifyContent = 'center';
-            cell.style.fontSize = FONT_SIZE + 'vmin';
-            cell.style.backgroundColor = mycolors2[colorIdx];
-            cell.style.color = mycolors[colorIdx];
-            
-            var glyph = getRandomGlyph();
-            if (glyph.font === "Noto Sans Symbols 2") {
-                console.log('in the symbols loop;' + glyph.font)
-                cell.classList.add('noto-sans-symbols-2'); // Apply the CSS class
-                cell.style.fontFamily = ''; // Ensure no conflicting inline style
-            } else {
-                cell.style.fontFamily = glyph.font; // For all other fonts, use inline style
+    dependencies.forEach(src => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = () => {
+            loadedCount++;
+            if (loadedCount === dependencies.length) {
+                console.log('DeGenerator 8: All dependencies loaded.');
+                run();
             }
-            cell.innerHTML = glyph.char;
-            
-            strip.appendChild(cell);
-        }
-        
-        document.body.appendChild(strip);
-        hStrips.push(strip);
-    }
-    
-    // Create vertical strips
-    for (var col = 0; col < GRID_SIZE; col++) {
-        var strip = document.createElement('div');
-        strip.style.position = 'absolute';
-        strip.style.display = 'flex';
-        strip.style.flexDirection = 'column';
-        strip.style.width = STRIP_SIZE + 'vw';
-        strip.style.left = (col * STRIP_SIZE) + 'vw';
-        strip.style.top = '0';
-        strip.style.zIndex = selectedPattern.v(col);
-        
-        var colorIdx = Math.floor(Math.random() * mycolors.length);
-        
-        var glyphCount = GRID_SIZE + 10;
-        for (var row = 0; row < glyphCount; row++) {
-            var cell = document.createElement('div');
-            cell.style.flexShrink = '0';
-            cell.style.width = STRIP_SIZE + 'vw';
-            cell.style.height = STRIP_SIZE + 'vh';
-            cell.style.display = 'flex';
-            cell.style.alignItems = 'center';
-            cell.style.justifyContent = 'center';
-            cell.style.fontSize = FONT_SIZE + 'vmin';
-            cell.style.backgroundColor = mycolors2[colorIdx];
-            cell.style.color = mycolors[colorIdx];
-            
-            var glyph = getRandomGlyph();
-            if (glyph.font === "Noto Sans Symbols 2") {
-                console.log('in the symbols loop;' + glyph.font)
-                cell.classList.add('noto-sans-symbols-2'); // Apply the CSS class
-                cell.style.fontFamily = ''; // Ensure no conflicting inline style
-            } else {
-                cell.style.fontFamily = glyph.font; // For all other fonts, use inline style
-            }
-            cell.innerHTML = glyph.char;
-            
-            strip.appendChild(cell);
-        }
-        
-        document.body.appendChild(strip);
-        vStrips.push(strip);
-    }
-    console.log('initBraid COMPLETE, total strips:', hStrips.length);
-}
-
-function startAnimation() {
-    hStrips.forEach(function(strip) {
-        animateHorizontal(strip);
+        };
+        document.head.appendChild(script);
     });
-    
-    vStrips.forEach(function(strip) {
-        animateVertical(strip);
-    });
-}
 
-function animateHorizontal(strip) {
-    var offset = -STRIP_SIZE;
-    var speed = BASE_SPEED * (0.8 + Math.random() * 0.4);
-    
-    function step() {
-        offset += speed;
-        
-        if (offset >= 0) {
-            offset = -STRIP_SIZE;
-            var lastCell = strip.children[strip.children.length - 1];
-            var glyph = getRandomGlyph();
-            if (glyph.font === "Noto Sans Symbols 2") {
-                console.log('in the symbols loop;' + glyph.font)
-                lastCell.classList.add('noto-sans-symbols-2'); // Apply the CSS class
-                lastCell.style.fontFamily = ''; // Ensure no conflicting inline style
-            } else {
-                lastCell.style.fontFamily = glyph.font; // For all other fonts, use inline style
+    function run() {
+        // --- CSS Injection ---
+        const style = document.createElement('style');
+        style.textContent = `
+            #degen8-wrapper {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                display: flex !important; /* Use flexbox for side-by-side layout */
+                overflow: hidden;
+                z-index: -1; /* Position behind the watermark */
             }
-            lastCell.innerHTML = glyph.char;
-            strip.insertBefore(lastCell, strip.children[0]);
+            .main-block {
+                position: relative; width: 50vw; height: 100vh; overflow: hidden;
+            }
+            .layer {
+                position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                display: flex; align-items: center; justify-content: center;
+                opacity: 0; /* Start transparent for fade-in */
+                transition: opacity 12s ease-in-out, background-color 15s ease-in-out, mix-blend-mode 15s ease-in-out;
+            }
+            .layer > span {
+                font-size: 70vmin; line-height: 1; position: absolute; pointer-events: none;
+                transition: color 15s ease-in-out, mix-blend-mode 15s ease-in-out;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // --- Main Logic ---
+        const wrapper = document.createElement('div');
+        wrapper.id = 'degen8-wrapper';
+        document.body.appendChild(wrapper);
+
+        const leftBlock = document.createElement('div');
+        leftBlock.id = 'leftBlock';
+        leftBlock.className = 'main-block';
+        wrapper.appendChild(leftBlock);
+
+        const rightBlock = document.createElement('div');
+        rightBlock.id = 'rightBlock';
+        rightBlock.className = 'main-block';
+        wrapper.appendChild(rightBlock);
+
+        let allLayers = [];
+        let themeColor;
+
+        function getRandomColor() { return themeColor; }
+
+        function getRandomRGBAColor(minAlpha = 0.01, maxAlpha = 0.1) {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            const a = (Math.random() * (maxAlpha - minAlpha)) + minAlpha;
+            return `rgba(${r},${g},${b},${a.toFixed(2)})`;
         }
-        
-        strip.style.transform = 'translateX(' + offset + 'vw)';
-        requestAnimationFrame(step);
-    }
-    
-    step();
-}
 
-function animateVertical(strip) {
-    var offset = -STRIP_SIZE;
-    var speed = BASE_SPEED * (0.8 + Math.random() * 0.4);
-    
-    function step() {
-        offset += speed;
-        
-        if (offset >= 0) {
-            offset = -STRIP_SIZE;
-            var lastCell = strip.children[strip.children.length - 1];
-            var glyph = getRandomGlyph();
-            lastCell.style.fontFamily = glyph.font;
-            lastCell.innerHTML = glyph.char;
-            strip.insertBefore(lastCell, strip.children[0]);
+        function getRandomBlendMode() {
+            return mixBlendModes[Math.floor(Math.random() * mixBlendModes.length)];
         }
-        
-        strip.style.transform = 'translateY(' + offset + 'vh)';
-        requestAnimationFrame(step);
+
+        function createAndAddLayer(parentBlock, delay) {
+            const layerDiv = document.createElement("div");
+            layerDiv.className = "layer";
+            const charSpan = document.createElement("span");
+            layerDiv.appendChild(charSpan);
+            parentBlock.appendChild(layerDiv);
+            allLayers.push(layerDiv);
+            updateLayer(layerDiv);
+
+            // Staggered fade-in
+            setTimeout(() => {
+                layerDiv.style.opacity = 0.9;
+            }, delay);
+        }
+
+        function updateLayer(layerElement) {
+            layerElement.style.backgroundColor = getRandomRGBAColor();
+            layerElement.style.mixBlendMode = getRandomBlendMode();
+
+            const charSpan = layerElement.querySelector('span');
+            if (charSpan) {
+                charSpan.style.color = getRandomColor();
+                charSpan.style.mixBlendMode = getRandomBlendMode();
+                if (Math.random() < 0.5) {
+                    const randomGlyphHex = myarray[Math.round((myarray.length - 1) * Math.random())];
+                    charSpan.innerHTML = `&#x${randomGlyphHex};`;
+                    layerElement.title = `Glyph HEX: ${randomGlyphHex}`;
+                }
+            }
+        }
+
+        function setupDynamicBlocks() {
+            leftBlock.innerHTML = '';
+            rightBlock.innerHTML = '';
+            allLayers = [];
+
+            // Use the main page's color palette
+            themeColor = mycolors[Math.round((mycolors.length - 1) * Math.random())];
+            document.body.style.backgroundColor = themeColor;
+
+            const numLayersLeft = Math.floor(Math.random() * 15) + 5;
+            for (let i = 0; i < numLayersLeft; i++) {
+                createAndAddLayer(leftBlock, i * 300); // Stagger fade-in by 300ms
+            }
+
+            const numLayersRight = Math.floor(Math.random() * 15) + 5;
+            for (let i = 0; i < numLayersRight; i++) {
+                createAndAddLayer(rightBlock, i * 300); // Stagger fade-in by 300ms
+            }
+        }
+
+        setupDynamicBlocks();
+
+        // Continuous updates
+        window.setInterval(() => {
+            if (allLayers.length > 0) {
+                const randomLayerIndex = Math.floor(Math.random() * allLayers.length);
+                updateLayer(allLayers[randomLayerIndex]);
+            }
+        }, 6000);
+
+        window.setInterval(() => {
+            themeColor = mycolors[Math.round((mycolors.length - 1) * Math.random())];
+            document.body.style.backgroundColor = themeColor;
+        }, 12000);
     }
-    
-    step();
 }
 
-// Nav button compatibility
-function changeHtmlDisplayInline() {
-    // Regenerate with new pattern
-    hStrips = [];
-    vStrips = [];
-    selectedPattern = zPatterns[Math.floor(Math.random() * zPatterns.length)];
-    initBraid();
-    startAnimation();
-
-}
-
-console.log('insert15.js loaded');
-jsWait();
+createDegenerator8();
