@@ -4,10 +4,18 @@
  * Randomly selects one of 4 flavor configurations on page load
  */
 
-function createDegenerator2() {
-    // === FLAVOR SELECTION ===
-    const FLAVOR = Math.floor(Math.random() * 4);
+// Store interval IDs to clear them on flavor change
+let dagenIntervalIds = [];
 
+function startDagenVisualization(flavor) {
+    // Clear previous intervals, wrapper, and style
+    dagenIntervalIds.forEach(clearInterval);
+    dagenIntervalIds = [];
+    document.getElementById('dagen-wrapper')?.remove();
+    document.getElementById('dagen-style')?.remove();
+
+    const FLAVOR = flavor;
+    
     // Flavor configurations:
     // 0: Doublefast Large (was insert25) - random 40-200px, normal bg, single-line chars, 2 intervals, mycolors
     // 1: Singlefast Medium (was insert26) - random 40-200px, normal bg, double-line chars, 1 interval, 3-color palette
@@ -30,6 +38,7 @@ function createDegenerator2() {
 
     // --- CSS Injection ---
     const style = document.createElement('style');
+    style.id = 'dagen-style'; // Add ID for easy removal
     let styleContent = `
         body {
             font-family: 'Code2000', 'Quivira', 'Akshar Unicode', 'Symbola', 'AegyptusR', 'Arial Unicode MS', 'Code2002', 'Code2001', sans-serif;
@@ -143,7 +152,7 @@ function createDegenerator2() {
     // Animation intervals based on speed
     if (flavorConfig.speed === 'doublefast') {
         // Two separate intervals for colors and characters
-        window.setInterval(function() {
+        const colorInterval = window.setInterval(function() {
             for (let i = 0; i < 100; i++) {
                 const rndDiv = Math.floor(Math.random() * divId.length);
                 if (divId[rndDiv]) {
@@ -151,8 +160,9 @@ function createDegenerator2() {
                 }
             }
         }, Math.random() * fontChangeRate + 15);
+        dagenIntervalIds.push(colorInterval);
 
-        window.setInterval(function() {
+        const charInterval = window.setInterval(function() {
             for (let i = 0; i < 100; i++) {
                 const rndDiv = Math.floor(Math.random() * divId.length);
                 if (divId[rndDiv]) {
@@ -160,10 +170,11 @@ function createDegenerator2() {
                 }
             }
         }, Math.random() * fontChangeRate + 200);
+        dagenIntervalIds.push(charInterval);
 
     } else {
         // Single interval for both colors and characters
-        window.setInterval(function() {
+        const singleInterval = window.setInterval(function() {
             for (let i = 0; i < 100; i++) {
                 const rndDiv = Math.floor(Math.random() * divId.length);
                 if (divId[rndDiv]) {
@@ -172,12 +183,26 @@ function createDegenerator2() {
                 }
             }
         }, Math.random() * fontChangeRate + 15);
+        dagenIntervalIds.push(singleInterval);
     }
 
     // Palette refresh interval (only for flavor 1)
     if (flavorConfig.colorMode === 'palette') {
-        window.setInterval(setPalette, 15000);
+        const paletteInterval = window.setInterval(setPalette, 60000);
+        dagenIntervalIds.push(paletteInterval);
     }
 }
 
-createDegenerator2();
+function initDagen() {
+    // Start with a random flavor
+    startDagenVisualization(Math.floor(Math.random() * 4));
+
+    // Add keyboard listeners for flavors 0-3
+    window.addEventListener('keydown', (e) => {
+        if (['0', '1', '2', '3'].includes(e.key)) {
+            startDagenVisualization(parseInt(e.key, 10));
+        }
+    });
+}
+
+initDagen();

@@ -1,13 +1,20 @@
 /**
  * Insert 28: DeGenerator Legacy 9 - Multi-Flavor Edition
  * Consolidates 4 variants into one file with random flavor selection
- * Randomly selects one of 4 flavor configurations on page load
+ * Randomly selects one of 4 flavor configurations on page load.
+ * Keyboard controls (0-3) allow switching between flavors.
  */
 
-function createDegenerator9() {
-    // === FLAVOR SELECTION ===
-    const FLAVOR = Math.floor(Math.random() * 4);
+// Store interval IDs to clear them on flavor change
+let intervalIds = [];
 
+function startVisualization(flavor) {
+    // Clear previous intervals and wrapper
+    intervalIds.forEach(clearInterval);
+    intervalIds = [];
+    document.getElementById('degen9-wrapper')?.remove();
+
+    const FLAVOR = flavor;
     // Flavor configurations:
     // 0: myarray, all-direction shadows, borders (original insert28)
     // 1: allMoireSymbols, all-direction shadows, borders (was insert31)
@@ -29,22 +36,6 @@ function createDegenerator9() {
     console.log(`DeGenerator 9 Legacy: Selected FLAVOR ${FLAVOR}`);
     console.log('Config:', flavorConfig);
 
-    // --- Load CSS ---
-    const cssLink = document.createElement('link');
-    cssLink.rel = 'stylesheet';
-    cssLink.href = '../css/boxplot.css';
-    document.head.appendChild(cssLink);
-
-    // --- Load Dependencies ---
-    const script = document.createElement('script');
-    script.src = '../js_glyph/boxplot.js?v=' + Date.now();
-    script.onload = () => {
-        console.log('DeGenerator 9 Legacy: Dependencies loaded.');
-        run();
-    };
-    document.head.appendChild(script);
-
-    function run() {
         // --- CSS Injection (insert-specific styles only) ---
         const style = document.createElement('style');
         let styleContent = `
@@ -318,7 +309,31 @@ function createDegenerator9() {
         window.setInterval(function() {
             setupDynamicBlocks();
         }, fontChangeRate * 20);
-    }
 }
 
-createDegenerator9();
+function init() {
+    // --- Load CSS ---
+    const cssLink = document.createElement('link');
+    cssLink.rel = 'stylesheet';
+    cssLink.href = '../css/boxplot.css';
+    document.head.appendChild(cssLink);
+
+    // --- Load Dependencies ---
+    const script = document.createElement('script');
+    script.src = '../js_glyph/boxplot.js?v=' + Date.now();
+    script.onload = () => {
+        console.log('DeGenerator 9 Legacy: Dependencies loaded.');
+        // Start with a random flavor
+        startVisualization(Math.floor(Math.random() * 4));
+
+        // Add keyboard listeners
+        window.addEventListener('keydown', (e) => {
+            if (['0', '1', '2', '3'].includes(e.key)) {
+                startVisualization(parseInt(e.key, 10));
+            }
+        });
+    };
+    document.head.appendChild(script);
+}
+
+init();
