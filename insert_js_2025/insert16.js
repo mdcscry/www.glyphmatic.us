@@ -2,6 +2,7 @@
  * Insert 16: Emoji Grid - Multi-Flavor Edition
  * Consolidates 3 emoji exploration variants into one file with random flavor selection
  * Randomly selects one of 3 flavor configurations on page load
+ * Making a change to get a redeploy.  Browser isn't picking up the new file?
  */
 
 (function() {
