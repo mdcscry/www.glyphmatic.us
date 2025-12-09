@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hypnotic Truchet</title>
+    <style>
+        :root {
+            /* The "Thickness" of the pipe */
+            --line-width: 12px; 
+            --cell-size: 60px;
+            --color-bg: #111;
+            --color-line: #00d2ff; /* Cyan Neon */
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--color-bg);
+            overflow: hidden;
+        }
+
+        #grid-container {
+            display: grid;
+            grid-template-columns: repeat(10, var(--cell-size));
+            grid-template-rows: repeat(10, var(--cell-size));
+            /* Clean borderless look */
+        }
+
+        .cell {
+            width: var(--cell-size);
+            height: var(--cell-size);
+            position: relative;
+            overflow: hidden;
+            
+            /* Slower, mesmerizing rotation */
+            transition: transform 1.5s cubic-bezier(0.65, 0, 0.35, 1);
+            will-change: transform;
+        }
+
+        /* The Glyphs (Using the "Perfect Fit" Calc math) */
+        .arc {
+            position: absolute;
+            border-radius: 50%;
+            border: var(--line-width) solid var(--color-line);
+            opacity: 0.9;
+            
+            /* Math to ensure lines touch perfectly at the center-point */
+            width: calc(100% + var(--line-width));
+            height: calc(100% + var(--line-width));
+        }
+
+        .arc-1 {
+            top: calc(-50% - (var(--line-width) / 2));
+            left: calc(-50% - (var(--line-width) / 2));
+        }
+
+        .arc-2 {
+            bottom: calc(-50% - (var(--line-width) / 2));
+            right: calc(-50% - (var(--line-width) / 2));
+        }
+    </style>
+</head>
+<body>
+
+    <div id="grid-container"></div>
+
+    <script>
+        const gridContainer = document.getElementById('grid-container');
+        const rows = 10;
+        const cols = 10;
+        const cells = []; 
+
+        // 1. Setup the Grid
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+
+                const arc1 = document.createElement('div');
+                arc1.classList.add('arc', 'arc-1');
+                const arc2 = document.createElement('div');
+                arc2.classList.add('arc', 'arc-2');
+
+                cell.appendChild(arc1);
+                cell.appendChild(arc2);
+                
+                // Store coordinates for pattern logic
+                cell.dataset.row = r;
+                cell.dataset.col = c;
+                
+                // Start at 0
+                cell.dataset.rotation = 0;
+                cell.style.transform = `rotate(0deg)`;
+
+                gridContainer.appendChild(cell);
+                cells.push(cell);
+            }
+        }
+
+        // 2. The Logic: Toggle between "Circles" and "Waves"
+        let state = 0; // 0 = Circles, 1 = Waves
+
+        function shiftPattern() {
+            state = (state + 1) % 2; // Toggle 0 or 1
+
+            cells.forEach(cell => {
+                const r = parseInt(cell.dataset.row);
+                const c = parseInt(cell.dataset.col);
+                let targetRotation = 0;
+
+                if (state === 0) {
+                    // PATTERN A: The "Circles" (Checkerboard)
+                    // If row+col is odd, rotate 90.
+                    if ((r + c) % 2 !== 0) targetRotation = 90;
+                    else targetRotation = 0;
+                } 
+                else {
+                    // PATTERN B: The "Waves" (All aligned)
+                    // Everyone rotates to 0 (or 180) for long diagonal snakes
+                    // Let's create diagonal snakes:
+                    if (r % 2 === 0) targetRotation = 0;
+                    else targetRotation = 90; // Alternating rows creates "scales"
+                }
+
+                // Apply rotation relative to current to prevent "unwinding"
+                // We just set the absolute angle for simplicity here, 
+                // but the CSS transition handles the smooth move.
+                cell.style.transform = `rotate(${targetRotation}deg)`;
+            });
+        }
+
+        // 3. Run the loop
+        // Initial set
+        setTimeout(shiftPattern, 100); 
+        
+        // Change pattern every 3 seconds
+        setInterval(shiftPattern, 3000);
+
+    </script>
+</body>
+</html>

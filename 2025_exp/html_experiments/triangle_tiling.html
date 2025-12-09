@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+}
+#canvas {
+    display: block;
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const colors = [
+    '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', 
+    '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
+    '#F8B739', '#52B788', '#E63946', '#A8DADC'
+];
+
+const glyphs = ['▲', '▼', '◀', '▶', '◢', '◣', '◤', '◥'];
+
+function randomColor() {
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function randomGlyph() {
+    return glyphs[Math.floor(Math.random() * glyphs.length)];
+}
+
+// Generate random points
+function generatePoints(numPoints) {
+    const points = [];
+    // Add corner points to ensure full coverage
+    points.push([0, 0], [canvas.width, 0], [canvas.width, canvas.height], [0, canvas.height]);
+    
+    // Add random interior points
+    for (let i = 0; i < numPoints; i++) {
+        points.push([
+            Math.random() * canvas.width,
+            Math.random() * canvas.height
+        ]);
+    }
+    return points;
+}
+
+// Simple Delaunay triangulation using Bowyer-Watson algorithm
+function delaunay(points) {
+    // Create super-triangle that contains all points
+    const superTriangle = [
+        [-10000, -10000],
+        [10000, -10000],
+        [0, 10000]
+    ];
+    
+    let triangles = [superTriangle];
+    
+    // Add each point one at a time
+    for (const point of points) {
+        const badTriangles = [];
+        
+        // Find all triangles whose circumcircle contains the point
+        for (const triangle of triangles) {
+            if (inCircumcircle(point, triangle)) {
+                badTriangles.push(triangle);
+            }
+        }
+        
+        // Find the boundary of the polygonal hole
+        const polygon = [];
+        for (const triangle of badTriangles) {
+            for (let i = 0; i < 3; i++) {
+                const edge = [triangle[i], triangle[(i + 1) % 3]];
+                let isShared = false;
+                
+                for (const other of badTriangles) {
+                    if (other === triangle) continue;
+                    if (hasEdge(other, edge)) {
+                        isShared = true;
+                        break;
+                    }
+                }
+                
+                if (!isShared) {
+                    polygon.push(edge);
+                }
+            }
+        }
+        
+        // Remove bad triangles
+        triangles = triangles.filter(t => !badTriangles.includes(t));
+        
+        // Add new triangles formed by connecting point to polygon edges
+        for (const edge of polygon) {
+            triangles.push([edge[0], edge[1], point]);
+        }
+    }
+    
+    // Remove triangles that share vertices with super-triangle
+    triangles = triangles.filter(triangle => {
+        for (const vertex of triangle) {
+            for (const superVertex of superTriangle) {
+                if (vertex[0] === superVertex[0] && vertex[1] === superVertex[1]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    });
+    
+    return triangles;
+}
+
+function inCircumcircle(point, triangle) {
+    const [ax, ay] = triangle[0];
+    const [bx, by] = triangle[1];
+    const [cx, cy] = triangle[2];
+    const [dx, dy] = point;
+    
+    const det = (ax - dx) * ((by - dy) * (cx * cx + cy * cy - dx * dx - dy * dy) - 
+                             (cy - dy) * (bx * bx + by * by - dx * dx - dy * dy)) +
+                (bx - dx) * ((cy - dy) * (ax * ax + ay * ay - dx * dx - dy * dy) - 
+                             (ay - dy) * (cx * cx + cy * cy - dx * dx - dy * dy)) +
+                (cx - dx) * ((ay - dy) * (bx * bx + by * by - dx * dx - dy * dy) - 
+                             (by - dy) * (ax * ax + ay * ay - dx * dx - dy * dy));
+    
+    return det > 0;
+}
+
+function hasEdge(triangle, edge) {
+    for (let i = 0; i < 3; i++) {
+        const v1 = triangle[i];
+        const v2 = triangle[(i + 1) % 3];
+        if ((v1[0] === edge[0][0] && v1[1] === edge[0][1] && v2[0] === edge[1][0] && v2[1] === edge[1][1]) ||
+            (v1[0] === edge[1][0] && v1[1] === edge[1][1] && v2[0] === edge[0][0] && v2[1] === edge[0][1])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function triangleArea(triangle) {
+    const [ax, ay] = triangle[0];
+    const [bx, by] = triangle[1];
+    const [cx, cy] = triangle[2];
+    return Math.abs((ax * (by - cy) + bx * (cy - ay) + cx * (ay - by)) / 2);
+}
+
+function triangleCentroid(triangle) {
+    const x = (triangle[0][0] + triangle[1][0] + triangle[2][0]) / 3;
+    const y = (triangle[0][1] + triangle[1][1] + triangle[2][1]) / 3;
+    return [x, y];
+}
+
+function drawTriangulation() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Set clipping region to canvas bounds
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, canvas.width, canvas.height);
+    ctx.clip();
+    
+    const points = generatePoints(50); // Adjust number of points here
+    const triangles = delaunay(points);
+    
+    for (const triangle of triangles) {
+        // Draw triangle
+        ctx.fillStyle = randomColor();
+        ctx.beginPath();
+        ctx.moveTo(triangle[0][0], triangle[0][1]);
+        ctx.lineTo(triangle[1][0], triangle[1][1]);
+        ctx.lineTo(triangle[2][0], triangle[2][1]);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Draw border
+        ctx.strokeStyle = '#fff'; // White borders
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Draw glyph at centroid, sized by area
+        const area = triangleArea(triangle);
+        const fontSize = Math.sqrt(area) * 0.4; // Bigger glyphs (was 0.3)
+        const [cx, cy] = triangleCentroid(triangle);
+        
+        // Save context, rotate randomly, draw glyph, restore
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(Math.random() * Math.PI * 2); // Random rotation 0-360 degrees
+        
+        ctx.font = `${fontSize}px Arial`;
+        ctx.fillStyle = randomColor(); // Random color for each glyph
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(randomGlyph(), 0, 0);
+        
+        ctx.restore();
+    }
+    
+    ctx.restore(); // Restore from clipping region
+}
+
+drawTriangulation();
+
+canvas.addEventListener('click', drawTriangulation);
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    drawTriangulation();
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,613 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>T H E   G E N E R A T O R</title>
+	</head>
+
+<body>
+<div id="controls" style="position: fixed; top: 20px; right: 20px; z-index: 1000; background: rgba(0,0,0,0.9); padding: 15px; border-radius: 10px; max-width: 320px;">
+    <button id="toggleMenu" style="position: absolute; top: 5px; right: 5px; width: 25px; height: 25px; font-size: 20px; line-height: 20px; padding: 0; border-radius: 50%; text-align: center; font-family: Arial, sans-serif; font-weight: bold; display: flex; align-items: center; justify-content: center;">-</button>
+    
+    <div id="menuContent">
+        <button id="refreshBtn" style="width: 100%; margin: 2px 0; padding-right: 25px;">Refresh<br>T H E G E N E R A T O R</button><br>
+        <button id="changeCmd" style="width: 100%; margin: 2px 0;">Change Command</button><br>
+        
+        <div style="display: flex; gap: 2px; margin: 5px 0;">
+            <button id="changeFontBtn" style="width: 32%; font-size: 10px;">Change<br>Google<br>Font</button>
+            <button id="changeFontStyleBtn" style="width: 32%; font-size: 10px;">Change<br>Font<br>Style</button>
+            <button id="changeFontRenderBtn" style="width: 32%; font-size: 10px;">Change<br>Font<br>Render</button>
+        </div>
+        
+        <div style="display: flex; gap: 3px; margin: 5px 0;">
+            <button id="biggerFontBtn" style="width: 48%; font-size: 12px;">Bigger Font</button>
+            <button id="smallerFontBtn" style="width: 48%; font-size: 12px;">Smaller Font</button>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; gap: 2px; margin: 5px 0;">
+            <button id="changeBorderBtn" style="width: 23%; font-size: 8px; padding: 5px 2px;">Border Color</button>
+            <button id="changeBorderStyleBtn" style="width: 23%; font-size: 8px; padding: 5px 2px;">Border Style</button>
+            <button id="biggerBorderBtn" style="width: 23%; font-size: 8px; padding: 5px 2px;">Bigger<br>Border<br>Box</button>
+            <button id="smallerBorderBtn" style="width: 23%; font-size: 8px; padding: 5px 2px;">Smaller<br>Border<br>Box</button>
+        </div>
+        
+        <div style="margin: 10px 0; font-size: 12px;">
+            <input type="checkbox" id="sysadminCheck"> <label for="sysadminCheck">S Y S A D M I N</label><br>
+            <input type="checkbox" id="sqlCheck"> <label for="sqlCheck">S Q L</label><br>
+            <input type="checkbox" id="borderCheck"> <label for="borderCheck">Add a Border</label><br>
+            <input type="checkbox" id="breakCheck"> <label for="breakCheck">Add Break</label><br>
+        </div>
+        
+        <div style="font-size: 12px;">
+            <label for="bgSelect">Background:</label><br>
+            <select id="bgSelect" style="width: 100%; font-size: 12px;">
+                <option value="black">Black</option>
+                <option value="white">White</option>
+                <option value="gray">Gray</option>
+                <option value="random">Random</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-1.11.0.js"></script>
+<script type="text/javascript">
+
+var linkFont=[];
+var outString='';
+var navGlyph=[];
+var json_fonts;
+var current_glyph_index = 1;
+
+// Command arrays
+var all_commands = ['##','#!','/dev/null','rm -rf','kill -9','cat','man','cd','pwd','find/-','grep','||','&&','awk','chmod 777','tail -f','uptime','head','mount','sftp','scp','cron','whoami','history','.*','[a-zA-Z]',"perl -pe 's/perl/perl/g'",'!-1','~/','touch','touch touch','more','ping','less','clear','alias','sleep','who','chown','curl','shutdown','reboot','halt','ctrl-z','ctrl-c','* * * * *','UNION ALL','OUTER JOIN','COALESCE','CONCAT','REPLACE','MIN','MAX','DROP TABLE','MERGE','ALTER TABLE','INSERT','UNION','|','`whoami`'];
+
+var sysadmin_commands = ['#!','/dev/null','rm -rf','kill -9','cat','man','cd','pwd','find/-','grep','||','&&','awk','chmod 777','tail -f','uptime','head','mount','sftp','scp','cron','whoami','history','.*','[a-zA-Z]',"perl -pe 's/perl/perl/g'",'!-1','~/','touch','touch touch','more','ping','less','clear','alias','sleep','who','chown','curl','shutdown','reboot','halt','ctrl-z','ctrl-c','* * * * *','|','`whoami`'];
+
+var sql_commands = ['UNION ALL','OUTER JOIN','COALESCE','CONCAT','REPLACE','MIN','MAX','DROP TABLE','MERGE','ALTER TABLE','INSERT','UNION'];
+
+$(function(){
+	loadGenerator();
+});
+
+function loadGenerator() {
+	$.getJSON('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBPEC-k91wzgVIMm9CZSJIINd-WKmR2Wmo', function(json) {
+		json_fonts = json;
+		
+		var cssImportRule = document.createElement('style');
+		document.getElementsByTagName('body')[0].appendChild(cssImportRule);
+
+		var cssImportStyle = document.styleSheets[0];
+		var cssImportRules=cssImportStyle.cssRules;
+
+		for (i=1;i<=json.items.length-1;i++){
+			for (subsetCnt=0;subsetCnt<=json.items[i].subsets.length-1;subsetCnt++){
+				if (JSON.stringify(json.items[i].subsets[subsetCnt]) == '"latin"'){
+					outString+=JSON.stringify(json.items[Math.round((json.items.length-1)*Math.random())].family)+ '<br>';
+					linkFont[i] = document.createElement('link');
+					document.getElementsByTagName('body')[0].appendChild(linkFont[i]);
+					linkFont[i].id=JSON.stringify(json.items[i].family).replace(/"/g,"")
+					linkFont[i].rel = 'stylesheet';
+					linkFont[i].type = 'text/css';
+					linkFont[i].href = 'https://fonts.googleapis.com/css?family=' + JSON.stringify(json.items[i].family).replace(/"/g,"") ;
+				}
+			}
+		}
+
+		createGlyph();
+		styleControls();
+		bindEvents();
+	});
+}
+
+function createGlyph() {
+	// Clear existing glyph
+	if (navGlyph[current_glyph_index]) {
+		navGlyph[current_glyph_index].remove();
+	}
+
+	var mycolors=[];
+	var colNum=1;
+
+	function setColor(hue,sat,light,opa){
+		for (colorCounter=1;colorCounter<=colNum;colorCounter++){
+			var toSpliceColor='hsla('
+			+  Math.round(Math.random()*10-20+hue) + ','
+			+  Math.round(40*Math.random()+sat-20)+ '%,'
+			+ (Math.round(Math.random()*20)+light) + '%,'
+			+ (1)
+			+ ')';
+			mycolors.splice(1,0,toSpliceColor);
+		}
+	}
+
+	setColor(Math.round(Math.random()*80-10),Math.round(Math.random()*1800),Math.round(Math.random()*80),1);
+	setColor(Math.round(Math.random()*340),Math.round(Math.random()*800),Math.round(Math.random()*80),1);
+
+	// Set background
+	setBackground();
+
+	// Get command array based on checkboxes
+	var command_array = getActiveCommandArray();
+	
+	var font=JSON.stringify(json_fonts.items[Math.round((json_fonts.items.length-1)*Math.random())].family);
+	var elementName='glyphmatic' + current_glyph_index;
+	navGlyph[current_glyph_index] = document.createElement("div");
+	document.body.appendChild(navGlyph[current_glyph_index]);
+	
+	var command_text = command_array[Math.round((command_array.length-1)*Math.random())];
+	
+	// Add break if checkbox is checked
+	if (document.getElementById('breakCheck').checked) {
+		command_text = command_text.replace(' ', '<br>');
+	}
+	
+	navGlyph[current_glyph_index].innerHTML = command_text;
+	navGlyph[current_glyph_index].id=elementName;
+	navGlyph[current_glyph_index].style.position='relative';
+	navGlyph[current_glyph_index].style.color= mycolors[Math.round((mycolors.length-1)*Math.random())];
+	
+	// Dynamic font size based on string length
+	var text_length = command_text.replace('<br>', '').length;
+	var font_size = 200;
+	if (text_length > 15) {
+		font_size = 120;
+	} else if (text_length > 10) {
+		font_size = 150;
+	} else if (text_length > 6) {
+		font_size = 180;
+	}
+	navGlyph[current_glyph_index].style.fontSize = font_size + 'px';
+	
+	navGlyph[current_glyph_index].style.padding=3+ Math.round( Math.random()*15 ) + 'px';
+	
+	// Adjust line height for breaks
+	if (document.getElementById('breakCheck').checked) {
+		navGlyph[current_glyph_index].style.lineHeight = '1.4';
+		navGlyph[current_glyph_index].style.whiteSpace = 'normal';
+		// Add more padding when broken to give container space
+		var current_padding = parseInt(navGlyph[current_glyph_index].style.padding) || 10;
+		navGlyph[current_glyph_index].style.padding = (current_padding + 20) + 'px';
+	} else {
+		navGlyph[current_glyph_index].style.lineHeight = Math.random()+.3;
+		navGlyph[current_glyph_index].style.whiteSpace = 'nowrap';
+	}
+	navGlyph[current_glyph_index].style.fontFamily=font;
+	navGlyph[current_glyph_index].style.textAlign = 'center';
+	navGlyph[current_glyph_index].style.position = 'absolute';
+	navGlyph[current_glyph_index].style.top = '50%';
+	navGlyph[current_glyph_index].style.left = '50%';
+	navGlyph[current_glyph_index].style.transform = 'translate(-50%, -50%)';
+	navGlyph[current_glyph_index].style.whiteSpace = 'nowrap';
+
+	// Style the glyphs
+	navGlyph[current_glyph_index].style.textShadow=Math.round( Math.random()*5-1 ) + 'px '
+									+Math.round( Math.random()*5-1 ) + 'px '
+									+ mycolors[Math.round((mycolors.length-1)*Math.random())];
+	navGlyph[current_glyph_index].style.webkitTextFillColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+	navGlyph[current_glyph_index].style.webkitTextStrokeWidth=Math.round(Math.random()*3-1) +"px";
+	navGlyph[current_glyph_index].style.webkitTextStrokeColor=mycolors[Math.round((mycolors.length-1)*Math.random())];
+
+	// Add border if checkbox is checked
+	if (document.getElementById('borderCheck').checked) {
+		addRandomBorder();
+	}
+}
+
+function getActiveCommandArray() {
+	var sysadmin_checked = document.getElementById('sysadminCheck').checked;
+	var sql_checked = document.getElementById('sqlCheck').checked;
+	
+	if (sysadmin_checked && sql_checked) {
+		return all_commands;
+	} else if (sysadmin_checked) {
+		return sysadmin_commands;
+	} else if (sql_checked) {
+		return sql_commands;
+	} else {
+		return all_commands;
+	}
+}
+
+function addRandomBorder() {
+	var border_styles = ['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset'];
+	var border_style = border_styles[Math.floor(Math.random() * border_styles.length)];
+	var border_width = Math.floor(Math.random() * 10) + 1;
+	var border_color = 'hsl(' + Math.floor(Math.random() * 360) + ', ' + 
+					   Math.floor(Math.random() * 100) + '%, ' + 
+					   Math.floor(Math.random() * 100) + '%)';
+	
+	navGlyph[current_glyph_index].style.border = border_width + 'px ' + border_style + ' ' + border_color;
+}
+
+function setBackground() {
+	var bg_select = document.getElementById('bgSelect').value;
+	
+	switch(bg_select) {
+		case 'black':
+			document.body.style.backgroundColor = 'black';
+			break;
+		case 'white':
+			document.body.style.backgroundColor = 'white';
+			break;
+		case 'gray':
+			document.body.style.backgroundColor = 'gray';
+			break;
+		case 'random':
+			var random_color = 'hsl(' + Math.floor(Math.random() * 360) + ', ' + 
+							   Math.floor(Math.random() * 100) + '%, ' + 
+							   Math.floor(Math.random() * 50) + '%)';
+			document.body.style.backgroundColor = random_color;
+			break;
+	}
+}
+
+function changeCommand() {
+	var command_array = getActiveCommandArray();
+	var command_text = command_array[Math.round((command_array.length-1)*Math.random())];
+	
+	if (document.getElementById('breakCheck').checked) {
+		command_text = command_text.replace(' ', '<br>');
+	}
+	
+	navGlyph[current_glyph_index].innerHTML = command_text;
+}
+
+function changeFont() {
+	var font = JSON.stringify(json_fonts.items[Math.round((json_fonts.items.length-1)*Math.random())].family);
+	navGlyph[current_glyph_index].style.fontFamily = font;
+}
+
+function changeFontStyle() {
+	console.log("*** changeFontStyle called (STROKE/FILL/SHADOW) ***"); // Debug
+	alert("changeFontStyle function called!"); // Super obvious debug
+	
+	if (!navGlyph[current_glyph_index]) {
+		console.log("No glyph element found!");
+		return;
+	}
+	
+	// Clear existing styles first
+	navGlyph[current_glyph_index].style.webkitTextFillColor = '';
+	navGlyph[current_glyph_index].style.webkitTextStrokeWidth = '';
+	navGlyph[current_glyph_index].style.webkitTextStrokeColor = '';
+	
+	// Generate bright contrasting colors
+	var colors = [
+		'#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff',
+		'#ff8800', '#8800ff', '#00ff88', '#ff0088'
+	];
+	
+	// Apply styles one by one with logging
+	var fillColor = colors[Math.floor(Math.random() * colors.length)];
+	var strokeColor = colors[Math.floor(Math.random() * colors.length)];
+	var shadowColor = colors[Math.floor(Math.random() * colors.length)];
+	
+	console.log("Setting fill:", fillColor, "stroke:", strokeColor, "shadow:", shadowColor);
+	
+	navGlyph[current_glyph_index].style.webkitTextFillColor = fillColor;
+	navGlyph[current_glyph_index].style.webkitTextStrokeWidth = "3px";
+	navGlyph[current_glyph_index].style.webkitTextStrokeColor = strokeColor;
+	navGlyph[current_glyph_index].style.textShadow = "4px 4px 8px " + shadowColor;
+	
+	console.log("Applied styles - final element:", navGlyph[current_glyph_index].style.cssText);
+}
+
+function changeFontRender() {
+	console.log("*** changeFontRender called (BOLD/ITALIC/UPPERCASE) ***"); // Debug
+	// Change font weight, style, and text transform ONLY - NO visual styling
+	var weights = ['normal', 'bold', '100', '300', '500', '700', '900'];
+	var styles = ['normal', 'italic', 'oblique'];
+	var transforms = ['none', 'uppercase', 'lowercase', 'capitalize'];
+	
+	navGlyph[current_glyph_index].style.fontWeight = weights[Math.floor(Math.random() * weights.length)];
+	navGlyph[current_glyph_index].style.fontStyle = styles[Math.floor(Math.random() * styles.length)];
+	navGlyph[current_glyph_index].style.textTransform = transforms[Math.floor(Math.random() * transforms.length)];
+	
+	console.log("Applied font render changes");
+}
+
+function changeStyle() {
+	var mycolors = [];
+	var colNum = 5;
+
+	// Generate new colors
+	for (var i = 0; i < colNum; i++) {
+		var hue = Math.round(Math.random() * 360);
+		var sat = Math.round(Math.random() * 100);
+		var light = Math.round(Math.random() * 80 + 20);
+		var color = 'hsla(' + hue + ',' + sat + '%,' + light + '%,1)';
+		mycolors.push(color);
+	}
+	
+	// Apply new styles
+	navGlyph[current_glyph_index].style.color = mycolors[Math.round((mycolors.length-1)*Math.random())];
+	navGlyph[current_glyph_index].style.textShadow = Math.round(Math.random()*5-1) + 'px ' +
+													Math.round(Math.random()*5-1) + 'px ' +
+													mycolors[Math.round((mycolors.length-1)*Math.random())];
+	navGlyph[current_glyph_index].style.webkitTextFillColor = mycolors[Math.round((mycolors.length-1)*Math.random())];
+	navGlyph[current_glyph_index].style.webkitTextStrokeWidth = Math.round(Math.random()*5) + "px";
+	navGlyph[current_glyph_index].style.webkitTextStrokeColor = mycolors[Math.round((mycolors.length-1)*Math.random())];
+}
+
+function changeBorderColor() {
+	if (navGlyph[current_glyph_index] && navGlyph[current_glyph_index].style.border) {
+		var border_color = 'hsl(' + Math.floor(Math.random() * 360) + ', ' + 
+						   Math.floor(Math.random() * 100) + '%, ' + 
+						   Math.floor(Math.random() * 100) + '%)';
+		var current_border = navGlyph[current_glyph_index].style.border;
+		var border_parts = current_border.split(' ');
+		if (border_parts.length >= 2) {
+			navGlyph[current_glyph_index].style.border = border_parts[0] + ' ' + border_parts[1] + ' ' + border_color;
+		}
+	}
+}
+
+function changeBorderStyle() {
+	if (navGlyph[current_glyph_index] && navGlyph[current_glyph_index].style.border && navGlyph[current_glyph_index].style.border !== 'none') {
+		var border_styles = ['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset'];
+		var new_style = border_styles[Math.floor(Math.random() * border_styles.length)];
+		
+		// Parse current border
+		var current_border = navGlyph[current_glyph_index].style.border;
+		var width_match = current_border.match(/(\d+)px/);
+		var color_match = current_border.match(/(#[0-9a-f]{6}|#[0-9a-f]{3}|rgb\([^)]+\)|hsl\([^)]+\))/i);
+		
+		var width = width_match ? width_match[1] + 'px' : '2px';
+		var color = color_match ? color_match[1] : '#ffffff';
+		
+		navGlyph[current_glyph_index].style.border = width + ' ' + new_style + ' ' + color;
+	}
+}
+
+function biggerBorder() {
+	if (navGlyph[current_glyph_index]) {
+		var current_padding = parseInt(navGlyph[current_glyph_index].style.padding) || 10;
+		var new_padding = Math.min(current_padding + 10, 100);
+		navGlyph[current_glyph_index].style.padding = new_padding + 'px';
+	}
+}
+
+function smallerBorder() {
+	if (navGlyph[current_glyph_index]) {
+		var current_padding = parseInt(navGlyph[current_glyph_index].style.padding) || 10;
+		var new_padding = Math.max(current_padding - 10, 0);
+		navGlyph[current_glyph_index].style.padding = new_padding + 'px';
+	}
+}
+
+function biggerFont() {
+	var current_size = parseInt(navGlyph[current_glyph_index].style.fontSize) || 200;
+	var new_size = Math.min(current_size + 20, 400);
+	navGlyph[current_glyph_index].style.fontSize = new_size + 'px';
+}
+
+function smallerFont() {
+	var current_size = parseInt(navGlyph[current_glyph_index].style.fontSize) || 200;
+	var new_size = Math.max(current_size - 20, 60);
+	navGlyph[current_glyph_index].style.fontSize = new_size + 'px';
+}
+
+function changeFontStyle() {
+	// Change font weight, style, and text transform
+	var weights = ['normal', 'bold', '100', '300', '500', '700', '900'];
+	var styles = ['normal', 'italic', 'oblique'];
+	var transforms = ['none', 'uppercase', 'lowercase', 'capitalize'];
+	
+	navGlyph[current_glyph_index].style.fontWeight = weights[Math.floor(Math.random() * weights.length)];
+	navGlyph[current_glyph_index].style.fontStyle = styles[Math.floor(Math.random() * styles.length)];
+	navGlyph[current_glyph_index].style.textTransform = transforms[Math.floor(Math.random() * transforms.length)];
+}
+
+function styleControls() {
+	var controls = document.getElementById('controls');
+	var buttons = controls.querySelectorAll('button');
+	var checkboxes = controls.querySelectorAll('input[type="checkbox"]');
+	var select = controls.querySelector('select');
+	var labels = controls.querySelectorAll('label');
+	
+	// Apply random Google font to controls (ONE font for everything)
+	var menu_font = JSON.stringify(json_fonts.items[Math.round((json_fonts.items.length-1)*Math.random())].family);
+	
+	// Get background color to determine color scheme
+	var bg_color = getComputedStyle(document.body).backgroundColor;
+	var main_color, background_color, text_color;
+	
+	if (bg_color === 'white' || bg_color === 'rgb(255, 255, 255)') {
+		// White background: Blue, Red, Black scheme
+		var colors = ['#0066ff', '#ff0033', '#000000'];
+		main_color = colors[Math.floor(Math.random() * colors.length)];
+		background_color = 'rgba(255, 255, 255, 0.9)';
+		text_color = main_color;
+	} else if (bg_color === 'gray' || bg_color === 'grey' || bg_color === 'rgb(128, 128, 128)') {
+		// Gray background: Blue, Red, Black scheme
+		var colors = ['#0066ff', '#ff0033', '#000000'];
+		main_color = colors[Math.floor(Math.random() * colors.length)];
+		background_color = 'rgba(200, 200, 200, 0.9)';
+		text_color = main_color;
+	} else {
+		// Black or random background: Electric colors (less fugly)
+		var electric_colors = ['#00ffff', '#ff00ff', '#00ff00', '#ffff00'];
+		main_color = electric_colors[Math.floor(Math.random() * electric_colors.length)];
+		background_color = 'rgba(0, 0, 0, 0.9)';
+		text_color = main_color;
+	}
+	
+	// Apply consistent font and background to entire controls
+	controls.style.fontFamily = menu_font;
+	controls.style.background = background_color;
+	controls.style.border = '3px solid ' + main_color;
+	controls.style.borderRadius = '15px';
+	
+	// Fix the toggle button to match the color scheme
+	var toggleBtn = document.getElementById('toggleMenu');
+	if (toggleBtn) {
+		toggleBtn.style.background = background_color;
+		toggleBtn.style.color = text_color;
+		toggleBtn.style.border = '2px solid ' + main_color;
+	}
+	
+	// ALL buttons get identical OUTLINE styling with rounded corners
+	buttons.forEach(function(button) {
+		button.style.backgroundColor = 'transparent';
+		button.style.color = text_color;
+		button.style.border = '2px solid ' + main_color;
+		button.style.borderRadius = '8px';
+		button.style.padding = '8px 10px';
+		button.style.fontSize = '12px';
+		button.style.fontWeight = 'bold';
+		button.style.cursor = 'pointer';
+		button.style.margin = '2px 0';
+		button.style.fontFamily = menu_font;
+	});
+	
+	// ALL checkboxes get identical styling
+	checkboxes.forEach(function(checkbox) {
+		checkbox.style.transform = 'scale(1.8)';
+		checkbox.style.accentColor = main_color;
+		checkbox.style.marginRight = '12px';
+	});
+	
+	// Select gets consistent styling
+	select.style.backgroundColor = 'transparent';
+	select.style.color = text_color;
+	select.style.border = '3px solid ' + main_color;
+	select.style.borderRadius = '5px';
+	select.style.padding = '12px';
+	select.style.fontSize = '18px';
+	select.style.width = '250px';
+	select.style.fontFamily = menu_font;
+	select.style.fontWeight = 'bold';
+	
+	// ALL labels get identical styling
+	labels.forEach(function(label) {
+		label.style.color = text_color;
+		label.style.fontWeight = 'bold';
+		label.style.fontSize = '18px';
+		label.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
+		label.style.marginLeft = '10px';
+		label.style.fontFamily = menu_font;
+	});
+}
+
+function getContrastColor(bg_color) {
+	// Simple contrast function - returns white or bright color for dark backgrounds, dark color for light backgrounds
+	if (bg_color.includes('rgb')) {
+		// Extract RGB values and calculate brightness
+		var rgb = bg_color.match(/\d+/g);
+		var brightness = (parseInt(rgb[0]) * 299 + parseInt(rgb[1]) * 587 + parseInt(rgb[2]) * 114) / 1000;
+		return brightness < 128 ? '#ffffff' : '#000000';
+	} else if (bg_color === 'black') {
+		return '#ffffff';
+	} else if (bg_color === 'white') {
+		return '#000000';
+	} else if (bg_color === 'gray') {
+		return '#ffffff';
+	} else {
+		return '#ffffff'; // Default to white for random colors
+	}
+}
+
+function bindEvents() {
+	document.getElementById('refreshBtn').addEventListener('click', function() {
+		location.reload();
+	});
+	
+	document.getElementById('changeCmd').addEventListener('click', function() {
+		changeCommand();
+	});
+	
+	document.getElementById('changeFontBtn').addEventListener('click', function() {
+		changeFont();
+	});
+	
+	document.getElementById('changeFontStyleBtn').addEventListener('click', function() {
+		console.log("changeFontStyleBtn clicked!"); // Debug
+		changeFontStyle();
+	});
+	
+	document.getElementById('changeFontRenderBtn').addEventListener('click', function() {
+		changeFontRender();
+	});
+	
+	document.getElementById('biggerFontBtn').addEventListener('click', function() {
+		biggerFont();
+	});
+	
+	document.getElementById('smallerFontBtn').addEventListener('click', function() {
+		smallerFont();
+	});
+	
+	document.getElementById('changeBorderBtn').addEventListener('click', function() {
+		changeBorderColor();
+	});
+	
+	document.getElementById('changeBorderStyleBtn').addEventListener('click', function() {
+		changeBorderStyle();
+	});
+	
+	document.getElementById('biggerBorderBtn').addEventListener('click', function() {
+		biggerBorder();
+	});
+	
+	document.getElementById('smallerBorderBtn').addEventListener('click', function() {
+		smallerBorder();
+	});
+	
+	document.getElementById('toggleMenu').addEventListener('click', function() {
+		var menuContent = document.getElementById('menuContent');
+		var toggleBtn = document.getElementById('toggleMenu');
+		if (menuContent.style.display === 'none') {
+			menuContent.style.display = 'block';
+			toggleBtn.innerHTML = '−';
+		} else {
+			menuContent.style.display = 'none';
+			toggleBtn.innerHTML = '+';
+		}
+	});
+	
+	document.getElementById('bgSelect').addEventListener('change', function() {
+		setBackground();
+		styleControls(); // Re-style labels for new background
+	});
+	
+	document.getElementById('borderCheck').addEventListener('change', function() {
+		if (this.checked) {
+			addRandomBorder();
+		} else {
+			navGlyph[current_glyph_index].style.border = 'none';
+		}
+	});
+	
+	document.getElementById('sysadminCheck').addEventListener('change', function() {
+		// Uncheck SQL if sysadmin is checked
+		if (this.checked) {
+			document.getElementById('sqlCheck').checked = false;
+		}
+		// Don't auto-change command - let user click Change Command button
+	});
+	
+	document.getElementById('sqlCheck').addEventListener('change', function() {
+		// Uncheck sysadmin if SQL is checked
+		if (this.checked) {
+			document.getElementById('sysadminCheck').checked = false;
+		}
+		// Don't auto-change command - let user click Change Command button
+	});
+	
+	document.getElementById('breakCheck').addEventListener('change', function() {
+		// Only update current command when break checkbox changes
+		var current_text = navGlyph[current_glyph_index].innerHTML;
+		if (this.checked) {
+			// Add break to current text (replace first space with <br>)
+			current_text = current_text.replace(' ', '<br>');
+		} else {
+			// Remove breaks from current text
+			current_text = current_text.replace('<br>', ' ');
+		}
+		navGlyph[current_glyph_index].innerHTML = current_text;
+	});
+}
+
+</script>
+</body>
+</html>

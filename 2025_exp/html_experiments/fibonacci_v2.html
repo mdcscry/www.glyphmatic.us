@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fibonacci</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #000;
+            min-height: 100vh;
+            overflow: hidden;
+            font-weight: 900;
+
+        }
+        .container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        .line-v {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 1px;
+            opacity: 0.7;
+        }
+        .line-h {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            opacity: 0.7;
+        }
+        .line-d {
+            position: absolute;
+            width: 1px;
+            height: 200vmax;
+            opacity: 0.7;
+            transform-origin: center center;
+        }
+        .red { background: #d03020; }
+        .orange { background: #e08020; }
+    </style>
+</head>
+<body>
+    <div class="container" id="container"></div>
+
+    <script>
+        const container = document.getElementById('container');
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        // Get Fibonacci numbers up to max
+        function getFibonacci(max) {
+            const fibs = [1, 1];
+            while (fibs[fibs.length - 1] + fibs[fibs.length - 2] <= max) {
+                fibs.push(fibs[fibs.length - 1] + fibs[fibs.length - 2]);
+            }
+            return fibs;
+        }
+        
+        const maxVal = Math.max(width, height) * 2;
+        const fibs = getFibonacci(maxVal);
+        
+        // Vertical lines - left to right (red)
+        fibs.forEach(f => {
+            const x = (f / maxVal) * width;
+            if (x < width) {
+                const line = document.createElement('div');
+                line.className = 'line-v red';
+                line.style.left = `${x}px`;
+                container.appendChild(line);
+            }
+        });
+        
+        // Vertical lines - right to left (red, mirrored)
+        fibs.forEach(f => {
+            const x = width - (f / maxVal) * width;
+            if (x > 0) {
+                const line = document.createElement('div');
+                line.className = 'line-v red';
+                line.style.left = `${x}px`;
+                container.appendChild(line);
+            }
+        });
+        
+        // Horizontal lines - from top (orange)
+        fibs.forEach(f => {
+            const y = (f / maxVal) * height;
+            if (y < height) {
+                const line = document.createElement('div');
+                line.className = 'line-h orange';
+                line.style.top = `${y}px`;
+                container.appendChild(line);
+            }
+        });
+        
+        // Horizontal lines - from bottom (orange, mirrored)
+        fibs.forEach(f => {
+            const y = height - (f / maxVal) * height;
+            if (y > 0) {
+                const line = document.createElement('div');
+                line.className = 'line-h orange';
+                line.style.top = `${y}px`;
+                container.appendChild(line);
+            }
+        });
+        
+        // For diagonals, we place them by where they'd intersect the top edge (for one direction)
+        // and mirror from bottom. Using the diagonal length to ensure they cross the whole screen.
+        
+        const diagLength = Math.sqrt(width * width + height * height) * 1.5;
+        
+        // 45° diagonals (top-left to bottom-right direction)
+        // From left edge, going down
+        fibs.forEach(f => {
+            const pos = (f / maxVal) * height;
+            if (pos < height) {
+                const line = document.createElement('div');
+                line.className = 'line-d red';
+                line.style.width = '1px';
+                line.style.height = `${diagLength}px`;
+                line.style.left = `0px`;
+                line.style.top = `${pos}px`;
+                line.style.transformOrigin = `top left`;
+                line.style.transform = `rotate(45deg)`;
+                container.appendChild(line);
+            }
+        });
+        
+        // From top edge, going right
+        fibs.forEach(f => {
+            const pos = (f / maxVal) * width;
+            if (pos < width && pos > 0) {
+                const line = document.createElement('div');
+                line.className = 'line-d red';
+                line.style.width = '1px';
+                line.style.height = `${diagLength}px`;
+                line.style.left = `${pos}px`;
+                line.style.top = `0px`;
+                line.style.transformOrigin = `top left`;
+                line.style.transform = `rotate(45deg)`;
+                container.appendChild(line);
+            }
+        });
+        
+        // Mirror: from right edge, going up
+        fibs.forEach(f => {
+            const pos = (f / maxVal) * height;
+            if (pos < height) {
+                const line = document.createElement('div');
+                line.className = 'line-d red';
+                line.style.width = '1px';
+                line.style.height = `${diagLength}px`;
+                line.style.left = `${width}px`;
+                line.style.top = `${height - pos}px`;
+                line.style.transformOrigin = `top left`;
+                line.style.transform = `rotate(-135deg)`;
+                container.appendChild(line);
+            }
+        });
+        
+        // Mirror: from bottom edge, going left  
+        fibs.forEach(f => {
+            const pos = (f / maxVal) * width;
+            if (pos < width && pos > 0) {
+                const line = document.createElement('div');
+                line.className = 'line-d red';
+                line.style.width = '1px';
+                line.style.height = `${diagLength}px`;
+                line.style.left = `${width - pos}px`;
+                line.style.top = `${height}px`;
+                line.style.transformOrigin = `top left`;
+                line.style.transform = `rotate(-135deg)`;
+                container.appendChild(line);
+            }
+        });
+        
+        // -45° diagonals (top-right to bottom-left direction)
+        // From right edge, going down
+        fibs.forEach(f => {
+            const pos = (f / maxVal) * height;
+            if (pos < height) {
+                const line = document.createElement('div');
+                line.className = 'line-d orange';
+                line.style.width = '1px';
+                line.style.height = `${diagLength}px`;
+                line.style.left = `${width}px`;
+                line.style.top = `${pos}px`;
+                line.style.transformOrigin = `top left`;
+                line.style.transform = `rotate(135deg)`;
+                container.appendChild(line);
+            }
+        });
+        
+        // From top edge, going left
+        fibs.forEach(f => {
+            const pos = (f / maxVal) * width;
+            if (pos < width && pos > 0) {
+                const line = document.createElement('div');
+                line.className = 'line-d orange';
+                line.style.width = '1px';
+                line.style.height = `${diagLength}px`;
+                line.style.left = `${width - pos}px`;
+                line.style.top = `0px`;
+                line.style.transformOrigin = `top left`;
+                line.style.transform = `rotate(135deg)`;
+                container.appendChild(line);
+            }
+        });
+        
+        // Mirror: from left edge, going up
+        fibs.forEach(f => {
+            const pos = (f / maxVal) * height;
+            if (pos < height) {
+                const line = document.createElement('div');
+                line.className = 'line-d orange';
+                line.style.width = '1px';
+                line.style.height = `${diagLength}px`;
+                line.style.left = `0px`;
+                line.style.top = `${height - pos}px`;
+                line.style.transformOrigin = `top left`;
+                line.style.transform = `rotate(-45deg)`;
+                container.appendChild(line);
+            }
+        });
+        
+        // Mirror: from bottom edge, going right
+        fibs.forEach(f => {
+            const pos = (f / maxVal) * width;
+            if (pos < width && pos > 0) {
+                const line = document.createElement('div');
+                line.className = 'line-d orange';
+                line.style.width = '1px';
+                line.style.height = `${diagLength}px`;
+                line.style.left = `${pos}px`;
+                line.style.top = `${height}px`;
+                line.style.transformOrigin = `top left`;
+                line.style.transform = `rotate(-45deg)`;
+                container.appendChild(line);
+            }
+        });
+    // Fill the four central squares with Latin characters
+        // The center is at width/2, height/2
+        // Find the Fibonacci boundaries around the center
+        
+        // Convert fib positions to actual pixel positions
+        const fibPositionsX = fibs.map(f => (f / maxVal) * width);
+        const fibPositionsY = fibs.map(f => (f / maxVal) * height);
+        const fibPositionsXRight = fibs.map(f => width - (f / maxVal) * width);
+        const fibPositionsYBottom = fibs.map(f => height - (f / maxVal) * height);
+        
+        // All X boundaries (from left and right)
+        const allX = [...fibPositionsX, ...fibPositionsXRight].sort((a, b) => a - b);
+        const allY = [...fibPositionsY, ...fibPositionsYBottom].sort((a, b) => a - b);
+        
+        // Find the boundaries around center
+        const centerX = width / 2;
+        const centerY = height / 2;
+        
+        // Find the two X boundaries that straddle the center
+        let leftOfCenter, rightOfCenter;
+        for (let i = 0; i < allX.length - 1; i++) {
+            if (allX[i] < centerX && allX[i + 1] > centerX) {
+                leftOfCenter = allX[i];
+                rightOfCenter = allX[i + 1];
+                break;
+            }
+        }
+        
+        // Find the two Y boundaries that straddle the center
+        let topOfCenter, bottomOfCenter;
+        for (let i = 0; i < allY.length - 1; i++) {
+            if (allY[i] < centerY && allY[i + 1] > centerY) {
+                topOfCenter = allY[i];
+                bottomOfCenter = allY[i + 1];
+                break;
+            }
+        }
+        
+        // Also find the outer boundaries for 4 squares
+        let farLeft, farRight, farTop, farBottom;
+        for (let i = 0; i < allX.length - 1; i++) {
+            if (allX[i] < leftOfCenter && allX[i + 1] >= leftOfCenter) {
+                farLeft = allX[i];
+            }
+            if (allX[i] <= rightOfCenter && allX[i + 1] > rightOfCenter) {
+                farRight = allX[i + 1];
+            }
+        }
+        for (let i = 0; i < allY.length - 1; i++) {
+            if (allY[i] < topOfCenter && allY[i + 1] >= topOfCenter) {
+                farTop = allY[i];
+            }
+            if (allY[i] <= bottomOfCenter && allY[i + 1] > bottomOfCenter) {
+                farBottom = allY[i + 1];
+            }
+        }
+        
+        // Four central squares (the inner black area - make ORANGE):
+        const squares = [
+            { x1: farLeft, y1: farTop, x2: leftOfCenter, y2: topOfCenter, color: '#e08020' },      // top-left
+            { x1: rightOfCenter, y1: farTop, x2: farRight, y2: topOfCenter, color: '#e08020' },    // top-right
+            { x1: farLeft, y1: bottomOfCenter, x2: leftOfCenter, y2: farBottom, color: '#e08020' }, // bottom-left
+            { x1: rightOfCenter, y1: bottomOfCenter, x2: farRight, y2: farBottom, color: '#e08020' }, // bottom-right
+            // Also fill the center cross (the actual center void)
+            { x1: leftOfCenter, y1: farTop, x2: rightOfCenter, y2: topOfCenter, color: '#e08020' },
+            { x1: leftOfCenter, y1: bottomOfCenter, x2: rightOfCenter, y2: farBottom, color: '#e08020' },
+            { x1: farLeft, y1: topOfCenter, x2: leftOfCenter, y2: bottomOfCenter, color: '#e08020' },
+            { x1: rightOfCenter, y1: topOfCenter, x2: farRight, y2: bottomOfCenter, color: '#e08020' },
+            { x1: leftOfCenter, y1: topOfCenter, x2: rightOfCenter, y2: bottomOfCenter, color: '#d03020' }, // dead center
+        ];
+        
+        // Find the next outer boundaries for the 12 surrounding boxes
+        let farFarLeft, farFarRight, farFarTop, farFarBottom;
+        for (let i = 0; i < allX.length - 1; i++) {
+            if (allX[i] < farLeft && allX[i + 1] >= farLeft) {
+                farFarLeft = allX[i];
+            }
+            if (allX[i] <= farRight && allX[i + 1] > farRight) {
+                farFarRight = allX[i + 1];
+            }
+        }
+        for (let i = 0; i < allY.length - 1; i++) {
+            if (allY[i] < farTop && allY[i + 1] >= farTop) {
+                farFarTop = allY[i];
+            }
+            if (allY[i] <= farBottom && allY[i + 1] > farBottom) {
+                farFarBottom = allY[i + 1];
+            }
+        }
+        
+        // Find even more outer boundaries
+        let fff_Left, fff_Right, fff_Top, fff_Bottom;
+        for (let i = 0; i < allX.length - 1; i++) {
+            if (allX[i] < farFarLeft && allX[i + 1] >= farFarLeft) {
+                fff_Left = allX[i];
+            }
+            if (allX[i] <= farFarRight && allX[i + 1] > farFarRight) {
+                fff_Right = allX[i + 1];
+            }
+        }
+        for (let i = 0; i < allY.length - 1; i++) {
+            if (allY[i] < farFarTop && allY[i + 1] >= farFarTop) {
+                fff_Top = allY[i];
+            }
+            if (allY[i] <= farFarBottom && allY[i + 1] > farFarBottom) {
+                fff_Bottom = allY[i + 1];
+            }
+        }
+        
+        // And one more ring out
+        let ffff_Left, ffff_Right, ffff_Top, ffff_Bottom;
+        for (let i = 0; i < allX.length - 1; i++) {
+            if (allX[i] < fff_Left && allX[i + 1] >= fff_Left) {
+                ffff_Left = allX[i];
+            }
+            if (allX[i] <= fff_Right && allX[i + 1] > fff_Right) {
+                ffff_Right = allX[i + 1];
+            }
+        }
+        for (let i = 0; i < allY.length - 1; i++) {
+            if (allY[i] < fff_Top && allY[i + 1] >= fff_Top) {
+                ffff_Top = allY[i];
+            }
+            if (allY[i] <= fff_Bottom && allY[i + 1] > fff_Bottom) {
+                ffff_Bottom = allY[i + 1];
+            }
+        }
+        
+        // Ring 1: 12 surrounding boxes (orange)
+        const ring1 = [
+            // Top row (3 boxes)
+            { x1: farFarLeft, y1: farFarTop, x2: farLeft, y2: farTop },
+            { x1: farLeft, y1: farFarTop, x2: farRight, y2: farTop },
+            { x1: farRight, y1: farFarTop, x2: farFarRight, y2: farTop },
+            // Middle-top row (2 boxes on sides)
+            { x1: farFarLeft, y1: farTop, x2: farLeft, y2: topOfCenter },
+            { x1: farRight, y1: farTop, x2: farFarRight, y2: topOfCenter },
+            // Middle-bottom row (2 boxes on sides)
+            { x1: farFarLeft, y1: bottomOfCenter, x2: farLeft, y2: farBottom },
+            { x1: farRight, y1: bottomOfCenter, x2: farFarRight, y2: farBottom },
+            // Center row sides (2 boxes)
+            { x1: farFarLeft, y1: topOfCenter, x2: farLeft, y2: bottomOfCenter },
+            { x1: farRight, y1: topOfCenter, x2: farFarRight, y2: bottomOfCenter },
+            // Bottom row (3 boxes)
+            { x1: farFarLeft, y1: farBottom, x2: farLeft, y2: farFarBottom },
+            { x1: farLeft, y1: farBottom, x2: farRight, y2: farFarBottom },
+            { x1: farRight, y1: farBottom, x2: farFarRight, y2: farFarBottom },
+        ].map(b => ({ ...b, color: '#d03020' }));
+        
+        // Ring 2: next outer ring (ORANGE)
+        const ring2 = [
+            // Top row
+            { x1: fff_Left, y1: fff_Top, x2: farFarLeft, y2: farFarTop },
+            { x1: farFarLeft, y1: fff_Top, x2: farFarRight, y2: farFarTop },
+            { x1: farFarRight, y1: fff_Top, x2: fff_Right, y2: farFarTop },
+            // Upper sides
+            { x1: fff_Left, y1: farFarTop, x2: farFarLeft, y2: farTop },
+            { x1: farFarRight, y1: farFarTop, x2: fff_Right, y2: farTop },
+            { x1: fff_Left, y1: farTop, x2: farFarLeft, y2: topOfCenter },
+            { x1: farFarRight, y1: farTop, x2: fff_Right, y2: topOfCenter },
+            // Middle sides
+            { x1: fff_Left, y1: topOfCenter, x2: farFarLeft, y2: bottomOfCenter },
+            { x1: farFarRight, y1: topOfCenter, x2: fff_Right, y2: bottomOfCenter },
+            // Lower sides
+            { x1: fff_Left, y1: bottomOfCenter, x2: farFarLeft, y2: farBottom },
+            { x1: farFarRight, y1: bottomOfCenter, x2: fff_Right, y2: farBottom },
+            { x1: fff_Left, y1: farBottom, x2: farFarLeft, y2: farFarBottom },
+            { x1: farFarRight, y1: farBottom, x2: fff_Right, y2: farFarBottom },
+            // Bottom row
+            { x1: fff_Left, y1: farFarBottom, x2: farFarLeft, y2: fff_Bottom },
+            { x1: farFarLeft, y1: farFarBottom, x2: farFarRight, y2: fff_Bottom },
+            { x1: farFarRight, y1: farFarBottom, x2: fff_Right, y2: fff_Bottom },
+        ].map(b => ({ ...b, color: '#e08020' }));
+        
+        // Ring 3: (RED)
+        const ring3 = [
+            // Top row
+            { x1: ffff_Left, y1: ffff_Top, x2: fff_Left, y2: fff_Top },
+            { x1: fff_Left, y1: ffff_Top, x2: fff_Right, y2: fff_Top },
+            { x1: fff_Right, y1: ffff_Top, x2: ffff_Right, y2: fff_Top },
+            // Upper sides
+            { x1: ffff_Left, y1: fff_Top, x2: fff_Left, y2: farFarTop },
+            { x1: fff_Right, y1: fff_Top, x2: ffff_Right, y2: farFarTop },
+            { x1: ffff_Left, y1: farFarTop, x2: fff_Left, y2: farTop },
+            { x1: fff_Right, y1: farFarTop, x2: ffff_Right, y2: farTop },
+            { x1: ffff_Left, y1: farTop, x2: fff_Left, y2: topOfCenter },
+            { x1: fff_Right, y1: farTop, x2: ffff_Right, y2: topOfCenter },
+            // Middle sides
+            { x1: ffff_Left, y1: topOfCenter, x2: fff_Left, y2: bottomOfCenter },
+            { x1: fff_Right, y1: topOfCenter, x2: ffff_Right, y2: bottomOfCenter },
+            // Lower sides
+            { x1: ffff_Left, y1: bottomOfCenter, x2: fff_Left, y2: farBottom },
+            { x1: fff_Right, y1: bottomOfCenter, x2: ffff_Right, y2: farBottom },
+            { x1: ffff_Left, y1: farBottom, x2: fff_Left, y2: farFarBottom },
+            { x1: fff_Right, y1: farBottom, x2: ffff_Right, y2: farFarBottom },
+            { x1: ffff_Left, y1: farFarBottom, x2: fff_Left, y2: fff_Bottom },
+            { x1: fff_Right, y1: farFarBottom, x2: ffff_Right, y2: fff_Bottom },
+            // Bottom row
+            { x1: ffff_Left, y1: fff_Bottom, x2: fff_Left, y2: ffff_Bottom },
+            { x1: fff_Left, y1: fff_Bottom, x2: fff_Right, y2: ffff_Bottom },
+            { x1: fff_Right, y1: fff_Bottom, x2: ffff_Right, y2: ffff_Bottom },
+        ].map(b => ({ ...b, color: '#d03020' }));
+        
+        // Find 5th ring boundaries
+        let fffff_Left = 0, fffff_Right = width, fffff_Top = 0, fffff_Bottom = height;
+        for (let i = 0; i < allX.length - 1; i++) {
+            if (allX[i] < ffff_Left && allX[i + 1] >= ffff_Left) {
+                fffff_Left = allX[i];
+            }
+            if (allX[i] <= ffff_Right && allX[i + 1] > ffff_Right) {
+                fffff_Right = allX[i + 1];
+            }
+        }
+        for (let i = 0; i < allY.length - 1; i++) {
+            if (allY[i] < ffff_Top && allY[i + 1] >= ffff_Top) {
+                fffff_Top = allY[i];
+            }
+            if (allY[i] <= ffff_Bottom && allY[i + 1] > ffff_Bottom) {
+                fffff_Bottom = allY[i + 1];
+            }
+        }
+        
+        // Ring 4: (RED)
+        const ring4 = [
+            // Top row
+            { x1: fffff_Left, y1: fffff_Top, x2: ffff_Left, y2: ffff_Top },
+            { x1: ffff_Left, y1: fffff_Top, x2: ffff_Right, y2: ffff_Top },
+            { x1: ffff_Right, y1: fffff_Top, x2: fffff_Right, y2: ffff_Top },
+            // Upper sides
+            { x1: fffff_Left, y1: ffff_Top, x2: ffff_Left, y2: fff_Top },
+            { x1: ffff_Right, y1: ffff_Top, x2: fffff_Right, y2: fff_Top },
+            { x1: fffff_Left, y1: fff_Top, x2: ffff_Left, y2: farFarTop },
+            { x1: ffff_Right, y1: fff_Top, x2: fffff_Right, y2: farFarTop },
+            { x1: fffff_Left, y1: farFarTop, x2: ffff_Left, y2: farTop },
+            { x1: ffff_Right, y1: farFarTop, x2: fffff_Right, y2: farTop },
+            { x1: fffff_Left, y1: farTop, x2: ffff_Left, y2: topOfCenter },
+            { x1: ffff_Right, y1: farTop, x2: fffff_Right, y2: topOfCenter },
+            // Middle sides
+            { x1: fffff_Left, y1: topOfCenter, x2: ffff_Left, y2: bottomOfCenter },
+            { x1: ffff_Right, y1: topOfCenter, x2: fffff_Right, y2: bottomOfCenter },
+            // Lower sides
+            { x1: fffff_Left, y1: bottomOfCenter, x2: ffff_Left, y2: farBottom },
+            { x1: ffff_Right, y1: bottomOfCenter, x2: fffff_Right, y2: farBottom },
+            { x1: fffff_Left, y1: farBottom, x2: ffff_Left, y2: farFarBottom },
+            { x1: ffff_Right, y1: farBottom, x2: fffff_Right, y2: farFarBottom },
+            { x1: fffff_Left, y1: farFarBottom, x2: ffff_Left, y2: fff_Bottom },
+            { x1: ffff_Right, y1: farFarBottom, x2: fffff_Right, y2: fff_Bottom },
+            { x1: fffff_Left, y1: fff_Bottom, x2: ffff_Left, y2: ffff_Bottom },
+            { x1: ffff_Right, y1: fff_Bottom, x2: fffff_Right, y2: ffff_Bottom },
+            // Bottom row
+            { x1: fffff_Left, y1: ffff_Bottom, x2: ffff_Left, y2: fffff_Bottom },
+            { x1: ffff_Left, y1: ffff_Bottom, x2: ffff_Right, y2: fffff_Bottom },
+            { x1: ffff_Right, y1: ffff_Bottom, x2: fffff_Right, y2: fffff_Bottom },
+        ].map(b => ({ ...b, color: '#e08020' }));
+        
+        // Combine all boxes
+        const allBoxes = [...squares, ...ring1, ...ring2, ...ring3, ...ring4];
+        
+        // Latin characters
+        //const latinChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzĦĦĦĦĦĦĦ';
+        
+        const latinCharsPre = 
+        // Basic Latin (uppercase & lowercase)
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' +
+        // Latin-1 Supplement
+        'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ' +
+        // Latin Extended-A
+        'ĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħĨĩĪīĬĭĮįİıĲĳĴĵĶķĸĹĺĻļĽľĿŀŁłŃńŅņŇňŉŊŋŌōŎŏŐőŒœŔŕŖŗŘřŚśŜŝŞşŠšŢţŤťŦŧŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽžſ' +
+        // Latin Extended-B
+        'ƀƁƂƃƄƅƆƇƈƉƊƋƌƍƎƏƐƑƒƓƔƕƖƗƘƙƚƛƜƝƞƟƠơƢƣƤƥƦƧƨƩƪƫƬƭƮƯưƱƲƳƴƵƶƷƸƹƺƻƼƽƾƿǀǁǂǃǄǅǆǇǈǉǊǋǌǍǎǏǐǑǒǓǔǕǖǗǘǙǚǛǜǝǞǟǠǡǢǣǤǥǦǧǨǩǪǫǬǭǮǯǰǱǲǳǴǵǶǷǸǹǺǻǼǽǾǿȀȁȂȃȄȅȆȇȈȉȊȋȌȍȎȏȐȑȒȓȔȕȖȗȘșȚțȜȝȞȟȠȡȢȣȤȥȦȧȨȩȪȫȬȭȮȯȰȱȲȳȴȵȶȷȸȹȺȻȼȽȾȿɀɁɂɃɄɅɆɇɈɉɊɋɌɍɎɏ' +
+        // Latin Extended Additional
+        'ḀḁḂḃḄḅḆḇḈḉḊḋḌḍḎḏḐḑḒḓḔḕḖḗḘḙḚḛḜḝḞḟḠḡḢḣḤḥḦḧḨḩḪḫḬḭḮḯḰḱḲḳḴḵḶḷḸḹḺḻḼḽḾḿṀṁṂṃṄṅṆṇṈṉṊṋṌṍṎṏṐṑṒṓṔṕṖṗṘṙṚṛṜṝṞṟṠṡṢṣṤṥṦṧṨṩṪṫṬṭṮṯṰṱṲṳṴṵṶṷṸṹṺṻṼṽṾṿẀẁẂẃẄẅẆẇẈẉẊẋẌẍẎẏẐẑẒẓẔẕẖẗẘẙẚẛẜẝẞẟẠạẢảẤấẦầẨẩẪẫẬậẮắẰằẲẳẴẵẶặẸẹẺẻẼẽẾếỀềỂểỄễỆệỈỉỊịỌọỎỏỐốỒồỔổỖỗỘộỚớỜờỞởỠỡỢợỤụỦủỨứỪừỬửỮữỰựỲỳỴỵỶỷỸỹỺỻỼỽỾỿ' +
+        // Latin Extended-C
+        'ⱠⱡⱢⱣⱤⱥⱦⱧⱨⱩⱪⱫⱬⱭⱮⱯⱰⱱⱲⱳⱴⱵⱶⱷⱸⱹⱺⱻⱼⱽⱾⱿ' +
+        // Latin Extended-D
+        'ꜢꜣꜤꜥꜦꜧꜨꜩꜪꜫꜬꜭꜮꜯꜰꜱꜲꜳꜴꜵꜶꜷꜸꜹꜺꜻꜼꜽꜾꜿꝀꝁꝂꝃꝄꝅꝆꝇꝈꝉꝊꝋꝌꝍꝎꝏꝐꝑꝒꝓꝔꝕꝖꝗꝘꝙꝚꝛꝜꝝꝞꝟꝠꝡꝢꝣꝤꝥꝦꝧꝨꝩꝪꝫꝬꝭꝮꝯꝰꝱꝲꝳꝴꝵꝶꝷꝸꝹꝺꝻꝼꝽꝾꝿꞀꞁꞂꞃꞄꞅꞆꞇꞈꞋꞌꞍꞎꞏꞐꞑꞒꞓꞔꞕꞖꞗꞘꞙꞚꞛꞜꞝꞞꞟꞠꞡꞢꞣꞤꞥꞦꞧꞨꞩꞪꞫꞬꞭꞮꞯꞰꞱꞲꞳꞴꞵꞶꞷꞸꞹꞺꞻꞼꞽꞾꞿꟀꟁꟂꟃꟄꟅꟆꟇꟈꟉꟊꟋꟌꟑꟓꟕꟖꟗꟘꟙꟲꟳꟴꟵꟶꟷꟸꟹꟺꟻꟼꟽꟾꟿ' +
+        // Latin Extended-E
+        'ꬰꬱꬲꬳꬴꬵꬶꬷꬸꬹꬺꬻꬼꬽꬾꬿꭀꭁꭂꭃꭄꭅꭆꭇꭈꭉꭊꭋꭌꭍꭎꭏꭐꭑꭒꭓꭔꭕꭖꭗꭘꭙꭚꭜꭝꭞꭟꭠꭡꭢꭣꭤꭥꭦꭧꭨꭩ';
+
+        // IPA Extensions (U+0250-U+02AF)
+        const ipaChars = 'ɐɑɒɓɔɕɖɗɘəɚɛɜɝɞɟɠɡɢɣɤɥɦɧɨɩɪɫɬɭɮɯɰɱɲɳɴɵɶɷɸɹɺɻɼɽɾɿʀʁʂʃʄʅʆʇʈʉʊʋʌʍʎʏʐʑʒʓʔʕʖʗʘʙʚʛʜʝʞʟʠʡʢʣʤʥʦʧʨʩʪʫʬʭʮʯ';
+
+        // Phonetic Extensions (U+1D00-U+1D7F)
+        const phoneticExt = 'ᴀᴁᴂᴃᴄᴅᴆᴇᴈᴉᴊᴋᴌᴍᴎᴏᴐᴑᴒᴓᴔᴕᴖᴗᴘᴙᴚᴛᴜᴝᴞᴟᴠᴡᴢᴣᴤᴥᴦᴧᴨᴩᴪᴫᴬᴭᴮᴯᴰᴱᴲᴳᴴᴵᴶᴷᴸᴹᴺᴻᴼᴽᴾᴿᵀᵁᵂᵃᵄᵅᵆᵇᵈᵉᵊᵋᵌᵍᵎᵏᵐᵑᵒᵓᵔᵕᵖᵗᵘᵙᵚᵛᵜᵝᵞᵟᵠᵡᵢᵣᵤᵥᵦᵧᵨᵩᵪᵫᵬᵭᵮᵯᵰᵱᵲᵳᵴᵵᵶᵷᵸᵹᵺᵻᵼᵽᵾᵿ';
+
+        // Phonetic Extensions Supplement (U+1D80-U+1DBF)
+        const phoneticExtSupp = 'ᶀᶁᶂᶃᶄᶅᶆᶇᶈᶉᶊᶋᶌᶍᶎᶏᶐᶑᶒᶓᶔᶕᶖᶗᶘᶙᶚᶛᶜᶝᶞᶟᶠᶡᶢᶣᶤᶥᶦᶧᶨᶩᶪᶫᶬᶭᶮᶯᶰᶱᶲᶳᶴᶵᶶᶷᶸᶹᶺᶻᶼᶽᶾᶿ';
+
+        // All IPA/Phonetic combined
+        const allIPA = ipaChars + phoneticExt + phoneticExtSupp;
+
+        const latinChars = allIPA + latinCharsPre
+
+        // Fill each square with characters
+        allBoxes.forEach(sq => {
+            if (!sq.x1 || !sq.x2 || !sq.y1 || !sq.y2) return;
+            const sqWidth = sq.x2 - sq.x1;
+            const sqHeight = sq.y2 - sq.y1;
+            
+            if (sqWidth > 10 && sqHeight > 10) {
+                const cols = Math.floor(sqWidth / 12);
+                const rows = Math.floor(sqHeight / 14);
+                
+                for (let row = 0; row < rows; row++) {
+                    for (let col = 0; col < cols; col++) {
+                        const char = document.createElement('div');
+                        char.textContent = latinChars[Math.floor(Math.random() * latinChars.length)];
+                        char.style.position = 'absolute';
+                        char.style.left = `${sq.x1 + 6 + col * 12}px`;
+                        char.style.top = `${sq.y1 + 4 + row * 14}px`;
+                        char.style.fontSize = '11px';
+                        char.style.color = sq.color;
+                        char.style.fontFamily = 'monospace';
+                        char.style.zIndex = '50';
+                        container.appendChild(char);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

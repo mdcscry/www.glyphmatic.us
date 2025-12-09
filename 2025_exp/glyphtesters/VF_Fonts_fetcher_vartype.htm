@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variable Font Axes Dictionary</title>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: #ccc;
+            font-family: monospace;
+            padding: 40px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #888;
+            font-weight: normal;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #555;
+            margin-bottom: 30px;
+            font-size: 12px;
+        }
+        .count {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .axis-group {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #222;
+            border-radius: 4px;
+        }
+        .axis-tag {
+            color: #aa8866;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .axis-name {
+            color: #888;
+            margin-left: 15px;
+        }
+        .axis-range {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .axis-fonts {
+            color: #555;
+            font-size: 11px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #333;
+        }
+        .axis-fonts span {
+            display: inline-block;
+            margin-right: 15px;
+        }
+        .registered {
+            color: #6a8a6a;
+        }
+        .custom {
+            color: #8a6a6a;
+        }
+        .section-title {
+            color: #666;
+            font-size: 13px;
+            margin: 30px 0 15px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Variable Font Axes Dictionary</h1>
+    <div class="subtitle">All axes found in Google Fonts variable fonts</div>
+    <div class="count" id="count"></div>
+    <div id="output"></div>
+
+    <script>
+        const API_KEY = 'AIzaSyBPEC-k91wzgVIMm9CZSJIINd-WKmR2Wmo';
+        
+        // Known registered axes (from OpenType spec)
+        const registeredAxes = {
+            'ital': { name: 'Italic', description: 'Controls italic vs upright' },
+            'opsz': { name: 'Optical Size', description: 'Optimizes for display size' },
+            'slnt': { name: 'Slant', description: 'Controls oblique angle' },
+            'wdth': { name: 'Width', description: 'Condensed to expanded' },
+            'wght': { name: 'Weight', description: 'Thin to black' },
+            'GRAD': { name: 'Grade', description: 'Weight without changing width' }
+        };
+        
+        // Known custom axes (community knowledge)
+        const knownCustomAxes = {
+            'CASL': { name: 'Casual', description: 'Casual/cursive to formal' },
+            'CRSV': { name: 'Cursive', description: 'Controls cursive letterforms' },
+            'MONO': { name: 'Monospace', description: 'Proportional to monospace' },
+            'FILL': { name: 'Fill', description: 'Outline to filled' },
+            'SOFT': { name: 'Softness', description: 'Sharp to rounded corners' },
+            'WONK': { name: 'Wonky', description: 'Optical size quirks on/off' },
+            'XTRA': { name: 'X Transparent', description: 'Counter width' },
+            'YOPQ': { name: 'Y Opaque', description: 'Vertical stroke thickness' },
+            'XOPQ': { name: 'X Opaque', description: 'Horizontal stroke thickness' },
+            'YTLC': { name: 'Y Transparent LC', description: 'Lowercase x-height' },
+            'YTUC': { name: 'Y Transparent UC', description: 'Uppercase height' },
+            'YTAS': { name: 'Y Transparent Asc', description: 'Ascender height' },
+            'YTDE': { name: 'Y Transparent Desc', description: 'Descender depth' },
+            'YTFI': { name: 'Y Transparent Fig', description: 'Figure height' },
+            'ROND': { name: 'Roundness', description: 'Angular to rounded' },
+            'BNCE': { name: 'Bounce', description: 'Baseline bounce' },
+            'SPAC': { name: 'Spacing', description: 'Letter spacing' },
+            'SRIF': { name: 'Serif', description: 'Sans to serif' },
+            'EDPT': { name: 'Edge Point', description: 'Edge sharpness' },
+            'EHLT': { name: 'Edge Highlight', description: 'Edge highlight size' },
+            'ELSH': { name: 'Element Shape', description: 'Element shape variation' },
+            'ELXP': { name: 'Element Expand', description: 'Element expansion' },
+            'HEXP': { name: 'Horizontal Exp', description: 'Horizontal expansion' },
+            'INFM': { name: 'Informal', description: 'Formal to informal' },
+            'PWGT': { name: 'Para Weight', description: 'Parametric weight' },
+            'PWDT': { name: 'Para Width', description: 'Parametric width' },
+            'YTCH': { name: 'Y Transparent CH', description: 'Chinese vertical metrics' },
+            'XTCH': { name: 'X Transparent CH', description: 'Chinese horizontal metrics' },
+            // Decovar axes
+            'BLDA': { name: 'Blend A', description: 'Decorative blend A' },
+            'BLDB': { name: 'Blend B', description: 'Decorative blend B' },
+            'SKLA': { name: 'Skeleton A', description: 'Skeleton variant A' },
+            'SKLB': { name: 'Skeleton B', description: 'Skeleton variant B' },
+            'SKLD': { name: 'Skeleton D', description: 'Skeleton variant D' },
+            'TRMA': { name: 'Terminal A', description: 'Terminal style A' },
+            'TRMB': { name: 'Terminal B', description: 'Terminal style B' },
+            'TRMC': { name: 'Terminal C', description: 'Terminal style C' },
+            'TRMD': { name: 'Terminal D', description: 'Terminal style D' },
+            'TRME': { name: 'Terminal E', description: 'Terminal style E' },
+            'TRMF': { name: 'Terminal F', description: 'Terminal style F' },
+            'TRMG': { name: 'Terminal G', description: 'Terminal style G' },
+            'TRMK': { name: 'Terminal K', description: 'Terminal style K' },
+            'TRML': { name: 'Terminal L', description: 'Terminal style L' },
+            'WMX2': { name: 'Width Mult 2', description: 'Width multiplier 2' }
+        };
+        
+        async function fetchAxes() {
+            const url = `https://www.googleapis.com/webfonts/v1/webfonts?key=${API_KEY}&capability=VF&sort=alpha`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                // Collect all axes with their ranges and fonts
+                const axisMap = {};
+                
+                data.items.forEach(font => {
+                    if (font.axes) {
+                        font.axes.forEach(axis => {
+                            if (!axisMap[axis.tag]) {
+                                axisMap[axis.tag] = {
+                                    tag: axis.tag,
+                                    ranges: [],
+                                    fonts: []
+                                };
+                            }
+                            axisMap[axis.tag].ranges.push({
+                                start: axis.start,
+                                end: axis.end
+                            });
+                            axisMap[axis.tag].fonts.push(font.family);
+                        });
+                    }
+                });
+                
+                // Process and categorize
+                const axes = Object.values(axisMap).map(axis => {
+                    // Calculate typical range
+                    const starts = axis.ranges.map(r => r.start);
+                    const ends = axis.ranges.map(r => r.end);
+                    const minStart = Math.min(...starts);
+                    const maxEnd = Math.max(...ends);
+                    
+                    // Look up name
+                    const isRegistered = registeredAxes[axis.tag];
+                    const isKnownCustom = knownCustomAxes[axis.tag];
+                    
+                    return {
+                        tag: axis.tag,
+                        name: isRegistered?.name || isKnownCustom?.name || 'Unknown',
+                        description: isRegistered?.description || isKnownCustom?.description || '',
+                        isRegistered: !!isRegistered,
+                        range: `${minStart} – ${maxEnd}`,
+                        fontCount: axis.fonts.length,
+                        fonts: [...new Set(axis.fonts)].sort()
+                    };
+                });
+                
+                // Sort: registered first, then custom alphabetically
+                const registered = axes.filter(a => a.isRegistered).sort((a, b) => a.tag.localeCompare(b.tag));
+                const custom = axes.filter(a => !a.isRegistered).sort((a, b) => a.tag.localeCompare(b.tag));
+                
+                document.getElementById('count').textContent = 
+                    `${axes.length} unique axes (${registered.length} registered, ${custom.length} custom)`;
+                
+                // Render
+                const outputEl = document.getElementById('output');
+                let html = '';
+                
+                html += `<div class="section-title">Registered Axes (OpenType spec)</div>`;
+                registered.forEach(axis => {
+                    html += renderAxis(axis, 'registered');
+                });
+                
+                html += `<div class="section-title">Custom Axes</div>`;
+                custom.forEach(axis => {
+                    html += renderAxis(axis, 'custom');
+                });
+                
+                outputEl.innerHTML = html;
+                    
+            } catch (err) {
+                document.getElementById('output').textContent = 'Error: ' + err.message;
+            }
+        }
+        
+        function renderAxis(axis, type) {
+            const maxFontsToShow = 10;
+            const fontList = axis.fonts.slice(0, maxFontsToShow);
+            const remaining = axis.fonts.length - maxFontsToShow;
+            
+            let html = `<div class="axis-group">`;
+            html += `<span class="axis-tag ${type}">${axis.tag}</span>`;
+            html += `<span class="axis-name">${axis.name}</span>`;
+            if (axis.description) {
+                html += ` <span class="axis-name">— ${axis.description}</span>`;
+            }
+            html += `<div class="axis-range">Range: ${axis.range} • Used by ${axis.fontCount} font${axis.fontCount > 1 ? 's' : ''}</div>`;
+            html += `<div class="axis-fonts">`;
+            fontList.forEach(f => {
+                html += `<span>${f}</span>`;
+            });
+            if (remaining > 0) {
+                html += `<span>...and ${remaining} more</span>`;
+            }
+            html += `</div>`;
+            html += `</div>`;
+            return html;
+        }
+        
+        fetchAxes();
+    </script>
+</body>
+</html>

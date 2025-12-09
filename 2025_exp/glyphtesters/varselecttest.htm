@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../css_font/glyphmatic-fonts.css">
+
+<style>
+body { 
+    font-family: 'New Gardiner SMP', 'Noto Sans Egyptian Hieroglyphs', 'Segoe UI Symbol', sans-serif; 
+    font-size: 48px;
+    padding: 20px;
+    background: #f0f0f0;
+}
+.test {
+    margin: 20px 0;
+    padding: 10px;
+    background: white;
+    border: 1px solid #ccc;
+}
+</style>
+</head>
+<body>
+
+<h2>Testing Hieroglyphic Format Controls on Actual Hieroglyphs</h2>
+
+<div class="test">
+Normal (3 glyphs): &#x13000;&#x13001;&#x13002;
+</div>
+
+<div class="test">
+With U+13430 (begin segment): &#x13430;&#x13000;&#x13430;&#x13001;&#x13430;&#x13002;
+</div>
+
+<div class="test">
+With U+13431 (end segment): &#x13000;&#x13431;&#x13001;&#x13431;&#x13002;
+</div>
+
+<div class="test">
+With U+13432 (begin group): &#x13000;&#x13432;&#x13001;&#x13002;
+</div>
+
+<div class="test">
+With U+13433 (end group): &#x13000;&#x13001;&#x13433;&#x13002;
+</div>
+
+<div class="test">
+With U+13434 (insert at top start): &#x13000;&#x13434;&#x13001;&#x13002;
+</div>
+
+<div class="test">
+With U+13435 (insert at bottom start): &#x13000;&#x13435;&#x13001;&#x13002;
+</div>
+
+<div class="test">
+With U+13436 (insert at top end): &#x13000;&#x13001;&#x13436;&#x13002;
+</div>
+
+<div class="test">
+With U+13437 (insert at bottom end): &#x13000;&#x13001;&#x13437;&#x13002;
+</div>
+
+<div class="test">
+With U+13438 (overlay): &#x13000;&#x13438;&#x13001;&#x13002;
+</div>
+
+<div class="test">
+Cartouche (begin): &#x1343C;&#x13000;&#x13001;&#x13002;
+</div>
+
+<div class="test">
+Cartouche (end): &#x13000;&#x13001;&#x13002;&#x1343D;
+</div>
+
+<div class="test">
+Full cartouche: &#x1343C;&#x13000;&#x13001;&#x13002;&#x1343D;
+</div>
+
+<div class="test">
+Complex grouping: &#x13000;&#x13432;&#x13001;&#x13434;&#x13002;&#x13433;&#x13003;
+</div>
+
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+}
+#canvas {
+    display: block;
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const colors = [
+    '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', 
+    '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
+    '#F8B739', '#52B788', '#E63946', '#A8DADC'
+];
+
+const glyphs = ['◆', '●', '■', '▲', '★', '◉', '◈', '▼', '◀', '▶'];
+
+function randomColor() {
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function randomGlyph() {
+    return glyphs[Math.floor(Math.random() * glyphs.length)];
+}
+
+function drawRotatedRect(x, y, width, height, angle) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    
+    // Draw rectangle
+    ctx.fillStyle = randomColor();
+    ctx.fillRect(-width/2, -height/2, width, height);
+    
+    // Draw border
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(-width/2, -height/2, width, height);
+    
+    // Draw glyph
+    const fontSize = Math.min(width, height) * 0.6;
+    ctx.font = `${fontSize}px Arial`;
+    ctx.fillStyle = randomColor();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(randomGlyph(), 0, 0);
+    
+    ctx.restore();
+}
+
+function drawHerringbone() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, canvas.width, canvas.height);
+    ctx.clip();
+    
+    const brickWidth = 100;
+    const brickHeight = 40;
+    
+    // Herringbone pattern uses diagonal bricks alternating direction
+    const diagSize = Math.sqrt(brickWidth * brickWidth + brickHeight * brickHeight) / 2;
+    const rowHeight = brickWidth * 0.7; // Spacing between rows
+    const colWidth = brickWidth * 0.7;  // Spacing between columns
+    
+    for (let row = -5; row * rowHeight < canvas.height + rowHeight * 5; row++) {
+        for (let col = -5; col * colWidth < canvas.width + colWidth * 5; col++) {
+            const x = col * colWidth;
+            const y = row * rowHeight;
+            
+            // Alternate between two orientations
+            if ((row + col) % 2 === 0) {
+                // Diagonal down-right
+                drawRotatedRect(x, y, brickWidth, brickHeight, Math.PI / 4);
+            } else {
+                // Diagonal down-left  
+                drawRotatedRect(x, y, brickWidth, brickHeight, -Math.PI / 4);
+            }
+        }
+    }
+    
+    ctx.restore();
+}
+
+drawHerringbone();
+
+canvas.addEventListener('click', drawHerringbone);
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    drawHerringbone();
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glyph Spiral</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #08080a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-family: system-ui, sans-serif;
+        }
+        
+        .container {
+            position: relative;
+            width: 95vmin;
+            height: 95vmin;
+            filter: grayscale(100%);
+        }
+        
+        .glyph {
+            position: absolute;
+            color: rgba(200, 180, 180, 0.8);
+            text-shadow: 0 0 8px rgba(150, 100, 100, 0.3);
+            transition: all 0.3s ease-out;
+            cursor: default;
+            user-select: none;
+        }
+        
+        .glyph:hover {
+            color: rgba(255, 220, 220, 1);
+            text-shadow: 0 0 20px rgba(200, 100, 100, 0.6);
+            transform: scale(1.4) !important;
+            z-index: 100;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 200;
+        }
+        
+        button {
+            padding: 8px 16px;
+            border: 1px solid #2a2a2a;
+            border-radius: 4px;
+            background: #111;
+            color: #555;
+            cursor: pointer;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        
+        button:hover, button.active {
+            border-color: #444;
+            color: #888;
+        }
+        
+        button.active {
+            background: #1a1a1a;
+            color: #aa8888;
+            border-color: #553333;
+        }
+        
+        .title {
+            position: fixed;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #2a2020;
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            z-index: 200;
+        }
+        
+        .equation {
+            position: fixed;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #333;
+            font-size: 11px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            z-index: 200;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">Glyph Spiral</div>
+    <div class="equation" id="equation">r = aθ</div>
+    <div class="container" id="container"></div>
+    
+    <div class="controls">
+        <button class="active" data-spiral="archimedean">Archimedean</button>
+        <button data-spiral="fermat">Fermat</button>
+        <button data-spiral="logarithmic">Logarithmic</button>
+        <button data-spiral="hyperbolic">Hyperbolic</button>
+        <button data-spiral="lituus">Lituus</button>
+        <button data-spiral="golden">Golden</button>
+    </div>
+
+    <script>
+        const glyphRanges = [
+            [0x2600, 0x26FF], [0x2700, 0x27BF], [0x2190, 0x21FF],
+            [0x2300, 0x23FF], [0x25A0, 0x25FF], [0x2660, 0x2667],
+            [0x1F0A0, 0x1F0AE], [0x1F0B0, 0x1F0BE], [0x1F0C0, 0x1F0CE],
+            [0x1F300, 0x1F5FF], [0x1F600, 0x1F64F], [0x1F680, 0x1F6FF],
+            [0x1F700, 0x1F77F], [0x2654, 0x265F], [0x2648, 0x2653],
+            [0x263D, 0x2647],
+            [0x10300, 0x1032F], [0x10330, 0x1034F], [0x10380, 0x1039F],
+            [0x10400, 0x1044F], [0x10800, 0x1083F], [0x10900, 0x1091F],
+            [0x12000, 0x123FF], [0x13000, 0x1342F], [0x2800, 0x28FF],
+            [0x10A0, 0x10FF], [0x0530, 0x058F], [0x0590, 0x05FF],
+            [0x0900, 0x097F], [0x0F00, 0x0FFF], [0x1200, 0x137F],
+            [0x16A0, 0x16FF], [0x1680, 0x169F], [0x1800, 0x18AF],
+            [0x1D100, 0x1D1FF], [0x1D300, 0x1D35F],
+            [0x1F000, 0x1F02F], [0x1F030, 0x1F09F],
+            [0x4E00, 0x4FFF], [0x0370, 0x03FF], [0x0400, 0x04FF],
+        ];
+        
+        let glyphPool = [];
+        
+        for (const [start, end] of glyphRanges) {
+            for (let cp = start; cp <= end; cp++) {
+                if (cp >= 0x20 && !(cp >= 0xE000 && cp <= 0xF8FF)) {
+                    glyphPool.push(String.fromCodePoint(cp));
+                }
+            }
+        }
+        
+        function randomGlyph() {
+            return glyphPool[Math.floor(Math.random() * glyphPool.length)];
+        }
+        
+        const container = document.getElementById('container');
+        const equationEl = document.getElementById('equation');
+        const PHI = (1 + Math.sqrt(5)) / 2;
+        
+        const spirals = {
+            archimedean: {
+                equation: 'r = a + bθ',
+                direction: -1, // counterclockwise
+                getPoint: (i, n) => {
+                    const maxTheta = 6 * Math.PI;
+                    const theta = (i / n) * maxTheta;
+                    const r = 0.02 + (theta / maxTheta) * 0.46;
+                    return [r, theta];
+                }
+            },
+            fermat: {
+                equation: 'r = a√θ',
+                direction: -1,
+                getPoint: (i, n) => {
+                    const maxTheta = 8 * Math.PI;
+                    const theta = (i / n) * maxTheta;
+                    const r = 0.02 + Math.sqrt(theta / maxTheta) * 0.46;
+                    return [r, theta];
+                }
+            },
+            logarithmic: {
+                equation: 'r = ae^(bθ)',
+                direction: -1, // fix direction
+                getPoint: (i, n) => {
+                    const maxTheta = 6 * Math.PI;
+                    const theta = (i / n) * maxTheta;
+                    const r = 0.04 + 0.44 * (Math.exp(0.3 * theta / Math.PI) - 1) / (Math.exp(0.3 * maxTheta / Math.PI) - 1);
+                    return [r, theta];
+                }
+            },
+            hyperbolic: {
+                equation: 'r = a/θ',
+                direction: 1,
+                getPoint: (i, n) => {
+                    const minTheta = 0.5;
+                    const maxTheta = 8 * Math.PI;
+                    const theta = minTheta + ((n - i) / n) * (maxTheta - minTheta);
+                    const r = 2.5 / theta;
+                    return [Math.min(Math.max(r, 0.05), 0.48), theta];
+                }
+            },
+            lituus: {
+                equation: 'r = a/√θ',
+                direction: 1, // swapping - it collapses inward
+                getPoint: (i, n) => {
+                    const minTheta = 0.8;
+                    const maxTheta = 12 * Math.PI;
+                    const theta = minTheta + ((n - i) / n) * (maxTheta - minTheta);
+                    const r = 2.0 / Math.sqrt(theta);
+                    return [Math.min(Math.max(r, 0.05), 0.47), theta];
+                }
+            },
+            golden: {
+                equation: 'r = φ^(2θ/π)',
+                direction: -1,
+                getPoint: (i, n) => {
+                    const maxTheta = 5 * Math.PI;
+                    const theta = (i / n) * maxTheta;
+                    const r = 0.02 * Math.pow(PHI, (2 * theta) / Math.PI);
+                    return [Math.min(r, 0.48), theta];
+                }
+            }
+        };
+        
+        const NUM_GLYPHS = 120;
+        let glyphElements = [];
+        let currentSpiral = 'archimedean';
+        let rotationOffset = 0;
+        
+        function createGlyphs() {
+            container.innerHTML = '';
+            glyphElements = [];
+            
+            for (let i = 0; i < NUM_GLYPHS; i++) {
+                const glyph = document.createElement('div');
+                glyph.className = 'glyph';
+                glyph.textContent = randomGlyph();
+                container.appendChild(glyph);
+                glyphElements.push(glyph);
+            }
+            
+            positionGlyphs();
+        }
+        
+        function positionGlyphs() {
+            const spiral = spirals[currentSpiral];
+            equationEl.textContent = spiral.equation;
+            
+            glyphElements.forEach((glyph, i) => {
+                const [r, theta] = spiral.getPoint(i, NUM_GLYPHS);
+                const adjustedTheta = theta + rotationOffset;
+                
+                const x = 50 + r * 100 * Math.cos(adjustedTheta);
+                const y = 50 + r * 100 * Math.sin(adjustedTheta);
+                
+                // Size decreases toward center for some spirals, increases for others
+                const sizeFactor = currentSpiral === 'hyperbolic' || currentSpiral === 'lituus' 
+                    ? 0.6 + r * 0.8 
+                    : 0.5 + (i / NUM_GLYPHS) * 1;
+                const fontSize = 14 + sizeFactor * 18;
+                
+                glyph.style.left = `${x}%`;
+                glyph.style.top = `${y}%`;
+                glyph.style.fontSize = `${fontSize}px`;
+                glyph.style.transform = 'translate(-50%, -50%)';
+                glyph.style.opacity = 0.4 + (i / NUM_GLYPHS) * 0.5;
+            });
+        }
+        
+        // Rotation animation
+        function animate() {
+            const spiral = spirals[currentSpiral];
+            rotationOffset += 0.002 * spiral.direction;
+            positionGlyphs();
+            requestAnimationFrame(animate);
+        }
+        
+        // Occasionally swap glyphs
+        setInterval(() => {
+            const idx = Math.floor(Math.random() * glyphElements.length);
+            const glyph = glyphElements[idx];
+            glyph.style.opacity = '0';
+            setTimeout(() => {
+                glyph.textContent = randomGlyph();
+                glyph.style.opacity = '';
+            }, 300);
+        }, 500);
+        
+        // Button controls
+        document.querySelectorAll('button[data-spiral]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('button[data-spiral]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentSpiral = btn.dataset.spiral;
+                positionGlyphs();
+            });
+        });
+        
+        createGlyphs();
+        animate();
+    </script>
+</body>
+</html>

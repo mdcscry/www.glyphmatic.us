@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circles in a Circle</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #2a2a2a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: system-ui, sans-serif;
+        }
+        .canvas {
+            width: 90vmin;
+            height: 90vmin;
+            max-width: 700px;
+            max-height: 700px;
+            background: #f5f2ea;
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        /* Diagonal bands - behind everything */
+        .band {
+            position: absolute;
+            transform-origin: center;
+        }
+        .band-teal {
+            width: 200%;
+            height: 18%;
+            background: linear-gradient(180deg, #7ab5a8 0%, #5a9a8a 50%, #4a8878 100%);
+            top: 25%;
+            left: -50%;
+            transform: rotate(-32deg);
+            opacity: 0.85;
+        }
+        .band-yellow {
+            width: 200%;
+            height: 14%;
+            background: linear-gradient(180deg, #d8c878 0%, #c8b860 50%, #b8a850 100%);
+            top: 55%;
+            left: -50%;
+            transform: rotate(-32deg);
+            opacity: 0.8;
+        }
+        
+        /* Main circle ring */
+        .main-ring {
+            position: absolute;
+            width: 85%;
+            height: 85%;
+            top: 7.5%;
+            left: 7.5%;
+            border: 8px solid #1a1a1a;
+            border-radius: 50%;
+            z-index: 50;
+        }
+        
+        /* Circles */
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        /* Crosshatch clusters */
+        .hatch-cluster {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+        }
+        .hatch {
+            position: absolute;
+            height: 1px;
+            background: #1a1a1a;
+            top: 50%;
+            left: 50%;
+            transform-origin: left center;
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas" id="canvas">
+        <!-- Diagonal bands -->
+        <div class="band band-teal"></div>
+        <div class="band band-yellow"></div>
+        
+        <!-- Main ring -->
+        <div class="main-ring"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        
+        // Circles data: x%, y%, size px, color, z-index, optional border, opacity
+        const circles = [
+            // Large olive green cluster
+            { x: 58, y: 55, size: 140, color: '#6a7a50', z: 10, opacity: 0.85 },
+            { x: 52, y: 62, size: 100, color: '#5a6a45', z: 11, opacity: 0.8 },
+            { x: 68, y: 48, size: 90, color: '#4a6858', z: 9, opacity: 0.75 },
+            
+            // Yellows
+            { x: 42, y: 68, size: 85, color: '#e8d860', z: 8, opacity: 0.7 },
+            { x: 70, y: 72, size: 70, color: '#f0e070', z: 7, opacity: 0.65 },
+            
+            // Big pink
+            { x: 42, y: 35, size: 95, color: '#e8c0c8', z: 12, opacity: 0.6 },
+            
+            // Reds and magentas
+            { x: 50, y: 42, size: 75, color: '#b83038', z: 15, opacity: 0.85 },
+            { x: 55, y: 52, size: 55, color: '#d85030', z: 16, opacity: 0.9 },
+            { x: 55, y: 52, size: 25, color: '#1a1a1a', z: 17, opacity: 1 },
+            { x: 48, y: 60, size: 45, color: '#d84830', z: 14, opacity: 0.8 },
+            
+            // Purple cluster right side
+            { x: 72, y: 35, size: 60, color: '#7a4868', z: 13, opacity: 0.85 },
+            { x: 68, y: 40, size: 30, color: '#1a1a1a', z: 14, opacity: 1 },
+            
+            // Small scattered circles
+            { x: 25, y: 45, size: 35, color: '#c83030', z: 20, border: '3px solid #1a1a1a', opacity: 0.9 },
+            { x: 25, y: 45, size: 12, color: '#c83030', z: 21, opacity: 1 },
+            
+            { x: 35, y: 70, size: 32, color: '#c84030', z: 18, opacity: 0.85 },
+            { x: 30, y: 78, size: 25, color: '#e8a080', z: 17, opacity: 0.75 },
+            
+            { x: 78, y: 58, size: 28, color: '#1a4a5a', z: 19, opacity: 0.9 },
+            { x: 80, y: 52, size: 22, color: '#1a1a1a', z: 20, opacity: 1 },
+            
+            { x: 18, y: 60, size: 12, color: '#2040a0', z: 22, opacity: 0.95 },
+            { x: 62, y: 78, size: 18, color: '#1a1a1a', z: 20, opacity: 1 },
+            { x: 75, y: 80, size: 22, color: '#e0a0b0', z: 18, opacity: 0.7 },
+            { x: 35, y: 28, size: 14, color: '#c83030', z: 23, opacity: 0.9 },
+            { x: 82, y: 68, size: 12, color: '#8a4060', z: 21, opacity: 0.85 },
+            { x: 58, y: 82, size: 16, color: '#f0d878', z: 17, opacity: 0.7 },
+            
+            // Teal circles
+            { x: 38, y: 58, size: 50, color: '#5a9888', z: 12, border: '3px solid #1a1a1a', opacity: 0.75 },
+            { x: 60, y: 68, size: 55, color: '#6aa878', z: 11, opacity: 0.7 },
+            
+            // Small accents
+            { x: 45, y: 48, size: 8, color: '#1a1a1a', z: 25, opacity: 1 },
+            { x: 32, y: 52, size: 6, color: '#1a1a1a', z: 25, opacity: 1 },
+            { x: 72, y: 62, size: 5, color: '#c83030', z: 25, opacity: 0.9 },
+        ];
+        
+        // Create circles
+        circles.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'circle';
+            div.style.left = `${c.x}%`;
+            div.style.top = `${c.y}%`;
+            div.style.width = `${c.size}px`;
+            div.style.height = `${c.size}px`;
+            div.style.backgroundColor = c.color;
+            div.style.zIndex = c.z;
+            div.style.opacity = c.opacity || 1;
+            if (c.border) div.style.border = c.border;
+            canvas.appendChild(div);
+        });
+        
+        // Crosshatch clusters
+        const hatches = [
+            { x: 22, y: 42, count: 8, spread: 40, lengths: [30, 50] },
+            { x: 35, y: 55, count: 6, spread: 35, lengths: [25, 40] },
+            { x: 65, y: 32, count: 7, spread: 30, lengths: [20, 35] },
+            { x: 75, y: 65, count: 5, spread: 25, lengths: [20, 30] },
+            { x: 55, y: 75, count: 6, spread: 30, lengths: [25, 40] },
+            { x: 28, y: 68, count: 5, spread: 25, lengths: [20, 35] },
+            { x: 45, y: 38, count: 4, spread: 20, lengths: [15, 25] },
+            { x: 80, y: 45, count: 5, spread: 25, lengths: [20, 30] },
+            { x: 40, y: 82, count: 4, spread: 20, lengths: [15, 25] },
+        ];
+        
+        hatches.forEach(h => {
+            for (let i = 0; i < h.count; i++) {
+                const line = document.createElement('div');
+                line.className = 'hatch';
+                
+                const offsetX = (Math.random() - 0.5) * h.spread;
+                const offsetY = (Math.random() - 0.5) * h.spread;
+                const angle = Math.random() * 180 - 90;
+                const length = h.lengths[0] + Math.random() * (h.lengths[1] - h.lengths[0]);
+                
+                line.style.left = `calc(${h.x}% + ${offsetX}px)`;
+                line.style.top = `calc(${h.y}% + ${offsetY}px)`;
+                line.style.width = `${length}px`;
+                line.style.transform = `rotate(${angle}deg)`;
+                line.style.zIndex = 30;
+                
+                canvas.appendChild(line);
+            }
+        });
+    </script>
+</body>
+</html>

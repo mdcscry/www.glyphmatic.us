@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primes</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0a0a;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .canvas {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        .line {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 1px;
+            background: #d4d420;
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas" id="canvas"></div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const width = window.innerWidth;
+        
+        // Sieve of Eratosthenes
+        function getPrimes(max) {
+            const sieve = new Array(max + 1).fill(true);
+            sieve[0] = sieve[1] = false;
+            
+            for (let i = 2; i <= Math.sqrt(max); i++) {
+                if (sieve[i]) {
+                    for (let j = i * i; j <= max; j += i) {
+                        sieve[j] = false;
+                    }
+                }
+            }
+            
+            const primes = [];
+            for (let i = 2; i <= max; i++) {
+                if (sieve[i]) primes.push(i);
+            }
+            return primes;
+        }
+        
+        // Get primes up to width value, map to screen position
+        const maxPrime = width * 2; // Scale factor
+        const primes = getPrimes(maxPrime);
+        
+        primes.forEach(p => {
+            const x = (p / maxPrime) * width;
+            if (x < width) {
+                const line = document.createElement('div');
+                line.className = 'line';
+                line.style.left = `${x}px`;
+                canvas.appendChild(line);
+            }
+        });
+    </script>
+</body>
+</html>

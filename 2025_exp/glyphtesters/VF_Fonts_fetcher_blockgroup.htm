@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Fonts - Variable Fonts by Script</title>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: #ccc;
+            font-family: monospace;
+            padding: 40px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #888;
+            font-weight: normal;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .count {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .script-group {
+            margin-bottom: 30px;
+        }
+        .script-name {
+            color: #aa8866;
+            font-size: 14px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 4px;
+        }
+        .font-list {
+            padding-left: 20px;
+        }
+        .font-name {
+            color: #aaa;
+            padding: 2px 0;
+        }
+        .axes {
+            color: #666;
+            font-size: 12px;
+        }
+        .multi-script {
+            color: #555;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Variable Fonts by Script (non-Noto)</h1>
+    <div class="count" id="count"></div>
+    <div id="output"></div>
+
+    <script>
+        const API_KEY = 'AIzaSyBPEC-k91wzgVIMm9CZSJIINd-WKmR2Wmo';
+        
+        // Map subsets to broader script categories
+        const scriptCategories = {
+            // Indic
+            'bengali': 'Bengali',
+            'devanagari': 'Devanagari',
+            'gujarati': 'Gujarati',
+            'gurmukhi': 'Gurmukhi',
+            'kannada': 'Kannada',
+            'malayalam': 'Malayalam',
+            'oriya': 'Odia',
+            'tamil': 'Tamil',
+            'telugu': 'Telugu',
+            'sinhala': 'Sinhala',
+            
+            // Southeast Asian
+            'thai': 'Thai',
+            'khmer': 'Khmer',
+            'lao': 'Lao',
+            'myanmar': 'Myanmar',
+            'vietnamese': 'Vietnamese',
+            
+            // East Asian
+            'chinese-simplified': 'Chinese Simplified',
+            'chinese-traditional': 'Chinese Traditional',
+            'japanese': 'Japanese',
+            'korean': 'Korean',
+            
+            // Middle Eastern
+            'arabic': 'Arabic',
+            'hebrew': 'Hebrew',
+            
+            // European
+            'cyrillic': 'Cyrillic',
+            'cyrillic-ext': 'Cyrillic Extended',
+            'greek': 'Greek',
+            'greek-ext': 'Greek Extended',
+            'latin': 'Latin',
+            'latin-ext': 'Latin Extended',
+            
+            // Other
+            'armenian': 'Armenian',
+            'georgian': 'Georgian',
+            'ethiopic': 'Ethiopic',
+            'cherokee': 'Cherokee',
+            'tibetan': 'Tibetan'
+        };
+        
+        async function fetchVariableFonts() {
+            const url = `https://www.googleapis.com/webfonts/v1/webfonts?key=${API_KEY}&capability=VF&sort=alpha`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                const variableFonts = data.items
+                    .filter(font => !font.family.startsWith('Noto'))
+                    .map(font => ({
+                        name: font.family,
+                        axes: font.axes ? font.axes.map(a => a.tag).join(', ') : 'wght',
+                        subsets: font.subsets || []
+                    }));
+                
+                document.getElementById('count').textContent = `${variableFonts.length} variable fonts`;
+                
+                // Group by script
+                const byScript = {};
+                
+                variableFonts.forEach(font => {
+                    // Find non-Latin scripts this font supports
+                    const scripts = font.subsets
+                        .filter(s => s !== 'menu')
+                        .map(s => scriptCategories[s] || s)
+                        .filter(s => s);
+                    
+                    // Determine primary script (non-Latin if available)
+                    const nonLatin = scripts.filter(s => 
+                        s !== 'Latin' && s !== 'Latin Extended'
+                    );
+                    
+                    const primaryScript = nonLatin.length > 0 ? nonLatin[0] : 'Latin';
+                    
+                    if (!byScript[primaryScript]) {
+                        byScript[primaryScript] = [];
+                    }
+                    
+                    byScript[primaryScript].push({
+                        ...font,
+                        scripts: scripts
+                    });
+                });
+                
+                // Sort scripts, but put Latin at the end
+                const sortedScripts = Object.keys(byScript).sort((a, b) => {
+                    if (a === 'Latin') return 1;
+                    if (b === 'Latin') return -1;
+                    return a.localeCompare(b);
+                });
+                
+                // Render
+                const outputEl = document.getElementById('output');
+                let html = '';
+                
+                sortedScripts.forEach(script => {
+                    const fonts = byScript[script].sort((a, b) => 
+                        a.name.localeCompare(b.name)
+                    );
+                    
+                    html += `<div class="script-group">`;
+                    html += `<div class="script-name">${script} (${fonts.length})</div>`;
+                    html += `<div class="font-list">`;
+                    
+                    fonts.forEach(f => {
+                        const otherScripts = f.scripts
+                            .filter(s => s !== script)
+                            .join(', ');
+                        
+                        html += `<div class="font-name">`;
+                        html += `${f.name} <span class="axes">[${f.axes}]</span>`;
+                        if (otherScripts) {
+                            html += ` <span class="multi-script">+ ${otherScripts}</span>`;
+                        }
+                        html += `</div>`;
+                    });
+                    
+                    html += `</div></div>`;
+                });
+                
+                outputEl.innerHTML = html;
+                    
+            } catch (err) {
+                document.getElementById('output').textContent = 'Error: ' + err.message;
+            }
+        }
+        
+        fetchVariableFonts();
+    </script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfect Squares</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0a0a;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        .line-v {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 1px;
+            opacity: 0.7;
+        }
+        .line-h {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            opacity: 0.7;
+        }
+        .line-d {
+            position: absolute;
+            width: 1px;
+            height: 200vmax;
+            opacity: 0.7;
+            transform-origin: center center;
+        }
+        .line-v.yellow, .line-d.yellow { background: #d4d420; }
+        .line-h.blue, .line-d.blue { background: #2080d0; }
+    </style>
+</head>
+<body>
+    <div class="container" id="container"></div>
+
+    <script>
+        const container = document.getElementById('container');
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        // Get perfect squares up to max
+        function getSquares(max) {
+            const squares = [];
+            let i = 1;
+            while (i * i <= max) {
+                squares.push(i * i);
+                i++;
+            }
+            return squares;
+        }
+        
+        const maxVal = Math.max(width, height) * 3;
+        const squares = getSquares(maxVal);
+        
+        // Vertical lines - left to right (yellow)
+        squares.forEach(s => {
+            const x = (s / maxVal) * width;
+            if (x < width) {
+                const line = document.createElement('div');
+                line.className = 'line-v yellow';
+                line.style.left = `${x}px`;
+                container.appendChild(line);
+            }
+        });
+        
+        // Vertical lines - right to left (yellow, mirrored)
+        squares.forEach(s => {
+            const x = width - (s / maxVal) * width;
+            if (x > 0) {
+                const line = document.createElement('div');
+                line.className = 'line-v yellow';
+                line.style.left = `${x}px`;
+                container.appendChild(line);
+            }
+        });
+        
+        // Horizontal lines - from top (blue)
+        squares.forEach(s => {
+            const y = (s / maxVal) * height;
+            if (y < height) {
+                const line = document.createElement('div');
+                line.className = 'line-h blue';
+                line.style.top = `${y}px`;
+                container.appendChild(line);
+            }
+        });
+        
+        // Horizontal lines - from bottom (blue, mirrored)
+        squares.forEach(s => {
+            const y = height - (s / maxVal) * height;
+            if (y > 0) {
+                const line = document.createElement('div');
+                line.className = 'line-h blue';
+                line.style.top = `${y}px`;
+                container.appendChild(line);
+            }
+        });
+        
+        // Diagonal lines - top-left to bottom-right (yellow, 45deg)
+        squares.forEach(s => {
+            const offset = (s / maxVal) * (width + height);
+            if (offset < width + height) {
+                const line = document.createElement('div');
+                line.className = 'line-d yellow';
+                line.style.left = `${offset - height}px`;
+                line.style.top = `0px`;
+                line.style.transform = `rotate(45deg)`;
+                container.appendChild(line);
+            }
+        });
+        
+        // Diagonal lines - bottom-right to top-left (yellow, mirrored)
+        squares.forEach(s => {
+            const offset = (width + height) - (s / maxVal) * (width + height);
+            if (offset > 0) {
+                const line = document.createElement('div');
+                line.className = 'line-d yellow';
+                line.style.left = `${offset - height}px`;
+                line.style.top = `0px`;
+                line.style.transform = `rotate(45deg)`;
+                container.appendChild(line);
+            }
+        });
+        
+        // Diagonal lines - top-right to bottom-left (blue, -45deg)
+        squares.forEach(s => {
+            const offset = (s / maxVal) * (width + height);
+            if (offset < width + height) {
+                const line = document.createElement('div');
+                line.className = 'line-d blue';
+                line.style.left = `${width - offset + height}px`;
+                line.style.top = `0px`;
+                line.style.transform = `rotate(-45deg)`;
+                container.appendChild(line);
+            }
+        });
+        
+        // Diagonal lines - bottom-left to top-right (blue, mirrored)
+        squares.forEach(s => {
+            const offset = (width + height) - (s / maxVal) * (width + height);
+            if (offset > 0) {
+                const line = document.createElement('div');
+                line.className = 'line-d blue';
+                line.style.left = `${width - offset + height}px`;
+                line.style.top = `0px`;
+                line.style.transform = `rotate(-45deg)`;
+                container.appendChild(line);
+            }
+        });
+    </script>
+</body>
+</html>

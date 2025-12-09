@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Glyphs</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #d9d0c1;
+            min-height: 100vh;
+            padding: 10px;
+            font-family: system-ui, sans-serif;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(4, 1fr);
+            gap: 8px;
+            width: 100%;
+            height: calc(100vh - 20px);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .cell {
+            background: #f4efe6;
+            border-radius: 3px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 0 30px rgba(139, 119, 101, 0.08),
+                0 1px 3px rgba(0,0,0,0.1);
+        }
+        .glyph {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translate(-50%, -50%);
+        }
+        
+        /* Colors from the reference */
+        .pale-blue { color: #89b8c2; }
+        .deep-blue { color: #2e6e8a; }
+        .red { color: #c54a4a; }
+        .cream { color: #d4b896; }
+        .tan { color: #c9a86c; }
+        .black { color: #2a2a2a; }
+        .teal { color: #5a9a9a; }
+        
+        /* Subtle paper texture */
+        .cell::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid" id="grid"></div>
+
+    <script>
+        // Geometric unicode glyphs
+        const shapes = {
+            solidCircle: '●',      // U+25CF
+            hollowCircle: '○',     // U+25CB
+            ringCircle: '◯',       // U+25EF - larger
+            smallDot: '•',         // U+2022
+            tinyDot: '·',          // U+00B7
+            mediumCircle: '⬤',    // U+2B24
+            target: '◎',           // U+25CE
+            bullseye: '◉',         // U+25C9
+            fisheye: '◉',          // U+25C9
+            sunRays: '✺',          // U+273A
+            star: '✦',             // U+2726
+            triangle: '▲',         // U+25B2
+            triangleRight: '▶',   // U+25B6
+            ring: '◯',             // U+25EF
+            concentricTarget: '◎', // U+25CE
+            smallWhiteCircle: '◦', // U+25E6
+            largeCircle: '⬭',     // U+2B2D - or use sized ●
+        };
+
+        const panels = [
+            // Panel 0: Top left - large pale blue circle, row of small dots
+            {
+                glyphs: [
+                    { char: '●', x: 35, y: 35, size: 180, color: 'pale-blue' },
+                    { char: '●', x: 15, y: 80, size: 14, color: 'red' },
+                    { char: '●', x: 25, y: 82, size: 12, color: 'cream' },
+                    { char: '●', x: 34, y: 81, size: 10, color: 'tan' },
+                    { char: '●', x: 42, y: 82, size: 11, color: 'deep-blue' },
+                    { char: '●', x: 50, y: 81, size: 8, color: 'tan' },
+                    { char: '●', x: 56, y: 82, size: 6, color: 'cream' },
+                    { char: '●', x: 61, y: 81, size: 5, color: 'tan' },
+                ]
+            },
+            // Panel 1: Top right - radial burst, scattered dots
+            {
+                glyphs: [
+                    { char: '✺', x: 50, y: 25, size: 60, color: 'red', opacity: 0.7 },
+                    { char: '●', x: 50, y: 25, size: 20, color: 'red' },
+                    { char: '●', x: 25, y: 15, size: 24, color: 'tan' },
+                    { char: '●', x: 42, y: 12, size: 20, color: 'cream' },
+                    { char: '●', x: 60, y: 10, size: 22, color: 'tan' },
+                    { char: '●', x: 75, y: 18, size: 26, color: 'cream' },
+                    { char: '●', x: 85, y: 30, size: 18, color: 'red' },
+                    { char: '●', x: 20, y: 35, size: 22, color: 'deep-blue' },
+                    { char: '●', x: 80, y: 45, size: 20, color: 'deep-blue' },
+                    { char: '●', x: 30, y: 50, size: 18, color: 'tan' },
+                    { char: '●', x: 70, y: 55, size: 24, color: 'cream' },
+                    { char: '●', x: 15, y: 55, size: 16, color: 'red' },
+                    { char: '●', x: 55, y: 60, size: 20, color: 'deep-blue' },
+                    { char: '●', x: 40, y: 70, size: 22, color: 'tan' },
+                ]
+            },
+            // Panel 2: Middle left - circles with triangular beam
+            {
+                glyphs: [
+                    { char: '●', x: 20, y: 35, size: 50, color: 'tan' },
+                    { char: '◀', x: 50, y: 50, size: 80, color: 'red', opacity: 0.7 },
+                    { char: '●', x: 35, y: 50, size: 35, color: 'black' },
+                    { char: '●', x: 55, y: 40, size: 40, color: 'deep-blue' },
+                    { char: '●', x: 75, y: 60, size: 45, color: 'red' },
+                ]
+            },
+            // Panel 3: Middle right - concentric rings / target
+            {
+                glyphs: [
+                    { char: '●', x: 45, y: 50, size: 160, color: 'deep-blue', opacity: 0.9 },
+                    { char: '●', x: 45, y: 50, size: 120, color: 'cream' },
+                    { char: '●', x: 45, y: 50, size: 80, color: 'deep-blue', opacity: 0.8 },
+                    { char: '●', x: 45, y: 50, size: 50, color: 'tan' },
+                    { char: '●', x: 45, y: 50, size: 30, color: 'red' },
+                    // Orbital dots
+                    { char: '○', x: 45, y: 50, size: 200, color: 'tan', opacity: 0.3 },
+                ]
+            },
+            // Panel 4: Lower middle left - large red ring
+            {
+                glyphs: [
+                    { char: '●', x: 40, y: 45, size: 160, color: 'red' },
+                    { char: '●', x: 40, y: 45, size: 110, color: '#f4efe6' }, // hollow center
+                    { char: '●', x: 15, y: 85, size: 18, color: 'deep-blue' },
+                    { char: '●', x: 25, y: 80, size: 14, color: 'teal' },
+                    { char: '●', x: 75, y: 20, size: 12, color: 'tan' },
+                    { char: '●', x: 85, y: 75, size: 16, color: 'red' },
+                    { char: '●', x: 70, y: 85, size: 20, color: 'cream' },
+                ]
+            },
+            // Panel 5: Lower middle right - dots in row, circles below
+            {
+                glyphs: [
+                    // Row of decreasing dots
+                    { char: '●', x: 20, y: 20, size: 12, color: 'teal' },
+                    { char: '●', x: 30, y: 20, size: 10, color: 'tan' },
+                    { char: '●', x: 38, y: 20, size: 9, color: 'cream' },
+                    { char: '●', x: 45, y: 20, size: 8, color: 'black' },
+                    { char: '●', x: 51, y: 20, size: 6, color: 'tan' },
+                    { char: '●', x: 56, y: 20, size: 5, color: 'teal' },
+                    { char: '●', x: 60, y: 20, size: 4, color: 'cream' },
+                    // Larger circles
+                    { char: '●', x: 30, y: 55, size: 80, color: 'deep-blue' },
+                    { char: '●', x: 60, y: 50, size: 55, color: 'tan' },
+                    { char: '●', x: 80, y: 65, size: 40, color: 'red' },
+                ]
+            },
+            // Panel 6: Bottom left - scattered dot cluster
+            {
+                glyphs: [
+                    { char: '●', x: 30, y: 25, size: 22, color: 'tan' },
+                    { char: '●', x: 45, y: 20, size: 18, color: 'cream' },
+                    { char: '●', x: 55, y: 28, size: 24, color: 'tan' },
+                    { char: '●', x: 25, y: 40, size: 20, color: 'cream' },
+                    { char: '●', x: 40, y: 38, size: 16, color: 'tan' },
+                    { char: '●', x: 60, y: 42, size: 22, color: 'cream' },
+                    { char: '●', x: 35, y: 55, size: 14, color: 'tan' },
+                    { char: '●', x: 50, y: 58, size: 18, color: 'cream' },
+                    { char: '●', x: 20, y: 70, size: 16, color: 'deep-blue' },
+                    { char: '●', x: 35, y: 75, size: 24, color: 'red' },
+                    { char: '●', x: 55, y: 72, size: 20, color: 'cream' },
+                    { char: '●', x: 70, y: 78, size: 18, color: 'red' },
+                    { char: '●', x: 45, y: 85, size: 14, color: 'tan' },
+                ]
+            },
+            // Panel 7: Bottom right - concentric target rings
+            {
+                glyphs: [
+                    { char: '●', x: 60, y: 55, size: 150, color: 'pale-blue', opacity: 0.7 },
+                    { char: '●', x: 60, y: 55, size: 115, color: '#f4efe6' },
+                    { char: '●', x: 60, y: 55, size: 95, color: 'red' },
+                    { char: '●', x: 60, y: 55, size: 70, color: '#f4efe6' },
+                    { char: '●', x: 60, y: 55, size: 50, color: 'deep-blue' },
+                    { char: '●', x: 60, y: 55, size: 30, color: '#f4efe6' },
+                    { char: '●', x: 60, y: 55, size: 15, color: 'cream' },
+                    // Orbital ring hint
+                    { char: '○', x: 60, y: 55, size: 180, color: 'tan', opacity: 0.2 },
+                ]
+            },
+        ];
+
+        const grid = document.getElementById('grid');
+
+        panels.forEach((panel, index) => {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            
+            panel.glyphs.forEach(g => {
+                const glyph = document.createElement('div');
+                glyph.className = `glyph ${g.color}`;
+                glyph.textContent = g.char;
+                glyph.style.left = `${g.x}%`;
+                glyph.style.top = `${g.y}%`;
+                glyph.style.fontSize = `${g.size}px`;
+                if (g.opacity) {
+                    glyph.style.opacity = g.opacity;
+                }
+                if (g.color && g.color.startsWith('#')) {
+                    glyph.style.color = g.color;
+                    glyph.className = 'glyph';
+                }
+                cell.appendChild(glyph);
+            });
+            
+            grid.appendChild(cell);
+        });
+    </script>
+</body>
+</html>

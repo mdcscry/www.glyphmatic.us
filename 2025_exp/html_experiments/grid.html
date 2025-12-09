@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Living Truchet Tiles</title>
+    <style>
+        /* 1. Global Reset to ensure math works */
+        * {
+            box-sizing: border-box; 
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #222; /* Dark background to make it pop */
+            overflow: hidden;
+        }
+
+        /* 2. The Grid */
+        #grid-container {
+            display: grid;
+            grid-template-columns: repeat(10, 60px);
+            grid-template-rows: repeat(10, 60px);
+            /* gap: -1px;  <-- Optional hack if you still see white lines */
+            border: 4px solid #444;
+            background-color: #222;
+        }
+
+        /* 3. The Cell */
+        .cell {
+            width: 60px;
+            height: 60px;
+            position: relative;
+            overflow: hidden; 
+            
+            /* Smooth Rotation */
+            transition: transform 3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        /* 4. The Arcs */
+        .arc {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius:90%;
+            
+            /* The Line Style */
+            border: 1px solid #4ade80; /* Bright Green Lines */
+            
+            /* CRITICAL FIX FOR TOUCHING LINES:
+               We use a transparent border for the rest of the circle 
+               so it doesn't mess with layout 
+            */
+        }
+
+        /* Top-Left Arc */
+        .arc-1 {
+            top: -50%;
+            left: -50%;
+        }
+
+        /* Bottom-Right Arc */
+        .arc-2 {
+            bottom: -50%;
+            right: -50%;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="grid-container"></div>
+
+    <script>
+        const gridContainer = document.getElementById('grid-container');
+        const rows = 10;
+        const cols = 10;
+        const cells = []; // Array to store our cell DOM elements
+
+        function createGrid() {
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+
+                    const arc1 = document.createElement('div');
+                    arc1.classList.add('arc', 'arc-1');
+
+                    const arc2 = document.createElement('div');
+                    arc2.classList.add('arc', 'arc-2');
+
+                    cell.appendChild(arc1);
+                    cell.appendChild(arc2);
+
+                    // Initial Pattern: Checkerboard circles
+                    let rotation = 0;
+                    if ((r + c) % 2 !== 0) {
+                        rotation = 90;
+                    }
+
+                    cell.setAttribute('data-rotation', rotation);
+                    cell.style.transform = `rotate(${rotation}deg)`;
+
+                    gridContainer.appendChild(cell);
+                    cells.push(cell); // Add to our list for the auto-rotator
+                }
+            }
+        }
+
+        // --- THE "DO IT ON ITS OWN" LOGIC ---
+        function startChaos() {
+            // Every 100 milliseconds, pick a random cell and spin it
+            setInterval(() => {
+                // 1. Pick a random cell index (0 to 99)
+                const randomIndex = Math.floor(Math.random() * cells.length);
+                const randomCell = cells[randomIndex];
+
+                // 2. Calculate new rotation
+                let currentRot = parseInt(randomCell.getAttribute('data-rotation'));
+                
+                // Randomly choose left (-90) or right (+90) spin for variety
+                const direction = Math.random() > 0.5 ? 90 : -90;
+                let newRot = currentRot + direction;
+
+                // 3. Apply
+                randomCell.style.transform = `rotate(${newRot}deg)`;
+                randomCell.setAttribute('data-rotation', newRot);
+
+            }, 200); // <-- SPEED: Change this number (ms) to make it faster/slower
+        }
+
+        // Initialize
+        createGrid();
+        startChaos();
+
+    </script>
+</body>
+</html>

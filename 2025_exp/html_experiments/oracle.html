@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slot Machine Oracle</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #0a0a0c;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: system-ui, sans-serif;
+            overflow: hidden;
+        }
+        
+        .machine {
+            position: relative;
+            background: linear-gradient(145deg, #1a1a1f, #0d0d10);
+            border-radius: 20px;
+            padding: 40px 50px;
+            box-shadow: 
+                0 0 0 2px #2a2a35,
+                0 20px 60px rgba(0,0,0,0.8),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+        
+        .title {
+            color: #aa3333;
+            font-size: 14px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(170,50,50,0.5);
+        }
+        
+        .reels-container {
+            display: flex;
+            gap: 20px;
+            background: #000;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: inset 0 5px 20px rgba(0,0,0,0.8);
+        }
+        
+        .reel-window {
+            width: 120px;
+            height: 320px;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(180deg, 
+                rgba(0,0,0,0.8) 0%, 
+                transparent 20%, 
+                transparent 80%, 
+                rgba(0,0,0,0.8) 100%
+            );
+            border-radius: 8px;
+        }
+        
+        .reel-window::before,
+        .reel-window::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 40%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .reel-window::before {
+            top: 0;
+            background: linear-gradient(to bottom, #0a0a0c 0%, transparent 100%);
+        }
+        
+        .reel-window::after {
+            bottom: 0;
+            background: linear-gradient(to top, #0a0a0c 0%, transparent 100%);
+        }
+        
+        .reel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: none;
+        }
+        
+        .glyph {
+            width: 120px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            color: #e8e8e8;
+            flex-shrink: 0;
+        }
+        
+        .center-line {
+            position: absolute;
+            top: 50%;
+            left: -10px;
+            right: -10px;
+            height: 100px;
+            transform: translateY(-50%);
+            border-top: 1px solid rgba(170,50,50,0.3);
+            border-bottom: 1px solid rgba(170,50,50,0.3);
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .lever-container {
+            position: absolute;
+            right: -60px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .lever {
+            width: 40px;
+            height: 120px;
+            background: linear-gradient(90deg, #2a2a30, #1a1a1f);
+            border-radius: 20px;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+        }
+        
+        .lever-knob {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle at 30% 30%, #aa4444, #661a1a);
+            border-radius: 50%;
+            box-shadow: 
+                0 4px 15px rgba(0,0,0,0.5),
+                inset 0 2px 5px rgba(255,255,255,0.2);
+            transition: top 0.1s ease-out;
+        }
+        
+        .lever.pulled .lever-knob {
+            top: 60px;
+        }
+        
+        .oracle-reading {
+            margin-top: 30px;
+            text-align: center;
+            min-height: 60px;
+        }
+        
+        .oracle-text {
+            color: #666;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .oracle-text.visible {
+            opacity: 1;
+        }
+        
+        .result-glyphs {
+            font-size: 24px;
+            color: #aa3333;
+            letter-spacing: 20px;
+            margin-top: 10px;
+            text-shadow: 0 0 30px rgba(170,50,50,0.5);
+        }
+        
+        .instructions {
+            position: fixed;
+            bottom: 30px;
+            color: #333;
+            font-size: 12px;
+            letter-spacing: 2px;
+        }
+        
+        .glyph.locked {
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+        
+        @keyframes glow-pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(170,50,50,0.3); }
+            50% { box-shadow: 0 0 40px rgba(170,50,50,0.6); }
+        }
+        
+        .machine.ready .lever-knob {
+            animation: glow-pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="machine ready" id="machine">
+        <div class="title">Oracle</div>
+        
+        <div class="reels-container">
+            <div class="reel-window">
+                <div class="reel" id="reel0"></div>
+            </div>
+            <div class="reel-window">
+                <div class="reel" id="reel1"></div>
+            </div>
+            <div class="reel-window">
+                <div class="reel" id="reel2"></div>
+            </div>
+            <div class="center-line"></div>
+        </div>
+        
+        <div class="lever-container">
+            <div class="lever" id="lever">
+                <div class="lever-knob"></div>
+            </div>
+        </div>
+        
+        <div class="oracle-reading">
+            <div class="oracle-text" id="oracle-text">Your reading awaits</div>
+            <div class="result-glyphs" id="result-glyphs"></div>
+        </div>
+    </div>
+    
+    <div class="instructions">PULL THE LEVER OR PRESS SPACE</div>
+
+    <script>
+        // Extended glyph set - sampling from many Unicode blocks
+        const glyphRanges = [
+            // Symbols and pictographs
+            [0x2600, 0x26FF],  // Misc symbols
+            [0x2700, 0x27BF],  // Dingbats
+            [0x2190, 0x21FF],  // Arrows
+            [0x2300, 0x23FF],  // Misc technical
+            [0x25A0, 0x25FF],  // Geometric shapes
+            [0x2660, 0x2667],  // Card suits
+            // Playing cards
+            [0x1F0A0, 0x1F0AE],
+            [0x1F0B0, 0x1F0BE],
+            [0x1F0C0, 0x1F0CE],
+            [0x1F0D0, 0x1F0DF],
+            // Emoji and symbols
+            [0x1F300, 0x1F5FF],
+            [0x1F600, 0x1F64F],
+            [0x1F680, 0x1F6FF],
+            [0x1F900, 0x1F9FF],
+            // Alchemical
+            [0x1F700, 0x1F77F],
+            // Chess
+            [0x2654, 0x265F],
+            // Zodiac
+            [0x2648, 0x2653],
+            // Planets
+            [0x263D, 0x2647],
+            // Various scripts for texture
+            [0x10300, 0x1032F], // Old Italic
+            [0x10330, 0x1034F], // Gothic
+            [0x10380, 0x1039F], // Ugaritic
+            [0x103A0, 0x103DF], // Old Persian
+            [0x10400, 0x1044F], // Deseret
+            [0x10450, 0x1047F], // Shavian
+            [0x10480, 0x104AF], // Osmanya
+            [0x10800, 0x1083F], // Cypriot
+            [0x10900, 0x1091F], // Phoenician
+            [0x10920, 0x1093F], // Lydian
+            [0x10A00, 0x10A5F], // Kharoshthi
+            [0x12000, 0x1237F], // Cuneiform
+            [0x13000, 0x1342F], // Egyptian Hieroglyphs
+            // Braille
+            [0x2800, 0x28FF],
+            // Box drawing
+            [0x2500, 0x257F],
+            // Block elements  
+            [0x2580, 0x259F],
+            // CJK radicals
+            [0x2E80, 0x2EFF],
+            // Yi
+            [0xA000, 0xA48F],
+            // Georgian
+            [0x10A0, 0x10FF],
+            // Armenian
+            [0x0530, 0x058F],
+            // Hebrew
+            [0x0590, 0x05FF],
+            // Arabic
+            [0x0600, 0x06FF],
+            // Syriac
+            [0x0700, 0x074F],
+            // Thaana
+            [0x0780, 0x07BF],
+            // Devanagari
+            [0x0900, 0x097F],
+            // Bengali
+            [0x0980, 0x09FF],
+            // Gurmukhi
+            [0x0A00, 0x0A7F],
+            // Gujarati
+            [0x0A80, 0x0AFF],
+            // Oriya
+            [0x0B00, 0x0B7F],
+            // Tamil
+            [0x0B80, 0x0BFF],
+            // Telugu
+            [0x0C00, 0x0C7F],
+            // Kannada
+            [0x0C80, 0x0CFF],
+            // Malayalam
+            [0x0D00, 0x0D7F],
+            // Thai
+            [0x0E00, 0x0E7F],
+            // Lao
+            [0x0E80, 0x0EFF],
+            // Tibetan
+            [0x0F00, 0x0FFF],
+            // Myanmar
+            [0x1000, 0x109F],
+            // Ethiopic
+            [0x1200, 0x137F],
+            // Cherokee
+            [0x13A0, 0x13FF],
+            // Runic
+            [0x16A0, 0x16FF],
+            // Ogham
+            [0x1680, 0x169F],
+            // Tagalog
+            [0x1700, 0x171F],
+            // Mongolian
+            [0x1800, 0x18AF],
+            // Limbu
+            [0x1900, 0x194F],
+            // Khmer symbols
+            [0x19E0, 0x19FF],
+            // Musical symbols
+            [0x1D100, 0x1D1FF],
+            // Ancient Greek musical
+            [0x1D200, 0x1D24F],
+            // Tai Xuan Jing
+            [0x1D300, 0x1D35F],
+            // Math alphanumeric
+            [0x1D400, 0x1D7FF],
+            // Mahjong
+            [0x1F000, 0x1F02F],
+            // Dominos
+            [0x1F030, 0x1F09F],
+        ];
+        
+        // Build glyph pool
+        let glyphPool = [];
+        
+        function isRenderable(codePoint) {
+            try {
+                const char = String.fromCodePoint(codePoint);
+                // Skip control chars, combining marks alone, and private use
+                if (codePoint < 0x20) return false;
+                if (codePoint >= 0xE000 && codePoint <= 0xF8FF) return false;
+                if (codePoint >= 0xFE00 && codePoint <= 0xFE0F) return false;
+                return true;
+            } catch {
+                return false;
+            }
+        }
+        
+        for (const [start, end] of glyphRanges) {
+            for (let cp = start; cp <= end; cp++) {
+                if (isRenderable(cp)) {
+                    glyphPool.push(String.fromCodePoint(cp));
+                }
+            }
+        }
+        
+        console.log(`Glyph pool size: ${glyphPool.length}`);
+        
+        function randomGlyph() {
+            return glyphPool[Math.floor(Math.random() * glyphPool.length)];
+        }
+        
+        // Reel state
+        const VISIBLE_GLYPHS = 5; // Glyphs visible in window (center + 2 above + 2 below)
+        const GLYPH_HEIGHT = 100;
+        const REEL_GLYPHS = 60; // Total glyphs in reel strip
+        
+        const reels = [
+            { element: null, position: 0, velocity: 0, glyphs: [], targetGlyph: null, locked: false },
+            { element: null, position: 0, velocity: 0, glyphs: [], targetGlyph: null, locked: false },
+            { element: null, position: 0, velocity: 0, glyphs: [], targetGlyph: null, locked: false }
+        ];
+        
+        let isSpinning = false;
+        let animationId = null;
+        
+        function initReels() {
+            reels.forEach((reel, i) => {
+                reel.element = document.getElementById(`reel${i}`);
+                reel.glyphs = [];
+                reel.element.innerHTML = '';
+                
+                for (let j = 0; j < REEL_GLYPHS; j++) {
+                    const glyph = randomGlyph();
+                    reel.glyphs.push(glyph);
+                    
+                    const div = document.createElement('div');
+                    div.className = 'glyph';
+                    div.textContent = glyph;
+                    reel.element.appendChild(div);
+                }
+                
+                // Start at a random position
+                reel.position = Math.floor(Math.random() * (REEL_GLYPHS - VISIBLE_GLYPHS)) * GLYPH_HEIGHT;
+                reel.element.style.transform = `translateY(-${reel.position}px)`;
+            });
+        }
+        
+        function spin() {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            document.getElementById('machine').classList.remove('ready');
+            document.getElementById('oracle-text').classList.remove('visible');
+            document.getElementById('result-glyphs').textContent = '';
+            
+            // Pull lever animation
+            const lever = document.getElementById('lever');
+            lever.classList.add('pulled');
+            setTimeout(() => lever.classList.remove('pulled'), 150);
+            
+            // Regenerate glyphs for each reel
+            reels.forEach((reel, i) => {
+                reel.glyphs = [];
+                const glyphElements = reel.element.querySelectorAll('.glyph');
+                
+                glyphElements.forEach((el, j) => {
+                    const glyph = randomGlyph();
+                    reel.glyphs.push(glyph);
+                    el.textContent = glyph;
+                    el.classList.remove('locked');
+                });
+                
+                // Set target - the glyph that will land in center
+                const targetIndex = Math.floor(REEL_GLYPHS / 2) + Math.floor(Math.random() * 10) - 5;
+                reel.targetGlyph = reel.glyphs[targetIndex];
+                reel.targetPosition = (targetIndex - 1) * GLYPH_HEIGHT; // -1 to center it
+                
+                // Initial velocity - each reel slightly different
+                reel.velocity = 50 + Math.random() * 20;
+                reel.locked = false;
+                reel.lockDelay = 1000 + i * 800 + Math.random() * 400; // Staggered stopping
+                reel.spinStartTime = performance.now();
+            });
+            
+            if (animationId) cancelAnimationFrame(animationId);
+            animate();
+        }
+        
+        function animate() {
+            const now = performance.now();
+            let allLocked = true;
+            
+            reels.forEach((reel, i) => {
+                if (reel.locked) return;
+                
+                const elapsed = now - reel.spinStartTime;
+                
+                if (elapsed > reel.lockDelay) {
+                    // Deceleration phase
+                    const decelTime = elapsed - reel.lockDelay;
+                    const decelDuration = 1500; // Time to fully stop
+                    
+                    if (decelTime < decelDuration) {
+                        // Ease out - decelerate smoothly
+                        const progress = decelTime / decelDuration;
+                        const eased = 1 - Math.pow(1 - progress, 3); // Cubic ease out
+                        
+                        // Interpolate position to target
+                        const startPos = reel.position;
+                        const distance = reel.targetPosition - (reel.position % (REEL_GLYPHS * GLYPH_HEIGHT));
+                        
+                        // Add some extra rotations for effect
+                        const extraRotations = 2 * REEL_GLYPHS * GLYPH_HEIGHT;
+                        const totalDistance = extraRotations + distance;
+                        
+                        reel.position = startPos + totalDistance * eased;
+                        reel.velocity = reel.velocity * (1 - eased);
+                        
+                        allLocked = false;
+                    } else {
+                        // Snap to final position
+                        reel.position = reel.targetPosition;
+                        reel.locked = true;
+                        
+                        // Highlight the center glyph
+                        const centerIndex = Math.round(reel.position / GLYPH_HEIGHT) + 1;
+                        const glyphElements = reel.element.querySelectorAll('.glyph');
+                        if (glyphElements[centerIndex]) {
+                            glyphElements[centerIndex].classList.add('locked');
+                        }
+                    }
+                } else {
+                    // Full speed spinning
+                    reel.position += reel.velocity;
+                    
+                    // Wrap around
+                    if (reel.position >= REEL_GLYPHS * GLYPH_HEIGHT) {
+                        reel.position = reel.position % (REEL_GLYPHS * GLYPH_HEIGHT);
+                    }
+                    
+                    allLocked = false;
+                }
+                
+                reel.element.style.transform = `translateY(-${reel.position}px)`;
+            });
+            
+            if (allLocked) {
+                // All reels stopped - show oracle reading
+                isSpinning = false;
+                document.getElementById('machine').classList.add('ready');
+                
+                const results = reels.map(r => r.targetGlyph).join('  ');
+                document.getElementById('result-glyphs').textContent = results;
+                document.getElementById('oracle-text').textContent = 'Contemplate your fate';
+                document.getElementById('oracle-text').classList.add('visible');
+            } else {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        // Event listeners
+        document.getElementById('lever').addEventListener('click', spin);
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                spin();
+            }
+        });
+        
+        // Initialize
+        initReels();
+    </script>
+</body>
+</html>

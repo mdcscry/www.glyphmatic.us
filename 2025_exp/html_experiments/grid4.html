@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truchet Tile Engine</title>
+    <style>
+        :root {
+            /* --- TWEAK THESE TO SEE THE MAGIC --- */
+            
+            /* Try making this 4px (thin) or 30px (super thick) */
+            --line-width: 16px; 
+            
+            /* The size of the square grid cells */
+            --cell-size: 60px;
+            
+            /* Colors */
+            --bg-color: #1a1a1a;
+            --line-color: #4ade80; /* Matrix Green */
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--bg-color);
+            overflow: hidden;
+        }
+
+        #grid-container {
+            display: grid;
+            grid-template-columns: repeat(10, var(--cell-size));
+            grid-template-rows: repeat(10, var(--cell-size));
+            /* A subtle border to frame the artwork */
+            border: 8px solid #333;
+            border-radius: 4px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+
+        .cell {
+            width: var(--cell-size);
+            height: var(--cell-size);
+            position: relative;
+            overflow: hidden;
+            
+            /* The Animation Speed */
+            transition: transform 1.5s cubic-bezier(0.5, 0, 0.3, 1);
+            
+            /* Performance tweaks */
+            will-change: transform;
+            /* This fixes "jagged" edges during rotation in Chrome */
+            -webkit-backface-visibility: hidden; 
+        }
+
+        /* The Glyphs */
+        .arc {
+            position: absolute;
+            border-radius: 50%;
+            border: var(--line-width) solid var(--line-color);
+            
+            /* --- THE GEOMETRY FIX --- */
+            /* We make the circle diameter: 100% of cell + Line Width.
+               PLUS a tiny 1px buffer to force overlap and kill the gaps.
+            */
+            width: calc(100% + var(--line-width) + 1px);
+            height: calc(100% + var(--line-width) + 1px);
+            
+            pointer-events: none;
+        }
+
+        /* Top-Left Arc */
+        .arc-1 {
+            /* Shift up/left by (Line Width / 2) to center the stroke on the edge */
+            top: calc(-50% - (var(--line-width) / 2) - 0.5px);
+            left: calc(-50% - (var(--line-width) / 2) - 0.5px);
+        }
+
+        /* Bottom-Right Arc */
+        .arc-2 {
+            bottom: calc(-50% - (var(--line-width) / 2) - 0.5px);
+            right: calc(-50% - (var(--line-width) / 2) - 0.5px);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="grid-container"></div>
+
+    <script>
+        const gridContainer = document.getElementById('grid-container');
+        const rows = 10;
+        const cols = 10;
+        const allCells = []; // Keep track of cells to animate them
+
+        // 1. Build the Grid
+        function createGrid() {
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+
+                    // Store coordinates for pattern logic
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+                    
+                    // Create the two arcs
+                    const arc1 = document.createElement('div');
+                    arc1.classList.add('arc', 'arc-1');
+                    const arc2 = document.createElement('div');
+                    arc2.classList.add('arc', 'arc-2');
+
+                    cell.appendChild(arc1);
+                    cell.appendChild(arc2);
+                    
+                    // Initial State: Set rotation to 0
+                    setRotation(cell, 0);
+
+                    gridContainer.appendChild(cell);
+                    allCells.push(cell);
+                }
+            }
+        }
+
+        // Helper to handle rotation logic safely
+        function setRotation(element, deg) {
+            element.style.transform = `rotate(${deg}deg)`;
+            element.dataset.rotation = deg;
+        }
+
+        // 2. The Auto-Pilot Logic
+        // We will toggle between two classic Truchet states:
+        // State A: "Circles" (The checkerboard pattern)
+        // State B: "Waves/Snakes" (The aligned pattern)
+        
+        let patternState = 0; 
+
+        function updatePattern() {
+            patternState = (patternState + 1) % 2; // Toggle 0 -> 1 -> 0
+
+            allCells.forEach(cell => {
+                const r = parseInt(cell.dataset.row);
+                const c = parseInt(cell.dataset.col);
+                
+                let targetRotation = 0;
+
+                if (patternState === 0) {
+                    // --- PATTERN: CIRCLES ---
+                    // To make circles, we rotate every OTHER cell (checkerboard)
+                    if ((r + c) % 2 !== 0) {
+                        targetRotation = 90;
+                    } else {
+                        targetRotation = 0;
+                    }
+                } else {
+                    // --- PATTERN: WAVES ---
+                    // To make waves, we rotate alternate ROWS
+                    if (r % 2 !== 0) {
+                         targetRotation = 90;
+                    } else {
+                        targetRotation = 0;
+                    }
+                }
+
+                // Apply the rotation
+                setRotation(cell, targetRotation);
+            });
+        }
+
+        // 3. Start the Engine
+        createGrid();
+
+        // Wait 1 second, then run the update loop every 3.5 seconds
+        setTimeout(() => {
+            updatePattern(); // Run once immediately
+            setInterval(updatePattern, 3500); // Repeat loop
+        }, 1000);
+
+    </script>
+</body>
+</html>

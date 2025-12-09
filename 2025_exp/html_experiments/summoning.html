@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summoning Circle</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #08080a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-family: system-ui, sans-serif;
+        }
+        
+        .container {
+            position: relative;
+            width: 90vmin;
+            height: 90vmin;
+        }
+        
+        .circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 1px solid rgba(80, 40, 40, 0.3);
+        }
+        
+        .circle-outer {
+            width: 85%;
+            height: 85%;
+            border-color: rgba(100, 50, 50, 0.2);
+        }
+        
+        .circle-middle {
+            width: 60%;
+            height: 60%;
+            border-color: rgba(100, 50, 50, 0.25);
+        }
+        
+        .circle-inner {
+            width: 35%;
+            height: 35%;
+            border-color: rgba(100, 50, 50, 0.3);
+        }
+        
+        .glyph {
+            position: absolute;
+            font-size: 28px;
+            color: rgba(180, 160, 160, 0.7);
+            text-shadow: 0 0 10px rgba(150, 100, 100, 0.3);
+            transition: all 0.3s ease-out;
+            cursor: default;
+            user-select: none;
+        }
+        
+        .glyph:hover {
+            color: rgba(220, 180, 180, 0.9);
+            text-shadow: 0 0 20px rgba(200, 100, 100, 0.5);
+            transform: scale(1.3);
+        }
+        
+        .summoned {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: rgba(200, 150, 150, 0);
+            text-shadow: 0 0 30px rgba(200, 100, 100, 0.8);
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .summoned.active {
+            animation: summon 3s ease-out forwards;
+        }
+        
+        @keyframes summon {
+            0% {
+                font-size: 24px;
+                color: rgba(255, 200, 200, 0);
+                text-shadow: 0 0 0 transparent;
+            }
+            20% {
+                font-size: 120px;
+                color: rgba(255, 220, 220, 1);
+                text-shadow: 
+                    0 0 60px rgba(255, 150, 150, 0.8),
+                    0 0 120px rgba(200, 100, 100, 0.5);
+            }
+            40% {
+                font-size: 140px;
+                color: rgba(255, 255, 255, 1);
+            }
+            100% {
+                font-size: 160px;
+                color: rgba(200, 150, 150, 0);
+                text-shadow: 0 0 200px rgba(200, 100, 100, 0);
+            }
+        }
+        
+        .pulse-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 1px solid rgba(200, 100, 100, 0);
+            pointer-events: none;
+        }
+        
+        .pulse-ring.active {
+            animation: pulse-expand 2s ease-out forwards;
+        }
+        
+        @keyframes pulse-expand {
+            0% {
+                width: 10px;
+                height: 10px;
+                border-color: rgba(200, 100, 100, 0.8);
+                border-width: 2px;
+            }
+            100% {
+                width: 80vmin;
+                height: 80vmin;
+                border-color: rgba(200, 100, 100, 0);
+                border-width: 1px;
+            }
+        }
+        
+        .pentagram {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50%;
+            height: 50%;
+            opacity: 0.15;
+        }
+        
+        .pentagram line {
+            stroke: rgba(150, 80, 80, 0.5);
+            stroke-width: 0.5;
+        }
+        
+        .center-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(100, 50, 50, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: center-pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes center-pulse {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.5;
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0.8;
+            }
+        }
+        
+        .title {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #2a2020;
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="circle circle-outer"></div>
+        <div class="circle circle-middle"></div>
+        <div class="circle circle-inner"></div>
+        
+        <svg class="pentagram" viewBox="0 0 100 100">
+            <line x1="50" y1="5" x2="20" y2="90"/>
+            <line x1="20" y1="90" x2="95" y2="35"/>
+            <line x1="95" y1="35" x2="5" y2="35"/>
+            <line x1="5" y1="35" x2="80" y2="90"/>
+            <line x1="80" y1="90" x2="50" y2="5"/>
+        </svg>
+        
+        <div class="center-glow"></div>
+        <div class="summoned" id="summoned"></div>
+        <div class="pulse-ring" id="pulse"></div>
+    </div>
+    
+    <div class="title">Click any glyph to summon</div>
+
+    <script>
+        const glyphRanges = [
+            [0x2600, 0x26FF], [0x2700, 0x27BF], [0x2190, 0x21FF],
+            [0x2300, 0x23FF], [0x25A0, 0x25FF], [0x2660, 0x2667],
+            [0x1F0A0, 0x1F0AE], [0x1F0B0, 0x1F0BE], [0x1F0C0, 0x1F0CE],
+            [0x1F300, 0x1F5FF], [0x1F600, 0x1F64F], [0x1F680, 0x1F6FF],
+            [0x1F700, 0x1F77F], [0x2654, 0x265F], [0x2648, 0x2653],
+            [0x263D, 0x2647],
+            [0x10300, 0x1032F], [0x10330, 0x1034F], [0x10380, 0x1039F],
+            [0x10400, 0x1044F], [0x10450, 0x1047F], [0x10480, 0x104AF],
+            [0x10800, 0x1083F], [0x10900, 0x1091F], [0x10920, 0x1093F],
+            [0x12000, 0x1237F], [0x13000, 0x1342F], [0x2800, 0x28FF],
+            [0x2E80, 0x2EFF], [0x10A0, 0x10FF], [0x0530, 0x058F],
+            [0x0590, 0x05FF], [0x0600, 0x06FF], [0x0700, 0x074F],
+            [0x0900, 0x097F], [0x0F00, 0x0FFF], [0x1200, 0x137F],
+            [0x16A0, 0x16FF], [0x1680, 0x169F], [0x1800, 0x18AF],
+            [0x1D100, 0x1D1FF], [0x1D300, 0x1D35F],
+            [0x1F000, 0x1F02F], [0x1F030, 0x1F09F],
+            [0x4E00, 0x4FFF], [0x0370, 0x03FF], [0x0400, 0x04FF],
+        ];
+        
+        let glyphPool = [];
+        
+        for (const [start, end] of glyphRanges) {
+            for (let cp = start; cp <= end; cp++) {
+                if (cp >= 0x20 && !(cp >= 0xE000 && cp <= 0xF8FF)) {
+                    glyphPool.push(String.fromCodePoint(cp));
+                }
+            }
+        }
+        
+        function randomGlyph() {
+            return glyphPool[Math.floor(Math.random() * glyphPool.length)];
+        }
+        
+        const container = document.getElementById('container');
+        const summonedEl = document.getElementById('summoned');
+        const pulseEl = document.getElementById('pulse');
+        
+        // Ring configurations
+        const rings = [
+            { radius: 42, count: 24, speed: 0.0003, offset: 0 },
+            { radius: 29, count: 16, speed: -0.0005, offset: Math.PI / 16 },
+            { radius: 16, count: 10, speed: 0.0007, offset: Math.PI / 10 }
+        ];
+        
+        const glyphElements = [];
+        
+        // Create glyphs for each ring
+        rings.forEach((ring, ringIndex) => {
+            for (let i = 0; i < ring.count; i++) {
+                const glyph = document.createElement('div');
+                glyph.className = 'glyph';
+                glyph.textContent = randomGlyph();
+                glyph.dataset.ring = ringIndex;
+                glyph.dataset.index = i;
+                container.appendChild(glyph);
+                
+                glyphElements.push({
+                    el: glyph,
+                    ring: ringIndex,
+                    index: i,
+                    baseAngle: (i / ring.count) * Math.PI * 2 + ring.offset
+                });
+                
+                // Click to summon
+                glyph.addEventListener('click', () => summon(glyph.textContent));
+            }
+        });
+        
+        function summon(char) {
+            // Reset animations
+            summonedEl.classList.remove('active');
+            pulseEl.classList.remove('active');
+            
+            void summonedEl.offsetWidth; // Force reflow
+            
+            summonedEl.textContent = char;
+            summonedEl.classList.add('active');
+            pulseEl.classList.add('active');
+        }
+        
+        // Animation loop
+        let startTime = performance.now();
+        
+        function animate(time) {
+            const elapsed = time - startTime;
+            
+            glyphElements.forEach(item => {
+                const ring = rings[item.ring];
+                const angle = item.baseAngle + elapsed * ring.speed;
+                
+                const x = 50 + ring.radius * Math.cos(angle);
+                const y = 50 + ring.radius * Math.sin(angle);
+                
+                item.el.style.left = `${x}%`;
+                item.el.style.top = `${y}%`;
+                item.el.style.transform = 'translate(-50%, -50%)';
+            });
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate(performance.now());
+        
+        // Occasionally change glyphs
+        setInterval(() => {
+            const item = glyphElements[Math.floor(Math.random() * glyphElements.length)];
+            item.el.style.transition = 'opacity 0.3s';
+            item.el.style.opacity = '0';
+            
+            setTimeout(() => {
+                item.el.textContent = randomGlyph();
+                item.el.style.opacity = '';
+            }, 300);
+        }, 800);
+        
+        // Random auto-summons
+        setInterval(() => {
+            if (Math.random() < 0.3) {
+                const item = glyphElements[Math.floor(Math.random() * glyphElements.length)];
+                summon(item.el.textContent);
+            }
+        }, 4000);
+    </script>
+</body>
+</html>

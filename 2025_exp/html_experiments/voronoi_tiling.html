@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+}
+#canvas {
+    display: block;
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const colors = [
+    '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', 
+    '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
+    '#F8B739', '#52B788', '#E63946', '#A8DADC'
+];
+
+const glyphs = ['◆', '●', '■', '▲', '★', '◉', '◈', '▼', '◀', '▶', '⬟', '⬡', '⬢', '⬣'];
+
+function randomColor() {
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function randomGlyph() {
+    return glyphs[Math.floor(Math.random() * glyphs.length)];
+}
+
+function generatePoints(numPoints) {
+    const points = [];
+    for (let i = 0; i < numPoints; i++) {
+        points.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height
+        });
+    }
+    return points;
+}
+
+function computeVoronoi(points) {
+    const cells = [];
+    const step = 4; // Pixel sampling resolution
+    
+    // For each point, find all pixels closer to it than any other point
+    for (let i = 0; i < points.length; i++) {
+        const cell = {
+            point: points[i],
+            pixels: []
+        };
+        
+        for (let x = 0; x < canvas.width; x += step) {
+            for (let y = 0; y < canvas.height; y += step) {
+                let closest = 0;
+                let minDist = Infinity;
+                
+                for (let j = 0; j < points.length; j++) {
+                    const dist = Math.hypot(x - points[j].x, y - points[j].y);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        closest = j;
+                    }
+                }
+                
+                if (closest === i) {
+                    cell.pixels.push([x, y]);
+                }
+            }
+        }
+        
+        cells.push(cell);
+    }
+    
+    return cells;
+}
+
+function cellBounds(pixels) {
+    if (pixels.length === 0) return null;
+    
+    let minX = Infinity, minY = Infinity;
+    let maxX = -Infinity, maxY = -Infinity;
+    
+    for (const [x, y] of pixels) {
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+    }
+    
+    return { minX, maxX, minY, maxY };
+}
+
+function drawVoronoi() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, canvas.width, canvas.height);
+    ctx.clip();
+    
+    const points = generatePoints(40);
+    const cells = computeVoronoi(points);
+    
+    for (const cell of cells) {
+        if (cell.pixels.length === 0) continue;
+        
+        const color = randomColor();
+        
+        // Draw cell pixels
+        ctx.fillStyle = color;
+        for (const [x, y] of cell.pixels) {
+            ctx.fillRect(x, y, 4, 4);
+        }
+        
+        // Draw borders by checking neighboring pixels
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        for (const [x, y] of cell.pixels) {
+            // Check if this is an edge pixel
+            let isEdge = false;
+            for (let dx = -4; dx <= 4; dx += 4) {
+                for (let dy = -4; dy <= 4; dy += 4) {
+                    if (dx === 0 && dy === 0) continue;
+                    const found = cell.pixels.some(([px, py]) => 
+                        Math.abs(px - (x + dx)) < 2 && Math.abs(py - (y + dy)) < 2
+                    );
+                    if (!found) {
+                        isEdge = true;
+                        break;
+                    }
+                }
+                if (isEdge) break;
+            }
+            
+            if (isEdge) {
+                ctx.fillRect(x, y, 4, 4);
+            }
+        }
+        
+        // Draw glyph at center point
+        const bounds = cellBounds(cell.pixels);
+        if (!bounds) continue;
+        
+        const width = bounds.maxX - bounds.minX;
+        const height = bounds.maxY - bounds.minY;
+        const area = width * height;
+        const fontSize = Math.sqrt(area) * 0.3;
+        
+        ctx.save();
+        ctx.translate(cell.point.x, cell.point.y);
+        ctx.rotate(Math.random() * Math.PI * 2);
+        
+        ctx.font = `${fontSize}px Arial`;
+        ctx.fillStyle = randomColor();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(randomGlyph(), 0, 0);
+        
+        ctx.restore();
+    }
+    
+    ctx.restore();
+}
+
+drawVoronoi();
+
+canvas.addEventListener('click', drawVoronoi);
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    drawVoronoi();
+});
+
+</script>
+
+</body>
+</html>

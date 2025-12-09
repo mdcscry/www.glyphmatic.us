@@ -1512,6 +1512,12 @@ ugaritic old persian runic SIL fonts KangxiRadicals AnatolianHeiro
     src: url('../fonts/OpenMoji-color-colr0_svg.ttf') format('truetype');
 }
 
+
+@font-face {
+    font-family: 'New Gardiner SMP';
+    src: url('../fonts/NewGardinerSMP.ttf') format('truetype');
+}
+
 @font-face {
     font-family: 'Dela Gothic One';
     src: url('../fonts/DelaGothicOne.ttf') format('truetype');

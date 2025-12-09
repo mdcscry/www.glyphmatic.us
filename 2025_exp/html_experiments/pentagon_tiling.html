@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+}
+#canvas {
+    display: block;
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const colors = [
+    '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', 
+    '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
+    '#F8B739', '#52B788', '#E63946', '#A8DADC'
+];
+
+const glyphs = ['⬟', '⬠', '⬡'];  // Pentagon glyphs
+
+function randomColor() {
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function randomGlyph() {
+    return glyphs[Math.floor(Math.random() * glyphs.length)];
+}
+
+// Cairo pentagonal tiling - creates pentagons that tessellate
+function createCairoPentagon(x, y, size) {
+    // Cairo pentagon has specific angles and proportions
+    const vertices = [];
+    const angles = [0, 2.677945, 3.926991, 5.235988, 6.021386]; // Specific angles for Cairo tiling
+    
+    for (let i = 0; i < 5; i++) {
+        vertices.push([
+            x + size * Math.cos(angles[i]),
+            y + size * Math.sin(angles[i])
+        ]);
+    }
+    
+    return vertices;
+}
+
+function pentagonCentroid(vertices) {
+    let cx = 0, cy = 0;
+    for (const [x, y] of vertices) {
+        cx += x;
+        cy += y;
+    }
+    return [cx / vertices.length, cy / vertices.length];
+}
+
+function pentagonArea(vertices) {
+    let area = 0;
+    for (let i = 0; i < vertices.length; i++) {
+        const j = (i + 1) % vertices.length;
+        area += vertices[i][0] * vertices[j][1];
+        area -= vertices[j][0] * vertices[i][1];
+    }
+    return Math.abs(area / 2);
+}
+
+function drawPentagon(vertices) {
+    ctx.fillStyle = randomColor();
+    ctx.beginPath();
+    ctx.moveTo(vertices[0][0], vertices[0][1]);
+    for (let i = 1; i < vertices.length; i++) {
+        ctx.lineTo(vertices[i][0], vertices[i][1]);
+    }
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // Draw glyph
+    const area = pentagonArea(vertices);
+    const fontSize = Math.sqrt(area) * 0.4;
+    const [cx, cy] = pentagonCentroid(vertices);
+    
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(Math.random() * Math.PI * 2);
+    
+    ctx.font = `${fontSize}px Arial`;
+    ctx.fillStyle = randomColor();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(randomGlyph(), 0, 0);
+    
+    ctx.restore();
+}
+
+function drawCairoTiling() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Set clipping
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, canvas.width, canvas.height);
+    ctx.clip();
+    
+    const size = 60; // Size of pentagons
+    const sqrt3 = Math.sqrt(3);
+    
+    // Cairo tiling uses a specific pattern
+    // Each "unit" consists of 4 pentagons arranged in a specific way
+    const rowHeight = size * 2.5;
+    const colWidth = size * 2.3;
+    
+    for (let row = -2; row < canvas.height / rowHeight + 2; row++) {
+        for (let col = -2; col < canvas.width / colWidth + 2; col++) {
+            const baseX = col * colWidth;
+            const baseY = row * rowHeight;
+            
+            // Pattern 1: upward pointing
+            drawPentagon(createCairoPentagon(baseX, baseY, size));
+            
+            // Pattern 2: rotated
+            drawPentagon(createCairoPentagon(baseX + colWidth/2, baseY + rowHeight/2, size));
+            
+            // Additional pentagons to fill pattern
+            drawPentagon(createCairoPentagon(baseX + colWidth/4, baseY + rowHeight/4, size));
+            drawPentagon(createCairoPentagon(baseX + 3*colWidth/4, baseY + 3*rowHeight/4, size));
+        }
+    }
+    
+    ctx.restore();
+}
+
+drawCairoTiling();
+
+canvas.addEventListener('click', drawCairoTiling);
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    drawCairoTiling();
+});
+
+</script>
+
+</body>
+</html>

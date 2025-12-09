@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truchet Tile Engine - Final</title>
+    <style>
+        :root {
+            /* --- CONTROLS --- */
+            --cell-size: 60px;     /* Size of the square */
+            --line-width: 16px;    /* Thickness of the pipe */
+            --bg-color: #222;      /* Background */
+            --line-color: #4ade80; /* Line Color */
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--bg-color);
+            overflow: hidden;
+        }
+
+        #grid-container {
+            display: grid;
+            grid-template-columns: repeat(10, var(--cell-size));
+            grid-template-rows: repeat(10, var(--cell-size));
+            /* A clean border around the whole thing */
+            border: 8px solid #333;
+        }
+
+        .cell {
+            width: var(--cell-size);
+            height: var(--cell-size);
+            position: relative;
+            overflow: hidden;
+            
+            /* Slower transition for smoother visual */
+            transition: transform 1.5s cubic-bezier(0.5, 0, 0.3, 1);
+            
+            /* FIX FOR ANIMATION GAPS: 
+               This adds a transparent outline that forces the browser to 
+               render the edges more aggressively during movement. */
+            outline: 1px solid transparent;
+            will-change: transform;
+            transform-style: preserve-3d;
+        }
+
+        .arc {
+            position: absolute;
+            border-radius: 50%;
+            border: var(--line-width) solid var(--line-color);
+            
+            /* GEOMETRY: 
+               100% + line-width puts the center of the stroke on the edge.
+               We add +1px buffer to ensure overlap and prevent gaps. */
+            width: calc(100% + var(--line-width) + 1px);
+            height: calc(100% + var(--line-width) + 1px);
+            
+            pointer-events: none;
+        }
+
+        .arc-1 {
+            top: calc(-50% - (var(--line-width) / 2) - 0.5px);
+            left: calc(-50% - (var(--line-width) / 2) - 0.5px);
+        }
+
+        .arc-2 {
+            bottom: calc(-50% - (var(--line-width) / 2) - 0.5px);
+            right: calc(-50% - (var(--line-width) / 2) - 0.5px);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="grid-container"></div>
+
+    <script>
+        const gridContainer = document.getElementById('grid-container');
+        const rows = 10;
+        const cols = 10;
+        const allCells = [];
+
+        // 1. Build Grid
+        function createGrid() {
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+                    
+                    const arc1 = document.createElement('div');
+                    arc1.classList.add('arc', 'arc-1');
+                    const arc2 = document.createElement('div');
+                    arc2.classList.add('arc', 'arc-2');
+
+                    cell.appendChild(arc1);
+                    cell.appendChild(arc2);
+                    
+                    // Initial State: 0 rotation
+                    cell.style.transform = `rotate(0deg)`;
+
+                    gridContainer.appendChild(cell);
+                    allCells.push(cell);
+                }
+            }
+        }
+
+        // 2. Pattern Logic
+        let patternState = 0; 
+
+        function updatePattern() {
+            patternState = (patternState + 1) % 2; 
+
+            allCells.forEach(cell => {
+                const r = parseInt(cell.dataset.row);
+                const c = parseInt(cell.dataset.col);
+                let deg = 0;
+
+                if (patternState === 0) {
+                    // State 0: Checkerboard Circles
+                    if ((r + c) % 2 !== 0) deg = 90;
+                } else {
+                    // State 1: Waves / Scales
+                    if (r % 2 !== 0) deg = 90;
+                }
+                
+                cell.style.transform = `rotate(${deg}deg)`;
+            });
+        }
+
+        // 3. Init
+        createGrid();
+        
+        // Start the loop
+        setTimeout(() => {
+            updatePattern();
+            setInterval(updatePattern, 3000);
+        }, 500);
+
+    </script>
+</body>
+</html>

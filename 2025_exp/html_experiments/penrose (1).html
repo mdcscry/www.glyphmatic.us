@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penrose Tiling</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #1a1a2e; 
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: system-ui, sans-serif;
+        }
+        canvas { 
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background: #4a4a6a;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        button:hover { background: #6a6a8a; }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button onclick="unsubdivide()">−</button>
+        <button onclick="subdivide()">+</button>
+        <button onclick="regenerate()">Randomize</button>
+    </div>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Golden ratio
+        const PHI = (1 + Math.sqrt(5)) / 2;
+        
+        // Set canvas size
+        const size = Math.min(window.innerWidth - 40, window.innerHeight - 40, 800);
+        canvas.width = size;
+        canvas.height = size;
+        
+        // Tile types: 0 = thin rhombus, 1 = thick rhombus
+        // Using P3 Penrose tiling (rhombus version)
+        
+        let triangles = [];
+        
+        // Generate random pastel-ish color
+        function randomColor() {
+            const h = Math.random() * 360;
+            const s = 50 + Math.random() * 30;
+            const l = 45 + Math.random() * 25;
+            return `hsl(${h}, ${s}%, ${l}%)`;
+        }
+        
+        // Complex number operations for easier rotation
+        function cAdd(a, b) { return [a[0] + b[0], a[1] + b[1]]; }
+        function cSub(a, b) { return [a[0] - b[0], a[1] - b[1]]; }
+        function cMul(a, b) { return [a[0]*b[0] - a[1]*b[1], a[0]*b[1] + a[1]*b[0]]; }
+        function cScale(a, s) { return [a[0] * s, a[1] * s]; }
+        
+        // Robinson triangle types for P3 tiling
+        // type 0: small triangle (36-36-108)
+        // type 1: large triangle (36-72-72)
+        
+        function subdivideTriangles(tris) {
+            const result = [];
+            
+            for (const tri of tris) {
+                const [type, A, B, C] = tri;
+                
+                if (type === 0) {
+                    // Subdivide small (red) triangle
+                    // A is the apex (36°), B and C are base (72° each)
+                    const P = cAdd(A, cScale(cSub(B, A), 1 / PHI));
+                    result.push([0, C, P, B]);
+                    result.push([1, P, C, A]);
+                } else {
+                    // Subdivide large (blue) triangle
+                    // A is the apex (36°), B is 72°, C is 72°
+                    const Q = cAdd(B, cScale(cSub(A, B), 1 / PHI));
+                    const R = cAdd(B, cScale(cSub(C, B), 1 / PHI));
+                    result.push([1, Q, R, B]);
+                    result.push([0, R, Q, A]);
+                    result.push([1, R, A, C]);
+                }
+            }
+            
+            return result;
+        }
+        
+        function initTriangles() {
+            triangles = [];
+            const cx = size / 2;
+            const cy = size / 2;
+            const radius = size * 0.48;
+            
+            // Create initial wheel of 10 large triangles
+            for (let i = 0; i < 10; i++) {
+                const angle1 = (2 * Math.PI * i) / 10 - Math.PI / 2;
+                const angle2 = (2 * Math.PI * (i + 1)) / 10 - Math.PI / 2;
+                
+                const A = [cx, cy];
+                const B = [cx + radius * Math.cos(angle1), cy + radius * Math.sin(angle1)];
+                const C = [cx + radius * Math.cos(angle2), cy + radius * Math.sin(angle2)];
+                
+                if (i % 2 === 0) {
+                    triangles.push([1, A, B, C]);
+                } else {
+                    triangles.push([1, A, C, B]);
+                }
+            }
+        }
+        
+        let subdivisionHistory = []; // Stack to store previous states
+        let tileColors = new Map();
+        let tileGlyphs = new Map();
+        
+        // Unicode glyphs to randomly assign
+        const glyphs = [
+            '☀', '★', '✦', '◆', '●', '▲', '♦', '♠', '♣', '♥',
+            '✿', '❀', '✤', '✥', '❖', '⬟', '⬡', '⬢', '△', '○',
+            '◇', '□', '⬠', '✶', '✹', '❋', '✺', '⚡', '☾', '☽',
+            '⟡', '⟐', '◈', '❂', '✴', '✵', '❇', '❈', '✳', '✲'
+        ];
+        
+        function randomGlyph() {
+            return glyphs[Math.floor(Math.random() * glyphs.length)];
+        }
+        
+        function getTileKey(tri) {
+            const cx = ((tri[1][0] + tri[2][0] + tri[3][0]) / 3).toFixed(1);
+            const cy = ((tri[1][1] + tri[2][1] + tri[3][1]) / 3).toFixed(1);
+            return `${tri[0]}_${cx}_${cy}`;
+        }
+        
+        function getTriangleSize(tri) {
+            const [type, A, B, C] = tri;
+            const ab = Math.hypot(B[0] - A[0], B[1] - A[1]);
+            const bc = Math.hypot(C[0] - B[0], C[1] - B[1]);
+            const ca = Math.hypot(A[0] - C[0], A[1] - C[1]);
+            return Math.min(ab, bc, ca);
+        }
+        
+        function drawTriangles() {
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(0, 0, size, size);
+            
+            for (const tri of triangles) {
+                const [type, A, B, C] = tri;
+                const key = getTileKey(tri);
+                
+                if (!tileColors.has(key)) {
+                    tileColors.set(key, randomColor());
+                }
+                if (!tileGlyphs.has(key)) {
+                    tileGlyphs.set(key, randomGlyph());
+                }
+                
+                ctx.beginPath();
+                ctx.moveTo(A[0], A[1]);
+                ctx.lineTo(B[0], B[1]);
+                ctx.lineTo(C[0], C[1]);
+                ctx.closePath();
+                
+                ctx.fillStyle = tileColors.get(key);
+                ctx.fill();
+                
+                ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
+                // Draw glyph at centroid
+                const cx = (A[0] + B[0] + C[0]) / 3;
+                const cy = (A[1] + B[1] + C[1]) / 3;
+                const tileSize = getTriangleSize(tri);
+                const fontSize = Math.max(10, tileSize * 0.4);
+                
+                ctx.font = `${fontSize}px sans-serif`;
+                ctx.fillStyle = 'rgba(0,0,0,0.5)';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(tileGlyphs.get(key), cx, cy);
+            }
+        }
+        
+        function regenerate() {
+            tileColors.clear();
+            tileGlyphs.clear();
+            drawTriangles();
+        }
+        
+        function subdivide() {
+            // Save current state before subdividing
+            subdivisionHistory.push(JSON.parse(JSON.stringify(triangles)));
+            triangles = subdivideTriangles(triangles);
+            tileColors.clear();
+            tileGlyphs.clear();
+            drawTriangles();
+        }
+        
+        function unsubdivide() {
+            if (subdivisionHistory.length > 0) {
+                triangles = subdivisionHistory.pop();
+                tileColors.clear();
+                tileGlyphs.clear();
+                drawTriangles();
+            }
+        }
+        
+        // Initialize with just 2 subdivisions for larger tiles
+        initTriangles();
+        for (let i = 0; i < 2; i++) {
+            subdivisionHistory.push(JSON.parse(JSON.stringify(triangles)));
+            triangles = subdivideTriangles(triangles);
+        }
+        drawTriangles();
+    </script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+}
+#canvas {
+    display: block;
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+// Set canvas to full window
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// Color palette - can randomize these
+const colors = [
+    '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', 
+    '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
+    '#F8B739', '#52B788', '#E63946', '#A8DADC'
+];
+
+// Sample glyphs - can expand this to any Unicode block
+const glyphs = ['◆', '●', '■', '▲', '★', '◉', '◈', '◐', '◑', '◒', '◓', '◔', '◕', '▣', '▤', '▥', '▦', '▧', '▨', '▩'];
+
+function randomColor() {
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function randomGlyph() {
+    return glyphs[Math.floor(Math.random() * glyphs.length)];
+}
+
+function subdivideRectangle(x, y, width, height, depth) {
+    // Base case: stop subdividing
+    if (depth === 0 || (width < 60 && height < 60) || Math.random() < 0.15) {
+        // Draw background
+        ctx.fillStyle = randomColor();
+        ctx.fillRect(x, y, width, height);
+        
+        // Draw border
+        ctx.strokeStyle = '#222';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, width, height);
+        
+        // Check aspect ratio to determine if we should use multiple glyphs
+        const aspectRatio = width / height;
+        
+        if (aspectRatio > 2.2) {
+            // Wide rectangle - multiple glyphs horizontally
+            const numGlyphs = Math.floor(width / (height * 0.8));
+            const fontSize = height * 0.65;
+            ctx.font = `${fontSize}px Arial`;
+            ctx.fillStyle = '#000';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const spacing = width / (numGlyphs + 1);
+            for (let i = 1; i <= numGlyphs; i++) {
+                const glyph = randomGlyph();
+                ctx.fillText(glyph, x + spacing * i, y + height/2);
+            }
+        } else if (aspectRatio < 0.45) {
+            // Tall rectangle - multiple glyphs vertically
+            const numGlyphs = Math.floor(height / (width * 0.8));
+            const fontSize = width * 0.65;
+            ctx.font = `${fontSize}px Arial`;
+            ctx.fillStyle = '#000';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const spacing = height / (numGlyphs + 1);
+            for (let i = 1; i <= numGlyphs; i++) {
+                const glyph = randomGlyph();
+                ctx.fillText(glyph, x + width/2, y + spacing * i);
+            }
+        } else {
+            // Square-ish - single glyph
+            const fontSize = Math.min(width, height) * 0.65;
+            ctx.font = `${fontSize}px Arial`;
+            ctx.fillStyle = '#000';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const glyph = randomGlyph();
+            ctx.fillText(glyph, x + width/2, y + height/2);
+        }
+        
+        return;
+    }
+    
+    // Decide whether to split horizontally or vertically
+    // Prefer horizontal splits for wide rectangles, vertical for tall ones
+    const aspectRatio = width / height;
+    let splitHorizontally;
+    
+    if (aspectRatio > 1.5) {
+        splitHorizontally = true; // Wide rectangle - split vertically into left/right
+    } else if (aspectRatio < 0.67) {
+        splitHorizontally = false; // Tall rectangle - split horizontally into top/bottom
+    } else {
+        splitHorizontally = Math.random() < 0.5; // Square-ish - random
+    }
+    
+    if (splitHorizontally) {
+        // Split vertically (into left and right parts)
+        const splitRatio = 0.3 + Math.random() * 0.4; // Between 0.3 and 0.7
+        const splitX = width * splitRatio;
+        
+        subdivideRectangle(x, y, splitX, height, depth - 1);
+        subdivideRectangle(x + splitX, y, width - splitX, height, depth - 1);
+    } else {
+        // Split horizontally (into top and bottom parts)
+        const splitRatio = 0.3 + Math.random() * 0.4;
+        const splitY = height * splitRatio;
+        
+        subdivideRectangle(x, y, width, splitY, depth - 1);
+        subdivideRectangle(x, y + splitY, width, height - splitY, depth - 1);
+    }
+}
+
+// Generate the tiling
+subdivideRectangle(0, 0, canvas.width, canvas.height, 8);
+
+// Regenerate on click
+canvas.addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    subdivideRectangle(0, 0, canvas.width, canvas.height, 8);
+});
+
+// Handle window resize
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    subdivideRectangle(0, 0, canvas.width, canvas.height, 8);
+});
+
+</script>
+
+</body>
+</html>

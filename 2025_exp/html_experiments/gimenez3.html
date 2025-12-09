@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Glyphs III</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #3a3a3a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: system-ui, sans-serif;
+        }
+        .canvas {
+            width: 85vmin;
+            height: 120vmin;
+            max-width: 600px;
+            max-height: 850px;
+            background: #5b8bb8;
+            position: relative;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        /* Worn texture overlay */
+        .canvas::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        /* Fold lines */
+        .fold-h, .fold-v {
+            position: absolute;
+            background: rgba(255,255,255,0.08);
+            z-index: 50;
+        }
+        .fold-h {
+            width: 100%;
+            height: 1px;
+            top: 50%;
+        }
+        .fold-v {
+            height: 100%;
+            width: 1px;
+            left: 50%;
+        }
+        
+        /* Worn edges */
+        .canvas::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            box-shadow: inset 0 0 60px rgba(0,0,0,0.15);
+            pointer-events: none;
+            z-index: 90;
+        }
+        
+        .glyph {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        
+        /* Giménez palette */
+        .cream { color: #e8e0d0; }
+        .tan { color: #d8c8a8; }
+        .peach { color: #e0a080; }
+        .coral { color: #d86850; }
+        .red { color: #c84830; }
+    </style>
+</head>
+<body>
+    <div class="canvas" id="canvas">
+        <div class="fold-h"></div>
+        <div class="fold-v"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const centerX = 50;
+        const centerY = 46;
+        
+        // Aspect ratio correction: canvas is 85:120, so Y needs to be scaled
+        const aspectRatio = 85 / 120; // width / height
+        
+        const colors = {
+            cream: 'cream',
+            tan: 'tan', 
+            peach: 'peach',
+            coral: 'coral',
+            red: 'red'
+        };
+        
+        // Rings from outside in
+        // Outer rings: single color. Inner rings: alternating
+        const rings = [
+            { radius: 44, count: 18, size: 56, color: 'cream' },
+            { radius: 36, count: 16, size: 48, color: 'coral' },
+            { radius: 29, count: 15, size: 40, color: 'peach' },
+            { radius: 23, count: 14, size: 34, color: 'cream' },
+            { radius: 18, count: 13, size: 28, alt: ['coral', 'peach'] },
+            { radius: 13.5, count: 12, size: 22, alt: ['cream', 'coral'] },
+            { radius: 9.8, count: 11, size: 17, alt: ['peach', 'cream', 'coral'] },
+            { radius: 6.8, count: 10, size: 13, alt: ['cream', 'coral'] },
+            { radius: 4.2, count: 9, size: 10, alt: ['coral', 'cream', 'peach'] },
+        ];
+        
+        rings.forEach((ring, ringIndex) => {
+            for (let i = 0; i < ring.count; i++) {
+                const angle = (i / ring.count) * Math.PI * 2 - Math.PI / 2;
+                // Offset every other ring
+                const angleOffset = ringIndex % 2 === 0 ? 0 : Math.PI / ring.count;
+                const finalAngle = angle + angleOffset;
+                
+                // Apply aspect ratio correction to Y
+                const x = centerX + ring.radius * Math.cos(finalAngle);
+                const y = centerY + ring.radius * Math.sin(finalAngle) * aspectRatio;
+                
+                // Determine color
+                let ringColor;
+                if (ring.color) {
+                    ringColor = ring.color;
+                } else if (ring.alt) {
+                    ringColor = ring.alt[i % ring.alt.length];
+                }
+                
+                const glyph = document.createElement('div');
+                glyph.className = `glyph ${ringColor}`;
+                glyph.textContent = '●';
+                glyph.style.left = `${x}%`;
+                glyph.style.top = `${y}%`;
+                glyph.style.fontSize = `${ring.size}px`;
+                
+                canvas.appendChild(glyph);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Fonts - Variable Fonts (non-Noto)</title>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: #ccc;
+            font-family: monospace;
+            padding: 40px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #888;
+            font-weight: normal;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .count {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .font-list {
+            column-count: 3;
+            column-gap: 40px;
+        }
+        .font-name {
+            color: #aaa;
+            padding: 2px 0;
+        }
+        .axes {
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Variable Fonts (non-Noto)</h1>
+    <div class="count" id="count"></div>
+    <div class="font-list" id="font-list"></div>
+
+    <script>
+        const API_KEY = 'AIzaSyBPEC-k91wzgVIMm9CZSJIINd-WKmR2Wmo';
+        
+        async function fetchVariableFonts() {
+            const url = `https://www.googleapis.com/webfonts/v1/webfonts?key=${API_KEY}&capability=VF`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                const variableFonts = data.items
+                    .filter(font => !font.family.startsWith('Noto'))
+                    .map(font => ({
+                        name: font.family,
+                        axes: font.axes ? font.axes.map(a => a.tag).join(', ') : 'wght'
+                    }))
+                    .sort((a, b) => a.name.localeCompare(b.name));
+                
+                document.getElementById('count').textContent = `${variableFonts.length} fonts`;
+                
+                const listEl = document.getElementById('font-list');
+                listEl.innerHTML = variableFonts
+                    .map(f => `<div class="font-name">${f.name} <span class="axes">[${f.axes}]</span></div>`)
+                    .join('');
+                    
+            } catch (err) {
+                document.getElementById('font-list').textContent = 'Error: ' + err.message;
+            }
+        }
+        
+        fetchVariableFonts();
+    </script>
+</body>
+</html>

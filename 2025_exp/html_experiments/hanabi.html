@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hanabi No. 76</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: system-ui, sans-serif;
+        }
+        .card {
+            width: 380px;
+            height: 600px;
+            background: #1c2a2a;
+            position: relative;
+            border-radius: 4px;
+            box-shadow: 
+                0 0 0 8px #0a0a0a,
+                0 10px 40px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        
+        /* Worn edge effect */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 8px; left: 8px; right: 8px; bottom: 8px;
+            border: 1px solid rgba(200, 180, 160, 0.15);
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        /* Texture */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.06;
+            pointer-events: none;
+        }
+        
+        .firework {
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+        
+        .ray {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform-origin: center bottom;
+            background: #c85060;
+            border-radius: 50% 50% 0 0;
+        }
+        
+        /* Label */
+        .label {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #e8e0d0;
+            padding: 6px 20px;
+            border-radius: 3px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2a2a2a;
+            z-index: 50;
+            font-family: 'Times New Roman', serif;
+        }
+        .label sup {
+            font-size: 10px;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card" id="card">
+        <div class="label">N<sup>o</sup> 76</div>
+    </div>
+
+    <script>
+        const card = document.getElementById('card');
+        
+        function createFirework(x, y, size, rayCount, rayWidth, rayHeight) {
+            const fw = document.createElement('div');
+            fw.className = 'firework';
+            fw.style.left = `${x}%`;
+            fw.style.top = `${y}%`;
+            
+            for (let i = 0; i < rayCount; i++) {
+                const angle = (i / rayCount) * 360;
+                const ray = document.createElement('div');
+                ray.className = 'ray';
+                ray.style.width = `${rayWidth}px`;
+                ray.style.height = `${rayHeight}px`;
+                ray.style.transform = `rotate(${angle}deg) translateY(-${rayHeight/2}px)`;
+                fw.appendChild(ray);
+            }
+            
+            card.appendChild(fw);
+        }
+        
+        // Big one at top - many rays, elongated
+        createFirework(50, 28, 200, 72, 4, 90);
+        
+        // Smaller ones scattered below
+        const smallOnes = [
+            { x: 22, y: 58, rays: 24, w: 3, h: 28 },
+            { x: 50, y: 55, rays: 22, w: 3, h: 25 },
+            { x: 78, y: 60, rays: 26, w: 3, h: 30 },
+            { x: 18, y: 72, rays: 20, w: 2.5, h: 22 },
+            { x: 42, y: 70, rays: 24, w: 3, h: 26 },
+            { x: 68, y: 68, rays: 22, w: 2.5, h: 24 },
+            { x: 85, y: 75, rays: 20, w: 2.5, h: 22 },
+            { x: 30, y: 82, rays: 22, w: 2.5, h: 24 },
+            { x: 58, y: 80, rays: 24, w: 3, h: 26 },
+        ];
+        
+        smallOnes.forEach(s => {
+            createFirework(s.x, s.y, 60, s.rays, s.w, s.h);
+        });
+    </script>
+</body>
+</html>

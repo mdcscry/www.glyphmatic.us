@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Glyphs II</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #c9c4b8;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: system-ui, sans-serif;
+        }
+        .canvas {
+            width: 90vmin;
+            height: 130vmin;
+            max-width: 600px;
+            max-height: 780px;
+            background: #e8e4da;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        
+        /* Diagonal line texture overlay */
+        .canvas::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                -45deg,
+                transparent,
+                transparent 1px,
+                rgba(0,0,0,0.02) 1px,
+                rgba(0,0,0,0.02) 2px
+            );
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .glyph {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translate(-50%, -50%);
+        }
+        
+        /* Giménez palette - coral, grey, black, cream */
+        .coral { color: #e07860; }
+        .coral-light { color: #e8a090; }
+        .grey { color: #a8a8a0; }
+        .grey-light { color: #c8c8c0; }
+        .black { color: #1a1a1a; }
+        .cream { color: #f0ebe0; }
+        .pink { color: #e8c0b8; }
+        
+        /* Construction lines */
+        .line {
+            position: absolute;
+            background: rgba(160, 150, 140, 0.2);
+            z-index: 1;
+        }
+        .line-h {
+            height: 1px;
+            width: 100%;
+            left: 0;
+        }
+        .line-circle {
+            border: 1px solid rgba(160, 150, 140, 0.25);
+            border-radius: 50%;
+            background: transparent;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas" id="canvas"></div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        
+        // Construction lines first
+        const lines = [
+            { type: 'h', top: 38 },
+            { type: 'h', top: 72 },
+            { type: 'circle', x: 62, y: 12, size: 120 },
+        ];
+        
+        lines.forEach(l => {
+            const line = document.createElement('div');
+            line.className = 'line';
+            if (l.type === 'h') {
+                line.classList.add('line-h');
+                line.style.top = `${l.top}%`;
+            } else if (l.type === 'circle') {
+                line.classList.add('line-circle');
+                line.style.left = `${l.x}%`;
+                line.style.top = `${l.y}%`;
+                line.style.width = `${l.size}px`;
+                line.style.height = `${l.size}px`;
+            }
+            canvas.appendChild(line);
+        });
+
+        // Glyphs - layered back to front
+        const glyphs = [
+            // Upper left triangle (behind)
+            { char: '▲', x: 22, y: 28, size: 200, color: 'grey-light', opacity: 0.5, rotate: 15 },
+            
+            // Top bullseye - coral ring with black center
+            { char: '●', x: 62, y: 12, size: 110, color: 'coral' },
+            { char: '●', x: 62, y: 12, size: 55, color: 'black' },
+            
+            // Small target - coral ring black center
+            { char: '●', x: 58, y: 35, size: 45, color: 'coral' },
+            { char: '●', x: 58, y: 35, size: 18, color: 'black' },
+            
+            // Large center target - pink outer, coral ring, cream center, coral dot
+            { char: '●', x: 38, y: 52, size: 200, color: 'pink', opacity: 0.6 },
+            { char: '●', x: 38, y: 52, size: 150, color: 'coral' },
+            { char: '●', x: 38, y: 52, size: 110, color: 'cream' },
+            { char: '●', x: 38, y: 52, size: 40, color: 'coral', opacity: 0.8 },
+            
+            // Lower right triangle
+            { char: '▼', x: 68, y: 72, size: 180, color: 'grey', opacity: 0.4, rotate: -20 },
+            
+            // Solid coral circle
+            { char: '●', x: 72, y: 78, size: 90, color: 'coral' },
+            
+            // Bottom grey circle with black center and pink dot
+            { char: '●', x: 55, y: 95, size: 130, color: 'grey' },
+            { char: '●', x: 55, y: 95, size: 70, color: 'black' },
+            { char: '●', x: 55, y: 95, size: 25, color: 'pink' },
+        ];
+
+        glyphs.forEach(g => {
+            const glyph = document.createElement('div');
+            glyph.className = `glyph ${g.color}`;
+            glyph.textContent = g.char;
+            glyph.style.left = `${g.x}%`;
+            glyph.style.top = `${g.y}%`;
+            glyph.style.fontSize = `${g.size}px`;
+            if (g.opacity) glyph.style.opacity = g.opacity;
+            if (g.rotate) glyph.style.transform = `translate(-50%, -50%) rotate(${g.rotate}deg)`;
+            canvas.appendChild(glyph);
+        });
+    </script>
+</body>
+</html>
