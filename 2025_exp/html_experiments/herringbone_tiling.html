@@ -68,37 +68,33 @@ function drawRotatedRect(x, y, width, height, angle) {
 
 function drawHerringbone() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(0, 0, canvas.width, canvas.height);
-    ctx.clip();
-    
+
     const brickWidth = 100;
     const brickHeight = 40;
-    
-    // Herringbone pattern uses diagonal bricks alternating direction
-    const diagSize = Math.sqrt(brickWidth * brickWidth + brickHeight * brickHeight) / 2;
-    const rowHeight = brickWidth * 0.7; // Spacing between rows
-    const colWidth = brickWidth * 0.7;  // Spacing between columns
-    
-    for (let row = -5; row * rowHeight < canvas.height + rowHeight * 5; row++) {
-        for (let col = -5; col * colWidth < canvas.width + colWidth * 5; col++) {
-            const x = col * colWidth;
-            const y = row * rowHeight;
-            
-            // Alternate between two orientations
-            if ((row + col) % 2 === 0) {
-                // Diagonal down-right
-                drawRotatedRect(x, y, brickWidth, brickHeight, Math.PI / 4);
-            } else {
-                // Diagonal down-left  
-                drawRotatedRect(x, y, brickWidth, brickHeight, -Math.PI / 4);
-            }
+
+    // Herringbone uses pairs of bricks forming chevrons
+    // Calculate the spacing for proper tiling
+    const chevronHeight = brickWidth / Math.sqrt(2); // vertical spacing
+    const chevronWidth = brickWidth; // horizontal spacing
+
+    for (let row = -10; row * chevronHeight < canvas.height + chevronHeight * 10; row++) {
+        for (let col = -10; col * chevronWidth < canvas.width + chevronWidth * 10; col++) {
+            const baseX = col * chevronWidth;
+            const baseY = row * chevronHeight;
+
+            // Offset alternating rows for proper herringbone interlock
+            const offsetX = (row % 2) * (chevronWidth / 2);
+
+            const x = baseX + offsetX;
+            const y = baseY;
+
+            // Draw two bricks forming a V/chevron pattern
+            // Left brick angled up-right
+            drawRotatedRect(x - chevronWidth/4, y, brickWidth, brickHeight, Math.PI / 4);
+            // Right brick angled up-left
+            drawRotatedRect(x + chevronWidth/4, y, brickWidth, brickHeight, -Math.PI / 4);
         }
     }
-    
-    ctx.restore();
 }
 
 drawHerringbone();

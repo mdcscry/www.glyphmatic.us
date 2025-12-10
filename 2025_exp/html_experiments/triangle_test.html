@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+}
+#canvas {
+    display: block;
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// Center the drawing
+const centerX = canvas.width / 2;
+const centerY = canvas.height / 2;
+
+// Draw one large equilateral triangle subdivided into 9 small triangles
+const size = 300;
+const h = size * Math.sqrt(3) / 2;
+const smallSize = size / 3; // Each small triangle is 1/3 the size
+const smallH = smallSize * Math.sqrt(3) / 2;
+
+// Large triangle vertices (pointing up)
+const topVertex = { x: centerX, y: centerY - h * 2/3 };
+const bottomLeft = { x: centerX - size/2, y: centerY + h * 1/3 };
+const bottomRight = { x: centerX + size/2, y: centerY + h * 1/3 };
+
+// Draw large triangle outline
+ctx.strokeStyle = '#fff';
+ctx.lineWidth = 3;
+ctx.beginPath();
+ctx.moveTo(topVertex.x, topVertex.y);
+ctx.lineTo(bottomLeft.x, bottomLeft.y);
+ctx.lineTo(bottomRight.x, bottomRight.y);
+ctx.closePath();
+ctx.stroke();
+
+// Function to draw a small equilateral triangle with a number
+function drawSmallTriangle(x, y, pointUp, number) {
+    const h = smallH;
+    let vertices;
+
+    if (pointUp) {
+        vertices = [
+            { x: x, y: y - h * 2/3 },
+            { x: x - smallSize/2, y: y + h * 1/3 },
+            { x: x + smallSize/2, y: y + h * 1/3 }
+        ];
+    } else {
+        vertices = [
+            { x: x, y: y + h * 2/3 },
+            { x: x - smallSize/2, y: y - h * 1/3 },
+            { x: x + smallSize/2, y: y - h * 1/3 }
+        ];
+    }
+
+    ctx.strokeStyle = '#4ECDC4';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(vertices[0].x, vertices[0].y);
+    ctx.lineTo(vertices[1].x, vertices[1].y);
+    ctx.lineTo(vertices[2].x, vertices[2].y);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Draw number in center
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 20px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(number, x, y);
+}
+
+// Draw EXACTLY 9 small triangles - no more!
+let triangleNum = 1;
+
+const startY = topVertex.y + smallH * 2/3;
+
+// Row 1 (top): 1 triangle pointing up
+if (triangleNum <= 9) drawSmallTriangle(centerX, startY, true, triangleNum++);
+
+// Row 2 (middle): 3 triangles (2 up, 1 down)
+if (triangleNum <= 9) drawSmallTriangle(centerX - smallSize/2, startY + smallH, true, triangleNum++);
+if (triangleNum <= 9) drawSmallTriangle(centerX, startY + smallH, false, triangleNum++);
+if (triangleNum <= 9) drawSmallTriangle(centerX + smallSize/2, startY + smallH, true, triangleNum++);
+
+// Row 3 (bottom): 5 triangles (3 up, 2 down)
+if (triangleNum <= 9) drawSmallTriangle(centerX - smallSize, startY + 2*smallH, true, triangleNum++);
+if (triangleNum <= 9) drawSmallTriangle(centerX - smallSize/2, startY + 2*smallH, false, triangleNum++);
+if (triangleNum <= 9) drawSmallTriangle(centerX, startY + 2*smallH, true, triangleNum++);
+if (triangleNum <= 9) drawSmallTriangle(centerX + smallSize/2, startY + 2*smallH, false, triangleNum++);
+if (triangleNum <= 9) drawSmallTriangle(centerX + smallSize, startY + 2*smallH, true, triangleNum++);
+
+</script>
+
+</body>
+</html>

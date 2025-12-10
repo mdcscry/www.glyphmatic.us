@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+}
+#canvas {
+    display: block;
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+// Extend canvas beyond viewport for seamless tiling
+canvas.width = window.innerWidth * 1.5;
+canvas.height = window.innerHeight * 1.5;
+
+const size = 200;
+const h = size * Math.sqrt(3) / 2;
+const smallSize = size / 3;
+const smallH = smallSize * Math.sqrt(3) / 2;
+
+const glyphs = ['◆', '●', '■', '▲', '★', '◉', '◈', '▼', '◀', '▶'];
+const colorSets = [
+    ['#FF6B6B', '#4ECDC4', '#F7DC6F'],
+    ['#98D8C8', '#BB8FCE', '#85C1E2'],
+    ['#FFA07A', '#52B788', '#E63946']
+];
+
+function randomGlyph() {
+    return glyphs[Math.floor(Math.random() * glyphs.length)];
+}
+
+function drawTrapezoidTriangle(centerX, centerY, pointUp) {
+    // Draw large triangle (upward or downward)
+    let topVertex, bottomLeft, bottomRight;
+    let startY;
+
+    if (pointUp) {
+        topVertex = { x: centerX, y: centerY - h * 2/3 };
+        bottomLeft = { x: centerX - size/2, y: centerY + h * 1/3 };
+        bottomRight = { x: centerX + size/2, y: centerY + h * 1/3 };
+        startY = topVertex.y + smallH * 2/3;
+    } else {
+        // Flipped triangle
+        topVertex = { x: centerX, y: centerY + h * 2/3 };
+        bottomLeft = { x: centerX - size/2, y: centerY - h * 1/3 };
+        bottomRight = { x: centerX + size/2, y: centerY - h * 1/3 };
+        startY = topVertex.y - smallH * 2/3;
+    }
+
+    let triangleNum = 1;
+
+    function drawSmallTriangle(x, y, triPointUp, number) {
+        const h = smallH;
+        let vertices;
+
+        if (triPointUp) {
+            vertices = [
+                { x: x, y: y - h * 2/3 },
+                { x: x - smallSize/2, y: y + h * 1/3 },
+                { x: x + smallSize/2, y: y + h * 1/3 }
+            ];
+        } else {
+            vertices = [
+                { x: x, y: y + h * 2/3 },
+                { x: x - smallSize/2, y: y - h * 1/3 },
+                { x: x + smallSize/2, y: y - h * 1/3 }
+            ];
+        }
+
+        return vertices;
+    }
+
+    // Row 1
+    drawSmallTriangle(centerX, startY, pointUp, triangleNum++);
+
+    // Row 2
+    const v2 = drawSmallTriangle(centerX - smallSize/2, startY + (pointUp ? smallH : -smallH), pointUp, triangleNum++);
+    const v3 = drawSmallTriangle(centerX, startY + (pointUp ? smallH * 2/3 : -smallH * 2/3), !pointUp, triangleNum++);
+    const v4 = drawSmallTriangle(centerX + smallSize/2, startY + (pointUp ? smallH : -smallH), pointUp, triangleNum++);
+
+    // Row 3
+    drawSmallTriangle(centerX - smallSize, startY + (pointUp ? 2*smallH : -2*smallH), pointUp, triangleNum++);
+    const v6 = drawSmallTriangle(centerX - smallSize/2, startY + (pointUp ? smallH * 5/3 : -smallH * 5/3), !pointUp, triangleNum++);
+    const v7 = drawSmallTriangle(centerX, startY + (pointUp ? 2*smallH : -2*smallH), pointUp, triangleNum++);
+    const v8 = drawSmallTriangle(centerX + smallSize/2, startY + (pointUp ? smallH * 5/3 : -smallH * 5/3), !pointUp, triangleNum++);
+    drawSmallTriangle(centerX + smallSize, startY + (pointUp ? 2*smallH : -2*smallH), pointUp, triangleNum++);
+
+    // Draw borders between trapezoids in gold
+    const goldColor = '#D4AF37';
+    ctx.strokeStyle = goldColor;
+    ctx.lineWidth = 2;
+
+    // Border between 2 and 6
+    ctx.beginPath();
+    ctx.moveTo(v2[1].x, v2[1].y);
+    ctx.lineTo(v6[2].x, v6[2].y);
+    ctx.stroke();
+
+    // Border between 7 and 8
+    ctx.beginPath();
+    ctx.moveTo(v7[2].x, v7[2].y);
+    ctx.lineTo(v8[1].x, v8[1].y);
+    ctx.stroke();
+
+    // Border between 3 and 4
+    ctx.beginPath();
+    ctx.moveTo(v3[2].x, v3[2].y);
+    ctx.lineTo(v4[1].x, v4[1].y);
+    ctx.stroke();
+
+    // Draw outer border
+    ctx.strokeStyle = goldColor;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(topVertex.x, topVertex.y);
+    ctx.lineTo(bottomLeft.x, bottomLeft.y);
+    ctx.lineTo(bottomRight.x, bottomRight.y);
+    ctx.closePath();
+    ctx.stroke();
+}
+
+function drawPattern() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const spacing = size; // Horizontal spacing between triangles
+    const rowSpacing = h; // Vertical spacing between row centers
+
+    // Calculate how many rows and columns we need to fill the extended canvas
+    const numRows = Math.ceil(canvas.height / rowSpacing) + 2;
+    const numCols = Math.ceil(canvas.width / spacing) + 2;
+
+    const startX = -spacing;
+    const startY = -rowSpacing;
+
+    // Draw alternating rows of upward and downward triangles
+    for (let row = 0; row < numRows; row++) {
+        const y = startY + row * rowSpacing;
+        const isUpwardRow = row % 2 === 0;
+
+        if (isUpwardRow) {
+            // Upward pointing triangles
+            for (let col = 0; col < numCols; col++) {
+                const x = startX + col * spacing;
+                drawTrapezoidTriangle(x, y, true);
+            }
+        } else {
+            // Downward pointing triangles (offset by half spacing)
+            for (let col = 0; col < numCols; col++) {
+                const x = startX + (col + 0.5) * spacing;
+                drawTrapezoidTriangle(x, y, false);
+            }
+        }
+    }
+}
+
+drawPattern();
+
+canvas.addEventListener('click', drawPattern);
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    drawPattern();
+});
+
+</script>
+
+</body>
+</html>
