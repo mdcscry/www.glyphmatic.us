@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variable Fonts Animation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Honk:MORF,SHLN@0..45,0..100&family=Linefont:wdth,wght@25..200,4..1000&family=Wavefont:wght@4..1000&display=swap" rel="stylesheet">  <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #111;
+            color: #eee;
+        }
+
+        /* Container for the skeleton grid */
+        .skeleton-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-rows: repeat(auto-fit, minmax(300px, 1fr));
+            place-items: center;
+            gap: 20px;
+            padding: 20px;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        /* Styles for the grid-placed skeletons */
+        .skeleton {
+            /* Honk is a color font, but if you use an emoji, it uses system style.
+               If you want Honk style, you need to use letters.
+               I have left it as Honk font-family just in case. */
+            font-family: "Honk", system-ui !important;
+            font-optical-sizing: auto ;
+            font-size: 150px;
+            font-weight:400;
+            opacity: 1;
+            filter: saturate(0);
+        }
+
+        /* Container for the waving line in the middle */
+        .wave-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            font-family: "Linefont", system-ui;
+            font-size: 15vw; 
+            z-index: 10; 
+            position: relative;
+            font-variation-settings:"wdth" 50;
+        }
+        
+
+
+
+
+        /* Individual characters within the wave */
+        .wave-char {
+            display: inline-block;
+            /* We remove CSS transitions here because we are updating 
+               via JavaScript every frame. CSS transitions creates lag in this case. */
+            will-change: font-variation-settings;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Grid container for skeletons -->
+    <div class="skeleton-grid" id="skeletonGrid"></div>
+
+    <!-- Container for the Linefont wave -->
+    <div class="wave-container" id="waveContainer"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // === EASY SETTINGS TO CHANGE ===
+            const ANIMATION_SPEED = 3; // Higher = faster
+
+            // MORF animation ranges - each skeleton gets a random pair
+            const MORF_RANGES = [
+                [0, 5],
+                [15, 16],
+                [18, 21],
+                [22, 24],
+                [25, 38],
+                [39, 44],
+                [42, 45]
+            ];
+
+            const skeletonGlyph = String.fromCodePoint(0x2665);   // middle finger - change hex to test other glyphs
+            const numSkeletons = 21; // Grid will arrange these evenly
+
+            // --- 1. Create and place the skeletons in a grid ---
+            const skeletonGrid = document.getElementById('skeletonGrid');
+            const skeletons = [];
+            for (let i = 0; i < numSkeletons; i++) {
+                const skeleton = document.createElement('div');
+                skeleton.className = 'skeleton';
+                skeleton.textContent = skeletonGlyph;
+
+                // Randomly assign a MORF range from the list
+                const randomRange = MORF_RANGES[Math.floor(Math.random() * MORF_RANGES.length)];
+                skeleton.dataset.morfMin = randomRange[0];
+                skeleton.dataset.morfMax = randomRange[1];
+
+                skeletonGrid.appendChild(skeleton);
+                skeletons.push(skeleton);
+            }
+
+            // --- 2. Create the Linefont wave ---
+            const waveContainer = document.getElementById('waveContainer');
+            // Using logic chars or pipes often looks best with Linefont
+            const waveText = "a0Z0a0Z0a0Z0a0Z0a0Z0a0Z0a0Z0a0Z0a0Z0a0Z0a0Z"; 
+            const waveChars = [];
+
+            waveText.split('').forEach(char => {
+                const span = document.createElement('span');
+                span.className = 'wave-char';
+                span.textContent = char;
+                waveContainer.appendChild(span);
+                waveChars.push(span);
+            });
+
+            // --- 3. Animation logic ---
+            let time = 0;
+
+            function animate() {
+                time += 0.01;
+
+                // Animate the wave characters
+                waveChars.forEach((char, index) => {
+                    const sinValue = Math.sin(time + index * 0.9);
+                    const weight = 4 + (sinValue + 1) / 2 * (1000 - 4);
+                    const width = 25 + (sinValue + 1) / 2 * (200 - 25);
+                    char.style.fontVariationSettings = `'wght' ${weight}, 'wdth' ${width}`;
+                });
+
+                // Animate the skeletons
+                skeletons.forEach((skeleton) => {
+                    // Calculate ping-pong progress (0 to 1 and back)
+                    const progress = Math.abs((time * ANIMATION_SPEED % 2) - 1);
+
+                    // Get this skeleton's assigned MORF range
+                    const morfMin = parseFloat(skeleton.dataset.morfMin);
+                    const morfMax = parseFloat(skeleton.dataset.morfMax);
+                    const morfValue = morfMin + (progress * (morfMax - morfMin));
+
+                    // SHLN always goes 0-100
+                    const shlnValue = progress * 100;
+
+                    skeleton.style.fontVariationSettings = `"MORF" ${morfValue}, "SHLN" ${shlnValue}`;
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            // Start the main animation loop
+            animate();
+        });
+    </script>
+
+</body>
+</html>

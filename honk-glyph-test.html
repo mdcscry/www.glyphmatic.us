@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Font Glyph Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
+    <style>
+        body {
+            margin: 20px;
+            background-color: #222;
+            color: #eee;
+            font-family: system-ui;
+        }
+
+        .controls {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #333;
+            border-radius: 8px;
+        }
+
+        .controls input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #444;
+            border: 1px solid #666;
+            color: #eee;
+            font-family: monospace;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+
+        .controls textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #444;
+            border: 1px solid #666;
+            color: #eee;
+            font-family: monospace;
+            font-size: 12px;
+            border-radius: 4px;
+            min-height: 100px;
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            background: #4a9eff;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .controls button:hover {
+            background: #3a8eef;
+        }
+
+        .controls label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #4a9eff;
+        }
+
+        .glyph {
+            display: inline-block;
+            font-size: 48px;
+            margin: 10px;
+            padding: 10px;
+            background: #333;
+            border-radius: 4px;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .code {
+            display: block;
+            font-size: 10px;
+            font-family: monospace;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .range-title {
+            color: #4a9eff;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .info {
+            color: #999;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Universal Font Glyph Test</h1>
+
+    <div class="controls">
+        <label>Paste Google Fonts URL:</label>
+        <input type="text" id="googleFontsUrl" placeholder="https://fonts.google.com/specimen/Honk or https://fonts.googleapis.com/css2?family=..." value="">
+        <p class="info">Paste a Google Fonts specimen page URL or CSS link - it will auto-extract font name and ranges</p>
+
+        <button onclick="loadFromGoogleFonts()">Auto-Load Font</button>
+
+        <hr style="margin: 30px 0; border-color: #555;">
+
+        <label>OR Manual Entry - Font Name:</label>
+        <input type="text" id="fontName" placeholder="e.g., Honk, MyCustomFont">
+
+        <label>Font CSS/WOFF URL:</label>
+        <input type="text" id="fontUrl" placeholder="https://fonts.googleapis.com/css2?family=... or path/to/font.woff2">
+
+        <label>Unicode Ranges (one range per line, format: START-END):</label>
+        <textarea id="unicodeRanges" placeholder="2300-243F
+2460-24FF
+1F000-1F0FF">2300-243F
+2460-24FF
+25A0-27BF
+1F000-1F0FF
+1F100-1F1AD
+1F300-1F6FF
+1F900-1F9FF
+1FA00-1FAFF
+1FB00-1FBFF</textarea>
+
+        <button onclick="loadFontAndRender()">Manual Load</button>
+    </div>
+
+    <div id="glyphContainer"></div>
+
+    <script>
+        let currentFontFamily = '';
+
+        async function loadFromGoogleFonts() {
+            const url = document.getElementById('googleFontsUrl').value.trim();
+
+            if (!url) {
+                alert('Please enter a Google Fonts URL!');
+                return;
+            }
+
+            // Extract font name from URL
+            let fontName = '';
+            let cssUrl = '';
+
+            // Handle specimen page URLs like https://fonts.google.com/specimen/Honk
+            if (url.includes('fonts.google.com/specimen/') || url.includes('fonts.google.com/noto/specimen/')) {
+                const parts = url.split('/specimen/')[1];
+                if (parts) {
+                    fontName = decodeURIComponent(parts.split(/[?#]/)[0]).replace(/\+/g, ' ');
+                    // Build CSS URL
+                    cssUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}&display=swap`;
+                }
+            }
+            // Handle direct CSS URLs
+            else if (url.includes('fonts.googleapis.com/css')) {
+                cssUrl = url;
+                const match = url.match(/family=([^&:]+)/);
+                if (match) {
+                    fontName = decodeURIComponent(match[1]).replace(/\+/g, ' ');
+                }
+            }
+
+            if (!fontName || !cssUrl) {
+                alert('Could not parse Google Fonts URL. Please check the format.');
+                return;
+            }
+
+            // Fill in the manual fields
+            document.getElementById('fontName').value = fontName;
+            document.getElementById('fontUrl').value = cssUrl;
+
+            // Fetch the CSS to extract unicode-range declarations
+            try {
+                const response = await fetch(cssUrl);
+                const cssText = await response.text();
+
+                // Extract all unicode-range declarations
+                const unicodeRanges = new Set();
+                const rangeMatches = cssText.matchAll(/unicode-range:\s*([^;]+);/g);
+
+                for (const match of rangeMatches) {
+                    const ranges = match[1].split(',').map(r => r.trim());
+                    ranges.forEach(range => {
+                        // Parse ranges like "U+0100-02FF" or "U+0131"
+                        const cleaned = range.replace(/U\+/g, '');
+                        if (cleaned.includes('-')) {
+                            unicodeRanges.add(cleaned);
+                        } else {
+                            // Single codepoint, make it a range
+                            unicodeRanges.add(`${cleaned}-${cleaned}`);
+                        }
+                    });
+                }
+
+                const rangesTextarea = document.getElementById('unicodeRanges');
+                if (unicodeRanges.size > 0) {
+                    rangesTextarea.value = Array.from(unicodeRanges).join('\n');
+                } else {
+                    // Fallback to default emoji ranges if nothing found
+                    rangesTextarea.value = `2300-243F
+2460-24FF
+25A0-27BF
+1F000-1F0FF
+1F100-1F1AD
+1F300-1F6FF
+1F900-1F9FF
+1FA00-1FAFF
+1FB00-1FBFF`;
+                }
+
+                console.log('Loading font:', fontName);
+                console.log('CSS URL:', cssUrl);
+                console.log('Unicode ranges found:', unicodeRanges.size);
+
+            } catch (error) {
+                console.error('Error fetching font CSS:', error);
+                alert('Could not fetch font CSS. Using default emoji ranges.');
+                document.getElementById('unicodeRanges').value = `2300-243F
+2460-24FF
+25A0-27BF
+1F000-1F0FF
+1F100-1F1AD
+1F300-1F6FF
+1F900-1F9FF
+1FA00-1FAFF
+1FB00-1FBFF`;
+            }
+
+            // Auto-load
+            loadFontAndRender();
+        }
+
+        function loadFontAndRender() {
+            const fontName = document.getElementById('fontName').value.trim();
+            const fontUrl = document.getElementById('fontUrl').value.trim();
+            const rangesText = document.getElementById('unicodeRanges').value.trim();
+
+            if (!fontName || !fontUrl || !rangesText) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            // Parse Unicode ranges
+            const ranges = [];
+            rangesText.split('\n').forEach(line => {
+                line = line.trim();
+                if (!line) return;
+
+                const parts = line.split('-');
+                if (parts.length === 2) {
+                    const start = parseInt(parts[0], 16);
+                    const end = parseInt(parts[1], 16);
+                    if (!isNaN(start) && !isNaN(end)) {
+                        ranges.push([start, end]);
+                    }
+                }
+            });
+
+            if (ranges.length === 0) {
+                alert('No valid Unicode ranges found!');
+                return;
+            }
+
+            // Remove old font if exists
+            const oldStyle = document.getElementById('dynamicFontStyle');
+            if (oldStyle) oldStyle.remove();
+
+            // Load font
+            const style = document.createElement('style');
+            style.id = 'dynamicFontStyle';
+
+            if (fontUrl.endsWith('.woff2') || fontUrl.endsWith('.woff')) {
+                // Direct font file
+                style.textContent = `
+                    @font-face {
+                        font-family: '${fontName}';
+                        src: url('${fontUrl}') format('${fontUrl.endsWith('.woff2') ? 'woff2' : 'woff'}');
+                    }
+                `;
+            } else {
+                // Google Fonts CSS link
+                style.textContent = `@import url('${fontUrl}');`;
+            }
+
+            document.head.appendChild(style);
+            currentFontFamily = fontName;
+
+            // Wait a bit for font to load, then render
+            setTimeout(() => renderGlyphs(ranges, fontName), 500);
+        }
+
+        function renderGlyphs(ranges, fontFamily) {
+            const container = document.getElementById('glyphContainer');
+            container.innerHTML = '';
+
+            ranges.forEach(([start, end]) => {
+                const title = document.createElement('div');
+                title.className = 'range-title';
+                title.textContent = `U+${start.toString(16).toUpperCase()} - U+${end.toString(16).toUpperCase()}`;
+                container.appendChild(title);
+
+                for (let codePoint = start; codePoint <= end; codePoint++) {
+                    // Skip control characters that won't display
+                    if (codePoint < 0x20 || (codePoint >= 0x7F && codePoint <= 0x9F)) {
+                        continue;
+                    }
+
+                    const div = document.createElement('div');
+                    div.className = 'glyph';
+                    div.style.setProperty('font-family', `"${fontFamily}", system-ui`, 'important');
+
+                    const char = String.fromCodePoint(codePoint);
+                    div.innerHTML = `${char}<span class="code">U+${codePoint.toString(16).toUpperCase()}</span>`;
+
+                    container.appendChild(div);
+                }
+            });
+        }
+
+        // Set default to Honk on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('googleFontsUrl').value = 'https://fonts.google.com/specimen/Honk';
+        });
+    </script>
+</body>
+</html>
