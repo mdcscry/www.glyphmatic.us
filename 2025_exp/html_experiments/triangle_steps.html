@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+    margin: 20px;
+    background: #000;
+    color: #fff;
+}
+#container {
+    display: grid;
+    grid-template-columns: repeat(5, 200px);
+    gap: 20px;
+}
+.cell {
+    text-align: center;
+}
+canvas {
+    display: block;
+    border: 1px solid #333;
+}
+</style>
+</head>
+<body>
+
+<div id="container"></div>
+
+<script>
+const container = document.getElementById('container');
+const size = 150;
+const h = size * Math.sqrt(3) / 2;
+const smallSize = size / 3;
+const smallH = smallSize * Math.sqrt(3) / 2;
+
+// Create 10 cells: 0 (just big triangle), then 1-9 small triangles
+for (let step = 0; step <= 9; step++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 200;
+    canvas.height = 200;
+
+    const label = document.createElement('div');
+    label.textContent = step === 0 ? 'Big Triangle' : `Step ${step}`;
+
+    cell.appendChild(label);
+    cell.appendChild(canvas);
+    container.appendChild(cell);
+
+    const ctx = canvas.getContext('2d');
+    const centerX = 100;
+    const centerY = 100;
+
+    // Draw large triangle
+    const topVertex = { x: centerX, y: centerY - h * 2/3 };
+    const bottomLeft = { x: centerX - size/2, y: centerY + h * 1/3 };
+    const bottomRight = { x: centerX + size/2, y: centerY + h * 1/3 };
+
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(topVertex.x, topVertex.y);
+    ctx.lineTo(bottomLeft.x, bottomLeft.y);
+    ctx.lineTo(bottomRight.x, bottomRight.y);
+    ctx.closePath();
+    ctx.stroke();
+
+    if (step === 0) continue; // Just show big triangle
+
+    // Draw small triangles up to step number
+    const startY = topVertex.y + smallH * 2/3;
+    let triangleNum = 1;
+
+    function drawSmallTriangle(x, y, pointUp, number, color) {
+        if (number > step) return; // Don't draw past current step
+
+        const h = smallH;
+        let vertices;
+
+        if (pointUp) {
+            vertices = [
+                { x: x, y: y - h * 2/3 },
+                { x: x - smallSize/2, y: y + h * 1/3 },
+                { x: x + smallSize/2, y: y + h * 1/3 }
+            ];
+        } else {
+            vertices = [
+                { x: x, y: y + h * 2/3 },
+                { x: x - smallSize/2, y: y - h * 1/3 },
+                { x: x + smallSize/2, y: y - h * 1/3 }
+            ];
+        }
+
+        // Fill triangle with color
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(vertices[0].x, vertices[0].y);
+        ctx.lineTo(vertices[1].x, vertices[1].y);
+        ctx.lineTo(vertices[2].x, vertices[2].y);
+        ctx.closePath();
+        ctx.fill();
+
+        // Draw number
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(number, x, y);
+
+        return vertices; // Return vertices for border drawing
+    }
+
+    // Colors for the three trapezoid groups
+    const colors = {
+        1: '#FF6B6B', 2: '#FF6B6B', 3: '#FF6B6B',  // Group 1 (top trapezoid)
+        4: '#4ECDC4', 8: '#4ECDC4', 9: '#4ECDC4',  // Group 3 (right trapezoid)
+        5: '#F7DC6F', 6: '#F7DC6F', 7: '#F7DC6F'   // Group 2 (left trapezoid)
+    };
+
+    // Row 1
+    drawSmallTriangle(centerX, startY, true, triangleNum++, colors[1]);
+
+    // Row 2 - downward triangles moved up to align with row 1 bottom
+    const v2 = drawSmallTriangle(centerX - smallSize/2, startY + smallH, true, triangleNum++, colors[2]);
+    const v3 = drawSmallTriangle(centerX, startY + smallH * 2/3, false, triangleNum++, colors[3]);
+    const v4 = drawSmallTriangle(centerX + smallSize/2, startY + smallH, true, triangleNum++, colors[4]);
+
+    // Row 3 - downward triangles moved up to align with row 2 bottom
+    drawSmallTriangle(centerX - smallSize, startY + 2*smallH, true, triangleNum++, colors[5]);
+    const v6 = drawSmallTriangle(centerX - smallSize/2, startY + smallH * 5/3, false, triangleNum++, colors[6]);
+    const v7 = drawSmallTriangle(centerX, startY + 2*smallH, true, triangleNum++, colors[7]);
+    const v8 = drawSmallTriangle(centerX + smallSize/2, startY + smallH * 5/3, false, triangleNum++, colors[8]);
+    drawSmallTriangle(centerX + smallSize, startY + 2*smallH, true, triangleNum++, colors[9]);
+
+    // Draw borders only between different trapezoid groups (2-6, 7-8, 3-4)
+    if (step >= 6 && v2 && v6) {
+        // Border between 2 and 6
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(v2[1].x, v2[1].y); // Bottom-left of triangle 2
+        ctx.lineTo(v6[2].x, v6[2].y); // Top-right of triangle 6
+        ctx.stroke();
+    }
+
+    if (step >= 8 && v7 && v8) {
+        // Border between 7 and 8
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(v7[2].x, v7[2].y); // Bottom-right of triangle 7
+        ctx.lineTo(v8[1].x, v8[1].y); // Top-left of triangle 8
+        ctx.stroke();
+    }
+
+    if (step >= 4 && v3 && v4) {
+        // Border between 3 and 4
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(v3[2].x, v3[2].y); // Top-right of triangle 3
+        ctx.lineTo(v4[1].x, v4[1].y); // Bottom-left of triangle 4
+        ctx.stroke();
+    }
+}
+
+</script>
+
+</body>
+</html>

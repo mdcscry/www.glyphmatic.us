@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+}
+#canvas {
+    display: block;
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+// Extend canvas beyond viewport for seamless tiling
+canvas.width = window.innerWidth * 1.5;
+canvas.height = window.innerHeight * 1.5;
+
+const size = 200;
+const h = size * Math.sqrt(3) / 2;
+const smallSize = size / 3;
+const smallH = smallSize * Math.sqrt(3) / 2;
+
+function drawTrapezoidTriangle(centerX, centerY, pointUp) {
+    let topVertex, bottomLeft, bottomRight;
+    let startY;
+
+    if (pointUp) {
+        topVertex = { x: centerX, y: centerY - h * 2/3 };
+        bottomLeft = { x: centerX - size/2, y: centerY + h * 1/3 };
+        bottomRight = { x: centerX + size/2, y: centerY + h * 1/3 };
+        startY = topVertex.y + smallH * 2/3;
+    } else {
+        topVertex = { x: centerX, y: centerY + h * 2/3 };
+        bottomLeft = { x: centerX - size/2, y: centerY - h * 1/3 };
+        bottomRight = { x: centerX + size/2, y: centerY - h * 1/3 };
+        startY = topVertex.y - smallH * 2/3;
+    }
+
+    function drawSmallTriangle(x, y, triPointUp) {
+        const vertices = triPointUp ? [
+            { x: x, y: y - smallH * 2/3 },
+            { x: x - smallSize/2, y: y + smallH * 1/3 },
+            { x: x + smallSize/2, y: y + smallH * 1/3 }
+        ] : [
+            { x: x, y: y + smallH * 2/3 },
+            { x: x - smallSize/2, y: y - smallH * 1/3 },
+            { x: x + smallSize/2, y: y - smallH * 1/3 }
+        ];
+        return vertices;
+    }
+
+    const dir = pointUp ? 1 : -1;
+
+    drawSmallTriangle(centerX, startY, pointUp);
+    const v2 = drawSmallTriangle(centerX - smallSize/2, startY + dir * smallH, pointUp);
+    const v3 = drawSmallTriangle(centerX, startY + dir * smallH * 2/3, !pointUp);
+    const v4 = drawSmallTriangle(centerX + smallSize/2, startY + dir * smallH, pointUp);
+    drawSmallTriangle(centerX - smallSize, startY + dir * 2*smallH, pointUp);
+    const v6 = drawSmallTriangle(centerX - smallSize/2, startY + dir * smallH * 5/3, !pointUp);
+    const v7 = drawSmallTriangle(centerX, startY + dir * 2*smallH, pointUp);
+    const v8 = drawSmallTriangle(centerX + smallSize/2, startY + dir * smallH * 5/3, !pointUp);
+    drawSmallTriangle(centerX + smallSize, startY + dir * 2*smallH, pointUp);
+
+    const goldColor = '#D4AF37';
+    ctx.strokeStyle = goldColor;
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    ctx.moveTo(v2[1].x, v2[1].y);
+    ctx.lineTo(v6[2].x, v6[2].y);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(v7[2].x, v7[2].y);
+    ctx.lineTo(v8[1].x, v8[1].y);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(v3[2].x, v3[2].y);
+    ctx.lineTo(v4[1].x, v4[1].y);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(topVertex.x, topVertex.y);
+    ctx.lineTo(bottomLeft.x, bottomLeft.y);
+    ctx.lineTo(bottomRight.x, bottomRight.y);
+    ctx.closePath();
+    ctx.stroke();
+}
+
+function drawBigTriangleSimple(x, y, pointUp) {
+    const vertices = pointUp ? [
+        { x: x, y: y - h * 2/3 },
+        { x: x - size/2, y: y + h * 1/3 },
+        { x: x + size/2, y: y + h * 1/3 }
+    ] : [
+        { x: x, y: y + h * 2/3 },
+        { x: x - size/2, y: y - h * 1/3 },
+        { x: x + size/2, y: y - h * 1/3 }
+    ];
+
+    const goldColor = '#D4AF37';
+    ctx.strokeStyle = goldColor;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(vertices[0].x, vertices[0].y);
+    ctx.lineTo(vertices[1].x, vertices[1].y);
+    ctx.lineTo(vertices[2].x, vertices[2].y);
+    ctx.closePath();
+    ctx.stroke();
+
+    return vertices;
+}
+
+function drawPattern() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const centerY = window.innerHeight / 2;
+    const numTriangles = 15;
+
+    // Calculate starting X to center all triangles
+    const totalWidth = (numTriangles - 1) * size / 2;
+    const startX = (window.innerWidth - totalWidth) / 2;
+
+    // Row spacing for interlocking
+    const rowSpacing = 2 * h / 3;
+
+    // Draw 3 rows of triangles
+    for (let row = 0; row < 3; row++) {
+        const baseY = centerY + (row - 1) * rowSpacing; // -1, 0, 1 for top, middle, bottom
+
+        for (let i = 0; i < numTriangles; i++) {
+            // Offset pattern: odd rows start with down, even rows start with up
+            const startWithDown = (row % 2) === 1;
+            const x = startX + i * (size / 2);
+            const pointUp = startWithDown ? (i % 2) === 1 : (i % 2) === 0;
+            const y = pointUp ? baseY : baseY - h / 3;
+
+            drawTrapezoidTriangle(x, y, pointUp);
+        }
+    }
+}
+
+drawPattern();
+
+canvas.addEventListener('click', drawPattern);
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth * 1.5;
+    canvas.height = window.innerHeight * 1.5;
+    drawPattern();
+});
+
+</script>
+
+</body>
+</html>
