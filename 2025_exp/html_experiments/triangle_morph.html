@@ -25,29 +25,45 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth * 1.5;
 canvas.height = window.innerHeight * 1.5;
 
-const size = 200;
+// Random triangle size on page load (between 150 and 300)
+const size = 150 + Math.floor(Math.random() * 150);
 const h = size * Math.sqrt(3) / 2;
 const smallSize = size / 3;
 const smallH = smallSize * Math.sqrt(3) / 2;
 
-// Letter positioning offsets (centered in big triangles)
-const letterOffsetYUp = 20;      // For up-pointing triangles
-const letterOffsetYDown = -17;   // For down-pointing triangles
+// Letter positioning offsets (centered in big triangles, scaled to size)
+const letterOffsetYUp = size * 0.1;      // For up-pointing triangles (10% of size)
+const letterOffsetYDown = size * -0.085; // For down-pointing triangles (-8.5% of size)
 
-// Color morphing state
-let currentBgColor = { r: 255, g: 255, b: 255 };
-let targetBgColor = randomColor();
-let currentLineColor = { r: 0, g: 0, b: 139 };
-let targetLineColor = randomColor();
-let currentGlyphColor = { r: 0, g: 0, b: 139 };
-let targetGlyphColor = randomColor();
+// Color morphing state - will be initialized after helper functions are defined
+let currentBgColor;
+let targetBgColor;
+let currentLineColor;
+let targetLineColor;
+let currentGlyphColor;
+let targetGlyphColor;
 let colorProgress = 0;
 const colorTransitionTime = 15000; // 15 seconds per transition
 let lastFrameTime = Date.now();
 
-// Pick random character on page load, stays same until page refresh
-const chars = '◎◉◌●◇◆□■△▲▽▼♢♡♥♦✪✫✬✭✮✯✰';
-const currentChar = chars[Math.floor(Math.random() * chars.length)];
+// All 10 possible triangle combinations
+const combinations = [
+    { up: '▲', down: '▼' },  // Solid up, Solid down
+    { up: '△', down: '▽' },  // Hollow up, Hollow down
+    { up: '△', down: '△' },  // Hollow up, Hollow up
+    { up: '▲', down: '▲' },  // Solid up, Solid up
+    { up: '▽', down: '▽' },  // Hollow down, Hollow down
+    { up: '▼', down: '▼' },  // Solid down, Solid down
+    { up: '△', down: '▼' },  // Hollow up, Solid down
+    { up: '▽', down: '▲' },  // Hollow down, Solid up
+    { up: '▲', down: '▽' },  // Solid up, Hollow down
+    { up: '▼', down: '△' }   // Solid down, Hollow up
+];
+
+// Pick random combination on page load
+const combo = combinations[Math.floor(Math.random() * combinations.length)];
+const upChar = combo.up;
+const downChar = combo.down;
 
 function randomColor() {
     return {
@@ -56,6 +72,35 @@ function randomColor() {
         b: Math.floor(Math.random() * 256)
     };
 }
+
+function colorDistance(c1, c2) {
+    // Calculate rough color distance
+    return Math.abs(c1.r - c2.r) + Math.abs(c1.g - c2.g) + Math.abs(c1.b - c2.b);
+}
+
+function getDistinctColor(existing) {
+    // Get a color that's sufficiently different from existing colors
+    let newColor;
+    let attempts = 0;
+    do {
+        newColor = randomColor();
+        attempts++;
+    } while (
+        attempts < 50 &&
+        existing.some(c => colorDistance(newColor, c) < 150)
+    );
+    return newColor;
+}
+
+// Initialize all colors to be random and distinct from each other
+currentBgColor = randomColor();
+targetBgColor = getDistinctColor([currentBgColor]);
+
+currentLineColor = getDistinctColor([currentBgColor, targetBgColor]);
+targetLineColor = getDistinctColor([currentBgColor, targetBgColor, currentLineColor]);
+
+currentGlyphColor = getDistinctColor([currentBgColor, targetBgColor, currentLineColor, targetLineColor]);
+targetGlyphColor = getDistinctColor([currentBgColor, targetBgColor, currentLineColor, targetLineColor, currentGlyphColor]);
 
 function lerpColor(from, to, t) {
     return {
@@ -137,7 +182,7 @@ function drawTrapezoidTriangle(centerX, centerY, pointUp) {
     ctx.closePath();
     ctx.stroke();
 
-    // Fill trapezoids with single character (same for all positions)
+    // Fill trapezoids with triangle glyphs
     const glyphColor = lerpColor(currentGlyphColor, targetGlyphColor, colorProgress);
     ctx.fillStyle = colorToString(glyphColor);
     ctx.font = `${size / 8}px mono`;
@@ -147,7 +192,10 @@ function drawTrapezoidTriangle(centerX, centerY, pointUp) {
     const letterSpacing = smallSize / 2.5;
     const rowSpacing = smallH / 2;
 
-    // Fill ONLY top trapezoid with letters (0° or 180° rotation)
+    // Use appropriate triangle character based on orientation
+    const currentChar = pointUp ? upChar : downChar;
+
+    // Fill ONLY top trapezoid with letters
     const letterOffsetY = pointUp ? letterOffsetYUp : letterOffsetYDown;
     const topStartY = startY + letterOffsetY;
     for (let row = 0; row < 4; row++) {
@@ -158,10 +206,6 @@ function drawTrapezoidTriangle(centerX, centerY, pointUp) {
             ctx.fillText(currentChar, x, y);
         }
     }
-
-    // Left and right trapezoids (120° and 240° rotations) - not filled yet
-    // Left trapezoid: ~240° rotation
-    // Right trapezoid: ~120° rotation
 }
 
 function drawPattern() {
@@ -203,15 +247,16 @@ function animate() {
     // Update color progress
     colorProgress += deltaTime / colorTransitionTime;
 
-    // When transition completes, pick new targets
+    // When transition completes, pick new targets (all distinct)
     if (colorProgress >= 1) {
         colorProgress = 0;
         currentBgColor = lerpColor(currentBgColor, targetBgColor, 1);
         currentLineColor = lerpColor(currentLineColor, targetLineColor, 1);
         currentGlyphColor = lerpColor(currentGlyphColor, targetGlyphColor, 1);
-        targetBgColor = randomColor();
-        targetLineColor = randomColor();
-        targetGlyphColor = randomColor();
+
+        targetBgColor = getDistinctColor([currentBgColor]);
+        targetLineColor = getDistinctColor([currentBgColor, targetBgColor, currentLineColor]);
+        targetGlyphColor = getDistinctColor([currentBgColor, targetBgColor, currentLineColor, targetLineColor, currentGlyphColor]);
     }
 
     drawPattern();

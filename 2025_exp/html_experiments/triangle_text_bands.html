@@ -31,6 +31,65 @@ const h = size * Math.sqrt(3) / 2;
 const smallSize = size / 3;
 const smallH = smallSize * Math.sqrt(3) / 2;
 
+// Color morphing state
+let currentLineColor;
+let targetLineColor;
+let currentTextColor;
+let targetTextColor;
+let colorProgress = 0;
+const colorTransitionTime = 15000; // 15 seconds
+let lastFrameTime = Date.now();
+
+// Glyph change state (random timing)
+let cachedTextLines = [];
+let glyphChangeTimer = 0;
+let nextGlyphChangeTime = Math.random() * 5000 + 500; // Random 0.5-5.5 seconds
+
+// Grayscale colors for lines (111, 222, etc. - no black)
+function randomGrayscaleColor() {
+    const val = Math.floor(Math.random() * 15) + 1; // 1-15, skip 0 (black)
+    return { r: val * 17, g: val * 17, b: val * 17 }; // 0x11, 0x22, ... 0xFF
+}
+
+// Jewel tone colors for text
+function randomJewelTone() {
+    const jewelTones = [
+        { r: 139, g: 0, b: 139 },     // Dark Magenta
+        { r: 75, g: 0, b: 130 },      // Indigo
+        { r: 0, g: 100, b: 0 },       // Dark Green
+        { r: 148, g: 0, b: 211 },     // Dark Violet
+        { r: 220, g: 20, b: 60 },     // Crimson
+        { r: 0, g: 128, b: 128 },     // Teal
+        { r: 128, g: 0, b: 128 },     // Purple
+        { r: 255, g: 140, b: 0 },     // Dark Orange
+        { r: 184, g: 134, b: 11 },    // Dark Goldenrod
+        { r: 0, g: 139, b: 139 },     // Dark Cyan
+        { r: 178, g: 34, b: 34 },     // Fire Brick
+        { r: 46, g: 139, b: 87 },     // Sea Green
+        { r: 199, g: 21, b: 133 },    // Medium Violet Red
+        { r: 72, g: 61, b: 139 }      // Dark Slate Blue
+    ];
+    return jewelTones[Math.floor(Math.random() * jewelTones.length)];
+}
+
+function lerpColor(from, to, t) {
+    return {
+        r: Math.floor(from.r + (to.r - from.r) * t),
+        g: Math.floor(from.g + (to.g - from.g) * t),
+        b: Math.floor(from.b + (to.b - from.b) * t)
+    };
+}
+
+function colorToString(color) {
+    return `rgb(${color.r}, ${color.g}, ${color.b})`;
+}
+
+// Initialize colors
+currentLineColor = randomGrayscaleColor();
+targetLineColor = randomGrayscaleColor();
+currentTextColor = randomJewelTone();
+targetTextColor = randomJewelTone();
+
 // Extended Latin character set including IPA - letters only, no combining forms or punctuation
 const latinChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' +
     'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ' +
@@ -46,10 +105,10 @@ function randomLatinChar() {
 }
 
 function generateTextLine(width, fontSize) {
-    const numChars = Math.ceil(width / (fontSize * 0.6)); // Approximate char width
+    const numChars = Math.ceil(width / (fontSize * 1.2)); // Account for spacing
     let line = '';
     for (let i = 0; i < numChars; i++) {
-        line += randomLatinChar();
+        line += randomLatinChar() + ' '; // Add space between each letter
     }
     return line;
 }
@@ -110,9 +169,9 @@ function drawTrapezoidTriangle(centerX, centerY, pointUp) {
     const v8 = drawSmallTriangle(centerX + smallSize/2, startY + (pointUp ? smallH * 5/3 : -smallH * 5/3), !pointUp, triangleNum++);
     drawSmallTriangle(centerX + smallSize, startY + (pointUp ? 2*smallH : -2*smallH), pointUp, triangleNum++);
 
-    // Draw borders between trapezoids in gold
-    const goldColor = '#D4AF37';
-    ctx.strokeStyle = goldColor;
+    // Draw borders with morphing grayscale color
+    const lineColor = lerpColor(currentLineColor, targetLineColor, colorProgress);
+    ctx.strokeStyle = colorToString(lineColor);
     ctx.lineWidth = 2;
 
     // Border between 2 and 6
@@ -133,9 +192,7 @@ function drawTrapezoidTriangle(centerX, centerY, pointUp) {
     ctx.lineTo(v4[1].x, v4[1].y);
     ctx.stroke();
 
-    // Draw outer border
-    ctx.strokeStyle = goldColor;
-    ctx.lineWidth = 2;
+    // Draw outer border (same color as inner borders)
     ctx.beginPath();
     ctx.moveTo(topVertex.x, topVertex.y);
     ctx.lineTo(bottomLeft.x, bottomLeft.y);
@@ -157,7 +214,7 @@ function drawPattern() {
     const startX = -spacing;
     const startY = -rowSpacing;
 
-    const fontSize = 12; // Small font size for gap text
+    const fontSize = 13; // Small font size for gap text
     const gapHeight = rowSpacing * 0.35; // Height of the gap bands
 
     // Draw alternating rows of upward and downward triangles
@@ -179,29 +236,71 @@ function drawPattern() {
             }
         }
 
-        // Draw text in the gap bands (after each upward row)
+        // Draw text in the gap bands (after each upward row) - THREE ROWS
         if (isUpwardRow) {
-            const gapY = y + h * 0.55; // Position in the gap below upward triangles
-            const textLine = generateTextLine(canvas.width * 1.2, fontSize);
+            const gapStartY = y + h * 0.42; // Start of gap below upward triangles
+            const lineSpacing = fontSize * 1.1; // Spacing between text lines
 
-            ctx.fillStyle = '#D4AF37'; // Gold color for now
+            // Use morphing jewel tone color for text
+            const textColor = lerpColor(currentTextColor, targetTextColor, colorProgress);
+            ctx.fillStyle = colorToString(textColor);
             ctx.font = `${fontSize}px monospace`;
             ctx.textBaseline = 'middle';
 
-            // Draw continuous text line
-            ctx.fillText(textLine, 0, gapY);
+            // Draw three rows of text in each gap band (use cached lines)
+            const gapIndex = row;
+            if (!cachedTextLines[gapIndex]) {
+                cachedTextLines[gapIndex] = [];
+            }
+
+            for (let textRow = 0; textRow < 3; textRow++) {
+                // Use cached line if exists, otherwise generate
+                if (!cachedTextLines[gapIndex][textRow]) {
+                    cachedTextLines[gapIndex][textRow] = generateTextLine(canvas.width * 1.2, fontSize);
+                }
+                const textLine = cachedTextLines[gapIndex][textRow];
+                const textY = gapStartY + textRow * lineSpacing;
+                ctx.fillText(textLine, 0, textY);
+            }
         }
     }
 }
 
-drawPattern();
+function animate() {
+    const now = Date.now();
+    const deltaTime = now - lastFrameTime;
+    lastFrameTime = now;
 
-canvas.addEventListener('click', drawPattern);
+    // Update color progress
+    colorProgress += deltaTime / colorTransitionTime;
+
+    // When transition completes, pick new targets
+    if (colorProgress >= 1) {
+        colorProgress = 0;
+        currentLineColor = lerpColor(currentLineColor, targetLineColor, 1);
+        currentTextColor = lerpColor(currentTextColor, targetTextColor, 1);
+        targetLineColor = randomGrayscaleColor();
+        targetTextColor = randomJewelTone();
+    }
+
+    // Update glyph change timer (random intervals)
+    glyphChangeTimer += deltaTime;
+    if (glyphChangeTimer >= nextGlyphChangeTime) {
+        glyphChangeTimer = 0;
+        nextGlyphChangeTime = Math.random() * 5000 + 500; // Random 0.5-5.5 seconds
+        cachedTextLines = []; // Clear cache to regenerate all glyphs
+    }
+
+    drawPattern();
+    requestAnimationFrame(animate);
+}
+
+// Start animation loop
+animate();
 
 window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    drawPattern();
+    canvas.width = window.innerWidth * 1.5;
+    canvas.height = window.innerHeight * 1.5;
 });
 
 </script>
