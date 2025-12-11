@@ -2,12 +2,17 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet" href="../../css_font/glyphmatic-fonts.css">
+
 <style>
+
+
 body {
     margin: 0;
     padding: 0;
     overflow: hidden;
     background: #FFF;
+    font-family: 'Noto Sans Symbols','Noto Sans Symbols 2','Noto Sans Math';
 }
 #canvas {
     display: block;
@@ -35,19 +40,110 @@ const letterOffsetYUp = 20;      // For up-pointing triangles
 const letterOffsetYDown = -17;   // For down-pointing triangles
 
 // Color morphing state
-let currentBgColor = { r: 255, g: 255, b: 255 };
-let targetBgColor = randomColor();
-let currentLineColor = { r: 0, g: 0, b: 139 };
-let targetLineColor = randomColor();
-let currentGlyphColor = { r: 0, g: 0, b: 139 };
-let targetGlyphColor = randomColor();
+let currentBgColor;
+let targetBgColor;
+let currentLineColor;
+let targetLineColor;
+let currentGlyphColor;
+let targetGlyphColor;
 let colorProgress = 0;
 const colorTransitionTime = 15000; // 15 seconds per transition
 let lastFrameTime = Date.now();
 
+// Character array with hex codes for debugging rendering issues
+const charData = [
+    { char: '◎', hex: '0x25CE' },
+    { char: '◉', hex: '0x25C9' },
+    { char: '◌', hex: '0x25CC' },
+    { char: '●', hex: '0x25CF' },
+    { char: '◇', hex: '0x25C7' },
+    { char: '◆', hex: '0x25C6' },
+    { char: '△', hex: '0x25B3' },
+    { char: '▲', hex: '0x25B2' },
+    { char: '▽', hex: '0x25BD' },
+    { char: '▼', hex: '0x25BC' },
+    { char: '♢', hex: '0x2662' },
+    { char: '♦', hex: '0x2666' },
+    { char: '◬', hex: '0x25EC' },
+    { char: '◭', hex: '0x25ED' },
+    { char: '◮', hex: '0x25EE' },
+    { char: '◦', hex: '0x25E6' },
+    { char: '○', hex: '0x25CB' },
+    { char: '▾', hex: '0x25BE' },
+    { char: '▿', hex: '0x25BF' },
+    { char: '▴', hex: '0x25B4' },
+    { char: '▵', hex: '0x25B5' },
+    { char: '▪', hex: '0x25AA' },
+    { char: '▫', hex: '0x25AB' },
+    { char: '🞄', hex: '0x1F784' },
+    { char: '🞅', hex: '0x1F785' },
+    { char: '🞆', hex: '0x1F786' },
+    { char: '🞇', hex: '0x1F787' },
+    { char: '🞈', hex: '0x1F788' },
+    { char: '🞉', hex: '0x1F789' },
+    { char: '🞊', hex: '0x1F78A' },
+    { char: '🞋', hex: '0x1F78B' },
+    { char: '🞠', hex: '0x1F7A0' },
+    { char: '🞗', hex: '0x1F797' },
+    { char: '🞘', hex: '0x1F798' },
+    { char: '🞙', hex: '0x1F799' },
+    { char: '🞚', hex: '0x1F79A' },
+    { char: '🞛', hex: '0x1F79B' },
+    { char: '🞜', hex: '0x1F79C' },
+    { char: '🞝', hex: '0x1F79D' },
+    { char: '🞞', hex: '0x1F79E' },
+    { char: '🞟', hex: '0x1F79F' },
+    { char: '🞔', hex: '0x1F794' },
+    { char: '🞕', hex: '0x1F795' },
+    { char: '🞖', hex: '0x1F796' },
+    { char: '🟒', hex: '0x1F7D2' },
+    { char: '🟓', hex: '0x1F7D3' },
+    { char: '⎊', hex: '0x238A' },
+    { char: '⏃', hex: '0x23C3' },
+    { char: '⏚', hex: '0x23DA' },
+    { char: '∆', hex: '0x2206' },
+    { char: '∇', hex: '0x2207' },
+    { char: '⊻', hex: '0x22BB' },
+    { char: '⊼', hex: '0x22BC' },
+    { char: '⊽', hex: '0x22BD' },
+    { char: '⋮', hex: '0x22EE' },
+    { char: '⋯', hex: '0x22EF' },
+    { char: '⟁', hex: '0x27C1' },
+    { char: '⧨', hex: '0x29E8' },
+    { char: '⧩', hex: '0x29E9' },
+    { char: '⦁', hex: '0x2981' },
+    { char: '⦂', hex: '0x2982' },
+    { char: '⍋', hex: '0x234B' },
+    { char: '⍌', hex: '0x234C' },
+    { char: '⍍', hex: '0x234D' },
+    { char: '⍒', hex: '0x2352' },
+    { char: '⍓', hex: '0x2353' },
+    { char: '⍔', hex: '0x2354' },
+    { char: '⍙', hex: '0x2359' },
+    { char: '⍫', hex: '0x236B' },
+    { char: '⏣', hex: '0x23E3' },
+    { char: '⎔', hex: '0x2394' },
+    { char: '⍢', hex: '0x2362' },
+    { char: '⬮', hex: '0x2B2E' },
+    { char: '⬯', hex: '0x2B2F' },
+    { char: '⭖', hex: '0x2B56' },
+    { char: '⮛', hex: '0x2B9B' },
+    { char: '⮙', hex: '0x2B99' },
+    { char: '⮝', hex: '0x2B9D' },
+    { char: '⮟', hex: '0x2B9F' },
+    { char: '⯌', hex: '0x2BCC' },
+    { char: '⯯', hex: '0x2BEF' },
+    { char: '⯭', hex: '0x2BED' },
+    { char: '⯼', hex: '0x2BFC' }
+];
+
 // Pick random character on page load, stays same until page refresh
-const chars = '◎◉◌●◇◆□■△▲▽▼♢♡♥♦✪✫✬✭✮✯✰';
-const currentChar = chars[Math.floor(Math.random() * chars.length)];
+const selectedCharData = charData[Math.floor(Math.random() * charData.length)];
+const currentChar = selectedCharData.char;
+
+// Log the selected character and its hex code for debugging
+console.log(`Selected character: "${selectedCharData.char}" (hex: ${selectedCharData.hex})`);
+console.log(`Total characters available: ${charData.length}`);
 
 function randomColor() {
     return {
@@ -56,6 +152,14 @@ function randomColor() {
         b: Math.floor(Math.random() * 256)
     };
 }
+
+// Initialize all colors to random values
+currentBgColor = randomColor();
+targetBgColor = randomColor();
+currentLineColor = randomColor();
+targetLineColor = randomColor();
+currentGlyphColor = randomColor();
+targetGlyphColor = randomColor();
 
 function lerpColor(from, to, t) {
     return {
