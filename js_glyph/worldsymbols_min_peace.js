@@ -70,7 +70,7 @@ myFontSet[35]=['2451;&#x2433','Arial Unicode MS','Code2000','FreeSans','Noto San
 myFontSet[36]=['x0c13;&#x0c02','Arial Unicode MS','Akshar Unicode','Code2000','Gautami','Noto Sans Telugu','Pothana2000','Vani'];//telugu sacred om
 myFontSet[37]=['x0D13;&#x0D02','Arial Unicode MS','Akshar Unicode','Code2000','Kartika','Noto Sans Malayalam',];//malayalam sacred om
 
-myFontSet[38]=['xFDFB','_PDMS_Saleem_QuranFont ','Arial Unicode MS ','Jameel Noori Nastaleeq ','Kinza','Noto Naskh Arabic UI','Pak Nastaleeq','PakType Ajrak','PakType Naqsh ','PakType Naskh Basic','PakType Tehreer','Sakkal Majalla',''];//alehye
+myFontSet[38]=['xFDFB','_PDMS_Saleem_QuranFont ','Arial Unicode MS ','Jameel Noori Nastaleeq ','Kinza','Noto Naskh Arabic UI','Pak Nastaleeq','PakType Ajrak','PakType Naqsh ','PakType Naskh Basic','PakType Tehreer','Sakkal Majalla',''];//alehye 
 
 myFontSet[39]=['xFDF2','PakType Tehreer','_PDMS_Saleem_QuranFont','Amiri','Andalus','Arabic Typesetting','Arial Unicode MS','Code2000','Courier New','Diwani Bent','Diwani Simple Outline','Diwani Simple Striped','Droid Arabic Kufi','Droid Arabic Naskh','Fajer Noori Nastalique','Jameel Noori Nastaleeq','FreeSerif','Kinza','Lateef','Microsoft Uighur','MPH 2B Damase','MV Boli','Nafees Web Naskh','Old Antic Decorative','Old Antic Outline','Pak Nastaleeq','PakType Ajrak','PakType Naqsh','PakType Naskh Basic','Sakkal Majalla','Scheherazade','Segoe UI','Simplified Arabic','Tahoma','Times New Roman','Traditional Arabic','Urdu Naskh Asiatype'];//allah
 myFontSet[40]=['x262E','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Arial Unicode MS','Code2000','Meiryo','MS Gothic','MS Mincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//peace sign
@@ -118,8 +118,8 @@ myFontSet[74]=['x2624','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans 
 myFontSet[75]=['xC2E0','Arial Unicode MS','Batang','BatangChe','BM HANNA','Code2000','Dotum','DotumChe','Gulim','GulimChe','Gungsuh','GungsuhChe','Malgun Gothic','Malgun Gothic','Nanum Brush Script',];//hangul god
 myFontSet[76]=['62931','Maya'];//spiral
 myFontSet[77]=['xAA5C','Code2000'];//cham spiral
-myFontSet[78]=['x1F4AE','Symbola','Noto Sans Symbols-Black'];//Lotus
-myFontSet[79]=['x1F54A','Symbola','Noto Sans Symbols 2'];//Dove of Peace
+myFontSet[78]=['x1F4AE','Symbola','Noto Sans Symbols-Black','Noto Emoji'];//Lotus
+myFontSet[79]=['x1F54A','Symbola','Noto Sans Symbols 2','Noto Emoji'];//Dove of Peace
 myFontSet[80]=['x1F54F','Symbola','Noto Sans Symbols-Black'];//Bowl of Hygeia
 
 
@@ -146,7 +146,7 @@ myFontSet[92]=['x1455B','Anatolian','Anatolian_Douros'];//anatolian;
 myFontSet[100]=['x1F41A','Symbola','Noto Sans Symbols-Black'];//conch;
 myFontSet[101]=['x2695','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//staff of aesculapius;
 myFontSet[102]=['x269A','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//staff of hermes;
-myFontSet[103]=['x269B','Code2000','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//atom symbol;
+myFontSet[103]=['x269B','Code2000','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola','Noto Emoji'];//atom symbol;
 
 myFontSet[104]=['x203D','Code2000'];//interrobang;
 myFontSet[105]=['x221E','Code2000'];//infinity;
@@ -156,9 +156,8 @@ myFontSet[107]=['x5300','Code2000'];//chinese swastica right;
 
 myFontSet[108]=['x2729','Arial Unicode MS','Code2000','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','-Black','Quivira','Segoe UI Symbol','Symbola'];//5 pointed star;
 myFontSet[109]=['x2742','Arial Unicode MS','Code2000','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//circled 8 point star
-myFontSet[110]=['x26E9','Noto Sans Symbols-Black','Quivira','Symbola'];//shinto shrine
-myFontSet[111]=['x269C','Code2000','Everson Mono ','FreeSerif','Noto Sans Symbols-Black','Segoe UI Symbol','Symbola'];
-myFontSet[112]=['9766','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola'];//crosses
+myFontSet[110]=['x26E9','Noto Sans Symbols-Black','Quivira','Symbola','Noto Emoji'];//shinto shrine
+myFontSet[111]=['x1F54C','Arial Unicode MS','Code2000','DejaVu Sans','DejaVu Sans Condensed','Everson Mono','FreeMono','FreeSerif','FreeSans','Meiryo','Meiryo UI','MS Gothic','MS Mincho','MS PGothic','MS PMincho','Noto Sans Symbols-Black','Quivira','Segoe UI Symbol','Symbola','Noto Emoji'];//mosque
 
 
 //myFontSet[]=['x0A14;&#x0A01','Symbola'];//Gurmuckhi om

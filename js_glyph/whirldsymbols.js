@@ -577,8 +577,9 @@ myFontSet[442]=['x1F77C','Symbola','Noto Sans Symbols','Apple Symbols,Noto Sans 
 myFontSet[443]=['x1F77D','Symbola','Noto Sans Symbols','Apple Symbols,Noto Sans Symbols','Quivira','Everson Mono']; // Gonggong
 myFontSet[444]=['x1F77E','Symbola','Noto Sans Symbols','Apple Symbols,Noto Sans Symbols','Quivira','Everson Mono']; // Quaoar
 myFontSet[445]=['x1F77F','Symbola','Noto Sans Symbols','Apple Symbols,Noto Sans Symbols','Quivira','Everson Mono']; // Orcus
-
-
+myFontSet[446]=['x1F54C','Symbola','Noto Emoji'];//mosque
+myFontSet[447]=['x1F7D9','Symbola','Noto Emoji'];//9 pinted white star Bahai
+myFontSet[448]=['x1F54B','Symbola','Noto Emoji'];//9 pinted white star Bahai
 
 var glyphDescriptions = [];
 
@@ -1038,7 +1039,9 @@ glyphDescriptions[442]=['Makemake'];
 glyphDescriptions[443]=['Gonggong'];
 glyphDescriptions[444]=['Quaoar'];
 glyphDescriptions[445]=['Orcus'];
-
+glyphDescriptions[446]=['Mosque'];
+glyphDescriptions[447]=["9-Pointed White Star of Bahá'í"];
+glyphDescriptions[448]=["Kaaba"];
 
 
 // Place of Worship 
