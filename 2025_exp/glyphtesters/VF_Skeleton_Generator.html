@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VF Skeleton Generator</title>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: #ccc;
+            font-family: monospace;
+            padding: 40px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #888;
+            font-weight: normal;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .status {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section-title {
+            color: #aa8866;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 400px;
+            background: #0a0a0a;
+            color: #0f0;
+            border: 1px solid #333;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            resize: vertical;
+        }
+        button {
+            background: #333;
+            color: #ccc;
+            border: 1px solid #555;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: monospace;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #444;
+        }
+    </style>
+</head>
+<body>
+    <h1>Variable Font Skeleton Generator</h1>
+    <div class="status" id="status">Loading...</div>
+
+    <div class="section">
+        <div class="section-title">var_axes (array of all axes combinations)</div>
+        <textarea id="varAxes" readonly></textarea>
+        <button onclick="copyToClipboard('varAxes')">Copy to Clipboard</button>
+    </div>
+
+    <div class="section">
+        <div class="section-title">var_block_lang entries</div>
+        <textarea id="varBlockLang" readonly></textarea>
+        <button onclick="copyToClipboard('varBlockLang')">Copy to Clipboard</button>
+    </div>
+
+    <div class="section">
+        <div class="section-title">var_lang_font entries</div>
+        <textarea id="varLangFont" readonly></textarea>
+        <button onclick="copyToClipboard('varLangFont')">Copy to Clipboard</button>
+    </div>
+
+    <div class="section">
+        <div class="section-title">var_blocks entries (grouped by axes)</div>
+        <textarea id="varBlocks" readonly></textarea>
+        <button onclick="copyToClipboard('varBlocks')">Copy to Clipboard</button>
+    </div>
+
+    <div class="section">
+        <div class="section-title">var_blocks_list (array of blocks with variable fonts)</div>
+        <textarea id="varBlocksList" readonly></textarea>
+        <button onclick="copyToClipboard('varBlocksList')">Copy to Clipboard</button>
+    </div>
+
+    <div class="section">
+        <div class="section-title">font_axis_ranges entries</div>
+        <textarea id="fontAxisRanges" readonly></textarea>
+        <button onclick="copyToClipboard('fontAxisRanges')">Copy to Clipboard</button>
+    </div>
+
+    <script>
+        const API_KEY = 'AIzaSyBPEC-k91wzgVIMm9CZSJIINd-WKmR2Wmo';
+
+        // Map Google Fonts subsets to Unicode block names
+        const subsetToBlock = {
+            'bengali': 'Bengali',
+            'devanagari': 'Devanagari',
+            'gujarati': 'Gujarati',
+            'gurmukhi': 'Gurmukhi',
+            'kannada': 'Kannada',
+            'malayalam': 'Malayalam',
+            'oriya': 'Oriya',
+            'tamil': 'Tamil',
+            'telugu': 'Telugu',
+            'sinhala': 'Sinhala',
+            'thai': 'Thai',
+            'khmer': 'Khmer',
+            'lao': 'Lao',
+            'myanmar': 'Myanmar',
+            // 'vietnamese': 'Vietnamese', // Not a Unicode block - uses Basic Latin + Latin Extended-A
+            'chinese-simplified': 'CJK Unified Ideographs',
+            'chinese-traditional': 'CJK Unified Ideographs',
+            'japanese': 'Hiragana',
+            'korean': 'Hangul Syllables',
+            'arabic': 'Arabic',
+            'hebrew': 'Hebrew',
+            'cyrillic': 'Cyrillic',
+            'cyrillic-ext': 'Cyrillic Extended-B',
+            'greek': 'Greek and Coptic',
+            'greek-ext': 'Greek Extended',
+            'latin': 'Basic Latin',
+            'latin-ext': 'Latin Extended-A',
+            'armenian': 'Armenian',
+            'georgian': 'Georgian',
+            'ethiopic': 'Ethiopic',
+            'cherokee': 'Cherokee',
+            'tibetan': 'Tibetan',
+            'math': 'Mathematical Operators',
+            'symbols': 'Geometric Shapes',
+            'tifinagh': 'Tifinagh',
+            'makasar': 'Makasar',
+            'znamenny': 'Znamenny Musical Notation',
+            'syriac': 'Syriac',
+            'tai-le': 'Tai Le'
+        };
+
+        function normalizeAxes(axes) {
+            // Sort axes alphabetically for consistent grouping
+            return axes.split(', ').sort().join('_');
+        }
+
+        function copyToClipboard(elementId) {
+            const textarea = document.getElementById(elementId);
+            textarea.select();
+            document.execCommand('copy');
+        }
+
+        async function generateSkeleton() {
+            const url = `https://www.googleapis.com/webfonts/v1/webfonts?key=${API_KEY}&capability=VF&sort=alpha`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                // Group fonts by block and axes
+                const blockAxesGroups = {};
+
+                data.items
+                    .filter(font => !font.family.includes('Material')) // Exclude Material Symbols/Icons
+                    .filter(font => font.axes) // Only include variable fonts with axes
+                    .forEach(font => {
+                    const axes = font.axes.map(a => a.tag).sort().join('_');
+                    const subsets = font.subsets || [];
+
+                    // Process each subset
+                    subsets.forEach(subset => {
+                        if (subset === 'menu') return; // Skip menu
+
+                        // Vietnamese maps to multiple blocks
+                        if (subset === 'vietnamese') {
+                            ['Basic Latin', 'Latin Extended-A', 'Latin Extended-B'].forEach(blockName => {
+                                const key = `${blockName}___${axes}`;
+                                if (!blockAxesGroups[key]) {
+                                    blockAxesGroups[key] = {
+                                        block: blockName,
+                                        axes: axes,
+                                        fonts: []
+                                    };
+                                }
+                                blockAxesGroups[key].fonts.push(font.family);
+                            });
+                            return;
+                        }
+
+                        const blockName = subsetToBlock[subset];
+                        if (!blockName) return; // Skip unmapped subsets
+                        const key = `${blockName}___${axes}`;
+
+                        if (!blockAxesGroups[key]) {
+                            blockAxesGroups[key] = {
+                                block: blockName,
+                                axes: axes,
+                                fonts: []
+                            };
+                        }
+
+                        blockAxesGroups[key].fonts.push(font.family);
+                    });
+                });
+
+                // Sort by axes first, then block name
+                const sortedKeys = Object.keys(blockAxesGroups).sort((a, b) => {
+                    const aGroup = blockAxesGroups[a];
+                    const bGroup = blockAxesGroups[b];
+
+                    if (aGroup.axes !== bGroup.axes) {
+                        return aGroup.axes.localeCompare(bGroup.axes);
+                    }
+                    return aGroup.block.localeCompare(bGroup.block);
+                });
+
+                // Collect all unique axes combinations
+                const allAxes = [...new Set(sortedKeys.map(key => blockAxesGroups[key].axes))].sort();
+
+                // Generate var_axes output
+                let varAxesOutput = 'var_axes = [\n';
+                allAxes.forEach((axes, idx) => {
+                    const comma = idx < allAxes.length - 1 ? ',' : '';
+                    varAxesOutput += `  "${axes}"${comma}\n`;
+                });
+                varAxesOutput += '];\n';
+
+                // Generate var_block_lang output
+                let varBlockLangOutput = 'var_block_lang = {}\n\n';
+                sortedKeys.forEach(key => {
+                    const group = blockAxesGroups[key];
+                    const blockKey = `${group.block}-${group.axes}`;
+                    const langKey = `${group.block.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${group.axes}`;
+
+                    varBlockLangOutput += `var_block_lang['${blockKey}'] = ['${langKey}'];\n`;
+                });
+
+                // Generate var_lang_font output
+                let varLangFontOutput = 'var_lang_font = {}\n\n';
+                sortedKeys.forEach(key => {
+                    const group = blockAxesGroups[key];
+                    const langKey = `${group.block.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${group.axes}`;
+
+                    // Sort fonts alphabetically
+                    const sortedFonts = [...new Set(group.fonts)].sort();
+
+                    varLangFontOutput += `var_lang_font['${langKey}'] = [\n`;
+                    sortedFonts.forEach((font, idx) => {
+                        const comma = idx < sortedFonts.length - 1 ? ',' : '';
+                        varLangFontOutput += `  "${font}"${comma}\n`;
+                    });
+                    varLangFontOutput += `];\n\n`;
+                });
+
+                // Generate var_blocks output (grouped by axes)
+                let varBlocksOutput = 'var_blocks = {}\n\n';
+                const axesGroups = {};
+
+                sortedKeys.forEach(key => {
+                    const group = blockAxesGroups[key];
+                    if (!axesGroups[group.axes]) {
+                        axesGroups[group.axes] = [];
+                    }
+                    axesGroups[group.axes].push(group.block);
+                });
+
+                // Sort axes
+                const sortedAxes = Object.keys(axesGroups).sort();
+
+                sortedAxes.forEach(axes => {
+                    const blocks = [...new Set(axesGroups[axes])].sort();
+                    varBlocksOutput += `var_blocks['${axes}'] = [\n`;
+                    blocks.forEach((block, idx) => {
+                        const comma = idx < blocks.length - 1 ? ',' : '';
+                        varBlocksOutput += `  "${block}"${comma}\n`;
+                    });
+                    varBlocksOutput += `];\n\n`;
+                });
+
+                // Generate var_blocks_list output (simple array of blocks with variable fonts)
+                const allVariableFontBlocks = new Set();
+                sortedAxes.forEach(axes => {
+                    const blocks = [...new Set(axesGroups[axes])];
+                    blocks.forEach(block => allVariableFontBlocks.add(block));
+                });
+                const sortedBlocksList = Array.from(allVariableFontBlocks).sort();
+
+                let varBlocksListOutput = 'var_blocks_list = [\n';
+                sortedBlocksList.forEach((block, idx) => {
+                    const comma = idx < sortedBlocksList.length - 1 ? ',' : '';
+                    varBlocksListOutput += `  "${block}"${comma}\n`;
+                });
+                varBlocksListOutput += '];\n';
+
+                // Generate font_axis_ranges output
+                let fontAxisRangesOutput = 'font_axis_ranges = {}\n\n';
+
+                // Collect all fonts with their axis data
+                const fontAxesMap = {};
+                data.items
+                    .filter(font => !font.family.includes('Material')) // Exclude Material Symbols/Icons
+                    .forEach(font => {
+                    if (font.axes) {
+                        const axesData = {};
+                        font.axes.forEach(axis => {
+                            axesData[axis.tag] = {
+                                min: axis.start,
+                                max: axis.end
+                            };
+                        });
+                        fontAxesMap[font.family] = axesData;
+                    }
+                });
+
+                // Sort fonts alphabetically and output
+                const sortedFontNames = Object.keys(fontAxesMap).sort();
+                sortedFontNames.forEach(fontName => {
+                    const axesData = fontAxesMap[fontName];
+                    const axesTags = Object.keys(axesData).sort();
+
+                    fontAxisRangesOutput += `font_axis_ranges['${fontName}'] = {\n`;
+                    axesTags.forEach((tag, idx) => {
+                        const comma = idx < axesTags.length - 1 ? ',' : '';
+                        const range = axesData[tag];
+                        fontAxisRangesOutput += `  ${tag}: { min: ${range.min}, max: ${range.max} }${comma}\n`;
+                    });
+                    fontAxisRangesOutput += `};\n\n`;
+                });
+
+                // Update textareas
+                document.getElementById('varAxes').value = varAxesOutput;
+                document.getElementById('varBlockLang').value = varBlockLangOutput;
+                document.getElementById('varLangFont').value = varLangFontOutput;
+                document.getElementById('varBlocks').value = varBlocksOutput;
+                document.getElementById('varBlocksList').value = varBlocksListOutput;
+                document.getElementById('fontAxisRanges').value = fontAxisRangesOutput;
+
+                // Update status
+                const totalGroups = sortedKeys.length;
+                const totalBlocks = new Set(sortedKeys.map(k => blockAxesGroups[k].block)).size;
+                document.getElementById('status').textContent =
+                    `Generated ${totalGroups} block-axes combinations across ${totalBlocks} blocks`;
+
+            } catch (err) {
+                document.getElementById('status').textContent = 'Error: ' + err.message;
+            }
+        }
+
+        generateSkeleton();
+    </script>
+</body>
+</html>

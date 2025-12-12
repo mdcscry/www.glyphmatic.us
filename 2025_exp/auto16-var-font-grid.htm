@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Variable Font Macroglyph</title>
+    <style type="text/css">
+        /* Emoji needs to be included for blocks with mixed emoji/not emoji */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Emoji&display=swap');
+
+        table {
+            border-bottom: 50px solid #110c11;
+            border-radius: 20px;
+            max-height: 90vh;
+            height: 75%;
+        }
+
+        div {
+            display: inline;
+            height: .1em;
+        }
+
+        tr {
+            height: 1em;
+            overflow: hidden;
+            vertical-align: middle;
+        }
+
+        td {
+            height: 1em;
+            overflow: hidden;
+            vertical-align: middle;
+        }
+
+        tr.border_bottom td {
+            border-bottom: 1pt dotted transparent;
+        }
+
+        [title] {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 1px;
+            position: relative;
+        }
+
+        body.touched [title] > * {
+            user-select: none;
+        }
+
+        body.touched [title]:hover > * {
+            user-select: auto
+        }
+
+        body.touched [title]:hover:after {
+            font-size: .12em;
+            position: absolute;
+            top: 100%;
+            right: 0%;
+            content: attr(title);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            background-color: white;
+            color: black;
+            padding: 0.1em;
+            z-index: 1;
+        }
+
+        body {
+            background-color: black;
+            color: white;
+        }
+
+        /* Google fonts @import version doesn't have complete coverage */
+        @font-face {
+            font-family: 'Noto Sans Full';
+            src: url('../tff/NotoSans-Regular.ttf') format('truetype');
+        }
+    </style>
+
+    <!-- Core libraries -->
+    <script src="../js_funct/contrast_tester.js"></script>
+    <script src="../js_funct/colorpalette.js"></script>
+    <script src="../js_funct/autoFontVar.js"></script>
+
+    <!-- Variable font data files -->
+    <script src="../js_glyph/2025_block_17/block_hex_17.js"></script>
+    <script src="../js_glyph/2025_block_17/block_hex_desc_17.js"></script>
+    <script src="../js_glyph/2025_var_blocks/var_axis.js"></script>
+    <script src="../js_glyph/2025_var_blocks/var_block_skeleton.js"></script>
+    <script src="../js_glyph/2025_var_blocks/var_blocks.js"></script>
+    <script src="../js_glyph/2025_var_blocks/var_blocks_list.js"></script>
+    <script src="../js_glyph/2025_var_blocks/font_axis_ranges.js"></script>
+</head>
+<body style="overflow: hidden; font-size: 3.75em; display: inline;">
+    <table id="tab" align='center' width=90%>
+        <tr>
+            <TD id="row1" style="text-align:center" colspan=2></TD>
+        </tr>
+        <tr>
+            <TD id="row2" style="text-align:center" colspan=2></TD>
+        </tr>
+        <tr>
+            <TD id="row3" style="text-align:center" colspan=2></TD>
+        </tr>
+        <tr class="border_bottom">
+            <TD id="row4" style="text-align:center" colspan=2></TD>
+        </tr>
+        <tr>
+            <TD id="row5" style="text-align:center" colspan=2></TD>
+        </tr>
+        <tr>
+            <td style='text-align:left;'>
+                <div id="footerLeft" style="font-size:.35em;"></div>
+            </td>
+            <td style="text-align:right;">
+                <div style="font-size:.35em; font-family:'Noto Sans Mono';"> glyphmatic.us</div>
+            </td>
+        </tr>
+    </table>
+
+    <script type="text/javascript">
+        // Configuration
+        const CONFIG = {
+            testMode: false,
+            testBlock: null, // e.g., "Basic Latin"
+            animationDurationMin: 3000, // Minimum morph duration
+            animationDurationMax: 7500, // Maximum morph duration
+            glyphCount: 20 // Glyphs per row
+        };
+
+        // Animation state for all glyphs
+        const glyphAnimations = [];
+
+        document.body.addEventListener('touchstart', function() {
+            document.body.classList.add('touched');
+        });
+
+        function lerp(start, end, t) {
+            return start + (end - start) * t;
+        }
+
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        // Generate morphing variable font glyph
+        function generateVariableGlyph(index) {
+            const glyphData = AutoFontVar.generateGlyph(
+                block_hex,
+                block_hex_desc,
+                var_blocks_list,
+                var_blocks,
+                var_block_lang,
+                var_lang_font,
+                font_axis_ranges,
+                CONFIG.testMode,
+                { block: CONFIG.testBlock }
+            );
+
+            if (!glyphData) {
+                console.error('Failed to generate glyph', index);
+                return null;
+            }
+
+            // Get random color from palette
+            const glyphColor = ColorPalette.randomPaletteGlyphColor();
+
+            // Initialize animation state with randomization
+            const randomDuration = Math.random() * (CONFIG.animationDurationMax - CONFIG.animationDurationMin) + CONFIG.animationDurationMin;
+            const randomProgress = Math.random(); // Start at random point in animation cycle
+
+            const animState = {
+                glyphData,
+                elementId: `glyph${index}`,
+                currentValues: { ...glyphData.axisValues },
+                targetValues: { ...glyphData.axisValues },
+                progress: randomProgress,
+                duration: randomDuration,
+                lastTime: Date.now()
+            };
+
+            glyphAnimations.push(animState);
+
+            return `<td><span id="glyph${index}"
+                style="font-family: '${glyphData.fontFamily}';
+                       color: ${glyphColor};
+                       font-variation-settings: ${glyphData.fontVariationSettings};"
+                title="${glyphData.glyphHex}-${glyphData.description}">&#x${glyphData.glyphHex};</span></td>`;
+        }
+
+        // Generate row of glyphs
+        function spectacular(startIndex, count) {
+            let spansString = '';
+            for (let i = startIndex; i < startIndex + count; i++) {
+                const glyphSpan = generateVariableGlyph(i);
+                if (glyphSpan) {
+                    spansString += glyphSpan;
+                }
+            }
+            return spansString;
+        }
+
+        // Animate single glyph
+        function animateGlyph(animState) {
+            const now = Date.now();
+            const deltaTime = now - animState.lastTime;
+            animState.lastTime = now;
+
+            // Update progress (use each glyph's own duration)
+            animState.progress += deltaTime / animState.duration;
+
+            if (animState.progress >= 1) {
+                // Transition complete, set new targets
+                animState.progress = 0;
+                animState.currentValues = { ...animState.targetValues };
+
+                // Randomize duration for next morph
+                animState.duration = Math.random() * (CONFIG.animationDurationMax - CONFIG.animationDurationMin) + CONFIG.animationDurationMin;
+
+                // Generate new random targets
+                for (const [tag, range] of Object.entries(animState.glyphData.axisRanges)) {
+                    animState.targetValues[tag] = AutoFontVar.randomInRange(range.min, range.max);
+                }
+            } else {
+                // Interpolate between current and target
+                const t = easeInOutCubic(animState.progress);
+                for (const tag of Object.keys(animState.currentValues)) {
+                    const current = animState.currentValues[tag];
+                    const target = animState.targetValues[tag];
+                    animState.currentValues[tag] = lerp(current, target, t);
+                }
+            }
+
+            // Apply font-variation-settings
+            const fontVariationSettings = Object.entries(animState.currentValues)
+                .map(([tag, val]) => `"${tag}" ${Math.round(val)}`)
+                .join(', ');
+
+            const element = document.getElementById(animState.elementId);
+            if (element) {
+                element.style.fontVariationSettings = fontVariationSettings;
+            }
+        }
+
+        // Main animation loop
+        function animate() {
+            glyphAnimations.forEach(animState => animateGlyph(animState));
+            requestAnimationFrame(animate);
+        }
+
+        // Initialize
+        async function init() {
+            if (typeof blockHexWait == "undefined" ||
+                typeof blockHexDescWait == "undefined" ||
+                typeof var_axes == "undefined" ||
+                typeof var_blocks == "undefined" ||
+                typeof var_blocks_list == "undefined" ||
+                typeof var_block_lang == "undefined" ||
+                typeof var_lang_font == "undefined" ||
+                typeof font_axis_ranges == "undefined"
+            ) {
+                window.setTimeout(init, 100);
+            } else {
+                await AutoFontVar.init();
+
+                // Apply random color palette
+                ColorPalette.selectRandomPalette();
+                const footerLeft = document.getElementById('footerLeft');
+                ColorPalette.applyFixedPalette(
+                    document.body,
+                    document.querySelector('table'),
+                    footerLeft,
+                    document.querySelector('tr:last-child td:last-child div'),
+                    document.querySelector('tr.border_bottom')
+                );
+
+                if (footerLeft) {
+                    if (CONFIG.testMode) {
+                        footerLeft.textContent = `Test Mode - Block: ${CONFIG.testBlock || 'Random'}`;
+                    } else {
+                        footerLeft.textContent = 'Variable Font Unicode';
+                    }
+                    footerLeft.style.fontFamily = "'Noto Serif Mono'";
+                }
+
+                // Generate all glyphs
+                const glyphsPerRow = CONFIG.glyphCount;
+                document.getElementById('row1').innerHTML = spectacular(0, glyphsPerRow);
+                document.getElementById('row2').innerHTML = spectacular(glyphsPerRow, glyphsPerRow);
+                document.getElementById('row3').innerHTML = spectacular(glyphsPerRow * 2, glyphsPerRow);
+                document.getElementById('row4').innerHTML = spectacular(glyphsPerRow * 3, glyphsPerRow);
+                document.getElementById('row5').innerHTML = spectacular(glyphsPerRow * 4, glyphsPerRow);
+
+                // Wait a bit for fonts to load, then start animation
+                setTimeout(() => {
+                    animate();
+                }, 1000);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

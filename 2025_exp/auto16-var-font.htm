@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Variable Font Glyph POC</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a0a;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: monospace;
+        }
+
+        #glyphContainer {
+            text-align: center;
+        }
+
+        #glyph {
+            font-size: 40vh;
+            line-height: 1;
+            cursor: help;
+            transition: all 0.3s ease;
+        }
+
+        #glyph:hover {
+            transform: scale(1.05);
+        }
+
+        #info {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #666;
+            max-width: 800px;
+            line-height: 1.6;
+        }
+
+        .info-line {
+            margin: 8px 0;
+        }
+
+        .label {
+            color: #888;
+            display: inline-block;
+            width: 120px;
+        }
+
+        .value {
+            color: #ccc;
+        }
+
+        .axes {
+            color: #4a9eff;
+        }
+    </style>
+
+    <!-- Load Google Fonts dynamically -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Data files -->
+    <script src="../js_glyph/2025_block_17/block_hex_17.js"></script>
+    <script src="../js_glyph/2025_block_17/block_hex_desc_17.js"></script>
+    <script src="../js_glyph/2025_var_blocks/var_axis.js"></script>
+    <script src="../js_glyph/2025_var_blocks/var_block_skeleton.js"></script>
+    <script src="../js_glyph/2025_var_blocks/var_blocks.js"></script>
+    <script src="../js_glyph/2025_var_blocks/var_blocks_list.js"></script>
+    <script src="../js_glyph/2025_var_blocks/font_axis_ranges.js"></script>
+</head>
+<body>
+    <div id="glyphContainer">
+        <div id="glyph"></div>
+        <div id="info"></div>
+    </div>
+
+    <script>
+        function randomElement(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        function randomInRange(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function loadGoogleFont(fontFamily, axisRanges) {
+            // Build axis specification for Google Fonts URL
+            // Format: axis1,axis2@min1..max1,min2..max2
+            // Note: Google Fonts only supports registered axes in URLs and integer values
+            const registeredAxes = ['wght', 'wdth', 'slnt', 'opsz', 'ital'];
+            const filteredAxes = Object.entries(axisRanges)
+                .filter(([tag]) => registeredAxes.includes(tag.toLowerCase()))
+                .sort((a, b) => a[0].localeCompare(b[0]));
+
+            const axisTags = filteredAxes.map(([tag]) => tag.toLowerCase()).join(',');
+            const axisRangesStr = filteredAxes.map(([tag, range]) => `${Math.round(range.min)}..${Math.round(range.max)}`).join(',');
+            const axisSpecs = filteredAxes.length > 0 ? `${axisTags}@${axisRangesStr}` : '';
+
+            const link = document.createElement('link');
+            // If no registered axes, load font without axis specification
+            if (axisSpecs) {
+                link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/ /g, '+')}:${axisSpecs}&display=swap`;
+            } else {
+                link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/ /g, '+')}&display=swap`;
+            }
+            link.rel = 'stylesheet';
+            document.head.appendChild(link);
+
+            console.log('Loading font URL:', link.href);
+        }
+
+        function generateVariableGlyph() {
+            // 1. Pick random axes combo
+            const axes = randomElement(var_axes);
+            console.log('Selected axes:', axes);
+
+            // 2. Get blocks for this axes combo
+            const blocks = var_blocks[axes];
+            if (!blocks || blocks.length === 0) {
+                console.error('No blocks found for axes:', axes);
+                return null;
+            }
+
+            // 3. Pick random block
+            const block = randomElement(blocks);
+            console.log('Selected block:', block);
+
+            // 4. Get glyph from block_hex
+            const glyphs = block_hex[block];
+            if (!glyphs || glyphs.length === 0) {
+                console.error('No glyphs found for block:', block);
+                return null;
+            }
+            const glyphHex = randomElement(glyphs);
+
+            // 5. Get description
+            const descriptions = block_hex_desc[block];
+            const glyphIndex = glyphs.indexOf(glyphHex);
+            const description = descriptions && descriptions[glyphIndex]
+                ? descriptions[glyphIndex]
+                : 'Unknown';
+
+            // 6. Build lookup key: block + '-' + axes
+            const lookupKey = `${block}-${axes}`;
+            console.log('Lookup key:', lookupKey);
+
+            // 7. Get lang tag from var_block_lang
+            const langTags = var_block_lang[lookupKey];
+            if (!langTags || langTags.length === 0) {
+                console.error('No lang tags found for:', lookupKey);
+                return null;
+            }
+            const langTag = langTags[0];
+            console.log('Lang tag:', langTag);
+
+            // 8. Get fonts from var_lang_font
+            const fonts = var_lang_font[langTag];
+            if (!fonts || fonts.length === 0) {
+                console.error('No fonts found for lang tag:', langTag);
+                return null;
+            }
+            const fontFamily = randomElement(fonts);
+            console.log('Selected font:', fontFamily);
+
+            // 9. Get axis ranges for this font
+            const axisRanges = font_axis_ranges[fontFamily];
+            if (!axisRanges) {
+                console.error('No axis ranges found for font:', fontFamily);
+                return null;
+            }
+
+            // 10. Generate random values for each axis
+            const axisValues = {};
+            const axisSettings = [];
+            for (const [axisTag, range] of Object.entries(axisRanges)) {
+                const value = randomInRange(range.min, range.max);
+                axisValues[axisTag] = value;
+                axisSettings.push(`"${axisTag}" ${value}`);
+            }
+
+            const fontVariationSettings = axisSettings.join(', ');
+            console.log('Font variation settings:', fontVariationSettings);
+
+            return {
+                glyphHex,
+                description,
+                block,
+                axes,
+                fontFamily,
+                axisValues,
+                fontVariationSettings
+            };
+        }
+
+        // Animation state
+        let animationState = {
+            currentValues: {},
+            targetValues: {},
+            axisRanges: {},
+            progress: 0,
+            duration: 3000, // 3 seconds per transition
+            lastTime: Date.now()
+        };
+
+        function displayGlyph(data) {
+            if (!data) {
+                document.getElementById('info').innerHTML = '<div class="info-line" style="color: #f44;">Error generating glyph. Check console.</div>';
+                return;
+            }
+
+            // Load the Google Font with axis ranges
+            const axisRanges = font_axis_ranges[data.fontFamily];
+            loadGoogleFont(data.fontFamily, axisRanges);
+
+            // Initialize animation state
+            animationState.currentValues = { ...data.axisValues };
+            animationState.targetValues = { ...data.axisValues };
+            animationState.axisRanges = axisRanges;
+            animationState.data = data;
+
+            // Wait a bit for font to load, then display and start animation
+            setTimeout(() => {
+                const glyphEl = document.getElementById('glyph');
+                const infoEl = document.getElementById('info');
+
+                // Set glyph
+                glyphEl.innerHTML = `&#x${data.glyphHex};`;
+                glyphEl.style.fontFamily = `"${data.fontFamily}"`;
+
+                // Start animation loop
+                startAnimation(glyphEl, infoEl);
+            }, 500); // Give font a moment to load
+        }
+
+        function updateDisplay(glyphEl, infoEl) {
+            const data = animationState.data;
+            const currentValues = animationState.currentValues;
+            const axisRanges = animationState.axisRanges;
+
+            // Build font-variation-settings string
+            const fontVariationSettings = Object.entries(currentValues)
+                .map(([tag, val]) => `"${tag}" ${Math.round(val)}`)
+                .join(', ');
+
+            // Apply to glyph
+            glyphEl.style.fontVariationSettings = fontVariationSettings;
+
+            // Build detailed axes display with ranges
+            const axesDetailDisplay = Object.entries(currentValues)
+                .map(([tag, val]) => {
+                    const range = axisRanges[tag];
+                    return `<div class="info-line" style="margin-left: 20px;">
+                        <span class="label">${tag}:</span>
+                        <span class="value axes">${Math.round(val)}</span>
+                        <span class="value" style="color: #555;"> (range: ${range.min}-${range.max})</span>
+                    </div>`;
+                })
+                .join('');
+
+            // Update info
+            infoEl.innerHTML = `
+                <div class="info-line">
+                    <span class="label">Unicode:</span>
+                    <span class="value">U+${data.glyphHex}</span>
+                </div>
+                <div class="info-line">
+                    <span class="label">Description:</span>
+                    <span class="value">${data.description}</span>
+                </div>
+                <div class="info-line">
+                    <span class="label">Block:</span>
+                    <span class="value">${data.block}</span>
+                </div>
+                <div class="info-line">
+                    <span class="label">Font:</span>
+                    <span class="value">${data.fontFamily}</span>
+                </div>
+                <div class="info-line">
+                    <span class="label">Axes Combo:</span>
+                    <span class="value">${data.axes}</span>
+                </div>
+                <div class="info-line">
+                    <span class="label">Variable Axes:</span>
+                </div>
+                ${axesDetailDisplay}
+                <div class="info-line" style="margin-top: 12px;">
+                    <span class="label">CSS:</span>
+                    <span class="value" style="color: #888; font-size: 12px;">font-variation-settings: ${fontVariationSettings};</span>
+                </div>
+            `;
+        }
+
+        function lerp(start, end, t) {
+            return start + (end - start) * t;
+        }
+
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        function startAnimation(glyphEl, infoEl) {
+            function animate() {
+                const now = Date.now();
+                const deltaTime = now - animationState.lastTime;
+                animationState.lastTime = now;
+
+                // Update progress
+                animationState.progress += deltaTime / animationState.duration;
+
+                if (animationState.progress >= 1) {
+                    // Transition complete, set new targets
+                    animationState.progress = 0;
+                    animationState.currentValues = { ...animationState.targetValues };
+
+                    // Generate new random targets
+                    for (const [tag, range] of Object.entries(animationState.axisRanges)) {
+                        animationState.targetValues[tag] = randomInRange(range.min, range.max);
+                    }
+                } else {
+                    // Interpolate between current and target
+                    const t = easeInOutCubic(animationState.progress);
+                    const newValues = {};
+
+                    for (const tag of Object.keys(animationState.currentValues)) {
+                        const current = animationState.currentValues[tag];
+                        const target = animationState.targetValues[tag];
+                        newValues[tag] = lerp(current, target, t);
+                    }
+
+                    // Temporarily update for display
+                    const tempCurrent = animationState.currentValues;
+                    animationState.currentValues = newValues;
+                    updateDisplay(glyphEl, infoEl);
+                    animationState.currentValues = tempCurrent;
+                    return requestAnimationFrame(animate);
+                }
+
+                updateDisplay(glyphEl, infoEl);
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        // Wait for all scripts to load
+        function init() {
+            if (typeof var_axes === 'undefined' ||
+                typeof var_blocks === 'undefined' ||
+                typeof var_block_lang === 'undefined' ||
+                typeof var_lang_font === 'undefined' ||
+                typeof font_axis_ranges === 'undefined' ||
+                typeof block_hex === 'undefined' ||
+                typeof block_hex_desc === 'undefined') {
+                setTimeout(init, 100);
+                return;
+            }
+
+            console.log('All data loaded, generating glyph...');
+            const glyphData = generateVariableGlyph();
+            displayGlyph(glyphData);
+        }
+
+        init();
+    </script>
+</body>
+</html>
