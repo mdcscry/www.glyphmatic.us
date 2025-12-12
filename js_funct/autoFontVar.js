@@ -9,6 +9,50 @@
         // Font style sheets
         fontLinks: new Set(),
 
+        // Color fonts that need palette-based handling
+        colorFonts: [
+            'Honk',
+            'Nabla',
+            'Sixtyfour Convergence',
+            'Kalnia Glaze',
+            'Bitcount Grid Single Ink',
+            'Bitcount Single Ink',
+            'Bitcount Prop Double Ink',
+            'Bitcount Ink'
+        ],
+
+        // Palette-based color font behavior
+        // true = allow color fonts, 'desaturate' = allow with desaturation, false = exclude
+        paletteColorFontBehavior: {
+            'black_lightgray': 'desaturate',     // Black & Light Gray - desaturate color fonts
+            'white_primary': true,                // White & Primary Colors - allow color fonts
+            'silver_lightgray': false,            // Silver & Light Gray (gray teal blue) - exclude color fonts
+            'brown': 'desaturate', // 'desaturate',                // Brown Earth (taupe) - desaturate color fonts
+            'white_teal_red': false,              // White with Teal & Red - exclude color fonts
+        },
+
+        // Check if font should be excluded based on current palette
+        shouldExcludeFont: function(fontFamily) {
+            // Check if it's a color font
+            const isColorFont = this.colorFonts.some(cf => fontFamily.includes(cf));
+            if (!isColorFont) return false;
+
+            // Get current palette behavior (if ColorPalette is available)
+            if (typeof ColorPalette !== 'undefined' && ColorPalette.currentPaletteKey) {
+                const behavior = this.paletteColorFontBehavior[ColorPalette.currentPaletteKey];
+
+                // If behavior is explicitly false, exclude this font
+                if (behavior === false) {
+                    return true;
+                }
+
+                // If behavior is 'desaturate' or true, allow it
+                // (desaturation will be applied during rendering if needed)
+            }
+
+            return false;
+        },
+
         // Initialize
         init: function() {
             console.log('AutoFontVar engine loaded');
@@ -135,7 +179,11 @@
             }
 
             // Filter to only fonts that have axis ranges (are actually variable)
-            const variableFonts = fonts.filter(f => fontAxisRanges[f]);
+            // and aren't excluded by palette-based color font rules
+            const variableFonts = fonts.filter(f => {
+                return fontAxisRanges[f] && !this.shouldExcludeFont(f);
+            });
+
             if (variableFonts.length === 0) {
                 console.warn('No variable fonts with axis ranges for lang tag:', langTag);
                 return null;
@@ -153,6 +201,15 @@
             // STEP 10: Load the font
             this.loadGoogleFont(fontFamily, axisRanges);
 
+            // Check if this is a color font that needs desaturation
+            const isColorFont = this.colorFonts.some(cf => fontFamily.includes(cf));
+            let needsDesaturation = false;
+            if (isColorFont && typeof ColorPalette !== 'undefined' && ColorPalette.currentPaletteKey) {
+                const behavior = this.paletteColorFontBehavior[ColorPalette.currentPaletteKey];
+                needsDesaturation = (behavior === 'desaturate');
+                console.log(`Color font detected: ${fontFamily}, palette: ${ColorPalette.currentPaletteKey}, behavior: ${behavior}, needsDesaturation: ${needsDesaturation}`);
+            }
+
             // Build font-variation-settings string
             const fontVariationSettings = Object.entries(axisValues)
                 .map(([tag, val]) => `"${tag}" ${val}`)
@@ -166,7 +223,8 @@
                 fontFamily,
                 axisValues,
                 axisRanges,
-                fontVariationSettings
+                fontVariationSettings,
+                needsDesaturation
             };
         }
     };

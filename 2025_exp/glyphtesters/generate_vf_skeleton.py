@@ -11,6 +11,12 @@ from pathlib import Path
 API_KEY = 'AIzaSyBPEC-k91wzgVIMm9CZSJIINd-WKmR2Wmo'
 OUTPUT_DIR = Path(__file__).parent.parent.parent / 'js_glyph' / '2025_var_blocks'
 
+# Fonts to exclude from generation
+EXCLUDED_FONTS = (
+    'Honk',
+    'Nabla',
+)
+
 # Map Google Fonts subsets to Unicode block names
 SUBSET_TO_BLOCK = {
     'bengali': 'Bengali',
@@ -149,6 +155,8 @@ def generate_var_axes(block_axes_groups):
         comma = ',' if i < len(all_axes) - 1 else ''
         lines.append(f'  "{axes}"{comma}')
     lines.append('];')
+    lines.append("console.log('var_axes loaded');")
+    lines.append('var_axesWait = true;')
 
     return '\n'.join(lines) + '\n'
 
@@ -169,6 +177,9 @@ def generate_var_block_lang(block_axes_groups):
         lang_key = '-'.join(filter(None, lang_key.split('-')))
 
         lines.append(f"var_block_lang['{block_key}'] = ['{lang_key}'];")
+
+    lines.append("console.log('var_block_lang loaded');")
+    lines.append('var_block_langWait = true;')
 
     return '\n'.join(lines) + '\n'
 
@@ -196,6 +207,9 @@ def generate_var_lang_font(block_axes_groups):
         lines.append('];')
         lines.append('')
 
+    lines.append("console.log('var_lang_font loaded');")
+    lines.append('var_lang_fontWait = true;')
+
     return '\n'.join(lines)
 
 
@@ -222,6 +236,9 @@ def generate_var_blocks(block_axes_groups):
         lines.append('];')
         lines.append('')
 
+    lines.append("console.log('var_blocks loaded');")
+    lines.append('var_blocksWait = true;')
+
     return '\n'.join(lines)
 
 
@@ -234,6 +251,8 @@ def generate_var_blocks_list(block_axes_groups):
         comma = ',' if i < len(all_blocks) - 1 else ''
         lines.append(f'  "{block}"{comma}')
     lines.append('];')
+    lines.append("console.log('var_blocks_list loaded');")
+    lines.append('var_blocks_listWait = true;')
 
     return '\n'.join(lines) + '\n'
 
@@ -255,6 +274,9 @@ def generate_font_axis_ranges(font_axes_map):
             lines.append(f"  {tag}: {{ min: {range_data['min']}, max: {range_data['max']} }}{comma}")
         lines.append('};')
         lines.append('')
+
+    lines.append("console.log('font_axis_ranges loaded');")
+    lines.append('font_axis_rangesWait = true;')
 
     return '\n'.join(lines)
 

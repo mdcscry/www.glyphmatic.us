@@ -8,7 +8,7 @@ var_axes = [
   "CRSV_ELSH_ELXP_slnt_wght",
   "CRSV_SHRP_slnt_wght",
   "CTRS_slnt_wdth_wght",
-  //"EDPT_EHLT",
+  "EDPT_EHLT",
   "ELGR_ELSH_wght",
   "ELSH",
   "FLAR_VOLM_slnt_wght",
@@ -20,7 +20,7 @@ var_axes = [
   "HEXP_wght",
   "MONO_wght",
   "MORF",
-  //"MORF_SHLN",
+  "MORF_SHLN",
   "ROND_YELA_wght",
   "ROND_wght",
   "SOFT_WONK_opsz_wght",
@@ -37,3 +37,5 @@ var_axes = [
   "wdth_wght",
   "wght"
 ];
+console.log('var_axes loaded');
+var_axesWait = true;

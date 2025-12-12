@@ -1091,35 +1091,6 @@ font_axis_ranges['Matangi'] = {
   wght: { min: 300, max: 900 }
 };
 
-font_axis_ranges['Material Symbols'] = {
-  FILL: { min: 0, max: 1 },
-  GRAD: { min: -50, max: 200 },
-  ROND: { min: 0, max: 100 },
-  opsz: { min: 20, max: 48 },
-  wght: { min: 100, max: 700 }
-};
-
-font_axis_ranges['Material Symbols Outlined'] = {
-  FILL: { min: 0, max: 1 },
-  GRAD: { min: -50, max: 200 },
-  opsz: { min: 20, max: 48 },
-  wght: { min: 100, max: 700 }
-};
-
-font_axis_ranges['Material Symbols Rounded'] = {
-  FILL: { min: 0, max: 1 },
-  GRAD: { min: -50, max: 200 },
-  opsz: { min: 20, max: 48 },
-  wght: { min: 100, max: 700 }
-};
-
-font_axis_ranges['Material Symbols Sharp'] = {
-  FILL: { min: 0, max: 1 },
-  GRAD: { min: -50, max: 200 },
-  opsz: { min: 20, max: 48 },
-  wght: { min: 100, max: 700 }
-};
-
 font_axis_ranges['Maven Pro'] = {
   wght: { min: 400, max: 900 }
 };
@@ -2443,4 +2414,5 @@ font_axis_ranges['Zalando Sans SemiExpanded'] = {
   wght: { min: 200, max: 900 }
 };
 
-
+console.log('font_axis_ranges loaded');
+font_axis_rangesWait = true;

@@ -75,6 +75,7 @@
         currentGridBg: null,
         currentGlyphColors: [],
         currentPalette: null,
+        currentPaletteKey: null,  // Store the palette key for easy reference
         morphing: false,
         morphInterval: null,
         
@@ -260,8 +261,9 @@
         selectRandomPalette: function() {
             const paletteKeys = Object.keys(FIXED_PALETTES);
             const randomKey = paletteKeys[Math.floor(Math.random() * paletteKeys.length)];
+            this.currentPaletteKey = randomKey;  // Store the key
             this.currentPalette = FIXED_PALETTES[randomKey];
-            console.log('Selected palette:', this.currentPalette.name);
+            console.log('Selected palette:', this.currentPalette.name, `(${randomKey})`);
             return this.currentPalette;
         },
 

@@ -5,7 +5,8 @@
     <style type="text/css">
         /* Emoji needs to be included for blocks with mixed emoji/not emoji */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Emoji&display=swap');
-
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wdth,wght@62.5..100,100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wdth,wght@62.5..100,100..900&display=swap');
         table {
             border-bottom: 50px solid #110c11;
             border-radius: 20px;
@@ -15,8 +16,14 @@
 
         div {
             display: inline;
-            height: .1em;
+            height: .1em;        
         }
+
+        span {
+            font-family: 'Noto Sans Georgian','Noto Sans Kannada';
+        }
+
+
 
         tr {
             height: 1em;
@@ -71,6 +78,7 @@
             font-family: 'Noto Sans Full';
             src: url('../tff/NotoSans-Regular.ttf') format('truetype');
         }
+
     </style>
 
     <!-- Core libraries -->
@@ -86,6 +94,8 @@
     <script src="../js_glyph/2025_var_blocks/var_blocks.js"></script>
     <script src="../js_glyph/2025_var_blocks/var_blocks_list.js"></script>
     <script src="../js_glyph/2025_var_blocks/font_axis_ranges.js"></script>
+    <script src="../js_glyph/2025_var_blocks/var_lang_font.js"></script>
+
 </head>
 <body style="overflow: hidden; font-size: 3.75em; display: inline;">
     <table id="tab" align='center' width=90%>
@@ -177,10 +187,14 @@
 
             glyphAnimations.push(animState);
 
+            // Apply desaturation filter if needed for color fonts
+            const filterStyle = glyphData.needsDesaturation ? 'filter: grayscale(1); -webkit-filter: grayscale(1);filter:saturate(0);-webkit-filter:saturate(0)' : '';
+
             return `<td><span id="glyph${index}"
-                style="font-family: '${glyphData.fontFamily}';
+                style="font-family: '${glyphData.fontFamily}', 'Noto Sans Georgian', 'Noto Sans Kannada', 'Noto Emoji', 'Noto Sans Full';
                        color: ${glyphColor};
-                       font-variation-settings: ${glyphData.fontVariationSettings};"
+                       font-variation-settings: ${glyphData.fontVariationSettings};
+                       ${filterStyle}"
                 title="${glyphData.glyphHex}-${glyphData.description}">&#x${glyphData.glyphHex};</span></td>`;
         }
 
@@ -246,17 +260,25 @@
 
         // Initialize
         async function init() {
-            if (typeof blockHexWait == "undefined" ||
-                typeof blockHexDescWait == "undefined" ||
-                typeof var_axes == "undefined" ||
-                typeof var_blocks == "undefined" ||
-                typeof var_blocks_list == "undefined" ||
-                typeof var_block_lang == "undefined" ||
-                typeof var_lang_font == "undefined" ||
-                typeof font_axis_ranges == "undefined"
-            ) {
+            console.log('init() called');
+            const waitChecks = {
+                blockHexWait: typeof blockHexWait !== "undefined",
+                blockHexDescWait: typeof blockHexDescWait !== "undefined",
+                var_axesWait: typeof var_axesWait !== "undefined",
+                var_blocksWait: typeof var_blocksWait !== "undefined",
+                var_blocks_listWait: typeof var_blocks_listWait !== "undefined",
+                var_block_langWait: typeof var_block_langWait !== "undefined",
+                var_lang_fontWait: typeof var_lang_fontWait !== "undefined",
+                font_axis_rangesWait: typeof font_axis_rangesWait !== "undefined"
+            };
+
+            const missing = Object.entries(waitChecks).filter(([k, v]) => !v).map(([k]) => k);
+
+            if (missing.length > 0) {
+                console.log('Still waiting for:', missing.join(', '));
                 window.setTimeout(init, 100);
             } else {
+                console.log('All wait variables ready, initializing...');
                 await AutoFontVar.init();
 
                 // Apply random color palette

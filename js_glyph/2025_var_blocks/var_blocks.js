@@ -328,22 +328,18 @@ var_blocks['wght'] = [
   "Hiragana",
   "Kannada",
   "Khmer",
-  "Lao",
   "Latin Extended-A",
   "Latin Extended-B",
-  "Makasar",
   "Malayalam",
   "Mathematical Operators",
-  "Myanmar",
   "Oriya",
   "Sinhala",
   "Syriac",
-  "Tai Le",
   "Tamil",
   "Telugu",
   "Thai",
-  "Tibetan",
-  "Tifinagh",
-  "Znamenny Musical Notation"
+  "Tibetan"
 ];
 
+console.log('var_blocks loaded');
+var_blocksWait = true;

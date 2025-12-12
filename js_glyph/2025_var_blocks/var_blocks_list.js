@@ -23,19 +23,16 @@ var_blocks_list = [
   "Lao",
   "Latin Extended-A",
   "Latin Extended-B",
-  "Makasar",
   "Malayalam",
   "Mathematical Operators",
-  "Myanmar",
   "Oriya",
   "Sinhala",
   "Syriac",
-  "Tai Le",
   "Tamil",
   "Telugu",
   "Thai",
   "Tibetan",
-  "Tifinagh",
-  "Znamenny Musical Notation"
+  "Tifinagh"
 ];
-
+console.log('var_blocks_list loaded');
+var_blocks_listWait = true;
