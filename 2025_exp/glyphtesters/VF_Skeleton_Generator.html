@@ -55,11 +55,39 @@
         button:hover {
             background: #444;
         }
+        .stats {
+            background: #222;
+            border: 1px solid #333;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+        .stat-row {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .stat-item {
+            color: #888;
+        }
+        .stat-value {
+            color: #aa8866;
+            font-weight: bold;
+        }
+        .stat-section {
+            margin-bottom: 12px;
+        }
+        .stat-label {
+            color: #999;
+            margin-bottom: 4px;
+        }
     </style>
 </head>
 <body>
     <h1>Variable Font Skeleton Generator</h1>
     <div class="status" id="status">Loading...</div>
+    <div class="stats" id="stats"></div>
 
     <div class="section">
         <div class="section-title">var_axes (array of all axes combinations)</div>
@@ -339,11 +367,64 @@
                 document.getElementById('varBlocksList').value = varBlocksListOutput;
                 document.getElementById('fontAxisRanges').value = fontAxisRangesOutput;
 
-                // Update status
+                // Calculate statistics
                 const totalGroups = sortedKeys.length;
                 const totalBlocks = new Set(sortedKeys.map(k => blockAxesGroups[k].block)).size;
+                const totalFonts = Object.keys(fontAxesMap).length;
+                const totalAxesCombos = allAxes.length;
+                const totalBlockLangEntries = sortedKeys.length;
+                const totalLangFontEntries = sortedKeys.length;
+                const totalBlocksListEntries = sortedBlocksList.length;
+
+                // Calculate min/max stats
+                const fontsPerCombo = sortedKeys.map(k => blockAxesGroups[k].fonts.length);
+                const minFontsPerCombo = Math.min(...fontsPerCombo);
+                const maxFontsPerCombo = Math.max(...fontsPerCombo);
+
+                const blocksPerAxes = Object.values(axesGroups).map(blocks => blocks.length);
+                const minBlocksPerAxes = Math.min(...blocksPerAxes);
+                const maxBlocksPerAxes = Math.max(...blocksPerAxes);
+
+                const axesPerFont = Object.values(fontAxesMap).map(axes => Object.keys(axes).length);
+                const minAxesPerFont = Math.min(...axesPerFont);
+                const maxAxesPerFont = Math.max(...axesPerFont);
+
+                // Update status
                 document.getElementById('status').textContent =
                     `Generated ${totalGroups} block-axes combinations across ${totalBlocks} blocks`;
+
+                // Render statistics
+                const statsEl = document.getElementById('stats');
+                statsEl.innerHTML = `
+                    <div class="stat-section">
+                        <div class="stat-label">Core Counts</div>
+                        <div class="stat-row">
+                            <div class="stat-item">Total Fonts: <span class="stat-value">${totalFonts}</span></div>
+                            <div class="stat-item">Unique Blocks: <span class="stat-value">${totalBlocks}</span></div>
+                            <div class="stat-item">Axes Combos: <span class="stat-value">${totalAxesCombos}</span></div>
+                            <div class="stat-item">Block-Axes Combos: <span class="stat-value">${totalGroups}</span></div>
+                        </div>
+                    </div>
+                    <div class="stat-section">
+                        <div class="stat-label">Array Sizes</div>
+                        <div class="stat-row">
+                            <div class="stat-item">var_axes: <span class="stat-value">${allAxes.length}</span></div>
+                            <div class="stat-item">var_block_lang: <span class="stat-value">${totalBlockLangEntries}</span></div>
+                            <div class="stat-item">var_lang_font: <span class="stat-value">${totalLangFontEntries}</span></div>
+                            <div class="stat-item">var_blocks: <span class="stat-value">${Object.keys(axesGroups).length}</span></div>
+                            <div class="stat-item">var_blocks_list: <span class="stat-value">${totalBlocksListEntries}</span></div>
+                            <div class="stat-item">font_axis_ranges: <span class="stat-value">${Object.keys(fontAxesMap).length}</span></div>
+                        </div>
+                    </div>
+                    <div class="stat-section">
+                        <div class="stat-label">Ranges</div>
+                        <div class="stat-row">
+                            <div class="stat-item">Fonts per Block-Axes: <span class="stat-value">${minFontsPerCombo} - ${maxFontsPerCombo}</span></div>
+                            <div class="stat-item">Blocks per Axes: <span class="stat-value">${minBlocksPerAxes} - ${maxBlocksPerAxes}</span></div>
+                            <div class="stat-item">Axes per Font: <span class="stat-value">${minAxesPerFont} - ${maxAxesPerFont}</span></div>
+                        </div>
+                    </div>
+                `;
 
             } catch (err) {
                 document.getElementById('status').textContent = 'Error: ' + err.message;

@@ -212,7 +212,7 @@
 
             // Build font-variation-settings string
             const fontVariationSettings = Object.entries(axisValues)
-                .map(([tag, val]) => `"${tag}" ${val}`)
+                .map(([tag, val]) => `'${tag}' ${val}`)
                 .join(', ');
 
             return {

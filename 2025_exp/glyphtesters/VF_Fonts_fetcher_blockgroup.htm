@@ -48,11 +48,30 @@
             color: #555;
             font-size: 11px;
         }
+        .stats {
+            background: #222;
+            border: 1px solid #333;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+        .stat-row {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 8px;
+        }
+        .stat-item {
+            color: #888;
+        }
+        .stat-value {
+            color: #aa8866;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <h1>Variable Fonts by Script (non-Noto)</h1>
-    <div class="count" id="count"></div>
+    <div class="stats" id="stats"></div>
     <div id="output"></div>
 
     <script>
@@ -120,8 +139,6 @@
                         subsets: font.subsets || []
                     }));
                 
-                document.getElementById('count').textContent = `${variableFonts.length} variable fonts`;
-                
                 // Group by script
                 const byScript = {};
                 
@@ -155,7 +172,32 @@
                     if (b === 'Latin') return -1;
                     return a.localeCompare(b);
                 });
-                
+
+                // Calculate statistics
+                const uniqueAxes = new Set();
+                variableFonts.forEach(font => {
+                    font.axes.split(', ').forEach(axis => uniqueAxes.add(axis));
+                });
+
+                let totalCombinations = 0;
+                sortedScripts.forEach(script => {
+                    totalCombinations += byScript[script].length;
+                });
+
+                // Render statistics
+                const statsEl = document.getElementById('stats');
+                statsEl.innerHTML = `
+                    <div class="stat-row">
+                        <div class="stat-item">Fonts: <span class="stat-value">${variableFonts.length}</span></div>
+                        <div class="stat-item">Script Blocks: <span class="stat-value">${sortedScripts.length}</span></div>
+                        <div class="stat-item">Font-Block Combos: <span class="stat-value">${totalCombinations}</span></div>
+                        <div class="stat-item">Unique Axes: <span class="stat-value">${uniqueAxes.size}</span></div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-item">Axes: <span class="stat-value">${Array.from(uniqueAxes).sort().join(', ')}</span></div>
+                    </div>
+                `;
+
                 // Render
                 const outputEl = document.getElementById('output');
                 let html = '';
