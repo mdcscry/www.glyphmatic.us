@@ -78,15 +78,26 @@ console.log('Insert array length:', insertArray.length);
 
 // Helper function to get the correct path for a script file
 function getScriptPath(filename) {
-    const glyphFiles = ['msucd_hangul.js', 'msucd_drop.js', 'msucd.js', 'nonRsvdUtf.js', 'geometric.js',
-                        'msucd_mandala.js', 'whirldsymbols.js', 'whirldsymbols-OM.js', 'emoji_versions_data2.js',
-                        'msucd_letters.js', 'watermark.js', 'painters.js', 'superpainters.js'];
+    // 2011_glyphs subdirectory files
+    const glyphs2011 = ['msucd_hangul.js', 'msucd_drop.js', 'msucd.js', 'nonRsvdUtf.js', 'geometric.js',
+                        'msucd_mandala.js', 'msucd_letters.js', 'painters.js', 'superpainters.js'];
+    // Root level glyph files (shared across all inserts)
+    const glyphsRoot = ['whirldsymbols.js', 'whirldsymbols-OM.js', 'emoji_versions_data2.js', 'watermark.js'];
     const functFiles = ['insert_config.js', 'nav_menu.js', 'emoji_display_script.js'];
 
     // Special cases - inserts that load their own data
     if (filename === 'none') return null;
 
-    if (glyphFiles.includes(filename)) return './js_glyph/' + filename;
+    // For 2011 glyph files (inserts 0-11), use 2011_glyphs subdirectory
+    if (glyphs2011.includes(filename)) {
+        return './js_glyph/2011_glyphs/' + filename;
+    }
+
+    // Root level files stay in js_glyph/
+    if (glyphsRoot.includes(filename)) {
+        return './js_glyph/' + filename;
+    }
+
     if (functFiles.includes(filename)) return './js_funct/' + filename;
 
     // Fallback to old path if not found (shouldn't happen)

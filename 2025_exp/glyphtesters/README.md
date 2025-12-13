@@ -18,10 +18,10 @@ Uses the ../../js_glyph/emoji_versions_data2.js file to test all the 15 fonts an
 ### glyphtester-heiro.htm
 A test to determine how Aegyptus and Noto Sans Heiro tie out in the new supplemental release.  Hint: they don't
 
-### glyphtester_whirld_font.htm
+### glyphtester-whirld-font.htm
 This is the full set of whirld fonts/glyphs tester.  It organizes it by font instead of symbol..not particularly useful.  Stale AF. uses the limited ../../js_glyph/whirldsymbols.js
 
-### glyphtester_whirld_symbol.htm
+### glyphtester-whirld-symbol.htm
 Includes all the fonts/symbols for the full curated set used in braids and 4 quadrant flasher. Uses ../../js_glyph/whirldsymbols.js
 
 ---
@@ -35,21 +35,24 @@ produces an array which is cut and paste into the .j
 ### google-fonts-lookup.htm
 A web tool that allows any glyph to be entered and tells which fonts supposedly have coverage.  It shows all the glyphs/fonts and illustrates the sad reality that most fonts don't have the coverage you want.
 
+### google-fonts-range-fetcher.htm
+A web tool that pulls all the ranges associated to a google fonts font and displays all the glyphs in those ranges to see how the coverage is actually..covered.
+
 ---
 
 ## Mono Fonts
 
-### mono_font_fetcher.htm
+### mono-font-fetcher.htm
 Fetches all the mono fonts from google fonts.  Where do I use this?  Used in tshirtgen.htm in the font_utility.js for sidebar population.  Could also be used for the sidebar in glyphmatic.us description.
 
 ---
 
 ## Variable Fonts (VF)
 
-### VF_Fonts_fetcher.htm
+### VF-Fonts-fetcher.htm
 Lists all variable fonts in google fonts.  A study that began the process to VF_Skellie
 
-### VF_Fonts_fetcher_vartype.htm
+### VF-Fonts-fetcher-vartype.htm
 Took the VF_Fonts_fetcher and grouped by the axis combos for each font.
 
 e.g.
@@ -59,8 +62,8 @@ e.g.
 Desc: Optical Size — Optimizes for display size
 Range: 5 – 1200 • Used by 33 fonts
 
-### VF_Fonts_fetcher_blockgroup.htm
+### VF-Fonts-fetcher-blockgroup.htm
 Took VF_Fonts_fetcher to the next level sorting all the fonts by their Block Coverage
 
-### VF_Skeleton_Generator.html
+### VF-Skeleton-Generator.html
 Creates all the arrays required for the Variable autofont engine to run
