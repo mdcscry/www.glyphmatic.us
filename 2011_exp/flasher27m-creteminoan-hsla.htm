@@ -12,70 +12,14 @@
 
  <STYLE type="text/css">
 
-@-moz-keyframes mymove3
-{
-  0% {
-    -moz-transform: rotateX(360deg);    -moz-transform-style: preserve-3d;
-        -moz-transform-origin:55% 50%;
-  }
+@-moz-keyframes mymove3 { 0% { -moz-transform: rotateX(360deg); -moz-transform-style: preserve-3d; -moz-transform-origin:55% 50%; } 50% { -moz-transform: rotateX(0deg); -moz-transform-style: preserve-3d; -moz-transform-origin:55% 50%;} 100% { -moz-transform: rotateX(360deg); -moz-transform-style: preserve-3d; -moz-transform-origin:30% 50%; } }
+@-webkit-keyframes mymove3 { 0% { -webkit-transform: rotateX(360deg); -webkit-transform-style: preserve-3d; -webkit-transform-origin:55% 50%; } 50% { -webkit-transform: rotateX(0deg); -webkit-transform-style: preserve-3d; -webkit-transform-origin:55% 50%;} 100% { -webkit-transform: rotateX(360deg); -webkit-transform-style: preserve-3d; -webkit-transform-origin:30% 50%; } }
 
-  50% { -moz-transform: rotateX(0deg);    -moz-transform-style: preserve-3d;
-        -moz-transform-origin:55% 50%;}
+@-moz-keyframes mymove2 { 0% { -moz-transform: rotateY(360deg); -moz-transform-style: preserve-3d; -moz-transform-origin:50% 50%; } 50% { -moz-transform: rotateY(0deg); -moz-transform-style: preserve-3d; -moz-transform-origin:50% 50%;} 100% { -moz-transform: rotateY(360deg); -moz-transform-style: preserve-3d; -moz-transform-origin:50% 50%; } }
+@-webkit-keyframes mymove2 { 0% { -webkit-transform: rotateY(360deg); -webkit-transform-style: preserve-3d; -webkit-transform-origin:50% 50%; } 50% { -webkit-transform: rotateY(0deg); -webkit-transform-style: preserve-3d; -webkit-transform-origin:50% 50%;} 100% { -webkit-transform: rotateY(360deg); -webkit-transform-style: preserve-3d; -webkit-transform-origin:50% 50%; } }
 
-  100% {
-
-    -moz-transform: rotateX(360deg);    -moz-transform-style: preserve-3d;
-        -moz-transform-origin:30% 50%;
-  }
-
-}
-
-@-moz-keyframes mymove2
-{
-  0% {
-
-
-    -moz-transform: rotateY(360deg);    -moz-transform-style: preserve-3d;
-    -moz-transform-origin:50% 50%;
-  }
-    50% { -moz-transform: rotateY(0deg);    -moz-transform-style: preserve-3d;
-        -moz-transform-origin:50% 50%;}
-
-  100% {
-
-    -moz-transform: rotateY(360deg);    -moz-transform-style: preserve-3d;
-    -moz-transform-origin:50% 50%;
-  }
-
-}
-
-@-moz-keyframes mymove1
-{
-  0% {
-    -moz-filter:   opacity(.6) ;
-    -moz-transform-style: preserve-3d;
-    -moz-transform-origin:50% 50%;
-    -moz-transform: skewX(0deg);-moz-transform: skewY(0deg);background-color:transparent;
-  }
-    33% {
-      -moz-filter:   opacity(.6) ;
-      -moz-transform-style: preserve-3d;
-      -moz-transform-origin:50% 50%;
-      -moz-transform: skewX(15deg);-moz-transform: skewY(-50deg);background-color:transparent;
-  }
-  67% {
-    -moz-filter:   opacity(0.6)  ;
-    -moz-transform-style: preserve-3d;
-    -moz-transform-origin:50% 50%;
-    -moz-transform: skewX(-15deg);-moz-transform: skewY(60deg);background-color:transparent;
-  }
-  100% {
-      -moz-filter:   opacity(0.6)  ;
-      -moz-transform-style: preserve-3d;
-      -moz-transform-origin:50% 50%;
-      -moz-transform: skewX(0deg);-moz-transform: skewY(0deg);background-color:transparent;
-  }
-}
+@-moz-keyframes mymove1 { 0% { -moz-filter: opacity(.6); -moz-transform-style: preserve-3d; -moz-transform-origin:50% 50%; -moz-transform: skewX(0deg) skewY(0deg); background-color:transparent; } 33% { -moz-filter: opacity(.6); -moz-transform-style: preserve-3d; -moz-transform-origin:50% 50%; -moz-transform: skewX(15deg) skewY(-50deg); background-color:transparent; } 67% { -moz-filter: opacity(0.6); -moz-transform-style: preserve-3d; -moz-transform-origin:50% 50%; -moz-transform: skewX(-15deg) skewY(60deg); background-color:transparent; } 100% { -moz-filter: opacity(0.6); -moz-transform-style: preserve-3d; -moz-transform-origin:50% 50%; -moz-transform: skewX(0deg) skewY(0deg); background-color:transparent; } }
+@-webkit-keyframes mymove1 { 0% { opacity: .6; -webkit-transform-style: preserve-3d; -webkit-transform-origin:50% 50%; -webkit-transform: skewX(0deg) skewY(0deg); background-color:transparent; } 33% { opacity: .6; -webkit-transform-style: preserve-3d; -webkit-transform-origin:50% 50%; -webkit-transform: skewX(15deg) skewY(-50deg); background-color:transparent; } 67% { opacity: 0.6; -webkit-transform-style: preserve-3d; -webkit-transform-origin:50% 50%; -webkit-transform: skewX(-15deg) skewY(60deg); background-color:transparent; } 100% { opacity: 0.6; -webkit-transform-style: preserve-3d; -webkit-transform-origin:50% 50%; -webkit-transform: skewX(0deg) skewY(0deg); background-color:transparent; } }
 
 DIV   {
     position:absolute;
@@ -110,179 +54,129 @@ DIV   {
 
 #myid1 {
       -moz-transition-property: background-color,color,all;
+      -webkit-transition-property: background-color,color,all;
       -moz-transition-duration: 10s,20s;
-
+      -webkit-transition-duration: 10s,20s;
 }
 
 #myid2 {
       -moz-transition-property: background-color,color,all;
+      -webkit-transition-property: background-color,color,all;
       -moz-transition-duration: 10s,20s;
-
+      -webkit-transition-duration: 10s,20s;
 }
 
 #myid3 {
       -moz-transition-property: background-color,color,all;
+      -webkit-transition-property: background-color,color,all;
       -moz-transition-duration: 10s,20s;
-
+      -webkit-transition-duration: 10s,20s;
 }
 
 #myid4 {
       -moz-transition-property: background-color,color,all;
+      -webkit-transition-property: background-color,color,all;
       -moz-transition-duration: 10s,20s;
-
+      -webkit-transition-duration: 10s,20s;
 }
 
 
 #myid1.mymove3 {
       -moz-transition-property: background-color,color,all;
+      -webkit-transition-property: background-color,color,all;
       -moz-transition-duration: 10s,20s;
-
+      -webkit-transition-duration: 10s,20s;
 		-moz-animation-name: mymove3;
+		-webkit-animation-name: mymove3;
 		-moz-animation-duration: 25s;
+		-webkit-animation-duration: 25s;
 		-moz-animation-timing-function: linear;
+		-webkit-animation-timing-function: linear;
 		-moz-animation-delay: 6s;
+		-webkit-animation-delay: 6s;
 		-moz-animation-iteration-count: infinite;
-		-moz-animation-direction: alternate;background-color:transparent;
+		-webkit-animation-iteration-count: infinite;
+		-moz-animation-direction: alternate;
+		-webkit-animation-direction: alternate;
+		background-color:transparent;
 }
 
 #myid2.mymove3 {
       -moz-transition-property: background-color,color,all;
+      -webkit-transition-property: background-color,color,all;
       -moz-transition-duration: 10s,20s;
-
+      -webkit-transition-duration: 10s,20s;
 		-moz-animation-name: mymove3;
+		-webkit-animation-name: mymove3;
 		-moz-animation-duration: 18s;
+		-webkit-animation-duration: 18s;
 		-moz-animation-timing-function: linear;
+		-webkit-animation-timing-function: linear;
 		-moz-animation-delay: 4s;
+		-webkit-animation-delay: 4s;
 		-moz-animation-iteration-count: infinite;
-		-moz-animation-direction: alternate;background-color:transparent;
+		-webkit-animation-iteration-count: infinite;
+		-moz-animation-direction: alternate;
+		-webkit-animation-direction: alternate;
+		background-color:transparent;
 }
-
 
 #myid3.mymove3 {
       -moz-transition-property: background-color,color,all;
+      -webkit-transition-property: background-color,color,all;
       -moz-transition-duration: 10s,20s;
-
+      -webkit-transition-duration: 10s,20s;
 		-moz-animation-name: mymove3;
+		-webkit-animation-name: mymove3;
 		-moz-animation-duration: 21s;
+		-webkit-animation-duration: 21s;
 		-moz-animation-timing-function: linear;
+		-webkit-animation-timing-function: linear;
 		-moz-animation-delay: 2s;
+		-webkit-animation-delay: 2s;
 		-moz-animation-iteration-count: infinite;
-		-moz-animation-direction: alternate;background-color:transparent;
+		-webkit-animation-iteration-count: infinite;
+		-moz-animation-direction: alternate;
+		-webkit-animation-direction: alternate;
+		background-color:transparent;
 }
-
 
 #myid4.mymove3 {
       -moz-transition-property: background-color,color,all;
+      -webkit-transition-property: background-color,color,all;
       -moz-transition-duration: 10s,20s;
-
+      -webkit-transition-duration: 10s,20s;
 		-moz-animation-name: mymove3;
+		-webkit-animation-name: mymove3;
 		-moz-animation-duration: 28s;
+		-webkit-animation-duration: 28s;
 		-moz-animation-timing-function: linear;
+		-webkit-animation-timing-function: linear;
 		-moz-animation-delay: 2s;
+		-webkit-animation-delay: 2s;
 		-moz-animation-iteration-count: infinite;
-		-moz-animation-direction: alternate;background-color:transparent;
+		-webkit-animation-iteration-count: infinite;
+		-moz-animation-direction: alternate;
+		-webkit-animation-direction: alternate;
+		background-color:transparent;
 }
 
 
-#myid1.mymove1 {
-      -moz-transition-property: background-color,color,all;
-      -moz-transition-duration: 10s,20s;
+#myid1.mymove1 { -moz-transition-property: background-color,color,all; -webkit-transition-property: background-color,color,all; -moz-transition-duration: 10s,20s; -webkit-transition-duration: 10s,20s; -moz-animation-name: mymove1; -webkit-animation-name: mymove1; -moz-animation-duration: 25s; -webkit-animation-duration: 25s; -moz-animation-timing-function: linear; -webkit-animation-timing-function: linear; -moz-animation-delay: 6s; -webkit-animation-delay: 6s; -moz-animation-iteration-count: infinite; -webkit-animation-iteration-count: infinite; -moz-animation-direction: alternate; -webkit-animation-direction: alternate; background-color:transparent; }
 
-		-moz-animation-name: mymove1;
-		-moz-animation-duration: 25s;
-		-moz-animation-timing-function: linear;
-		-moz-animation-delay: 6s;
-		-moz-animation-iteration-count: infinite;
-		-moz-animation-direction: alternate;background-color:transparent;
-}
+#myid2.mymove1 { -moz-transition-property: background-color,color,all; -webkit-transition-property: background-color,color,all; -moz-transition-duration: 10s,20s; -webkit-transition-duration: 10s,20s; -moz-animation-name: mymove1; -webkit-animation-name: mymove1; -moz-animation-duration: 18s; -webkit-animation-duration: 18s; -moz-animation-timing-function: linear; -webkit-animation-timing-function: linear; -moz-animation-delay: 4s; -webkit-animation-delay: 4s; -moz-animation-iteration-count: infinite; -webkit-animation-iteration-count: infinite; -moz-animation-direction: alternate; -webkit-animation-direction: alternate; background-color:transparent; }
 
-#myid2.mymove1 {
-      -moz-transition-property: background-color,color,all;
-      -moz-transition-duration: 10s,20s;
+#myid3.mymove1 { -moz-transition-property: background-color,color,all; -webkit-transition-property: background-color,color,all; -moz-transition-duration: 10s,20s; -webkit-transition-duration: 10s,20s; -moz-animation-name: mymove1; -webkit-animation-name: mymove1; -moz-animation-duration: 21s; -webkit-animation-duration: 21s; -moz-animation-timing-function: linear; -webkit-animation-timing-function: linear; -moz-animation-delay: 2s; -webkit-animation-delay: 2s; -moz-animation-iteration-count: infinite; -webkit-animation-iteration-count: infinite; -moz-animation-direction: alternate; -webkit-animation-direction: alternate; background-color:transparent; }
 
-		-moz-animation-name: mymove1;
-		-moz-animation-duration: 18s;
-		-moz-animation-timing-function: linear;
-		-moz-animation-delay: 4s;
-		-moz-animation-iteration-count: infinite;
-		-moz-animation-direction: alternate;background-color:transparent;
-}
+#myid4.mymove1 { -moz-transition-property: background-color,color,all; -webkit-transition-property: background-color,color,all; -moz-transition-duration: 10s,20s; -webkit-transition-duration: 10s,20s; -moz-animation-name: mymove1; -webkit-animation-name: mymove1; -moz-animation-duration: 28s; -webkit-animation-duration: 28s; -moz-animation-timing-function: linear; -webkit-animation-timing-function: linear; -moz-animation-delay: 0s; -webkit-animation-delay: 0s; -moz-animation-iteration-count: infinite; -webkit-animation-iteration-count: infinite; -moz-animation-direction: normal; -webkit-animation-direction: normal; background-color:transparent; }
 
+#myid1.mymove2 { -moz-transition-property: background-color,color,all; -webkit-transition-property: background-color,color,all; -moz-transition-duration: 10s,20s; -webkit-transition-duration: 10s,20s; -moz-animation-name: mymove2; -webkit-animation-name: mymove2; -moz-animation-duration: 25s; -webkit-animation-duration: 25s; -moz-animation-timing-function: linear; -webkit-animation-timing-function: linear; -moz-animation-delay: 6s; -webkit-animation-delay: 6s; -moz-animation-iteration-count: infinite; -webkit-animation-iteration-count: infinite; -moz-animation-direction: alternate; -webkit-animation-direction: alternate; background-color:transparent; }
 
-#myid3.mymove1 {
-      -moz-transition-property: background-color,color,all;
-      -moz-transition-duration: 10s,20s;
+#myid2.mymove2 { -moz-transition-property: background-color,color,all; -webkit-transition-property: background-color,color,all; -moz-transition-duration: 10s,20s; -webkit-transition-duration: 10s,20s; -moz-animation-name: mymove2; -webkit-animation-name: mymove2; -moz-animation-duration: 18s; -webkit-animation-duration: 18s; -moz-animation-timing-function: linear; -webkit-animation-timing-function: linear; -moz-animation-delay: 4s; -webkit-animation-delay: 4s; -moz-animation-iteration-count: infinite; -webkit-animation-iteration-count: infinite; -moz-animation-direction: alternate; -webkit-animation-direction: alternate; background-color:transparent; }
 
-		-moz-animation-name: mymove1;
-		-moz-animation-duration: 21s;
-		-moz-animation-timing-function: linear;
-		-moz-animation-delay: 2s;
-		-moz-animation-iteration-count: infinite;
-		-moz-animation-direction: alternate;background-color:transparent;
-}
+#myid3.mymove2 { -moz-transition-property: background-color,color,all; -webkit-transition-property: background-color,color,all; -moz-transition-duration: 10s,20s; -webkit-transition-duration: 10s,20s; -moz-animation-name: mymove2; -webkit-animation-name: mymove2; -moz-animation-duration: 41s; -webkit-animation-duration: 41s; -moz-animation-timing-function: linear; -webkit-animation-timing-function: linear; -moz-animation-delay: 2s; -webkit-animation-delay: 2s; -moz-animation-iteration-count: 18; -webkit-animation-iteration-count: 18; -moz-animation-direction: alternate; -webkit-animation-direction: alternate; background-color:transparent; }
 
-
-#myid4.mymove1 {
-      -moz-transition-property: background-color,color,all;
-      -moz-transition-duration: 10s,20s;
-
-		-moz-animation-name: mymove1;
-		-moz-animation-duration: 28s;
-		-moz-animation-timing-function: linear;
-		-moz-animation-delay: 0s;
-		-moz-animation-iteration-count: infinite;
-		-moz-animation-direction: normal;background-color:transparent;
-}
-
-#myid1.mymove2 {
-      -moz-transition-property: background-color,color,all;
-      -moz-transition-duration: 10s,20s;
-
-		-moz-animation-name: mymove2;
-		-moz-animation-duration: 25s;
-		-moz-animation-timing-function: linear;
-		-moz-animation-delay: 6s;
-		-moz-animation-iteration-count: infinite;
-		-moz-animation-direction: alternate;background-color:transparent;
-}
-
-#myid2.mymove2 {
-      -moz-transition-property: background-color,color,all;
-      -moz-transition-duration: 10s,20s;
-
-		-moz-animation-name: mymove2;
-		-moz-animation-duration: 18s;
-		-moz-animation-timing-function: linear;
-		-moz-animation-delay: 4s;
-		-moz-animation-iteration-count: infinite;
-		-moz-animation-direction: alternate;background-color:transparent;
-}
-
-
-#myid3.mymove2 {
-      -moz-transition-property: background-color,color,all;
-      -moz-transition-duration: 10s,20s;
-
-		-moz-animation-name: mymove2;
-		-moz-animation-duration: 41s;
-		-moz-animation-timing-function: linear;
-		-moz-animation-delay: 2s;
-		-moz-animation-iteration-count: 18;
-		-moz-animation-direction: alternate;background-color:transparent;
-}
-
-
-#myid4.mymove2 {
-      -moz-transition-property: background-color,color,all;
-      -moz-transition-duration: 10s,20s;
-
-		-moz-animation-name: mymove2;
-		-moz-animation-duration: 28s;
-		-moz-animation-timing-function: linear;
-		-moz-animation-delay: 2.2s;
-		-moz-animation-iteration-count: infinite;
-		-moz-animation-direction: alternate;background-color:transparent;
-}
+#myid4.mymove2 { -moz-transition-property: background-color,color,all; -webkit-transition-property: background-color,color,all; -moz-transition-duration: 10s,20s; -webkit-transition-duration: 10s,20s; -moz-animation-name: mymove2; -webkit-animation-name: mymove2; -moz-animation-duration: 28s; -webkit-animation-duration: 28s; -moz-animation-timing-function: linear; -webkit-animation-timing-function: linear; -moz-animation-delay: 2.2s; -webkit-animation-delay: 2.2s; -moz-animation-iteration-count: infinite; -webkit-animation-iteration-count: infinite; -moz-animation-direction: alternate; -webkit-animation-direction: alternate; background-color:transparent; }
 
 
 </STYLE>
