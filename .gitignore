@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 *.lock
 *.toml
+=======
+poetry.lock
+pyproject.toml
+>>>>>>> master
