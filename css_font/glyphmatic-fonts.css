@@ -2053,8 +2053,28 @@ ugaritic old persian runic SIL fonts KangxiRadicals AnatolianHeiro
 }
 
 @font-face {
-    font-family: ''; 
-    src: url('') format('truetype');
+    font-family: 'Noto Music Full';
+    src: url('../otf/NotoMusic-Regular.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Noto Sans Devanagari Full';
+    src: url('../otf/NotoSansDevanagari-Regular.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Noto Znamenny Musical Notation Full';
+    src: url('../otf/NotoZnamennyMusicalNotation-Regular.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Nithya Ranjana NU';
+    src: url('../otf/NithyaRanjanaNU-Regular.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Nithya Ranjana DU';
+    src: url('../otf/NithyaRanjanaDU-Regular.otf') format('opentype');
 }
 
 .myanmar-taungyi {

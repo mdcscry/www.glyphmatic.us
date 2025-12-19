@@ -7,7 +7,7 @@ lang_font =[{}]
  block_lang['Alchemical Symbols'] = ['symbols'];
 // block_lang['Alphabetic Presentation Forms'] = ['']; //armenian/latin/hebrew requires special processing
  block_lang['Anatolian Hieroglyphs'] = ['anatolianheiroglyphics'];
- block_lang['Ancient Greek Musical Notation'] = ['music'];
+ block_lang['Ancient Greek Musical Notation'] = ['music-full'];
  block_lang['Ancient Greek Numbers'] = ['symbols2'];
  block_lang['Ancient Symbols'] = ['symbols2'];
  block_lang['Arabic'] = ['arabic'];
@@ -53,6 +53,10 @@ lang_font =[{}]
 // block_lang['CJK_Unified_Ideographs_Extension_A'] = ['chinese-simplified','noto-trad-chinese','noto-hongkong'];
 // block_lang['Combining_Diacritical_Marks_Extended'] = ['latin','latin-ext'];
 // block_lang['Combining_Diacritical_Marks_For_Symbols'] = ['latin','latin-ext'];
+ block_lang['Combining Diacritical Marks'] = ['noto-full'];
+ block_lang['Combining Diacritical Marks for Symbols'] = ['symbola'];
+ block_lang['Combining Diacritical Marks Supplement'] = ['noto-full'];
+ block_lang['Combining Half Marks'] =  ['noto-full'];
  block_lang['Common Indic Number Forms'] = ['noto-devanagari'];
 // block_lang['Control_Pictures'] = ['symbols2'];
  block_lang['Coptic'] = ['coptic','newathena'];
@@ -63,6 +67,7 @@ lang_font =[{}]
  block_lang['Currency Symbols'] = ['symbols2-currency'];
  block_lang['Cypriot Syllabary'] = ['cypriot'];
  block_lang['Cyrillic'] = ['cyrillic'];
+ block_lang['Cyrillic Extended-A'] = ['noto-regular','Arimo'];
  block_lang['Cyrillic Extended-B'] = ['noto-regular','Arimo'];
  block_lang['Cyrillic Extended-C'] = ['noto-regular','Arimo'];
  block_lang['Cyrillic Supplement'] = ['cyrillic-ext'];
@@ -127,6 +132,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Kayah Li'] = ['kayahli'];
  block_lang['Kharoshthi'] = ['kharoshthi'];
  block_lang['Khmer'] = ['khmer'];
+ block_lang['Khmer-diacritics'] = ['khmer-diacritics'];
  block_lang['Khmer Symbols'] = ['khmer-noto'];
  block_lang['Khojki'] = ['khojki'];
  block_lang['Khudawadi'] = ['khudawadi'];
@@ -159,6 +165,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Mandaic'] = ['mandaic'];
  block_lang['Manichaean'] = ['manichaean'];
  block_lang['Marchen'] = ['marchen'];
+ block_lang['Marchen-diacritics'] = ['marchen-diacritics'];
  block_lang['Masaram Gondi'] = ['masaram-gondi'];
  block_lang['Mathematical Alphanumeric Symbols'] = ['math'];
  block_lang['Mathematical Operators'] = ['math'];
@@ -183,6 +190,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Mro'] = ['mro'];
  block_lang['Multani'] = ['multani'];
  block_lang['Musical Symbols'] = ['music'];
+ block_lang['Musical Symbols-diacritics'] = ['music-full'];
  block_lang['Myanmar'] = ['myanmar'];
  block_lang['Myanmar Extended-A'] = ['myanmar'];
  block_lang['Myanmar Extended-B'] = ['myanmar'];
@@ -279,7 +287,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Unified Canadian Aboriginal Syllabics Extended'] = ['canadianaboriginal'];
  block_lang['Unified Canadian Aboriginal Syllabics Extended-A'] = ['canadianaboriginal-noto'];
  block_lang['Vai'] = ['vai'];
- block_lang['Vedic Extensions'] = ['noto-devanagari'];
+ block_lang['Vedic Extensions'] = ['noto-devanagari-full'];
  block_lang['Vertical Forms'] = ['noto-japanese'];
  block_lang['Wancho'] = ['wancho'];
  block_lang['Warang Citi'] = ['warangciti'];
@@ -303,6 +311,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Cypro-Minoan'] = ['cyprominoan'];
  block_lang['Tangsa'] = ['tangsa'];
  block_lang['Znamenny Musical Notation'] = ['znamenny-musical-notation'];
+ block_lang['Znamenny Musical Notation-diacritics'] = ['znamenny-musical-notation-diacritics'];
  block_lang['Toto'] = ['toto'];
  block_lang['Ethiopic Extended-B'] = ['noto-ethiopic'];
 //unicode 15
@@ -353,6 +362,8 @@ lang_font['cyprominoan'] = [ "Noto Sans Cypro Minoan" ]
 lang_font['tangsa'] = [ "Noto Sans Tangsa" ]
 //lang_font['kana-extended-b'] = [ "" ] //no coverage
 lang_font['znamenny-musical-notation'] = [ "Noto Znamenny Musical Notation" ]
+lang_font['znamenny-musical-notation-diacritics'] = [ "Noto Znamenny Musical Notation-local-otf" ]
+
 lang_font['toto'] = [ "Noto Serif Toto" ]
 
 //Unicode 15
@@ -385,6 +396,9 @@ lang_font['wancho'] = [ "Noto Sans Wancho"  ]
 lang_font['noto-devanagari'] = [  //has complexity all but a few are covered by devanagari
   "Noto Serif Devanagari",
   "Noto Sans Devanagari"
+]
+lang_font['noto-devanagari-full'] = [  
+  "NotoSansDevanagari-local-otf"
 ]
 lang_font['tirhuta'] = [ "Noto Sans Tirhuta" ]
 lang_font['tangut'] = [ "Noto Serif Tangut"  ]
@@ -429,6 +443,7 @@ lang_font['mahajani'] = [ "Noto Sans Mahajani" ]
 lang_font['makasar'] = [ "Noto Serif Makasar" ]
 lang_font['manichaean'] = [ "Noto Sans Manichaean" ]
 lang_font['marchen'] = [ "Noto Sans Marchen","BabelStone Marchen-local-fonts" ]
+lang_font['marchen-diacritics'] = [ "Noto Sans Marchen"]
 lang_font['masaram-gondi'] = [ "Noto Sans Masaram Gondi" ]
 lang_font['mayan-numerals'] = [ "Noto Sans Mayan Numerals" ]
 lang_font['medefaidrin'] = [ "Noto Sans Medefaidrin" ]
@@ -453,6 +468,7 @@ lang_font['chakma'] = [ "Noto Sans Chakma" ]
 lang_font['bhaiksuki'] = [ "Noto Sans Bhaiksuki" ]
 lang_font['bassa-vah'] = [ "Noto Sans Bassa Vah" ]
 lang_font['music'] = [ "Noto Music" ]
+lang_font['music-full'] = [ "Noto Music-local-otf" ]
 lang_font['adlam'] = [
   "ADLaM Display",
   "Noto Sans Adlam",
@@ -604,6 +620,11 @@ lang_font['khmer-noto'] = [
   "Noto Sans Khmer",
   "Noto Serif Khmer",
   ];
+
+ lang_font['khmer-diacritics'] = [    
+  "Khmer",
+  "Siemreap"
+]
 
  lang_font['khmer'] = [    
   "Angkor",

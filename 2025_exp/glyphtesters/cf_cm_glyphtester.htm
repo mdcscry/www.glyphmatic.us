@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Combining Forms Glyph Tester</title>
+	<style>
+		body {
+			font-family: monospace;
+			padding: 20px;
+			background: #1a1a1a;
+			color: #00ff00;
+		}
+		.glyph-row {
+			margin-bottom: 20px;
+			padding: 10px;
+			background-color: #2a2a2a;
+			border-radius: 5px;
+		}
+		.glyph-header {
+			font-weight: bold;
+			margin-bottom: 10px;
+			color: #00ffff;
+			font-size: 14px;
+		}
+		.font-samples {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+		}
+		.glyph-test {
+			text-align: center;
+			padding: 10px;
+			background: #002200;
+			border: 1px solid #00ff00;
+			border-radius: 3px;
+			min-width: 80px;
+			cursor: pointer;
+		}
+		.glyph-test:hover {
+			background: #003300;
+		}
+		.glyph-test.excluded {
+			background: #220000;
+			border-color: #ff0000;
+			opacity: 0.6;
+		}
+		.glyph-char {
+			font-size: 32px;
+			display: block;
+			margin-bottom: 5px;
+		}
+		.font-name {
+			font-size: 13px;
+			color: #999;
+		}
+		#output {
+			margin-top: 20px;
+			padding: 10px;
+			background: #000;
+			color: #00ff00;
+			border: 1px solid #00ff00;
+			white-space: pre-wrap;
+			font-size: 12px;
+			font-family: monospace;
+			width: 100%;
+			min-height: 300px;
+			resize: vertical;
+		}
+		.block-header {
+			font-weight: bold;
+			margin-top: 20px;
+			color: #00ffff;
+		}
+		button {
+			background: #003300;
+			color: #00ff00;
+			border: 1px solid #00ff00;
+			padding: 10px 20px;
+			font-size: 16px;
+			cursor: pointer;
+			margin: 10px 5px;
+		}
+		button:hover {
+			background: #004400;
+		}
+	</style>
+
+	<!-- Load fonts CSS -->
+	<link rel="stylesheet" href="../../css_font/glyphmatic-fonts.css">
+
+	<!-- Load the combining marks data -->
+	<script src="../../js_glyph/2025_block_17/block_hex_cf_cm_17.js"></script>
+	<script src="../../js_glyph/2025_block_17/block_hex_desc_cf_cm_17.js"></script>
+	<script src="../../js_glyph/2025_block_17/block_lang_skeleton_17.js"></script>
+</head>
+<body>
+	<h1>Combining Forms Glyph Tester</h1>
+	<p>Testing combining marks with: &nbsp; (non-breaking space)</p>
+	<p>Click glyphs to toggle exclusion (red = excluded)</p>
+
+	<div style="margin: 20px 0;">
+		<label for="blockSelect">Select Block: </label>
+		<select id="blockSelect" onchange="loadBlock()" style="padding: 5px; font-size: 14px;">
+			<option value="">-- Choose a block --</option>
+		</select>
+		<span id="blockInfo" style="margin-left: 20px; color: #00ffff;"></span>
+	</div>
+
+	<div style="margin: 20px 0;">
+		<label>
+			<input type="checkbox" id="selectAllCheckbox" onchange="toggleAllGlyphs()">
+			<span style="margin-left: 5px;">Select/Deselect All Glyphs in Block</span>
+		</label>
+	</div>
+
+	<button onclick="generateOutput()">Generate Exclusions</button>
+	<button onclick="copyExclusions()">Copy Exclusions</button>
+	<button onclick="clearAllExclusions()">Clear All Exclusions</button>
+
+	<div id="testArea"></div>
+	<textarea id="output" readonly></textarea>
+
+	<script>
+		// Load exclusions from localStorage or initialize empty
+		let exclusions = JSON.parse(localStorage.getItem('cf_cm_exclusions') || '{}');
+		let currentBlock = null;
+		let loadedFonts = new Set();
+
+		// Save exclusions to localStorage
+		function saveExclusions() {
+			localStorage.setItem('cf_cm_exclusions', JSON.stringify(exclusions));
+		}
+
+		// Font attachment functions
+		function attach_goog_font(font) {
+			if (loadedFonts.has(font)) return;
+			const gf_prefix = '//fonts.googleapis.com/css?family=';
+			const font_formatted = font.replace(/ /g, "+");
+			const link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.href = 'https:' + gf_prefix + font_formatted;
+			document.head.appendChild(link);
+			loadedFonts.add(font);
+		}
+
+		function attach_local_font(font, directory = 'tff') {
+			if (loadedFonts.has(font)) return;
+			const font_formatted = font.replace(/ /g, "");
+			const style = document.createElement('style');
+			let filename;
+			if (directory === 'otf') {
+				filename = `${font_formatted}-Regular.otf`;
+			} else if (directory === 'tff') {
+				filename = `${font_formatted}-Regular.ttf`;
+			} else {
+				filename = `${font_formatted}.ttf`;
+			}
+			style.textContent = `@font-face {font-family: "${font}"; src: url('/${directory}/${filename}');}`;
+			document.head.appendChild(style);
+			loadedFonts.add(font);
+		}
+
+		// Wait for data to load, then populate dropdown
+		function checkDataLoaded() {
+			if (typeof blockHexWait !== 'undefined' &&
+				typeof blockHexDescWait !== 'undefined' &&
+				typeof block_lang !== 'undefined' &&
+				typeof lang_font !== 'undefined') {
+				console.log('Data loaded. Populating blocks.');
+				populateBlockDropdown();
+
+				// Check for block in URL parameter
+				const urlParams = new URLSearchParams(window.location.search);
+				const blockParam = urlParams.get('block');
+
+				if (blockParam && block_hex[blockParam]) {
+					// Auto-select block from URL
+					document.getElementById('blockSelect').value = blockParam;
+					loadBlock();
+				} else {
+					document.getElementById('output').value = 'Data loaded. Select a block to begin testing.';
+				}
+			} else {
+				setTimeout(checkDataLoaded, 100);
+			}
+		}
+
+		// Populate the block dropdown
+		function populateBlockDropdown() {
+			const select = document.getElementById('blockSelect');
+			blocks.forEach(blockName => {
+				console.log(blockName)
+				if (block_hex[blockName] && block_hex[blockName].length > 0) {
+					const option = document.createElement('option');
+					option.value = blockName;
+					//console.log(blockName)
+					option.textContent = `${blockName} (${block_hex[blockName].length})`;
+					select.appendChild(option);
+				}
+			});
+		}
+
+		// Load selected block
+		function loadBlock() {
+			const select = document.getElementById('blockSelect');
+			const blockName = select.value;
+
+			if (!blockName) {
+				document.getElementById('testArea').innerHTML = '';
+				document.getElementById('blockInfo').textContent = '';
+				// Clear URL parameter
+				const url = new URL(window.location);
+				url.searchParams.delete('block');
+				window.history.replaceState({}, '', url);
+				return;
+			}
+
+			// Update URL parameter
+			const url = new URL(window.location);
+			url.searchParams.set('block', blockName);
+			window.history.replaceState({}, '', url);
+
+			currentBlock = blockName;
+			const testArea = document.getElementById('testArea');
+			testArea.innerHTML = '';
+
+			// Initialize exclusions for this block if not exists
+			if (!exclusions[blockName]) {
+				exclusions[blockName] = [];
+			}
+
+			const hexCodes = block_hex[blockName];
+			const descriptions = block_hex_desc[blockName];
+
+			// Update checkbox state based on whether all glyphs are excluded
+		const checkbox = document.getElementById('selectAllCheckbox');
+		checkbox.checked = (exclusions[blockName].length === hexCodes.length);
+
+		// Get and load fonts for this block
+			const fontCategories = block_lang[blockName] || [];
+			let allFonts = [];
+			fontCategories.forEach(category => {
+				if (lang_font[category]) {
+					allFonts = allFonts.concat(lang_font[category]);
+				} else {
+					console.warn(`Font category '${category}' not found in lang_font for block '${blockName}'`);
+				}
+			});
+			allFonts = [...new Set(allFonts)]; // Remove duplicates
+
+			// Filter out any undefined/null values
+			allFonts = allFonts.filter(font => font != null);
+
+			// Load all fonts for this block
+			allFonts.forEach(font => {
+				if (!font || typeof font !== 'string') {
+					console.error('Invalid font value:', font, 'in block:', blockName);
+					return;
+				}
+				const fontName = font.split("-")[0];
+				if (font.includes("-EA")) {
+					console.warn('Early access font not implemented:', font);
+				} else if (font.includes("-local")) {
+					const parts = font.split("-");
+					const fontName = parts[0];
+					const directory = parts[2] || 'tff';
+					attach_local_font(fontName, directory);
+				} else {
+					attach_goog_font(font);
+				}
+			});
+
+			// Build font stack for this block
+			let fontStack = '';
+			if (allFonts.length > 0) {
+				const fontNames = allFonts.filter(f => f).map(f => `'${f.split("-")[0]}'`).join(', ');
+				fontStack = `${fontNames}, sans-serif`;
+			} else {
+				fontStack = 'sans-serif';
+			}
+
+			// Update info
+			document.getElementById('blockInfo').textContent =
+				`${hexCodes.length} glyphs | ${exclusions[blockName].length} excluded | Fonts: ${allFonts.length}`;
+
+			// Create a row for each glyph
+			hexCodes.forEach((hexCode, index) => {
+				const char = String.fromCodePoint(parseInt(hexCode, 16));
+				const description = descriptions[index] || '';
+
+				// Create row container
+				const row = document.createElement('div');
+				row.className = 'glyph-row';
+
+				// Create header
+				const header = document.createElement('div');
+				header.className = 'glyph-header';
+				header.textContent = `U+${hexCode} - ${description}`;
+				row.appendChild(header);
+
+				// Create samples container
+				const samples = document.createElement('div');
+				samples.className = 'font-samples';
+
+				// Create a sample for each font
+				allFonts.forEach(font => {
+					if (!font || typeof font !== 'string') {
+						console.error('Invalid font in sample loop:', font);
+						return;
+					}
+
+					const sample = document.createElement('div');
+					sample.className = 'glyph-test';
+					sample.dataset.hex = hexCode;
+					sample.dataset.block = blockName;
+
+					// Check if this glyph is excluded
+					if (exclusions[blockName] && exclusions[blockName].includes(hexCode)) {
+						sample.classList.add('excluded');
+					}
+
+					// Click to toggle exclusion
+					sample.addEventListener('click', toggleExclusion);
+
+					// Create character span
+					const charSpan = document.createElement('span');
+					charSpan.className = 'glyph-char';
+
+					// Build font stack
+					const fontName = font.split("-")[0];
+					const genericFallback = font.includes('Serif') ? 'serif' : 'sans-serif';
+					let fontStackSingle;
+
+					if (font.includes('Noto Sans Symbols') || font.includes('Noto Sans Symbols 2')) {
+						fontStackSingle = `'Noto Emoji', '${fontName}', ${genericFallback}`;
+					} else if (font.includes('Symbola')) {
+						fontStackSingle = `'Symbola','Noto Sans Symbols','Noto Sans Symbols 2','Noto Emoji', ${genericFallback}`;
+					} else {
+						fontStackSingle = `'${fontName}'`;
+					}
+
+					charSpan.style.fontFamily = fontStackSingle;
+
+					// Create test string with non-breaking space
+					charSpan.innerHTML = `&nbsp;&#x${hexCode};`;
+
+					// Create font label
+					const fontLabel = document.createElement('div');
+					fontLabel.className = 'font-name';
+					fontLabel.textContent = font;
+
+					sample.appendChild(charSpan);
+					sample.appendChild(fontLabel);
+					samples.appendChild(sample);
+				});
+
+				row.appendChild(samples);
+				testArea.appendChild(row);
+			});
+		}
+
+		// Toggle exclusion for a glyph
+		function toggleExclusion(event) {
+			const element = event.currentTarget;
+			const hexCode = element.dataset.hex;
+			const blockName = element.dataset.block;
+
+			if (!exclusions[blockName]) {
+				exclusions[blockName] = [];
+			}
+
+			const index = exclusions[blockName].indexOf(hexCode);
+
+			// Find all samples for this glyph
+			const allSamples = document.querySelectorAll(`[data-hex="${hexCode}"][data-block="${blockName}"]`);
+
+			if (index > -1) {
+				// Remove from exclusions
+				exclusions[blockName].splice(index, 1);
+				allSamples.forEach(sample => sample.classList.remove('excluded'));
+			} else {
+				// Add to exclusions
+				exclusions[blockName].push(hexCode);
+				allSamples.forEach(sample => sample.classList.add('excluded'));
+			}
+
+			// Save to localStorage
+			saveExclusions();
+
+			// Update info
+			if (currentBlock) {
+				const hexCodes = block_hex[currentBlock];
+				const fontCategories = block_lang[currentBlock] || [];
+				let allFonts = [];
+				fontCategories.forEach(category => {
+					if (lang_font[category]) {
+						allFonts = allFonts.concat(lang_font[category]);
+					}
+				});
+				allFonts = [...new Set(allFonts)].filter(font => font != null);
+
+				document.getElementById('blockInfo').textContent =
+					`${hexCodes.length} glyphs | ${exclusions[currentBlock].length} excluded | Fonts: ${allFonts.length}`;
+			}
+		}
+
+		// Toggle all glyphs in the current block
+		function toggleAllGlyphs() {
+			if (!currentBlock) {
+				alert('Please select a block first.');
+				document.getElementById('selectAllCheckbox').checked = false;
+				return;
+			}
+
+			const checkbox = document.getElementById('selectAllCheckbox');
+			const hexCodes = block_hex[currentBlock];
+
+			if (!exclusions[currentBlock]) {
+				exclusions[currentBlock] = [];
+			}
+
+			if (checkbox.checked) {
+				// Select all - add all glyphs to exclusions
+				hexCodes.forEach(hexCode => {
+					if (!exclusions[currentBlock].includes(hexCode)) {
+						exclusions[currentBlock].push(hexCode);
+					}
+					// Mark all samples as excluded
+					const allSamples = document.querySelectorAll(`[data-hex="${hexCode}"][data-block="${currentBlock}"]`);
+					allSamples.forEach(sample => sample.classList.add('excluded'));
+				});
+			} else {
+				// Deselect all - remove all glyphs from exclusions
+				hexCodes.forEach(hexCode => {
+					const index = exclusions[currentBlock].indexOf(hexCode);
+					if (index > -1) {
+						exclusions[currentBlock].splice(index, 1);
+					}
+					// Unmark all samples
+					const allSamples = document.querySelectorAll(`[data-hex="${hexCode}"][data-block="${currentBlock}"]`);
+					allSamples.forEach(sample => sample.classList.remove('excluded'));
+				});
+			}
+
+			// Save to localStorage
+			saveExclusions();
+
+			// Update info
+			const fontCategories = block_lang[currentBlock] || [];
+			let allFonts = [];
+			fontCategories.forEach(category => {
+				if (lang_font[category]) {
+					allFonts = allFonts.concat(lang_font[category]);
+				}
+			});
+			allFonts = [...new Set(allFonts)].filter(font => font != null);
+
+			document.getElementById('blockInfo').textContent =
+				`${hexCodes.length} glyphs | ${exclusions[currentBlock].length} excluded | Fonts: ${allFonts.length}`;
+		}
+
+		// Generate exclusions output
+		function generateOutput() {
+			const output = document.getElementById('output');
+
+			// Filter out blocks with no exclusions
+			const blocksWithExclusions = Object.keys(exclusions)
+				.filter(block => exclusions[block].length > 0)
+				.sort();
+
+			if (blocksWithExclusions.length === 0) {
+				output.value = 'No exclusions marked. Click glyphs to exclude them, then generate output.';
+				return;
+			}
+
+			let totalExcluded = 0;
+			blocksWithExclusions.forEach(block => {
+				totalExcluded += exclusions[block].length;
+			});
+
+			let outputText = `// Combining Forms Exclusions\n`;
+			outputText += `// Blocks with exclusions: ${blocksWithExclusions.length}\n`;
+			outputText += `// Total excluded glyphs: ${totalExcluded}\n`;
+			outputText += `// Generated: ${new Date().toISOString()}\n\n`;
+			outputText += `const cf_cm_exclusions = {\n`;
+
+			blocksWithExclusions.forEach((blockName, index) => {
+				const glyphs = exclusions[blockName];
+				const glyphList = glyphs.map(g => `'${g}'`).join(', ');
+				outputText += `\t'${blockName}': [${glyphList}]`;
+				if (index < blocksWithExclusions.length - 1) {
+					outputText += ',';
+				}
+				outputText += '\n';
+			});
+
+			outputText += `};\n\n`;
+			outputText += `var cfCmExclusionsWait = [];\n`;
+			outputText += `console.log('cf_cm_exclusions loaded');`;
+
+			output.value = outputText;
+		}
+
+		// Copy exclusions to clipboard
+		function copyExclusions() {
+			const output = document.getElementById('output');
+			const text = output.value;
+
+			if (!text || text === 'Data loaded. Select a block to begin testing.') {
+				alert('Generate exclusions first!');
+				return;
+			}
+
+			navigator.clipboard.writeText(text).then(() => {
+				alert('Exclusions copied to clipboard!');
+			}).catch(err => {
+				console.error('Failed to copy:', err);
+				// Fallback: select the textarea content
+				output.select();
+				alert('Text selected. Press Ctrl+C (Cmd+C) to copy.');
+			});
+		}
+
+		// Clear all exclusions
+		function clearAllExclusions() {
+			if (!confirm('Clear ALL exclusions across all blocks? This cannot be undone.')) {
+				return;
+			}
+
+			exclusions = {};
+			saveExclusions();
+
+			// Clear visual state
+			document.querySelectorAll('.glyph-test.excluded').forEach(el => {
+				el.classList.remove('excluded');
+			});
+
+			// Update checkbox if on a block
+			if (currentBlock) {
+				const checkbox = document.getElementById('selectAllCheckbox');
+				checkbox.checked = false;
+
+				const hexCodes = block_hex[currentBlock];
+				const fontCategories = block_lang[currentBlock] || [];
+				let allFonts = [];
+				fontCategories.forEach(category => {
+					if (lang_font[category]) {
+						allFonts = allFonts.concat(lang_font[category]);
+					}
+				});
+				allFonts = [...new Set(allFonts)].filter(font => font != null);
+
+				document.getElementById('blockInfo').textContent =
+					`${hexCodes.length} glyphs | 0 excluded | Fonts: ${allFonts.length}`;
+			}
+
+			document.getElementById('output').value = 'All exclusions cleared.';
+		}
+
+		checkDataLoaded();
+	</script>
+</body>
+</html>

@@ -137,13 +137,21 @@
         },
         
         // Generate complete glyph data
-        generateGlyph: function(blockHex, blockHexDesc, blockLang, langFont, testMode = false, testConfig = {}) {
+        generateGlyph: function(blockHex, blockHexDesc, blockLang, langFont, testMode = false, testConfig = {}, exclusions = null) {
             let block, glyphVal, glyph;
-            
+            const maxRetries = 100; // Prevent infinite loops
+            let retries = 0;
+
+            // Helper function to check if a glyph is excluded
+            const isExcluded = (block, glyph) => {
+                if (!exclusions || !exclusions[block]) return false;
+                return exclusions[block].includes(glyph);
+            };
+
             if (testMode) {
                 const blocks = Array.isArray(testConfig.blocks) ? testConfig.blocks : [testConfig.block];
                 block = this.randomFrom(blocks);
-                
+
                 if (testConfig.glyph) {
                     glyph = testConfig.glyph;
                     glyphVal = blockHex[block].indexOf(glyph);
@@ -153,16 +161,28 @@
                         glyph = blockHex[block][glyphVal];
                     }
                 } else {
-                    glyphVal = this.randomIndexFrom(blockHex[block]);
-                    glyph = blockHex[block][glyphVal];
+                    // Find non-excluded glyph in test mode
+                    do {
+                        glyphVal = this.randomIndexFrom(blockHex[block]);
+                        glyph = blockHex[block][glyphVal];
+                        retries++;
+                    } while (isExcluded(block, glyph) && retries < maxRetries);
                 }
             } else {
-                const blocks = Object.keys(blockHex);
-                block = this.randomFrom(blocks);
-                glyphVal = this.randomIndexFrom(blockHex[block]);
-                glyph = blockHex[block][glyphVal];
+                // Find non-excluded glyph in normal mode
+                do {
+                    const blocks = Object.keys(blockHex);
+                    block = this.randomFrom(blocks);
+                    glyphVal = this.randomIndexFrom(blockHex[block]);
+                    glyph = blockHex[block][glyphVal];
+                    retries++;
+                } while (isExcluded(block, glyph) && retries < maxRetries);
             }
-            
+
+            if (retries >= maxRetries) {
+                console.warn('Max retries reached finding non-excluded glyph');
+            }
+
             const glyphDesc = blockHexDesc[block][glyphVal].replace(/ /g, '_');
             const fontDuJour = this.selectFont(block, blockLang, langFont);
             const fontStack = this.loadFont(fontDuJour);

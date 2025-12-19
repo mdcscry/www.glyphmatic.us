@@ -1,5 +1,13 @@
 myFontSet=[];
 
+//𑀑: U+11011 — BRAHMI LETTER O
+//𑀫: U+1102B — BRAHMI LETTER MA
+
+// ا: U+0627 ARABIC LETTER ALEF
+// و: U+0648 ARABIC LETTER WAW
+// م: U+0645 ARABIC LETTER MEEM 
+
+
 whirldFontArray=[
 'Noto Sans','Noto Sans Symbols','Noto Sans Symbols 2',
 'Noto Sans Arabic','Noto Sans Bengali','Noto Sans Devanagari',
