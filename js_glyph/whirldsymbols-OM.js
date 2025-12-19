@@ -194,6 +194,13 @@ const outlierDefinitions = [
         appliesToGlyphIndices: [6]
     },
     {
+        id: 'HighCenter-Large-VeryTop-50vw', // Ex. Glyph 7, very high
+        maskSize: '60vw',
+        maskYPosition: '50%',
+        maskXPosition: '50%',
+        appliesToGlyphIndices: [41]
+    },
+    {
         id: 'HighCenter-MediumLarge-Up-50vw', // Ex. Glyph 22, shifted up
         maskSize: '45vw',
         maskYPosition: '44%',
@@ -209,10 +216,10 @@ const outlierDefinitions = [
     },
     {
         id: 'MidCenter-PhagsPa-Standard-34vw', // Ex. Phags-Pa glyphs, mid-center, compact
-        maskSize: '29vw',
+        maskSize: '31vw',
         maskYPosition: '50%',
         maskXPosition: '50%',
-        appliesToGlyphIndices: [26, 33, 40, 42]
+        appliesToGlyphIndices: [26, 33, 40]
     },
     {
         id: 'MidCenter-Javanese-Compact-30vw', // Ex. Javanese glyph
@@ -240,7 +247,7 @@ const outlierDefinitions = [
         maskSize: '35vw',
         maskYPosition: '50%',
         maskXPosition: '50%',
-        appliesToGlyphIndices: [17]
+        appliesToGlyphIndices: [17, 42]
     },
 
     // --- STANDARD / MID Placement (Mid Y-Position: 57% - 60%) ---
@@ -256,7 +263,7 @@ const outlierDefinitions = [
         maskSize: '50vw',
         maskYPosition: '60%',
         maskXPosition: '50%',
-        appliesToGlyphIndices: [0, 13, 24, 37, 38, 41]
+        appliesToGlyphIndices: [0, 13, 24, 37, 38]
     },
 
     // --- LOW Placement (High Y-Position: 65% - 78%) ---

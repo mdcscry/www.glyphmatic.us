@@ -172,6 +172,20 @@ const INSERT_CONFIG = {
         21: { description: 'Quad layout with 20 glyphs per quadrant featuring multi-font Unicode rendering with class-based styling and periodic background/text color changes.' },
         22: { description: 'Similar to insert 21 - Quad grid displaying font-styled Unicode glyphs with class names derived from codepoints and fonts for CSS targeting.' },
         24: { description: 'DeGenerator Legacy 1: Displays 1000 overlapping Symbols2 block characters (U+1FB00-1FBCA) with 8 child layers per container, creating a dense mosaic with color-changing intervals.' },
+        25: {
+            controls: {
+                style: false,
+                html: false,
+                resize: false,
+                moveUpDown: false
+            },
+            watermarks: {
+                count: 1,
+                zIndex: 10,
+                positioning: 'top-left'
+            },
+            description: 'Rectangle Tiling: Randomly displays either glyph-based or line-based Mondrian-style recursive rectangle subdivision with OKLCH color harmonies. Uses randomized palette sizes (4-10 colors), subdivision depths (3-7 levels), and contrast ratios (2.0-7.0) for infinite variation. Glyph variant features geometric Unicode symbols with backflip dive animations. Line variant features flowing gradient patterns with controlled animation cycling. Click to regenerate with new random parameters.'
+        },
     }
 };
 

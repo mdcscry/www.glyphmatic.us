@@ -11,7 +11,7 @@
 <body onload="startUpMain()">
 
 <!-- Core scripts -->
-<script type="text/JavaScript" src="./js_glyph/msucd_letters.js"></script>
+<script type="text/JavaScript" src="./js_glyph/2011_glyphs/msucd_letters.js"></script>
 <script type="text/JavaScript" src="./js_glyph/watermark.js"></script>
 <script type="text/JavaScript" src="./js_funct/insert_config.js"></script>
 <script type="text/JavaScript" src="./js_funct/font_utility.js"></script>
@@ -73,36 +73,28 @@ insertArray[21] = ['whirldsymbols-OM.js', 'flasher1-the OM'];
 insertArray[22] = ['whirldsymbols-OM.js', 'OMs within OMs'];
 insertArray[23] = ['none', 'Macroglyph']; // insert23.js loads its own data
 insertArray[24] = ['none', 'DeGenerator Legacy 1']; // insert24.js loads its own data
+insertArray[25] = ['none', 'Rectangle Tiling']; // insert25.js loads its own data
 
 console.log('Insert array length:', insertArray.length);
 
 // Helper function to get the correct path for a script file
 function getScriptPath(filename) {
-    // 2011_glyphs subdirectory files
-    const glyphs2011 = ['msucd_hangul.js', 'msucd_drop.js', 'msucd.js', 'nonRsvdUtf.js', 'geometric.js',
-                        'msucd_mandala.js', 'msucd_letters.js', 'painters.js', 'superpainters.js'];
-    // Root level glyph files (shared across all inserts)
-    const glyphsRoot = ['whirldsymbols.js', 'whirldsymbols-OM.js', 'emoji_versions_data2.js', 'watermark.js'];
-    const functFiles = ['insert_config.js', 'nav_menu.js', 'emoji_display_script.js'];
-
     // Special cases - inserts that load their own data
     if (filename === 'none') return null;
 
-    // For 2011 glyph files (inserts 0-11), use 2011_glyphs subdirectory
-    if (glyphs2011.includes(filename)) {
+    // Check if it's a function file
+    if (filename.includes('insert_config') || filename.includes('nav_menu') || filename.includes('font_utility') || filename.includes('emoji_display_script')) {
+        return './js_funct/' + filename;
+    }
+
+    // Determine path based on insert number
+    // Inserts 0-12 use 2011_glyphs subdirectory
+    if (insertArrayRnd <= 11) {
         return './js_glyph/2011_glyphs/' + filename;
     }
 
-    // Root level files stay in js_glyph/
-    if (glyphsRoot.includes(filename)) {
-        return './js_glyph/' + filename;
-    }
-
-    if (functFiles.includes(filename)) return './js_funct/' + filename;
-
-    // Fallback to old path if not found (shouldn't happen)
-    console.warn(`Unknown file ${filename}, using fallback path`);
-    return './css_js/' + filename;
+    // All other inserts use root js_glyph directory
+    return './js_glyph/' + filename;
 }
 
 // Get current parameter from URL

@@ -1,0 +1,955 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <TITLE>Concentric Squares - Box Drawing Glyphs</TITLE>
+
+    <STYLE type="text/css">
+        @font-face {
+            font-family: 'Symbols2';
+            src: url('../../tff/NotoSansSymbols2-Regular.ttf');
+        }
+
+        body {
+            font-family: 'Symbols2';
+            margin: 0;
+            padding: 20px;
+            background-color: #888;
+            overflow: auto;
+        }
+
+        #container-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .grid-container {
+            background-color: #e8e8d0;
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            display: inline-block;
+            overflow: hidden;
+        }
+
+        .grid-container:after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        DIV.cell {
+            float: left;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+            text-align: center;
+            transition: filter 3s ease-in-out;
+        }
+
+        DIV.cell.rotating {
+            transition: transform 3s ease-in-out;
+        }
+
+        DIV.cell.pulsing {
+            transition: opacity 2s ease-in-out;
+        }
+
+        DIV.cell.pulsing-formation {
+            transition: opacity 2.5s ease-in-out;
+        }
+    </STYLE>
+</head>
+
+<body>
+
+<div id="container-wrapper">
+    <div id="grid1" class="grid-container"></div>
+    <div id="grid2" class="grid-container"></div>
+    <div id="grid3" class="grid-container"></div>
+</div>
+
+<script type="text/javascript" src="../../js_glyph/boxplot.js"></script>
+
+<script type="text/javascript">
+
+    const DESIRED_GRID_COLS = 40; // Columns per grid (more cells = more groove rings)
+    const BORDER_WIDTH = 1; // Width of grooves (very skinny!)
+    const CHANNEL_WIDTH = 1; // Width of glyph-filled channels (narrow)
+    const RING_SPACING = BORDER_WIDTH + CHANNEL_WIDTH; // Total spacing per ring (many more rings!)
+
+    // Color system: pick a root color and create variations
+    function hexToRgb(hex) {
+        let r = parseInt(hex.slice(1, 3), 16);
+        let g = parseInt(hex.slice(3, 5), 16);
+        let b = parseInt(hex.slice(5, 7), 16);
+        return {r, g, b};
+    }
+
+    function rgbToHex(r, g, b) {
+        return '#' + [r, g, b].map(x => {
+            const hex = Math.round(x).toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        }).join('');
+    }
+
+    // Convert RGB to OKLCH color space
+    function rgbToOklch(r, g, b) {
+        // Normalize RGB to 0-1
+        r = r / 255;
+        g = g / 255;
+        b = b / 255;
+
+        // Convert to linear RGB
+        r = r > 0.04045 ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
+        g = g > 0.04045 ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
+        b = b > 0.04045 ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
+
+        // Convert to OKLab
+        let l = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b;
+        let m = 0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b;
+        let s = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b;
+
+        l = Math.cbrt(l);
+        m = Math.cbrt(m);
+        s = Math.cbrt(s);
+
+        let L = 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s;
+        let a = 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s;
+        let bVal = 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s;
+
+        // Convert to OKLCH
+        let C = Math.sqrt(a * a + bVal * bVal);
+        let H = Math.atan2(bVal, a) * 180 / Math.PI;
+        if (H < 0) H += 360;
+
+        return {L, C, H};
+    }
+
+    // Convert OKLCH to RGB
+    function oklchToRgb(L, C, H) {
+        // Convert to OKLab
+        let hRad = H * Math.PI / 180;
+        let a = C * Math.cos(hRad);
+        let bVal = C * Math.sin(hRad);
+
+        // Convert to linear RGB
+        let l = L + 0.3963377774 * a + 0.2158037573 * bVal;
+        let m = L - 0.1055613458 * a - 0.0638541728 * bVal;
+        let s = L - 0.0894841775 * a - 1.2914855480 * bVal;
+
+        l = l * l * l;
+        m = m * m * m;
+        s = s * s * s;
+
+        let r = +4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
+        let g = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
+        let bRgb = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s;
+
+        // Convert to sRGB
+        r = r > 0.0031308 ? 1.055 * Math.pow(r, 1/2.4) - 0.055 : 12.92 * r;
+        g = g > 0.0031308 ? 1.055 * Math.pow(g, 1/2.4) - 0.055 : 12.92 * g;
+        bRgb = bRgb > 0.0031308 ? 1.055 * Math.pow(bRgb, 1/2.4) - 0.055 : 12.92 * bRgb;
+
+        // Clamp to 0-255
+        r = Math.max(0, Math.min(255, Math.round(r * 255)));
+        g = Math.max(0, Math.min(255, Math.round(g * 255)));
+        bRgb = Math.max(0, Math.min(255, Math.round(bRgb * 255)));
+
+        return {r, g, b: bRgb};
+    }
+
+    function generateComplementaryColors(baseHex, count = 6) {
+        let {r, g, b} = hexToRgb(baseHex);
+        let {L, C, H} = rgbToOklch(r, g, b);
+
+        let complementary = [];
+        let hueShifts = [180, 120, -120, 60, -60, 90]; // Complementary, triadic, and other harmonious shifts
+
+        for (let i = 0; i < count; i++) {
+            let newH = (H + hueShifts[i]) % 360;
+            if (newH < 0) newH += 360;
+
+            let rgb = oklchToRgb(L, C, newH);
+            complementary.push(rgbToHex(rgb.r, rgb.g, rgb.b));
+        }
+
+        return complementary;
+    }
+
+    function mixWithWhite(hex, whiteAmount) {
+        let {r, g, b} = hexToRgb(hex);
+        // Mix with white (255, 255, 255)
+        r = r + (255 - r) * whiteAmount;
+        g = g + (255 - g) * whiteAmount;
+        b = b + (255 - b) * whiteAmount;
+        return rgbToHex(r, g, b);
+    }
+
+    function mixWithBlack(hex, blackAmount) {
+        let {r, g, b} = hexToRgb(hex);
+        // Mix with black (0, 0, 0)
+        r = r * (1 - blackAmount);
+        g = g * (1 - blackAmount);
+        b = b * (1 - blackAmount);
+        return rgbToHex(r, g, b);
+    }
+
+    // Pick a random root color
+    let rootColor;
+    let colorPalette;
+    let accentColors;
+
+    function rgbToHsl(r, g, b) {
+        r /= 255;
+        g /= 255;
+        b /= 255;
+        let max = Math.max(r, g, b);
+        let min = Math.min(r, g, b);
+        let h, s, l = (max + min) / 2;
+
+        if (max === min) {
+            h = s = 0;
+        } else {
+            let d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch (max) {
+                case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                case g: h = ((b - r) / d + 2) / 6; break;
+                case b: h = ((r - g) / d + 4) / 6; break;
+            }
+        }
+        return {h: h * 360, s: s * 100, l: l * 100};
+    }
+
+    function regenerateColors() {
+        // Filter for darker, less saturated colors
+        let darkerColors = mycolors.filter(color => {
+            let {r, g, b} = hexToRgb(color);
+            // Calculate luminance (0-255 scale)
+            let luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+
+            // Get HSL to check saturation
+            let {h, s, l} = rgbToHsl(r, g, b);
+
+            // Only use colors that are:
+            // - Darker (luminance < 170)
+            // - Not too saturated (saturation < 70%)
+            return luminance < 170 && s < 70;
+        });
+
+        rootColor = darkerColors[Math.floor(Math.random() * darkerColors.length)];
+
+        // Set page background to root color mixed with black (darker version)
+        document.body.style.backgroundColor = mixWithBlack(rootColor, 0.6);
+
+        // Create variations by mixing with white
+        colorPalette = [
+            rootColor,                      // Pure root color
+            mixWithWhite(rootColor, 0.15),  // Slightly lighter
+            mixWithWhite(rootColor, 0.3),   // Light
+            mixWithWhite(rootColor, 0.45),  // Lighter
+            mixWithWhite(rootColor, 0.6),   // Very light
+            mixWithWhite(rootColor, 0.75),  // Almost white
+            mixWithWhite(rootColor, 0.85)   // Nearly white
+        ];
+
+        // Generate 5-6 complementary accent colors using OKLCH
+        accentColors = generateComplementaryColors(rootColor, 6);
+    }
+
+    // Initialize colors
+    regenerateColors();
+
+    // Randomly choose rendering style: grooves, banded, or split-banded
+    let rand = Math.random();
+    let renderStyle = rand < 0.33 ? 'grooves' : (rand < 0.66 ? 'banded' : 'split-banded');
+
+    // Random ring width (1-4 cells) - smaller means more rings
+    let ringWidth = Math.floor(Math.random() * 4) + 1;
+
+    // For style 4: 10% chance of rendering with no glyphs at all
+    let noGlyphsMode = false;
+
+    // Animation state for style 4
+    let rotationAnimationId = null;
+
+    // Animation state for style 3
+    let pulsingAnimationId = null;
+
+    // Animation state for style 2 (formations)
+    let formationPulsingAnimationId = null;
+
+    // Animation state for style 1 (color cycling)
+    let colorCyclingAnimationId = null;
+
+    // CSS color spaces - each grid uses a different one for mixing
+    const cssColorSpaces = [
+        "srgb",             // Standard web color
+        "srgb-linear",      // sRGB without gamma correction
+        "display-p3",       // Apple's wide gamut space
+        "a98-rgb",          // Adobe RGB (1998)
+        "prophoto-rgb",     // Professional photography space
+        "rec2020",          // Ultra-HD TV standard
+        "xyz-d65",          // D65-adapted XYZ space
+        "lab",              // Perceptually uniform CIELAB
+        "oklab",            // Improved CIELAB for smooth gradients
+        "lch",              // Cylindrical CIELAB (Lightness, Chroma, Hue)
+        "oklch",            // Improved LCH (Highly recommended in 2025)
+        "hsl",              // Hue, Saturation, Lightness
+        "hwb"               // Hue, Whiteness, Blackness
+    ];
+
+    // Store color space for each grid
+    let gridColorSpaces = {};
+
+    function pickRandomColorSpace() {
+        return cssColorSpaces[Math.floor(Math.random() * cssColorSpaces.length)];
+    }
+
+    // Initialize color spaces for each grid
+    function initializeGridColorSpaces() {
+        gridColorSpaces['grid1'] = pickRandomColorSpace();
+        gridColorSpaces['grid2'] = pickRandomColorSpace();
+        gridColorSpaces['grid3'] = pickRandomColorSpace();
+    }
+
+    initializeGridColorSpaces();
+
+    // CSS color-mix based mixing functions
+    function mixWithWhiteCSS(hex, whiteAmount, colorSpace) {
+        const percentage = Math.round(whiteAmount * 100);
+        return `color-mix(in ${colorSpace}, white ${percentage}%, ${hex})`;
+    }
+
+    function mixWithBlackCSS(hex, blackAmount, colorSpace) {
+        const percentage = Math.round(blackAmount * 100);
+        return `color-mix(in ${colorSpace}, black ${percentage}%, ${hex})`;
+    }
+
+    function getGlyphColor() {
+        // 85% chance of using palette color, 15% chance of complementary accent color
+        if (Math.random() < 0.85) {
+            return colorPalette[Math.floor(Math.random() * colorPalette.length)];
+        } else {
+            return accentColors[Math.floor(Math.random() * accentColors.length)];
+        }
+    }
+
+    // Generate formations once (shared across all grids)
+    let sharedFormationGlyph = getRandomGlyph();
+    let sharedFormationPositions = null; // Will be generated with first grid dimensions
+
+    function generateFormations(rows, cols) {
+        let formations = new Set();
+        let centerRow = Math.floor(rows / 2);
+        let centerCol = Math.floor(cols / 2);
+
+        // Only 25% chance of adding centered formations
+        if (Math.random() < 0.25) {
+            // Randomly choose ONE centered pattern
+            let centeredPattern = Math.random();
+
+            if (centeredPattern < 0.5) {
+                // Small cross at center
+                for (let offset = -2; offset <= 2; offset++) {
+                    if (centerRow + offset >= 0 && centerRow + offset < rows) {
+                        formations.add(`${centerRow + offset},${centerCol}`);
+                    }
+                    if (centerCol + offset >= 0 && centerCol + offset < cols) {
+                        formations.add(`${centerRow},${centerCol + offset}`);
+                    }
+                }
+            } else {
+                // Small diamond around center (size 4)
+                let diamondSize = 4;
+                for (let offset = -diamondSize; offset <= diamondSize; offset++) {
+                    let dist = Math.abs(offset);
+                    let remaining = diamondSize - dist;
+
+                    if (centerRow - remaining >= 0 && centerCol + offset >= 0 && centerCol + offset < cols) {
+                        formations.add(`${centerRow - remaining},${centerCol + offset}`);
+                    }
+                    if (centerRow + remaining < rows && centerCol + offset >= 0 && centerCol + offset < cols) {
+                        formations.add(`${centerRow + remaining},${centerCol + offset}`);
+                    }
+                }
+            }
+        }
+
+        // Goldilocks dispersion: balanced mix of formations - visible but not overwhelming
+        // Keep formations mostly within grid (97% coverage)
+
+        // Add 1-2 small tight clusters
+        let numTightClusters = Math.floor(Math.random() * 2) + 1;
+        for (let i = 0; i < numTightClusters; i++) {
+            // Allow placement across 97% of grid (1.5% margin from edges)
+            let fRow = Math.floor(Math.random() * (rows * 0.50)) + Math.floor(rows * 0.015);
+            let fCol = Math.floor(Math.random() * (cols * 0.50)) + Math.floor(cols * 0.015);
+
+            // Small tight cluster: just 3 glyphs in a line
+            let tightPattern = [[0, 0], [-1, 0], [1, 0]];
+
+            for (let [dr, dc] of tightPattern) {
+                let r = fRow + dr;
+                let c = fCol + dc;
+                if (r >= 0 && r < rows && c >= 0 && c < cols) {
+                    formations.add(`${r},${c}`);
+                    formations.add(`${r},${cols - 1 - c}`);
+                    formations.add(`${rows - 1 - r},${c}`);
+                    formations.add(`${rows - 1 - r},${cols - 1 - c}`);
+                }
+            }
+        }
+
+        // Add 1 spread-out cluster
+        let fRow = Math.floor(Math.random() * (rows * 0.97)) + Math.floor(rows * 0.015);
+        let fCol = Math.floor(Math.random() * (cols * 0.97)) + Math.floor(cols * 0.015);
+
+        // Spread pattern: 3 glyphs with moderate spacing
+        let spreadPattern = [[0, 0], [-2, 0], [2, 0]];
+
+        for (let [dr, dc] of spreadPattern) {
+            let r = fRow + dr;
+            let c = fCol + dc;
+            if (r >= 0 && r < rows && c >= 0 && c < cols) {
+                formations.add(`${r},${c}`);
+                formations.add(`${r},${cols - 1 - c}`);
+                formations.add(`${rows - 1 - r},${c}`);
+                formations.add(`${rows - 1 - r},${cols - 1 - c}`);
+            }
+        }
+
+        // Add 2-3 scattered individual glyphs
+        let numScattered = Math.floor(Math.random() * 2) + 2;
+        for (let i = 0; i < numScattered; i++) {
+            let fRow = Math.floor(Math.random() * (rows * 0.97)) + Math.floor(rows * 0.015);
+            let fCol = Math.floor(Math.random() * (cols * 0.97)) + Math.floor(cols * 0.015);
+
+            // Just a single glyph at this position
+            if (fRow >= 0 && fRow < rows && fCol >= 0 && fCol < cols) {
+                formations.add(`${fRow},${fCol}`);
+                formations.add(`${fRow},${cols - 1 - fCol}`);
+                formations.add(`${rows - 1 - fRow},${fCol}`);
+                formations.add(`${rows - 1 - fRow},${cols - 1 - fCol}`);
+            }
+        }
+
+        return formations;
+    }
+
+    function createGrid(containerId) {
+        var container = document.getElementById(containerId);
+
+        // Clear existing content
+        container.innerHTML = '';
+
+        // Get the color space for this grid
+        const gridColorSpace = gridColorSpaces[containerId];
+
+        // Calculate dimensions based on viewport
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        // Each grid gets roughly 28% of viewport width (3 grids side-by-side with gaps)
+        const availableWidth = Math.floor(viewportWidth * 0.28);
+        const cellEffectiveWidth = Math.floor(availableWidth / DESIRED_GRID_COLS);
+
+        // Calculate rows based on viewport height to create tall rectangles
+        const DESIRED_GRID_ROWS = Math.floor((viewportHeight - 80) / cellEffectiveWidth);
+
+        // Set grid dimensions
+        const gridWidth = DESIRED_GRID_COLS * cellEffectiveWidth;
+        const gridHeight = DESIRED_GRID_ROWS * cellEffectiveWidth;
+
+        container.style.width = gridWidth + 'px';
+        container.style.height = gridHeight + 'px';
+
+        // Set background color using root color (all grids share the same root color background)
+        container.style.backgroundColor = rootColor;
+
+        // Generate formations once for all grids (if not already generated)
+        if (!sharedFormationPositions) {
+            sharedFormationPositions = generateFormations(DESIRED_GRID_ROWS, DESIRED_GRID_COLS);
+        }
+
+        let formations = sharedFormationPositions;
+        let formationGlyph = sharedFormationGlyph;
+        let centerRow = Math.floor(DESIRED_GRID_ROWS / 2);
+        let centerCol = Math.floor(DESIRED_GRID_COLS / 2);
+
+        for (let row = 0; row < DESIRED_GRID_ROWS; row++) {
+            for (let col = 0; col < DESIRED_GRID_COLS; col++) {
+                let cell = document.createElement("div");
+                cell.className = 'cell';
+
+                let distFromEdge = Math.min(row, col, DESIRED_GRID_COLS - 1 - col, DESIRED_GRID_ROWS - 1 - row);
+                let ringPos = distFromEdge % RING_SPACING;
+                let isFormation = formations.has(`${row},${col}`);
+                let isCenter = (row === centerRow && col === centerCol);
+
+                if (renderStyle === 'banded') {
+                    // BANDED STYLE: Each concentric band is filled with same-colored glyphs
+
+                    // Check if this is the center cell
+                    if (isCenter) {
+                        cell.innerHTML = '&#x' + formationGlyph + ';';
+                        // Use lighter, more muted colors (last 3 from palette)
+                        cell.style.color = colorPalette[Math.floor(Math.random() * 3) + 4];
+                        cell.style.opacity = 0.7;
+                        cell.classList.add('pulsing-formation');
+                    }
+                    // Check if this is part of a formation
+                    else if (isFormation) {
+                        cell.innerHTML = '&#x' + formationGlyph + ';';
+                        // Use lighter, more muted colors (last 3 from palette)
+                        cell.style.color = colorPalette[Math.floor(Math.random() * 3) + 4];
+                        cell.style.opacity = 0.6;
+                        cell.classList.add('pulsing-formation');
+                    }
+                    else {
+                        // Calculate which band (wider bands - 4 cells each)
+                        let bandNumber = Math.floor(distFromEdge / 4);
+
+                        // Create extended color palette with both palette and accent colors
+                        let allColors = [...colorPalette, ...accentColors];
+
+                        // Each band gets a color from the extended palette
+                        let bandColor = allColors[bandNumber % allColors.length];
+
+                        // Fill band with glyphs of that color
+                        cell.innerHTML = '&#x' + getRandomGlyph() + ';';
+                        cell.style.color = bandColor;
+                        cell.style.opacity = 0.8;
+                    }
+
+                } else if (renderStyle === 'split-banded') {
+                    // SPLIT COLORED BANDS: Filled with glyphs, colors split vertically or horizontally
+
+                    // Calculate which band using random ring width
+                    let bandNumber = Math.floor(distFromEdge / ringWidth);
+                    let positionInBand = distFromEdge % ringWidth;
+
+                    // Create extended color palette
+                    let allColors = [...colorPalette, ...accentColors];
+
+                    // Decide split direction based on band number (alternates)
+                    let splitVertically = bandNumber % 2 === 0;
+
+                    // Get two colors for this band - use more distant colors for contrast
+                    let bgColor1 = allColors[bandNumber % allColors.length];
+                    let bgColor2 = allColors[(bandNumber + 3) % allColors.length];
+
+                    // Get contrasting glyph colors (opposite side of palette)
+                    let glyphColor1 = allColors[(bandNumber + 6) % allColors.length];
+                    let glyphColor2 = allColors[(bandNumber + 9) % allColors.length];
+
+                    // For grooves, use different color offset for more contrast
+                    if (positionInBand === 0) {
+                        bgColor1 = allColors[(bandNumber + 2) % allColors.length];
+                        bgColor2 = allColors[(bandNumber + 5) % allColors.length];
+                        glyphColor1 = allColors[(bandNumber + 7) % allColors.length];
+                        glyphColor2 = allColors[(bandNumber + 10) % allColors.length];
+                    }
+
+                    // Determine which colors to use based on position
+                    let bgColor, glyphColor;
+                    if (splitVertically) {
+                        // Split vertically - left vs right
+                        bgColor = (col < DESIRED_GRID_COLS / 2) ? bgColor1 : bgColor2;
+                        glyphColor = (col < DESIRED_GRID_COLS / 2) ? glyphColor1 : glyphColor2;
+                    } else {
+                        // Split horizontally - top vs bottom
+                        bgColor = (row < DESIRED_GRID_ROWS / 2) ? bgColor1 : bgColor2;
+                        glyphColor = (row < DESIRED_GRID_ROWS / 2) ? glyphColor1 : glyphColor2;
+                    }
+
+                    // Fill with glyphs with contrasting colors
+                    cell.innerHTML = '&#x' + getRandomGlyph() + ';';
+                    cell.style.backgroundColor = bgColor;
+                    cell.style.color = glyphColor;
+                    cell.style.opacity = 0.9;
+
+                    // Add pulsing class for animation
+                    cell.classList.add('pulsing');
+
+                } else if (renderStyle === 'split-banded-clean') {
+                    // SPLIT COLORED BANDS (CLEAN): Like split-banded but NO glyphs in grooves
+                    // 10% of the time (noGlyphsMode), show NO glyphs at all - just colored bands
+                    // When ringWidth = 1, there are no grooves - all cells get glyphs
+
+                    // Calculate which band using random ring width
+                    let bandNumber = Math.floor(distFromEdge / ringWidth);
+                    let positionInBand = distFromEdge % ringWidth;
+
+                    // Create extended color palette
+                    let allColors = [...colorPalette, ...accentColors];
+
+                    // Decide split direction based on band number (alternates)
+                    let splitVertically = bandNumber % 2 === 0;
+
+                    // Determine if this is a groove (only when ringWidth > 1)
+                    let isGroove = (ringWidth > 1 && positionInBand === 0);
+
+                    // Get two colors for this band/groove
+                    let color1, color2;
+                    if (isGroove) {
+                        // This is a groove - use different color offset
+                        color1 = allColors[(bandNumber + 2) % allColors.length];
+                        color2 = allColors[(bandNumber + 5) % allColors.length];
+                    } else {
+                        // This is a band
+                        color1 = allColors[bandNumber % allColors.length];
+                        color2 = allColors[(bandNumber + 3) % allColors.length];
+                    }
+
+                    // Determine which color to use based on position and split direction
+                    let bgColor;
+                    if (splitVertically) {
+                        bgColor = (col < DESIRED_GRID_COLS / 2) ? color1 : color2;
+                    } else {
+                        bgColor = (row < DESIRED_GRID_ROWS / 2) ? color1 : color2;
+                    }
+
+                    cell.style.backgroundColor = bgColor;
+
+                    // Check if we should render glyphs
+                    if (noGlyphsMode || isGroove) {
+                        // No glyphs mode OR this is a groove - leave empty
+                        cell.innerHTML = '&nbsp;';
+                    } else {
+                        // This is a band and we're in normal mode - fill with glyphs
+
+                        // Get contrasting glyph colors (opposite side of palette)
+                        let glyphColor1 = allColors[(bandNumber + 6) % allColors.length];
+                        let glyphColor2 = allColors[(bandNumber + 9) % allColors.length];
+
+                        let glyphColor;
+                        if (splitVertically) {
+                            glyphColor = (col < DESIRED_GRID_COLS / 2) ? glyphColor1 : glyphColor2;
+                        } else {
+                            glyphColor = (row < DESIRED_GRID_ROWS / 2) ? glyphColor1 : glyphColor2;
+                        }
+
+                        cell.innerHTML = '&#x' + getRandomGlyph() + ';';
+                        cell.style.color = glyphColor;
+                        cell.style.opacity = 0.9;
+
+                        // Add rotating class for animation
+                        cell.classList.add('rotating');
+                    }
+
+                } else {
+                    // GROOVES STYLE: Original groove and channel pattern
+
+                    // Check if this is the center cell
+                    if (isCenter) {
+                        cell.innerHTML = '&#x' + formationGlyph + ';';
+                        cell.style.color = accentColors[Math.floor(Math.random() * accentColors.length)];
+                        cell.style.opacity = 0.9;
+                    }
+                    // Check if this is part of a symmetrical formation
+                    else if (isFormation) {
+                        cell.innerHTML = '&#x' + formationGlyph + ';';
+                        if (Math.random() < 0.7) {
+                            cell.style.color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+                        } else {
+                            cell.style.color = accentColors[Math.floor(Math.random() * accentColors.length)];
+                        }
+                        cell.style.opacity = 0.85;
+                    }
+                    else if (ringPos < BORDER_WIDTH) {
+                        // This is a groove - set background to DARKER root color, rarely place glyphs
+                        cell.style.backgroundColor = mixWithBlackCSS(rootColor, 0.3, gridColorSpace);
+                        if (Math.random() < 0.15) {
+                            cell.innerHTML = '&#x' + getRandomGlyph() + ';';
+                            cell.style.color = getGlyphColor();
+                            cell.style.opacity = 0.6;
+                        } else {
+                            cell.innerHTML = '&nbsp;';
+                        }
+                    } else {
+                        // This is a channel - place colored glyphs using our color system
+                        cell.innerHTML = '&#x' + getRandomGlyph() + ';';
+                        cell.style.color = getGlyphColor();
+                        cell.style.opacity = 0.8;
+                    }
+                }
+
+                cell.style.fontSize = cellEffectiveWidth + 'px';
+                cell.style.width = cellEffectiveWidth + 'px';
+                cell.style.height = cellEffectiveWidth + 'px';
+                cell.style.lineHeight = 1;
+
+                container.appendChild(cell);
+            }
+        }
+    }
+
+    function getRandomGlyph() {
+        // Randomly select from box drawing characters primarily
+        let source;
+        let rand = Math.random();
+        source = allBlockSymbols;
+        return source[Math.floor(Math.random() * source.length)];
+    }
+
+    // Create all three grids
+    createGrid('grid1');
+    createGrid('grid2');
+    createGrid('grid3');
+
+    // Handle window resizing to re-calculate and re-render grids
+    window.addEventListener('resize', function() {
+        // Reset shared formations so they regenerate with new dimensions
+        sharedFormationPositions = null;
+        sharedFormationGlyph = getRandomGlyph();
+
+        createGrid('grid1');
+        createGrid('grid2');
+        createGrid('grid3');
+    });
+
+    // Display color space info for each grid
+    function showColorSpaceInfo() {
+        console.log('Grid Color Spaces:');
+        console.log('  Grid 1:', gridColorSpaces['grid1']);
+        console.log('  Grid 2:', gridColorSpaces['grid2']);
+        console.log('  Grid 3:', gridColorSpaces['grid3']);
+    }
+
+    // Show initial color spaces
+    showColorSpaceInfo();
+
+    // Rotation animation for style 4
+    function startRotationAnimation() {
+        // Stop any existing animation
+        if (rotationAnimationId) {
+            clearInterval(rotationAnimationId);
+        }
+
+        // Rotate glyphs every 3 seconds
+        rotationAnimationId = setInterval(() => {
+            if (renderStyle === 'split-banded-clean') {
+                const rotatingCells = document.querySelectorAll('.cell.rotating');
+                rotatingCells.forEach(cell => {
+                    // Random rotation angle between -180 and 180 degrees
+                    const angle = Math.random() * 360 - 180;
+                    cell.style.transform = `rotate(${angle}deg)`;
+                });
+            }
+        }, 3000);
+    }
+
+    function stopRotationAnimation() {
+        if (rotationAnimationId) {
+            clearInterval(rotationAnimationId);
+            rotationAnimationId = null;
+        }
+        // Reset all rotations
+        const rotatingCells = document.querySelectorAll('.cell.rotating');
+        rotatingCells.forEach(cell => {
+            cell.style.transform = '';
+        });
+    }
+
+    // Start animation if initial style is split-banded-clean
+    if (renderStyle === 'split-banded-clean') {
+        startRotationAnimation();
+    }
+
+    // Pulsing animation for style 3
+    function startPulsingAnimation() {
+        // Stop any existing animation
+        if (pulsingAnimationId) {
+            clearInterval(pulsingAnimationId);
+        }
+
+        // Pulse glyphs every 2 seconds
+        pulsingAnimationId = setInterval(() => {
+            if (renderStyle === 'split-banded') {
+                const pulsingCells = document.querySelectorAll('.cell.pulsing');
+                pulsingCells.forEach(cell => {
+                    // Random opacity between 0.3 and 1.0
+                    const opacity = Math.random() * 0.7 + 0.3;
+                    cell.style.opacity = opacity;
+                });
+            }
+        }, 2000);
+    }
+
+    function stopPulsingAnimation() {
+        if (pulsingAnimationId) {
+            clearInterval(pulsingAnimationId);
+            pulsingAnimationId = null;
+        }
+        // Reset all opacities to default
+        const pulsingCells = document.querySelectorAll('.cell.pulsing');
+        pulsingCells.forEach(cell => {
+            cell.style.opacity = '';
+        });
+    }
+
+    // Start animation if initial style is split-banded
+    if (renderStyle === 'split-banded') {
+        startPulsingAnimation();
+    }
+
+    // Formation pulsing animation for style 2
+    function startFormationPulsingAnimation() {
+        // Stop any existing animation
+        if (formationPulsingAnimationId) {
+            clearInterval(formationPulsingAnimationId);
+        }
+
+        // Pulse formation glyphs every 2.5 seconds
+        formationPulsingAnimationId = setInterval(() => {
+            if (renderStyle === 'banded') {
+                const pulsingFormations = document.querySelectorAll('.cell.pulsing-formation');
+                pulsingFormations.forEach(cell => {
+                    // Random opacity between 0.5 and 1.0 for formations (more visible)
+                    const opacity = Math.random() * 0.5 + 0.5;
+                    cell.style.opacity = opacity;
+                });
+            }
+        }, 2500);
+    }
+
+    function stopFormationPulsingAnimation() {
+        if (formationPulsingAnimationId) {
+            clearInterval(formationPulsingAnimationId);
+            formationPulsingAnimationId = null;
+        }
+        // Reset all formation opacities to default
+        const pulsingFormations = document.querySelectorAll('.cell.pulsing-formation');
+        pulsingFormations.forEach(cell => {
+            cell.style.opacity = '';
+        });
+    }
+
+    // Start animation if initial style is banded
+    if (renderStyle === 'banded') {
+        startFormationPulsingAnimation();
+    }
+
+    // Color cycling animation for style 1 (grooves)
+    function startColorCyclingAnimation() {
+        // Stop any existing animation
+        if (colorCyclingAnimationId) {
+            clearInterval(colorCyclingAnimationId);
+        }
+
+        let hueShift = 0;
+
+        // Cycle colors every 3 seconds
+        colorCyclingAnimationId = setInterval(() => {
+            if (renderStyle === 'grooves') {
+                // Increment hue shift for visible cycling
+                hueShift = (hueShift + 10) % 360;
+
+                // Get all glyphs in style 1
+                const allCells = document.querySelectorAll('.cell');
+                allCells.forEach(cell => {
+                    if (cell.innerHTML !== '&nbsp;') {
+                        const currentColor = cell.style.color;
+                        if (currentColor && currentColor !== '') {
+                            // Apply a subtle hue rotation via CSS filter
+                            cell.style.filter = `hue-rotate(${hueShift}deg)`;
+                        }
+                    }
+                });
+            }
+        }, 3000);
+    }
+
+    function stopColorCyclingAnimation() {
+        if (colorCyclingAnimationId) {
+            clearInterval(colorCyclingAnimationId);
+            colorCyclingAnimationId = null;
+        }
+        // Reset all filters
+        const allCells = document.querySelectorAll('.cell');
+        allCells.forEach(cell => {
+            cell.style.filter = '';
+        });
+    }
+
+    // Start animation if initial style is grooves
+    if (renderStyle === 'grooves') {
+        startColorCyclingAnimation();
+    }
+
+    // Keyboard controls: 1, 2, 3, 4 to switch rendering styles
+    window.addEventListener('keydown', function(e) {
+        let styleChanged = false;
+
+        if (e.key === '1') {
+            renderStyle = 'grooves';
+            styleChanged = true;
+        } else if (e.key === '2') {
+            renderStyle = 'banded';
+            styleChanged = true;
+        } else if (e.key === '3') {
+            renderStyle = 'split-banded';
+            // Randomize ring width when switching to split-banded
+            ringWidth = Math.floor(Math.random() * 4) + 1;
+            noGlyphsMode = false;
+            styleChanged = true;
+        } else if (e.key === '4') {
+            renderStyle = 'split-banded-clean';
+            // Randomize ring width (1-4) and 10% chance of no glyphs at all
+            ringWidth = Math.floor(Math.random() * 4) + 1;
+            noGlyphsMode = Math.random() < 0.10;
+            styleChanged = true;
+        }
+
+        if (styleChanged) {
+            // Regenerate colors, color spaces, and formations for fresh look
+            regenerateColors();
+            initializeGridColorSpaces();
+            sharedFormationPositions = null;
+            sharedFormationGlyph = getRandomGlyph();
+
+            // Re-render all grids with new style
+            createGrid('grid1');
+            createGrid('grid2');
+            createGrid('grid3');
+
+            // Show which color spaces are being used
+            showColorSpaceInfo();
+
+            // Start/stop animations based on style
+            if (renderStyle === 'split-banded-clean') {
+                startRotationAnimation();
+                stopPulsingAnimation();
+                stopFormationPulsingAnimation();
+                stopColorCyclingAnimation();
+            } else if (renderStyle === 'split-banded') {
+                startPulsingAnimation();
+                stopRotationAnimation();
+                stopFormationPulsingAnimation();
+                stopColorCyclingAnimation();
+            } else if (renderStyle === 'banded') {
+                startFormationPulsingAnimation();
+                stopRotationAnimation();
+                stopPulsingAnimation();
+                stopColorCyclingAnimation();
+            } else if (renderStyle === 'grooves') {
+                startColorCyclingAnimation();
+                stopRotationAnimation();
+                stopPulsingAnimation();
+                stopFormationPulsingAnimation();
+            } else {
+                stopRotationAnimation();
+                stopPulsingAnimation();
+                stopFormationPulsingAnimation();
+                stopColorCyclingAnimation();
+            }
+        }
+    });
+
+</script>
+</body>
+</html>

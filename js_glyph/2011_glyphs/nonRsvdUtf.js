@@ -277,42 +277,42 @@ var glyphBlocks = [
         ],
         combining: null
     },
-    {
-        name: "Emoji",
-        fonts: [         
-          'Noto Emoji',
-          'Noto Sans Symbols','DejaVu Sans', 'DejaVu Sans Condensed', 'Everson Mono', 'Code2000',  'Quivira', 'Segoe UI Symbol', 'Symbola'
+    // {
+    //     name: "Emoji",
+    //     fonts: [         
+    //       'Noto Emoji',
+    //       'Noto Sans Symbols','DejaVu Sans', 'DejaVu Sans Condensed', 'Everson Mono', 'Code2000',  'Quivira', 'Segoe UI Symbol', 'Symbola'
 
-        ],
-        glyphs: [
-          '2191','2194','2195','2196','2197','2198','2199','262A','262E'
-          ,'262F'
-          ,'2626'
-        ],
-        combining: null
-    },
+    //     ],
+    //     glyphs: [
+    //       '2191','2194','2195','2196','2197','2198','2199','262A','262E'
+    //       ,'262F'
+    //       ,'2626'
+    //     ],
+    //     combining: null
+    // },
 
-    {
-        name: "Emoji-Special",
-        fonts: [         
-        //'Quivira',
-        'Symbola'
-        , 'Segoe UI Symbol','Noto Emoji'
-        ,'Twitter Color Emoji','Open Moji Black'
+    // {
+    //     name: "Emoji-Special",
+    //     fonts: [         
+    //     //'Quivira',
+    //     'Symbola'
+    //     , 'Segoe UI Symbol','Noto Emoji'
+    //     ,'Twitter Color Emoji','Open Moji Black'
 
-        ],
-        glyphs: [
-         '1F571', //black skull    
-          '1F480' //skull
-        //   ,'2638' //dharma wheel
-        //   ,'1F47E' //alien
-        //   ,'1F916' //robot
-        //   ,'1F47D' //alien
-          //,'262F' //yin yang
-          //,'1F31E' //sun
-        ],
-        combining: null
-    },
+    //     ],
+    //     glyphs: [
+    //      '1F571', //black skull    
+    //       '1F480' //skull
+    //     //   ,'2638' //dharma wheel
+    //     //   ,'1F47E' //alien
+    //     //   ,'1F916' //robot
+    //     //   ,'1F47D' //alien
+    //       //,'262F' //yin yang
+    //       //,'1F31E' //sun
+    //     ],
+    //     combining: null
+    // },
 
 
     {

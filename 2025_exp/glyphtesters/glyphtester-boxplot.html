@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BoxPlot Glyph Tester - Inclusion</title>
+
+    <script src="../../js_glyph/boxplot.js"></script>
+
+    <style>
+        @font-face {
+            font-family: 'Symbols2';
+            src: url('../../tff/NotoSansSymbols2-Regular.ttf');
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+
+        h1 {
+            color: #4a9eff;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #2a2a2a;
+            border-radius: 5px;
+        }
+
+        .controls h3 {
+            margin-top: 0;
+            color: #4a9eff;
+        }
+
+        .array-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .array-checkbox-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .array-checkbox-item input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .array-checkbox-item label {
+            cursor: pointer;
+            margin: 0;
+            font-weight: normal;
+        }
+
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            font-size: 14px;
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            border: 1px solid #555;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #4a4a4a;
+        }
+
+        #output {
+            margin-top: 20px;
+        }
+
+        .glyph-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #2a2a2a;
+            border-radius: 5px;
+        }
+
+        .glyph-section-header {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #4a9eff;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .glyph-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+        }
+
+        .glyph-item {
+            text-align: center;
+            padding: 10px;
+            background-color: #3a3a3a;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .glyph-item:hover {
+            background-color: #4a4a4a;
+        }
+
+        .glyph-item.selected {
+            background-color: #2a5a2a;
+            border: 2px solid #44ff44;
+        }
+
+        .glyph-char {
+            font-family: 'Symbols2';
+            font-size: 36px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .glyph-code {
+            font-size: 10px;
+            color: #999;
+            font-family: monospace;
+        }
+
+        .selection-area {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #2a2a2a;
+            border-radius: 5px;
+        }
+
+        .selection-area h3 {
+            margin-top: 0;
+            color: #44ff44;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 10px;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            border: 1px solid #555;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+
+        .info {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .legend {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #2a2a2a;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+        .legend-box {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <h1>BoxPlot Glyph Tester (Inclusion Mode)</h1>
+
+    <div class="controls">
+        <h3>Select Glyph Array Types</h3>
+        <div class="array-checkboxes" id="arrayCheckboxes"></div>
+        <div style="margin-top: 15px;">
+            <button onclick="selectAllArrays()">Select All</button>
+            <button onclick="deselectAllArrays()">Deselect All</button>
+            <button onclick="clearAllSelections()">Clear All Glyph Selections</button>
+        </div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <span class="legend-box" style="background-color: #2a5a2a; border: 2px solid #44ff44;"></span>
+            <span>Selected for inclusion (click to deselect)</span>
+        </div>
+    </div>
+
+    <div id="output"></div>
+
+    <div class="selection-area">
+        <h3>Selected Glyphs (by Source Array)</h3>
+        <textarea id="selectionList" placeholder="Click glyphs to build your selection..."></textarea>
+        <div class="info">Selected glyphs organized by their source array, ready to use in your code</div>
+    </div>
+
+    <script>
+        // Map of array names to their actual data
+        const glyphArrays = {
+            'boxDrawingHexArray': boxDrawingHexArray,
+            'blockElementsHexArray': blockElementsHexArray,
+            'geometricShapesHexArray': geometricShapesHexArray,
+            'geometricShapesExtendedHexArray': geometricShapesExtendedHexArray,
+            'legacyComputingArray': legacyComputingArray,
+            'countingRodNumeralsHexArray': countingRodNumeralsHexArray,
+            'mathematicalOperatorsHexArray': mathematicalOperatorsHexArray,
+            'supplementalMathematicalOperatorsHexArray': supplementalMathematicalOperatorsHexArray,
+            'miscellaneousMathematicalSymbolsA': miscellaneousMathematicalSymbolsA,
+            'miscellaneousMathematicalSymbolsB': miscellaneousMathematicalSymbolsB,
+            'miscellaneaousTechnicalBlock': miscellaneaousTechnicalBlock,
+            'oghamBlock': oghamBlock,
+            'oghamBlockMoire': oghamBlockMoire,
+            'legacyComputingArrayMoire': legacyComputingArrayMoire,
+            'geometricShapesMoire': geometricShapesMoire,
+            'blockElementsMoire': blockElementsMoire,
+            'dominoTilesMoire': dominoTilesMoire,
+            'blockElementsCircleSquareMoire': blockElementsCircleSquareMoire,
+            'blockElementsCirclesMoire': blockElementsCirclesMoire,
+            'countingRodNumeralsHexArrayMoire': countingRodNumeralsHexArrayMoire,
+            'supplementalMathematicalOperatorsMoire': supplementalMathematicalOperatorsMoire,
+            'copticMoire': copticMoire,
+            'yiJingHexagramMoire': yiJingHexagramMoire,
+            'taiXuanJingSymbolsMoire': taiXuanJingSymbolsMoire,
+            'egyptianHeiroMoire': egyptianHeiroMoire,
+            'mahJongTilesMoire': mahJongTilesMoire
+        };
+
+        // Track selected glyphs by array
+        const selectedGlyphs = {};
+
+        // Initialize
+        createArrayCheckboxes();
+
+        function createArrayCheckboxes() {
+            const container = document.getElementById('arrayCheckboxes');
+
+            Object.keys(glyphArrays).forEach(arrayName => {
+                const item = document.createElement('div');
+                item.className = 'array-checkbox-item';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `array-${arrayName}`;
+                checkbox.dataset.array = arrayName;
+
+                checkbox.addEventListener('change', function() {
+                    renderGlyphs();
+                });
+
+                const label = document.createElement('label');
+                label.htmlFor = checkbox.id;
+                label.textContent = arrayName;
+
+                item.appendChild(checkbox);
+                item.appendChild(label);
+                container.appendChild(item);
+            });
+        }
+
+        function selectAllArrays() {
+            document.querySelectorAll('.array-checkbox-item input[type="checkbox"]').forEach(cb => {
+                cb.checked = true;
+            });
+            renderGlyphs();
+        }
+
+        function deselectAllArrays() {
+            document.querySelectorAll('.array-checkbox-item input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+            renderGlyphs();
+        }
+
+        function clearAllSelections() {
+            Object.keys(selectedGlyphs).forEach(key => {
+                delete selectedGlyphs[key];
+            });
+            renderGlyphs();
+            updateSelectionList();
+        }
+
+        function renderGlyphs() {
+            const output = document.getElementById('output');
+            output.innerHTML = '';
+
+            // Get checked arrays
+            const checkedArrays = Array.from(
+                document.querySelectorAll('.array-checkbox-item input[type="checkbox"]:checked')
+            ).map(cb => cb.dataset.array);
+
+            if (checkedArrays.length === 0) {
+                output.innerHTML = '<p style="color: #999; padding: 20px;">Select at least one glyph array type to view glyphs</p>';
+                return;
+            }
+
+            checkedArrays.forEach(arrayName => {
+                const glyphs = glyphArrays[arrayName];
+                if (!glyphs || glyphs.length === 0) return;
+
+                const section = document.createElement('div');
+                section.className = 'glyph-section';
+
+                const header = document.createElement('div');
+                header.className = 'glyph-section-header';
+                header.innerHTML = `
+                    <span>${arrayName} (${glyphs.length} glyphs)</span>
+                    <span style="font-size: 12px; font-weight: normal; color: #999;">
+                        ${selectedGlyphs[arrayName] ? selectedGlyphs[arrayName].length : 0} selected
+                    </span>
+                `;
+                section.appendChild(header);
+
+                const grid = document.createElement('div');
+                grid.className = 'glyph-grid';
+
+                glyphs.forEach(hexCode => {
+                    const item = document.createElement('div');
+                    item.className = 'glyph-item';
+                    item.dataset.array = arrayName;
+                    item.dataset.code = hexCode;
+
+                    // Check if already selected
+                    if (selectedGlyphs[arrayName] && selectedGlyphs[arrayName].includes(hexCode)) {
+                        item.classList.add('selected');
+                    }
+
+                    item.addEventListener('click', function() {
+                        toggleGlyphSelection(arrayName, hexCode, this);
+                    });
+
+                    const charSpan = document.createElement('span');
+                    charSpan.className = 'glyph-char';
+                    charSpan.innerHTML = `&#x${hexCode};`;
+
+                    const codeSpan = document.createElement('div');
+                    codeSpan.className = 'glyph-code';
+                    codeSpan.textContent = hexCode;
+
+                    item.appendChild(charSpan);
+                    item.appendChild(codeSpan);
+                    grid.appendChild(item);
+                });
+
+                section.appendChild(grid);
+                output.appendChild(section);
+            });
+        }
+
+        function toggleGlyphSelection(arrayName, hexCode, element) {
+            // Initialize array if needed
+            if (!selectedGlyphs[arrayName]) {
+                selectedGlyphs[arrayName] = [];
+            }
+
+            const index = selectedGlyphs[arrayName].indexOf(hexCode);
+
+            if (index > -1) {
+                // Remove from selection
+                selectedGlyphs[arrayName].splice(index, 1);
+                element.classList.remove('selected');
+
+                // Clean up empty arrays
+                if (selectedGlyphs[arrayName].length === 0) {
+                    delete selectedGlyphs[arrayName];
+                }
+            } else {
+                // Add to selection
+                selectedGlyphs[arrayName].push(hexCode);
+                element.classList.add('selected');
+            }
+
+            // Update the header count
+            const section = element.closest('.glyph-section');
+            const header = section.querySelector('.glyph-section-header span:last-child');
+            const count = selectedGlyphs[arrayName] ? selectedGlyphs[arrayName].length : 0;
+            header.textContent = `${count} selected`;
+
+            updateSelectionList();
+        }
+
+        function updateSelectionList() {
+            const textarea = document.getElementById('selectionList');
+
+            if (Object.keys(selectedGlyphs).length === 0) {
+                textarea.value = '';
+                return;
+            }
+
+            let output = '';
+
+            Object.keys(selectedGlyphs).sort().forEach((arrayName, idx) => {
+                const glyphs = selectedGlyphs[arrayName];
+                if (glyphs.length === 0) return;
+
+                output += `// ${arrayName} (${glyphs.length} glyphs)\n`;
+                output += `var ${arrayName} = [\n`;
+
+                // Format glyphs in rows of 10
+                for (let i = 0; i < glyphs.length; i += 10) {
+                    const chunk = glyphs.slice(i, i + 10);
+                    output += `    '${chunk.join("', '")}'`;
+                    if (i + 10 < glyphs.length) {
+                        output += ',';
+                    }
+                    output += '\n';
+                }
+
+                output += '];\n\n';
+            });
+
+            textarea.value = output;
+        }
+    </script>
+</body>
+</html>

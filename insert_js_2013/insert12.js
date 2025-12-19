@@ -1,6 +1,6 @@
 // Configuration
 var divCounter = 4;
-var glyphsPerDiv = 20;
+var glyphsPerDiv = 3;
 var baseFontSize = '12vw';
 
 var container = [];
@@ -81,11 +81,11 @@ function initStyle() {
         container[i].style.backgroundColor = mycolors2[Math.floor(Math.random() * mycolors2.length)];
         container[i].style.color = mycolors[Math.floor(Math.random() * mycolors.length)];
         container[i].style.textShadow = 
-            Math.round(Math.random() * 2 - 1) + 'px ' +
-            Math.round(Math.random() * 3 - 1) + 'px ' +
+            Math.round(Math.random() * 10 - 1) + 'px ' +
+            Math.round(Math.random() * 4 - 1) + 'px ' +
             mycolors2[Math.floor(Math.random() * mycolors2.length)];
         container[i].style.webkitTextFillColor = mycolors2[Math.floor(Math.random() * mycolors2.length)];
-        container[i].style.webkitTextStrokeWidth = (Math.random() * 2) + "px";
+        container[i].style.webkitTextStrokeWidth = (Math.random() * 5) + "px";
         container[i].style.webkitTextStrokeColor = mycolors[Math.floor(Math.random() * mycolors.length)];
     }
 }

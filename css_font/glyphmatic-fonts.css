@@ -236,9 +236,17 @@ ugaritic old persian runic SIL fonts KangxiRadicals AnatolianHeiro
   font-family: "Noto Sans Mongolian", sans-serif;
   font-weight: 400;
   font-style: normal;
+}
+
+/* Scale for background glyphs only */
+.bg-glyph.noto-sans-mongolian {
   transform: scale(0.6);
-  transform-origin: bottom center;
-  writing-mode: vertical-rl;  
+  transform-origin: center center;
+}
+
+/* Masks - no CSS transform (JavaScript handles it) */
+.mask-glyph.noto-sans-mongolian {
+  transform: none;
 }
 
 .noto-sans-soyombo {
@@ -2520,3 +2528,46 @@ body {
   letter-spacing: -.1rem;
 }
 
+/* Mongolian glyphs - rotate and scale for insert21 (default for both 41 and 42) */
+.u1880 {
+  transform: rotate(90deg) scale(0.6);
+  display: inline-block;
+  transform-origin: center center;
+}
+
+/* Index 41 (Manchu Om) needs larger scale in insert21 */
+.glyph-41.u1880 {
+  transform: rotate(90deg) scale(0.75);
+}
+
+/* Index 42 (Mongolian Om) needs smaller scale in insert21 */
+.glyph-42.u1880 {
+  transform: rotate(90deg) scale(0.65);
+}
+
+/* Background glyphs in insert22 */
+.bg-glyph.u1880 {
+  transform: rotate(90deg) scale(0.6);
+  transform-origin: center center;
+}
+
+/* Masks in insert22 - no CSS rotation (JavaScript handles it) */
+.mask-glyph.u1880 {
+  transform: none;
+}
+
+/* Phags-pa Om - rotate for insert21 and insert22 background */
+.ua85d {
+  transform: rotate(-90deg);
+  display: inline-block;
+  transform-origin: center center;
+}
+
+.bg-glyph.ua85d {
+  transform: rotate(-90deg);
+  transform-origin: center center;
+}
+
+.mask-glyph.ua85d {
+  transform: none;
+}

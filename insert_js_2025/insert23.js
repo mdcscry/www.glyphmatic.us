@@ -9,25 +9,47 @@ const CONFIG = {
 const DATA_VARIANTS = [
     {
         name: 'full',
+        type: 'static',
         hex: '../js_glyph/2025_block_17/block_hex_17.js',
         desc: '../js_glyph/2025_block_17/block_hex_desc_17.js',
+        skeleton: '../js_glyph/2025_block_17/block_lang_skeleton_17.js',
         footerText: 'Unicode',
         footerFont: 'Noto Sans Mono'
     },
     {
         name: 'no_punct',
+        type: 'static',
         hex: '../js_glyph/2025_block_17/block_hex_no_punct_17.js',
         desc: '../js_glyph/2025_block_17/block_hex_desc_no_punct_17.js',
+        skeleton: '../js_glyph/2025_block_17/block_lang_skeleton_17.js',
         footerText: 'Unicode Letters Numbers and Symbols',
+        footerFont: 'Noto Serif Mono'
+    },
+    {
+        name: 'variable',
+        type: 'variable',
+        hex: '../js_glyph/2025_block_17/block_hex_17.js',
+        desc: '../js_glyph/2025_block_17/block_hex_desc_17.js',
+        varFiles: {
+            axis: '../js_glyph/2025_var_blocks/var_axis.js',
+            skeleton: '../js_glyph/2025_var_blocks/var_block_skeleton.js',
+            blocks: '../js_glyph/2025_var_blocks/var_blocks.js',
+            blocksList: '../js_glyph/2025_var_blocks/var_blocks_list.js',
+            axisRanges: '../js_glyph/2025_var_blocks/font_axis_ranges.js',
+            langFont: '../js_glyph/2025_var_blocks/var_lang_font.js'
+        },
+        animationConfig: {
+            durationMin: 3000,
+            durationMax: 7500
+        },
+        footerText: 'Variable Font Unicode',
         footerFont: 'Noto Serif Mono'
     }
 ];
 
-const SKELETON_FILE = '../js_glyph/2025_block_17/block_lang_skeleton_17.js';
-
 // Randomly select a variant
 const selectedVariant = DATA_VARIANTS[Math.floor(Math.random() * DATA_VARIANTS.length)];
-console.log('Insert25 - Selected data variant:', selectedVariant.name);
+console.log('Insert23 - Selected data variant:', selectedVariant.name);
 
 // Load required scripts
 function loadScript(src) {
@@ -47,30 +69,78 @@ async function loadDependencies() {
         // Load core libraries first
         await loadScript('../js_funct/contrast_tester.js');
         await loadScript('../js_funct/colorpalette.js');
-        await loadScript('../js_funct/autoFont.js');
 
-        // Load data variant files
+        // Load appropriate font library based on variant type
+        if (selectedVariant.type === 'variable') {
+            await loadScript('../js_funct/autoFontVar.js');
+        } else {
+            await loadScript('../js_funct/autoFont.js');
+        }
+
+        // Load data files
         await loadScript(selectedVariant.hex);
         await loadScript(selectedVariant.desc);
-        await loadScript(SKELETON_FILE);
 
-        console.log('Insert25 - All dependencies loaded');
+        // Load skeleton or variable font files
+        if (selectedVariant.type === 'variable') {
+            await loadScript(selectedVariant.varFiles.axis);
+            await loadScript(selectedVariant.varFiles.skeleton);
+            await loadScript(selectedVariant.varFiles.blocks);
+            await loadScript(selectedVariant.varFiles.blocksList);
+            await loadScript(selectedVariant.varFiles.axisRanges);
+            await loadScript(selectedVariant.varFiles.langFont);
+        } else {
+            await loadScript(selectedVariant.skeleton);
+        }
+
+        console.log('Insert23 - All dependencies loaded');
     } catch (error) {
-        console.error('Insert25 - Error loading dependencies:', error);
+        console.error('Insert23 - Error loading dependencies:', error);
     }
 }
 
 // Wait for dependencies
 function jsWait() {
-    if (typeof blockHexWait === "undefined" ||
-        typeof blockHexDescWait === "undefined" ||
-        typeof blockHexSkeletonWait === "undefined" ||
-        typeof AutoFont === "undefined" ||
-        typeof ColorPalette === "undefined") {
+    let ready = false;
+
+    if (selectedVariant.type === 'variable') {
+        // Check for variable font dependencies
+        ready = typeof blockHexWait !== "undefined" &&
+                typeof blockHexDescWait !== "undefined" &&
+                typeof var_axesWait !== "undefined" &&
+                typeof var_blocksWait !== "undefined" &&
+                typeof var_blocks_listWait !== "undefined" &&
+                typeof var_block_langWait !== "undefined" &&
+                typeof var_lang_fontWait !== "undefined" &&
+                typeof font_axis_rangesWait !== "undefined" &&
+                typeof AutoFontVar !== "undefined" &&
+                typeof ColorPalette !== "undefined";
+    } else {
+        // Check for static font dependencies
+        ready = typeof blockHexWait !== "undefined" &&
+                typeof blockHexDescWait !== "undefined" &&
+                typeof blockHexSkeletonWait !== "undefined" &&
+                typeof AutoFont !== "undefined" &&
+                typeof ColorPalette !== "undefined";
+    }
+
+    if (!ready) {
         window.setTimeout(jsWait, 100);
     } else {
         init();
     }
+}
+
+// Animation state for variable font glyphs
+const glyphAnimations = [];
+
+// Animation helper functions
+function lerp(start, end, t) {
+    return start + (end - start) * t;
+}
+
+function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
 // Generate row of glyphs
@@ -79,21 +149,66 @@ function spectacular(start, numberOfGlyphs) {
 
     for (let i = start; i <= start + numberOfGlyphs; i++) {
         try {
-            const glyphData = AutoFont.generateGlyph(
-                block_hex,
-                block_hex_desc,
-                block_lang,
-                lang_font,
-                CONFIG.testMode,
-                {
-                    blocks: CONFIG.testBlocks,
-                    glyph: CONFIG.testGlyph
+            if (selectedVariant.type === 'variable') {
+                // Variable font mode
+                const glyphData = AutoFontVar.generateGlyph(
+                    block_hex,
+                    block_hex_desc,
+                    var_blocks_list,
+                    var_blocks,
+                    var_block_lang,
+                    var_lang_font,
+                    font_axis_ranges,
+                    CONFIG.testMode,
+                    { block: CONFIG.testBlocks ? CONFIG.testBlocks[0] : null }
+                );
+
+                if (!glyphData) {
+                    console.error(`Failed to generate variable glyph at position ${i}`);
+                    spansString += `<td><span id="sid${i}" style="color: red;" title="Error">?</span></td>`;
+                    continue;
                 }
-            );
 
-            const glyphColor = ColorPalette.randomPaletteGlyphColor();
+                const glyphColor = ColorPalette.randomPaletteGlyphColor();
 
-            spansString += `<td><span id="sid${i}" style="font-family: ${glyphData.fontStack}; color: ${glyphColor};" title="${glyphData.glyph}-${glyphData.desc}">&#x${glyphData.glyph};</span></td>`;
+                // Initialize animation state with randomization
+                const randomDuration = Math.random() * (selectedVariant.animationConfig.durationMax - selectedVariant.animationConfig.durationMin) + selectedVariant.animationConfig.durationMin;
+                const randomProgress = Math.random();
+
+                const animState = {
+                    glyphData,
+                    elementId: `sid${i}`,
+                    currentValues: { ...glyphData.axisValues },
+                    targetValues: { ...glyphData.axisValues },
+                    progress: randomProgress,
+                    duration: randomDuration,
+                    lastTime: Date.now()
+                };
+
+                glyphAnimations.push(animState);
+
+                // Apply desaturation filter if needed
+                const filterStyle = glyphData.needsDesaturation ? 'filter: grayscale(1); -webkit-filter: grayscale(1);filter:saturate(0);-webkit-filter:saturate(0)' : '';
+
+                spansString += `<td><span id="sid${i}" style="font-family: '${glyphData.fontFamily}', 'Noto Sans Georgian', 'Noto Sans Kannada','Noto Serif Armenian','Noto Emoji', 'Noto Sans Full'; color: ${glyphColor}; font-variation-settings: ${glyphData.fontVariationSettings}; ${filterStyle}" title="${glyphData.glyphHex}-${glyphData.description}">&#x${glyphData.glyphHex};</span></td>`;
+            } else {
+                // Static font mode
+                const glyphData = AutoFont.generateGlyph(
+                    block_hex,
+                    block_hex_desc,
+                    block_lang,
+                    lang_font,
+                    CONFIG.testMode,
+                    {
+                        blocks: CONFIG.testBlocks,
+                        glyph: CONFIG.testGlyph
+                    }
+                );
+
+                const glyphColor = ColorPalette.randomPaletteGlyphColor();
+
+                spansString += `<td><span id="sid${i}" style="font-family: ${glyphData.fontStack}; color: ${glyphColor};" title="${glyphData.glyph}-${glyphData.desc}">&#x${glyphData.glyph};</span></td>`;
+            }
         } catch (error) {
             console.error(`Error generating glyph at position ${i}:`, error);
             // Insert a placeholder span on error
@@ -103,9 +218,62 @@ function spectacular(start, numberOfGlyphs) {
     return spansString;
 }
 
+// Animate single glyph (for variable font mode)
+function animateGlyph(animState) {
+    const now = Date.now();
+    const deltaTime = now - animState.lastTime;
+    animState.lastTime = now;
+
+    // Update progress (use each glyph's own duration)
+    animState.progress += deltaTime / animState.duration;
+
+    if (animState.progress >= 1) {
+        // Transition complete, set new targets
+        animState.progress = 0;
+        animState.currentValues = { ...animState.targetValues };
+
+        // Randomize duration for next morph
+        animState.duration = Math.random() * (selectedVariant.animationConfig.durationMax - selectedVariant.animationConfig.durationMin) + selectedVariant.animationConfig.durationMin;
+
+        // Generate new random targets
+        for (const [tag, range] of Object.entries(animState.glyphData.axisRanges)) {
+            animState.targetValues[tag] = AutoFontVar.randomInRange(range.min, range.max);
+        }
+    } else {
+        // Interpolate between current and target
+        const t = easeInOutCubic(animState.progress);
+        for (const tag of Object.keys(animState.currentValues)) {
+            const current = animState.currentValues[tag];
+            const target = animState.targetValues[tag];
+            animState.currentValues[tag] = lerp(current, target, t);
+        }
+    }
+
+    // Apply font-variation-settings
+    const fontVariationSettings = Object.entries(animState.currentValues)
+        .map(([tag, val]) => `"${tag}" ${Math.round(val)}`)
+        .join(', ');
+
+    const element = document.getElementById(animState.elementId);
+    if (element) {
+        element.style.fontVariationSettings = fontVariationSettings;
+    }
+}
+
+// Main animation loop (for variable font mode)
+function animate() {
+    glyphAnimations.forEach(animState => animateGlyph(animState));
+    requestAnimationFrame(animate);
+}
+
 // Initialize the table and layout
 async function init() {
-    await AutoFont.init();
+    // Initialize appropriate font library
+    if (selectedVariant.type === 'variable') {
+        await AutoFontVar.init();
+    } else {
+        await AutoFont.init();
+    }
 
     // Create table structure
     createTableStructure();
@@ -146,20 +314,41 @@ async function init() {
     document.getElementById('row3').innerHTML = spectacular(numberOfGlyphs * 2, numberOfGlyphs - 1);
     document.getElementById('row4').innerHTML = spectacular(numberOfGlyphs * 3, numberOfGlyphs - 1);
     document.getElementById('row5').innerHTML = spectacular(numberOfGlyphs * 4, numberOfGlyphs - 1);
+
+    // Start animation loop for variable fonts
+    if (selectedVariant.type === 'variable') {
+        // Wait a bit for fonts to load, then start animation
+        setTimeout(() => {
+            animate();
+        }, 1000);
+    }
 }
 
 // Create the table structure dynamically
 function createTableStructure() {
-    // Add Google Font import for Noto Emoji
+    // Add Google Font imports
     const fontImport = document.createElement('style');
-    fontImport.textContent = `
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Emoji&display=swap');
+    if (selectedVariant.type === 'variable') {
+        fontImport.textContent = `
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Emoji&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wdth,wght@62.5..100,100..900&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wdth,wght@62.5..100,100..900&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Armenian:wdth,wght@62.5..100,100..900&display=swap');
+            @font-face {
+                font-family: 'Noto Sans Full';
+                src: url('../tff/NotoSans-Regular.ttf') format('truetype');
+            }
+        `;
+    } else {
+        fontImport.textContent = `
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Emoji&display=swap');
 
-        @font-face {
-            font-family: 'Noto Sans Full';
-            src: url('../tff/NotoSans-Regular.ttf') format('truetype');
-        }
-    `;
+            @font-face {
+                font-family: 'Noto Sans Full';
+                src: url('../tff/NotoSans-Regular.ttf') format('truetype');
+            }
+        `;
+    }
     document.head.appendChild(fontImport);
 
     // Add styles
@@ -268,5 +457,5 @@ function createTableStructure() {
 }
 
 // Start the loading process
-console.log('insert25.js loaded');
+console.log('insert23.js loaded');
 loadDependencies().then(() => jsWait());

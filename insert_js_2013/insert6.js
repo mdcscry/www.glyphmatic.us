@@ -90,7 +90,7 @@ function initDisplayState() {
     changeViewState = "noDisplay";
     
     for (i = 1; i <= divCounter; i++) {
-        for (sp = 1; sp <= 20; sp++) {
+        for (sp = 1; sp <= 3; sp++) {
             var result = getGlyph();
             span_sp = document.createElement("span");
             container[i].appendChild(span_sp);

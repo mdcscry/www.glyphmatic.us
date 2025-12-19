@@ -7,6 +7,7 @@ var gridSpacingX = 1.75; // horizontal multiplier for glyph size
 var gridSpacingY = 3 // vertical multiplier for glyph size
 var maskDissolveDuration = 5000; // milliseconds
 var glyphColorChangeDuration = 3000; // how often background glyphs change color
+var forceMaskIndex = 6; // Set to null for random, or glyph index (0-48) to force specific mask for testing
 
 var container;
 var svgContainer;
@@ -90,19 +91,23 @@ function createMask() {
     maskCounter++;
     var clipId = 'omMaskClip_' + maskCounter;
 
-    // Pick random Om for mask with error checking
-    var maskIndex, attempts = 0;
-    do {
-        maskIndex = Math.floor(Math.random() * myFontSet.length);
-        attempts++;
-    } while ((!myFontSet[maskIndex] || !myFontSet[maskIndex][0]) && attempts < 50);
+    // Pick random Om for mask with error checking (or use forced index if set)
+    var maskIndex;
+    if (forceMaskIndex !== null && forceMaskIndex >= 0 && forceMaskIndex < myFontSet.length) {
+        maskIndex = forceMaskIndex;
+        console.log('Using forced mask index:', maskIndex);
+    } else {
+        var attempts = 0;
+        do {
+            maskIndex = Math.floor(Math.random() * myFontSet.length);
+            attempts++;
+        } while ((!myFontSet[maskIndex] || !myFontSet[maskIndex][0]) && attempts < 50);
+    }
 
     if (!myFontSet[maskIndex] || !myFontSet[maskIndex][0]) {
         console.error('Failed to find valid mask glyph');
         return;
     }
-
-    //maskIndex=3;
 
     var maskCodepoint = myFontSet[maskIndex][0];
     var maskFontList = myFontSet[maskIndex].slice(1);
@@ -128,16 +133,27 @@ function createMask() {
         currentMaskXPosition = glyphStyle.maskXPosition;
     }
 
-    // Check if this glyph needs rotation (-90 degrees)
+    // Check if this glyph needs rotation
     var needsRotation = (maskCodepoint === 'xE5B' || // Thai Khomut
                          maskCodepoint === 'xA85D;&#xA861;&#xA84F' || // Phags-pa Om
                          maskCodepoint === 'x17DA'); // Khmer Avakrahasanya
 
-    console.log('Mask glyph:', glyphDescriptions[maskIndex], maskFont, needsRotation ? '(rotated -90°)' : '', 'clipId:', clipId,
+    // Mongolian needs opposite rotation (+90 instead of -90)
+    var needsRotationReverse = (maskCodepoint === 'x1880;&#x1823' || // Manchu Om
+                                maskCodepoint === 'x1880;&#x1823;&#x1838;&#x1820'); // Mongolian Om
+
+    var rotationLabel = needsRotation ? '(rotated -90°)' : (needsRotationReverse ? '(rotated +90°)' : '');
+    console.log('Mask glyph:', glyphDescriptions[maskIndex], maskFont, rotationLabel, 'clipId:', clipId,
                 'Style:', { size: currentMaskSize, y: currentMaskYPosition, x: currentMaskXPosition });
 
     // Update description label
     updateDescriptionLabel(maskIndex);
+
+    // Generate CSS classes for mask (same as background glyphs)
+    var maskCodepointClass = maskCodepoint.split(';')[0].replace(/^x/, '').toLowerCase();
+    maskCodepointClass = 'u' + maskCodepointClass;
+    var maskFontClassName = maskFont.toLowerCase().replace(/\s+/g, '-');
+    var maskClasses = 'mask-glyph ' + maskCodepointClass + ' ' + maskFontClassName;
 
     // Calculate center point for rotation in pixels.
     // This assumes currentMaskXPosition and currentMaskYPosition are percentage strings (e.g., "50%", "70%").
@@ -165,8 +181,15 @@ function createMask() {
     maskText.setAttribute('dominant-baseline', 'middle');
     maskText.setAttribute('font-size', currentMaskSize); // Use the specific font size for this glyph
     maskText.setAttribute('font-family', maskFont);
+    maskText.setAttribute('class', maskClasses); // Apply codepoint and font classes
+    // Use inline style with !important to override CSS .mask-glyph.u1880 { transform: none }
     if (needsRotation) {
-        maskText.setAttribute('transform', 'rotate(-90 ' + centerX + ' ' + centerY + ')'); // Rotate around glyph's center
+        maskText.style.setProperty('transform', 'rotate(-90deg)', 'important');
+        maskText.style.setProperty('transform-origin', currentMaskXPosition + ' ' + currentMaskYPosition, 'important');
+    } else if (needsRotationReverse) {
+        // Mongolian needs scale(0.6) to match background glyphs
+        maskText.style.setProperty('transform', 'rotate(90deg) scale(0.6)', 'important');
+        maskText.style.setProperty('transform-origin', currentMaskXPosition + ' ' + currentMaskYPosition, 'important');
     }
     maskText.innerHTML = maskGlyph;
 
@@ -182,7 +205,7 @@ function createMask() {
     // Create mask shape (colored) with same rotation
     var maskShape = document.createElementNS("http://www.w3.org/2000/svg", "text");
     maskShape.setAttribute('id', 'maskShape_' + maskCounter);
-    maskShape.setAttribute('class', 'maskShape');
+    maskShape.setAttribute('class', maskClasses); // Apply codepoint and font classes
     maskShape.setAttribute('x', currentMaskXPosition); // Use the specific X position for this glyph
     maskShape.setAttribute('y', currentMaskYPosition); // Use the specific Y position for this glyph
     maskShape.setAttribute('text-anchor', 'middle');
@@ -191,8 +214,14 @@ function createMask() {
     maskShape.setAttribute('font-family', maskFont);
     maskShape.setAttribute('fill', schemeColors.maskColor);
     maskShape.setAttribute('opacity', '0'); // Set initial opacity as attribute
+    // Use inline style with !important to override CSS
     if (needsRotation) {
-        maskShape.setAttribute('transform', 'rotate(-90 ' + centerX + ' ' + centerY + ')'); // Rotate around glyph's center
+        maskShape.style.setProperty('transform', 'rotate(-90deg)', 'important');
+        maskShape.style.setProperty('transform-origin', currentMaskXPosition + ' ' + currentMaskYPosition, 'important');
+    } else if (needsRotationReverse) {
+        // Mongolian needs scale(0.6) to match background glyphs
+        maskShape.style.setProperty('transform', 'rotate(90deg) scale(0.6)', 'important');
+        maskShape.style.setProperty('transform-origin', currentMaskXPosition + ' ' + currentMaskYPosition, 'important');
     }
     maskShape.innerHTML = maskGlyph;
     svgContainer.appendChild(maskShape);

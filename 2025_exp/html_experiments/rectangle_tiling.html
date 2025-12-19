@@ -9,61 +9,329 @@ body {
     overflow: hidden;
     background: #000;
 }
-#canvas {
-    display: block;
+#container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+.rectangle {
+    position: absolute;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    border: 2px solid #999;
+}
+.glyph {
+    text-align: center;
+    user-select: none;
+    display: inline-block;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    transition: none;
+}
+
+/* Animation for glyphs: fade out and twist away */
+@keyframes fade-out-twist {
+    0% {
+        opacity: 1;
+        transform: rotateY(0deg) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: rotateY(180deg) scale(0.7);
+    }
+}
+
+/* Animation for glyphs: fade in and twist back */
+@keyframes fade-in-twist {
+    0% {
+        opacity: 0;
+        transform: rotateY(180deg) scale(0.7);
+    }
+    100% {
+        opacity: 1;
+        transform: rotateY(360deg) scale(1);
+    }
+}
+
+/* Animation for glyphs: backflip up and away */
+@keyframes backflip-dive-out {
+    0% {
+        opacity: 1;
+
+    }
+    100% {
+        opacity: .1;
+        transform: 
+                rotateX(-180deg)   /* Flips upside down */
+                scale(0);      /* Makes it look smaller as it recedes */
+    }
+}
+
+/* Animation for glyphs: dive back up from bottom */
+@keyframes backflip-dive-in {
+    0% {
+        opacity: 0;
+        scale: (0);
+        transform: 
+        scale(0)
+        rotateX(-180deg) translateY(150%) scale(0.5);
+    }
+    100% {
+        opacity: 1;
+        transform: 
+        scale(1)
+        rotateX(-360deg) translateY(0) scale(1);
+    }
+}
+
+.glyph.is-fading-out {
+    animation: fade-out-twist 3s ease-in-out forwards;
+}
+
+.glyph.is-fading-in {
+    animation: fade-in-twist 3s ease-in-out forwards;
+}
+
+.glyph.is-diving-out {
+    animation: backflip-dive-out 15s ease-in-out forwards;
+}
+
+.glyph.is-diving-in {
+    animation: backflip-dive-in 4s ease-in-out forwards;
 }
 </style>
 </head>
 <body>
 
-<canvas id="canvas"></canvas>
+<div id="container"></div>
 
 <script>
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+// ============================================
+// CONFIGURATION - Adjust these settings
+// ============================================
+const CONFIG = {
+    // Number of colors to generate for the palette (4-10 recommended)
+    paletteSize: 7,
 
-// Set canvas to full window
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+    // Maximum subdivision depth (8-12 recommended, higher = more rectangles)
+    maxDepth: 4,
 
-// Color palette - can randomize these
-const allHtmlColors = [
-  "aliceblue", "antiquewhite", "aqua", "aquamarine", "azure", "beige", "bisque", "black", "blanchedalmond", "blue",
-  "blueviolet", "brown", "burlywood", "cadetblue", "chartreuse", "chocolate", "coral", "cornflowerblue", "cornsilk", "crimson",
-  "cyan", "darkblue", "darkcyan", "darkgoldenrod", "darkgray", "darkgreen", "darkgrey", "darkkhaki", "darkmagenta", "darkolivegreen",
-  "darkorange", "darkorchid", "darkred", "darksalmon", "darkseagreen", "darkslateblue", "darkslategray", "darkslategrey", "darkturquoise", "darkviolet",
-  "deeppink", "deepskyblue", "dimgray", "dimgrey", "dodgerblue", "firebrick", "floralwhite", "forestgreen", "fuchsia", "gainsboro",
-  "ghostwhite", "gold", "goldenrod", "gray", "green", "greenyellow", "grey", "honeydew", "hotpink", "indianred",
-  "indigo", "ivory", "khaki", "lavender", "lavenderblush", "lawngreen", "lemonchiffon", "lightblue", "lightcoral", "lightcyan",
-  "lightgoldenrodyellow", "lightgray", "lightgreen", "lightgrey", "lightpink", "lightsalmon", "lightseagreen", "lightskyblue", "lightslategray", "lightslategrey",
-  "lightsteelblue", "lightyellow", "lime", "limegreen", "linen", "magenta", "maroon", "mediumaquamarine", "mediumblue", "mediumorchid",
-  "mediumpurple", "mediumseagreen", "mediumslateblue", "mediumspringgreen", "mediumturquoise", "mediumvioletred", "midnightblue", "mintcream", "mistyrose", "moccasin",
-  "navajowhite", "navy", "oldlace", "olive", "olivedrab", "orange", "orangered", "orchid", "palegoldenrod", "palegreen",
-  "paleturquoise", "palevioletred", "papayawhip", "peachpuff", "peru", "pink", "plum", "powderblue", "purple", "rebeccapurple",
-  "red", "rosybrown", "royalblue", "saddlebrown", "salmon", "sandybrown", "seagreen", "seashell", "sienna", "silver",
-  "skyblue", "slateblue", "slategray", "slategrey", "snow", "springgreen", "steelblue", "tan", "teal", "thistle",
-  "tomato", "turquoise", "violet", "wheat", "white", "whitesmoke", "yellow", "yellowgreen"
+    // Minimum contrast ratio for glyphs (2.0-5.0 recommended)
+    minContrast: 4.0,
 
-];
+    // Maximum contrast ratio (4.0-7.0 recommended)
+    maxContrast: 7.0,
 
-function generateSimpleRandomPalette() {
-  // Define 'colors' array using a simple loop and push
-  const colors = [];
-  const totalColorsInSource = allHtmlColors.length;
+    // Maximum attempts to find contrasting color before giving up
+    maxAttempts: 50,
 
-  for (let i = 0; i < 7; i++) {
-    // Get a random index from the source array
-    const randomIndex = Math.floor(Math.random() * totalColorsInSource);
-    
-    // Push the color at that index into our new array
-    colors.push(allHtmlColors[randomIndex]);
-  }
+    // Use OKLCH for more harmonious colors (true/false)
+    useOKLCH: true,
 
-  return colors;
+    // ANIMATION TUNING
+    // Animation duration in seconds (higher = slower)
+    animationDuration: 15.0,
+
+    // How often to morph glyphs in seconds (higher = less frequent)
+    // Try 2-3 for testing, 9-12 for final
+    glyphMorphInterval: 3.0,
+
+    // Backflip animation settings
+    backflip: {
+        // Distance to travel up/down (percentage, 100 = full container height)
+        travelDistance: 150,
+
+        // Rotation degrees (180 = half flip, 360 = full flip)
+        rotationDegrees: 180,
+
+        // Scale at extremes (0.5 = half size, 1.0 = full size)
+        scaleMin: 0.5,
+
+        // Easing function presets:
+        // 'ease-in-out' - smooth acceleration and deceleration
+        // 'ease-in' - slow start, fast end
+        // 'ease-out' - fast start, slow end
+        // 'linear' - constant speed
+        // 'slow-ends' - custom: slow at both ends, fast in middle
+        easingOut: 'slow-ends',
+        easingIn: 'slow-ends'
+    }
+};
+// ============================================
+
+const container = document.getElementById('container');
+
+// Easing function mapping
+const EASING_PRESETS = {
+    'ease-in-out': 'ease-in-out',
+    'ease-in': 'ease-in',
+    'ease-out': 'ease-out',
+    'linear': 'linear',
+    'slow-ends': 'cubic-bezier(0.4, 0, 0.6, 1)' // Slow at both ends
+};
+
+// Apply animation config to CSS
+function applyAnimationConfig() {
+    const style = document.createElement('style');
+    const duration = CONFIG.animationDuration;
+    const dist = CONFIG.backflip.travelDistance;
+    const rot = CONFIG.backflip.rotationDegrees;
+    const scale = CONFIG.backflip.scaleMin;
+    const easingOut = EASING_PRESETS[CONFIG.backflip.easingOut] || CONFIG.backflip.easingOut;
+    const easingIn = EASING_PRESETS[CONFIG.backflip.easingIn] || CONFIG.backflip.easingIn;
+
+    style.textContent = `
+        .glyph.is-fading-out {
+            animation: fade-out-twist ${duration}s ease-in-out forwards !important;
+        }
+        .glyph.is-fading-in {
+            animation: fade-in-twist ${duration}s ease-in-out forwards !important;
+        }
+        .glyph.is-diving-out {
+            animation: backflip-dive-out ${duration}s ${easingOut} forwards !important;
+        }
+        .glyph.is-diving-in {
+            animation: backflip-dive-in ${duration}s ${easingIn} forwards !important;
+        }
+
+        @keyframes backflip-dive-out {
+            0% {
+                opacity: 1;
+                transform: rotateX(0deg) translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: rotateX(-${rot}deg) translateY(-${dist}%) scale(${scale});
+            }
+        }
+
+        @keyframes backflip-dive-in {
+            0% {
+                opacity: 0;
+                transform: rotateX(-${rot}deg) translateY(${dist}%) scale(${scale});
+            }
+            100% {
+                opacity: 1;
+                transform: rotateX(-${rot * 2}deg) translateY(0) scale(1);
+            }
+        }
+    `;
+    document.head.appendChild(style);
 }
 
-// Example usage:
-var colors = generateSimpleRandomPalette();
+// applyAnimationConfig(); // Commented out to allow direct CSS editing
+
+// OKLCH Color Generation Functions
+function generateOKLCH(lightness, chroma, hue) {
+    const l = lightness !== undefined ? lightness : 0.3 + Math.random() * 0.6;
+    const c = chroma !== undefined ? chroma : Math.random() * 0.3;
+    const h = hue !== undefined ? hue : Math.random() * 360;
+    return `oklch(${l} ${c} ${h})`;
+}
+
+function oklchToRgb(oklchString) {
+    const match = oklchString.match(/oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/);
+    if (!match) return null;
+
+    const L = parseFloat(match[1]);
+    const C = parseFloat(match[2]);
+    const H = parseFloat(match[3]);
+
+    const hRad = H * Math.PI / 180;
+    const a = C * Math.cos(hRad);
+    const b = C * Math.sin(hRad);
+
+    const l_ = L + 0.3963377774 * a + 0.2158037573 * b;
+    const m_ = L - 0.1055613458 * a - 0.0638541728 * b;
+    const s_ = L - 0.0894841775 * a - 1.2914855480 * b;
+
+    const l = l_ * l_ * l_;
+    const m = m_ * m_ * m_;
+    const s = s_ * s_ * s_;
+
+    let r = +4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
+    let g = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
+    let bl = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s;
+
+    const toSrgb = (val) => {
+        val = Math.max(0, Math.min(1, val));
+        return val <= 0.0031308
+            ? 12.92 * val
+            : 1.055 * Math.pow(val, 1/2.4) - 0.055;
+    };
+
+    return {
+        r: Math.round(toSrgb(r) * 255),
+        g: Math.round(toSrgb(g) * 255),
+        b: Math.round(toSrgb(bl) * 255)
+    };
+}
+
+// HTML color fallback
+const allHtmlColors = [
+  "aliceblue", "antiquewhite", "aqua", "aquamarine", "azure", "beige", "bisque", "black",
+  "blue", "blueviolet", "brown", "burlywood", "cadetblue", "chartreuse", "chocolate",
+  "coral", "cornflowerblue", "crimson", "cyan", "darkblue", "darkcyan", "darkgoldenrod",
+  "darkgray", "darkgreen", "darkkhaki", "darkmagenta", "darkolivegreen", "darkorange",
+  "darkorchid", "darkred", "darksalmon", "darkseagreen", "darkslateblue", "darkslategray",
+  "darkturquoise", "darkviolet", "deeppink", "deepskyblue", "dodgerblue", "firebrick",
+  "forestgreen", "fuchsia", "gold", "goldenrod", "gray", "green", "greenyellow", "hotpink",
+  "indianred", "indigo", "khaki", "lavender", "lawngreen", "lightblue", "lightcoral",
+  "lightgreen", "lightpink", "lightsalmon", "lightseagreen", "lightskyblue", "lightsteelblue",
+  "lime", "limegreen", "magenta", "maroon", "mediumaquamarine", "mediumblue", "mediumorchid",
+  "mediumpurple", "mediumseagreen", "mediumslateblue", "mediumspringgreen", "mediumturquoise",
+  "mediumvioletred", "midnightblue", "navy", "olive", "olivedrab", "orange", "orangered",
+  "orchid", "palegreen", "palevioletred", "peru", "pink", "plum", "powderblue", "purple",
+  "rebeccapurple", "red", "rosybrown", "royalblue", "saddlebrown", "salmon", "sandybrown",
+  "seagreen", "sienna", "silver", "skyblue", "slateblue", "slategray", "springgreen",
+  "steelblue", "tan", "teal", "thistle", "tomato", "turquoise", "violet", "yellowgreen"
+];
+
+function generatePalette() {
+    if (!CONFIG.useOKLCH) {
+        const colors = [];
+        for (let i = 0; i < CONFIG.paletteSize; i++) {
+            const randomIndex = Math.floor(Math.random() * allHtmlColors.length);
+            colors.push(allHtmlColors[randomIndex]);
+        }
+        return colors;
+    }
+
+    const palette = [];
+    let attempts = 0;
+    const maxTotalAttempts = CONFIG.paletteSize * 100;
+
+    while (palette.length < CONFIG.paletteSize && attempts < maxTotalAttempts) {
+        const color = generateOKLCH();
+
+        // Check if this color has acceptable contrast with existing colors
+        let acceptable = true;
+        for (const existingColor of palette) {
+            const contrast = getContrastRatio(color, existingColor);
+            if (contrast < CONFIG.minContrast || contrast > CONFIG.maxContrast) {
+                acceptable = false;
+                break;
+            }
+        }
+
+        if (acceptable) {
+            palette.push(color);
+        }
+        attempts++;
+    }
+
+    // Fallback: fill remaining slots with random OKLCH colors
+    while (palette.length < CONFIG.paletteSize) {
+        palette.push(generateOKLCH());
+    }
+
+    return palette;
+}
+
+var colors = generatePalette();
 console.log(colors);
 
 
@@ -75,8 +343,7 @@ const glyphs = [
   '◄', '◅', '◆', '◇', '◈', '◉', '◊', '○', '◌', '◍', '◎', '●', '◐', '◑', '◒', '◓', '◔', '◕',
   '◖', '◗', '◘', '◙', '◚', '◛', '◜', '◝', '◞', '◟', '◠', '◡', '◢', '◣', '◤', '◥', '◦', '◧',
   '◨', '◩', '◪', '◫', '◬', '◭', '◮', '◯', '◰', '◱', '◲', '◳', '◴', '◵', '◶', '◷', '◸', '◹',
-  '◺', '◻', //'◼', '◾'
-   '◽', '◿',
+  '◺', '◻', '◽', '◿',
   // Geometric Shapes Extended (U+1F780–U+1F7FF)
   '🞀', '🞁', '🞂', '🞃', '🞄', '🞅', '🞆', '🞇', '🞈', '🞉', '🞊', '🞋', '🞌', '🞍', '🞎', '🞏',
   '🞐', '🞑', '🞒', '🞓', '🞔', '🞕', '🞖', '🞗', '🞘', '🞙', '🞚', '🞛', '🞜', '🞝', '🞞', '🞟',
@@ -85,6 +352,7 @@ const glyphs = [
   '🟀', '🟁', '🟂', '🟃', '🟄', '🟅', '🟆', '🟇', '🟈', '🟉', '🟊', '🟋', '🟌', '🟍', '🟎', '🟏',
   '🟐', '🟑', '🟒', '🟓', '🟔', '🟕', '🟖', '🟗', '🟘', '🟙'
 ];
+
 function randomColor() {
     return colors[Math.floor(Math.random() * colors.length)];
 }
@@ -93,112 +361,309 @@ function randomGlyph() {
     return glyphs[Math.floor(Math.random() * glyphs.length)];
 }
 
-function subdivideRectangle(x, y, width, height, depth,colors) {
-    generateSimpleRandomPalette()
+// Contrast checking functions
+function getContrastRatio(color1, color2) {
+    const rgb1 = colorToRgb(color1);
+    const rgb2 = colorToRgb(color2);
+
+    if (!rgb1 || !rgb2) {
+        console.warn('Could not parse colors:', color1, color2);
+        return 1;
+    }
+
+    const lum1 = getLuminance(rgb1);
+    const lum2 = getLuminance(rgb2);
+
+    const lighter = Math.max(lum1, lum2);
+    const darker = Math.min(lum1, lum2);
+
+    return (lighter + 0.05) / (darker + 0.05);
+}
+
+function colorToRgb(color) {
+    if (color.startsWith('#')) {
+        return hexToRgb(color);
+    }
+
+    if (color.startsWith('oklch')) {
+        return oklchToRgb(color);
+    }
+
+    if (color.startsWith('hsl')) {
+        return hslToRgb(color);
+    }
+
+    if (color.startsWith('rgb')) {
+        return rgbStringToRgb(color);
+    }
+
+    // Handle named HTML colors - convert to hex first
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = color;
+    const hexColor = ctx.fillStyle;
+    return hexToRgb(hexColor);
+}
+
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+function hslToRgb(hslString) {
+    const match = hslString.match(/hsla?\((\d+),\s*(\d+)%,\s*(\d+)%/);
+    if (!match) return null;
+
+    let h = parseInt(match[1]) / 360;
+    let s = parseInt(match[2]) / 100;
+    let l = parseInt(match[3]) / 100;
+
+    let r, g, b;
+    if (s === 0) {
+        r = g = b = l;
+    } else {
+        const hue2rgb = (p, q, t) => {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1/6) return p + (q - p) * 6 * t;
+            if (t < 1/2) return q;
+            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            return p;
+        };
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+    }
+
+    return {
+        r: Math.round(r * 255),
+        g: Math.round(g * 255),
+        b: Math.round(b * 255)
+    };
+}
+
+function rgbStringToRgb(rgbString) {
+    const match = rgbString.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    if (!match) return null;
+
+    return {
+        r: parseInt(match[1]),
+        g: parseInt(match[2]),
+        b: parseInt(match[3])
+    };
+}
+
+function getLuminance(rgb) {
+    const [r, g, b] = [rgb.r, rgb.g, rgb.b].map(val => {
+        val = val / 255;
+        return val <= 0.03928 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+// Get a color with good contrast against the background
+function getContrastingColor(bgColor, minContrast = CONFIG.minContrast) {
+    let attempts = 0;
+    let fgColor;
+
+    do {
+        fgColor = randomColor();
+        attempts++;
+        // Prevent infinite loop - after maxAttempts, just return what we have
+        if (attempts > CONFIG.maxAttempts) break;
+    } while (getContrastRatio(bgColor, fgColor) < minContrast);
+
+    return fgColor;
+}
+
+function subdivideRectangle(x, y, width, height, depth, maxDepth, parentElement) {
+    // Ensure minimum depth before allowing stops
+    const minDepth = maxDepth - 5;
+    const canStop = depth <= minDepth;
+
     // Base case: stop subdividing
-    if (depth === 0 || (width < 60 && height < 60) || Math.random() < 0.15) {
-        // Draw background
-        ctx.fillStyle = randomColor();
-        ctx.fillRect(x, y, width, height);
-        
-        // Draw border
-        ctx.strokeStyle = '#999';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x, y, width, height);
-        
+    if (depth === 0 || (canStop && ((width < 60 && height < 60) || Math.random() < 0.15))) {
+        // Create rectangle div
+        const rect = document.createElement('div');
+        rect.className = 'rectangle';
+        rect.style.left = x + 'px';
+        rect.style.top = y + 'px';
+        rect.style.width = width + 'px';
+        rect.style.height = height + 'px';
+
+        // Set background color
+        const bgColor = randomColor();
+        rect.style.backgroundColor = bgColor;
+
         // Check aspect ratio to determine if we should use multiple glyphs
         const aspectRatio = width / height;
-        
+
         if (aspectRatio > 2.2) {
             // Wide rectangle - multiple glyphs horizontally
             const numGlyphs = Math.floor(width / (height * 0.8));
             const fontSize = height * 0.65;
-            ctx.font = `${fontSize}px Arial`;
-            ctx.fillStyle = randomColor();
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
-            const spacing = width / (numGlyphs + 1);
-            for (let i = 1; i <= numGlyphs; i++) {
-                const glyph = randomGlyph();
-                ctx.fillText(glyph, x + spacing * i, y + height/2);
+            const fgColor = getContrastingColor(bgColor);
+
+            rect.style.flexDirection = 'row';
+            rect.style.justifyContent = 'space-around';
+
+            for (let i = 0; i < numGlyphs; i++) {
+                const span = document.createElement('span');
+                span.className = 'glyph';
+                span.textContent = randomGlyph();
+                span.style.fontSize = fontSize + 'px';
+                span.style.color = fgColor;
+                span.style.lineHeight = '1';
+                rect.appendChild(span);
             }
         } else if (aspectRatio < 0.45) {
             // Tall rectangle - multiple glyphs vertically
             const numGlyphs = Math.floor(height / (width * 0.8));
             const fontSize = width * 0.65;
-            ctx.font = `${fontSize}px Arial`;
-            ctx.fillStyle = randomColor();
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
-            const spacing = height / (numGlyphs + 1);
-            for (let i = 1; i <= numGlyphs; i++) {
-                const glyph = randomGlyph();
-                ctx.fillText(glyph, x + width/2, y + spacing * i);
+            const fgColor = getContrastingColor(bgColor);
+
+            rect.style.flexDirection = 'column';
+            rect.style.justifyContent = 'space-around';
+
+            for (let i = 0; i < numGlyphs; i++) {
+                const span = document.createElement('span');
+                span.className = 'glyph';
+                span.textContent = randomGlyph();
+                span.style.fontSize = fontSize + 'px';
+                span.style.color = fgColor;
+                span.style.lineHeight = '1';
+                rect.appendChild(span);
             }
         } else {
             // Square-ish - single glyph
             const fontSize = Math.min(width, height) * 0.65;
-            ctx.font = `${fontSize}px Arial`;
-            ctx.fillStyle = randomColor();
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
-            const glyph = randomGlyph();
-            ctx.fillText(glyph, x + width/2, y + height/2);
+            const fgColor = getContrastingColor(bgColor);
+
+            const span = document.createElement('span');
+            span.className = 'glyph';
+            span.textContent = randomGlyph();
+            span.style.fontSize = fontSize + 'px';
+            span.style.color = fgColor;
+            span.style.lineHeight = '1';
+            rect.appendChild(span);
         }
-        
+
+        parentElement.appendChild(rect);
         return;
     }
-    
+
     // Decide whether to split horizontally or vertically
-    // Prefer horizontal splits for wide rectangles, vertical for tall ones
     const aspectRatio = width / height;
     let splitHorizontally;
-    
+
     if (aspectRatio > 1.5) {
-        splitHorizontally = true; // Wide rectangle - split vertically into left/right
+        splitHorizontally = true;
     } else if (aspectRatio < 0.67) {
-        splitHorizontally = false; // Tall rectangle - split horizontally into top/bottom
+        splitHorizontally = false;
     } else {
-        splitHorizontally = Math.random() < 0.5; // Square-ish - random
+        splitHorizontally = Math.random() < 0.5;
     }
-    
+
     if (splitHorizontally) {
         // Split vertically (into left and right parts)
-        const splitRatio = 0.3 + Math.random() * 0.4; // Between 0.3 and 0.7
+        const splitRatio = 0.3 + Math.random() * 0.4;
         const splitX = width * splitRatio;
-        
-        subdivideRectangle(x, y, splitX, height, depth - 1);
-        subdivideRectangle(x + splitX, y, width - splitX, height, depth - 1);
+
+        subdivideRectangle(x, y, splitX, height, depth - 1, maxDepth, parentElement);
+        subdivideRectangle(x + splitX, y, width - splitX, height, depth - 1, maxDepth, parentElement);
     } else {
         // Split horizontally (into top and bottom parts)
         const splitRatio = 0.3 + Math.random() * 0.4;
         const splitY = height * splitRatio;
-        
-        subdivideRectangle(x, y, width, splitY, depth - 1);
-        subdivideRectangle(x, y + splitY, width, height - splitY, depth - 1);
+
+        subdivideRectangle(x, y, width, splitY, depth - 1, maxDepth, parentElement);
+        subdivideRectangle(x, y + splitY, width, height - splitY, depth - 1, maxDepth, parentElement);
     }
 }
 
-// Generate the tiling
-subdivideRectangle(0, 0, canvas.width, canvas.height, 8);
+function generate() {
+    // Clear container
+    container.innerHTML = '';
+
+    // Generate new palette
+    colors = generatePalette();
+
+    // Generate the tiling
+    subdivideRectangle(0, 0, window.innerWidth, window.innerHeight, CONFIG.maxDepth, CONFIG.maxDepth, container);
+}
+
+// Initial generation
+generate();
 
 // Regenerate on click
-canvas.addEventListener('click', () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    colors = generateSimpleRandomPalette();
-    subdivideRectangle(0, 0, canvas.width, canvas.height, 8,colors);
-});
+container.addEventListener('click', generate);
 
 // Handle window resize
 window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    gcolors = generateSimpleRandomPalette();
-    subdivideRectangle(0, 0, canvas.width, canvas.height, 8,colors);
+    generate();
 });
+
+// ============================================
+// GLYPH MORPHING ANIMATION
+// ============================================
+
+function morphGlyph(glyphElement) {
+    // TESTING: Force dive animation to see slow fade
+    const useDive = true; // was: Math.random() < 0.5;
+    const outClass = useDive ? 'is-diving-out' : 'is-fading-out';
+    const inClass = useDive ? 'is-diving-in' : 'is-fading-in';
+    const duration = CONFIG.animationDuration * 1000; // Convert to milliseconds
+
+    // Start fade-out/dive-out animation
+    glyphElement.classList.add(outClass);
+
+    // At the midpoint of the animation, swap the glyph
+    setTimeout(() => {
+        const newGlyph = randomGlyph();
+        glyphElement.textContent = newGlyph;
+
+        // Remove out class and add in class
+        glyphElement.classList.remove(outClass);
+        glyphElement.classList.add(inClass);
+
+        // Clean up in class after animation completes
+        setTimeout(() => {
+            glyphElement.classList.remove(inClass);
+        }, duration); // Match the animation duration
+
+    }, duration / 2); // Half of the animation duration
+}
+
+function startGlyphMorphing() {
+    // Randomly morph glyphs at intervals
+    setInterval(() => {
+        const allGlyphs = document.querySelectorAll('.glyph');
+        if (allGlyphs.length === 0) return;
+
+        // Pick a random number of glyphs to morph (1-5)
+        const numToMorph = 1 + Math.floor(Math.random() * Math.min(5, allGlyphs.length));
+
+        for (let i = 0; i < numToMorph; i++) {
+            const randomIndex = Math.floor(Math.random() * allGlyphs.length);
+            const glyphElement = allGlyphs[randomIndex];
+
+            // Add a random delay before morphing this glyph
+            const delay = Math.random() * 2000;
+            setTimeout(() => {
+                morphGlyph(glyphElement);
+            }, delay);
+        }
+    }, CONFIG.glyphMorphInterval * 1000); // Convert seconds to milliseconds
+}
+
+// Start the morphing animation after initial generation
+startGlyphMorphing();
 
 </script>
 

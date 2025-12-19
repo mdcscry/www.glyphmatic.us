@@ -270,3 +270,27 @@ var mycolors = [
     var allMoireCircleSquareSymbols = [
          ...blockElementsCircleSquareMoire,
     ];
+
+    // blockElementsHexArray (9 glyphs)
+    var blockElementsBlockArray = [
+        '2586', '2587', '2588', '2589', '258A', '2585', '2584', '2583', '2582'
+    ];
+
+    // legacyComputingArray (7 glyphs)
+    var legacyComputingBlockArray = [
+        '1FB0E', '1FB34', '1FB38', '1FB6B', '1FB69', '1FB6A', '1FB68','1FB90'
+    ];
+
+    var legacyComputingExtendedArray = [
+        '1FB0D', '1FB0C', '1FB0A', '1FB06', '1FB15', '1FB19', '1FB1C', '1FB1D', '1FB2A', '1FB37',
+        '1FB30', '1FB3B', '1FB3A', '1FB41', '1FB42', '1FB43', '1FB44', '1FB45', '1FB46', '1FB4C',
+        '1FB4D', '1FB4E', '1FB4F', '1FB5F', '1FB5E', '1FB5D', '1FB56', '1FB55', '1FB54', '1FB53',
+        '1FB52', '1FB51', '1FB50', '1FB69', '1FB6B', '1FB61', '1FB60'
+    ];
+
+
+    var allBlockSymbols = [
+        ...blockElementsBlockArray,
+        ...legacyComputingBlockArray, 
+        ...legacyComputingExtendedArray
+    ];
