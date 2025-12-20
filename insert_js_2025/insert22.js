@@ -7,7 +7,7 @@ var gridSpacingX = 1.75; // horizontal multiplier for glyph size
 var gridSpacingY = 3 // vertical multiplier for glyph size
 var maskDissolveDuration = 5000; // milliseconds
 var glyphColorChangeDuration = 3000; // how often background glyphs change color
-var forceMaskIndex = 6; // Set to null for random, or glyph index (0-48) to force specific mask for testing
+var forceMaskIndex = null; // Set to null for random, or glyph index (0-48) to force specific mask for testing
 
 var container;
 var svgContainer;
