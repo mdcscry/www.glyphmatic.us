@@ -149,9 +149,10 @@ const INSERT_CONFIG = {
         23: {
             controls: {
                 style: false,      // △STYLE button
-                html: true,       // △HTML button
-                resize: true,     // +/- Size buttons
-                moveUpDown: false // Move up/down (currently disabled globally)
+                html: false,       // △HTML button
+                resize: false,     // +/- Size buttons
+                moveUpDown: false, // Move up/down (currently disabled globally)
+                description: 'The Macroglyph uses the autofont engine to selects from as many as 270 blocks and 37k glyphs.<br><br> Versions with fewer glyphs include Letters Symbols and Numbers Only, Combining forms and a Variable Font Morphing Version. <br><br> You can use 1,2,3,4 to see the versions and b,w,r,g,t to see the palettes.<br><br> Every glyph is styled with its font selection. Hover to see glyph codepoint and description.'
             },
             watermarks: {
                 count: 0,
