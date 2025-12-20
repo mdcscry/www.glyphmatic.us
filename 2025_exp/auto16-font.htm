@@ -113,6 +113,8 @@
 			if (storedVariantIndex !== null && DATA_VARIANTS[storedVariantIndex]) {
 				selectedVariant = DATA_VARIANTS[storedVariantIndex];
 				console.log('Using stored variant:', selectedVariant.name);
+				// Clear immediately so next refresh is random
+				sessionStorage.removeItem('selectedVariantIndex');
 			} else {
 				selectedVariant = DATA_VARIANTS[Math.floor(Math.random() * DATA_VARIANTS.length)];
 				console.log('Randomly selected variant:', selectedVariant.name);
@@ -175,7 +177,7 @@
 		const CONFIG = {
 			testMode: false,
 			testGlyph: null, //'1F937',
-			testBlocks: ["Grantha","Zanabazar Square"]
+			testBlocks: ["Sinhala"]
 		};
 
 		document.body.addEventListener('touchstart', function() {

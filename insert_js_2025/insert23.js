@@ -1,8 +1,8 @@
 // Configuration
 const CONFIG = {
     testMode: false,
-    testGlyph: '1F937',
-    testBlocks: ["Supplemental Symbols and Pictographs"]
+    testGlyph: null,
+    testBlocks: ["Gujarati"]
 };
 
 // Data variant selection
@@ -63,6 +63,8 @@ const storedVariantIndex = sessionStorage.getItem('insert23_selectedVariantIndex
 if (storedVariantIndex !== null && DATA_VARIANTS[storedVariantIndex]) {
     selectedVariant = DATA_VARIANTS[storedVariantIndex];
     console.log('Insert23 - Using stored variant:', selectedVariant.name);
+    // Clear immediately so next refresh is random
+    sessionStorage.removeItem('insert23_selectedVariantIndex');
 } else {
     selectedVariant = DATA_VARIANTS[Math.floor(Math.random() * DATA_VARIANTS.length)];
     console.log('Insert23 - Randomly selected variant:', selectedVariant.name);
