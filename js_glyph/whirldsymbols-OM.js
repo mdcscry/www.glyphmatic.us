@@ -77,7 +77,7 @@ whirldFontArray=[
 // OM SYMBOLS - All Om and Om-related symbols
 myFontSet[0]=['x0950','Akshar Unicode','Annapurna SIL','Aparajita','Arial Unicode MS','Code2000','Kokila','Mangal','Siddhanta','Utsaah','Jaini','Jaini Purva','Noto Sans Devanagari']; // Devanagari Om
 myFontSet[1]=['x0AD0','Arial Unicode MS','Code2000','Shruti','Noto Serif Gujarati Full','Noto Sans Gujarati Full']; // Gujarati Om
-myFontSet[2]=['x006F;&#x030A;&#x006D','Akshar Unicode','Siddhanta','Noto Sans','Noto Serif','DejaVu','Arial Unicode MS','Everson Mono','Quivira','Segoe UI Symbol','Puppies Play','Tangerine','Quintessential','Kings']; // Latin Om (composite)
+myFontSet[2]=['x014C;&#x1E43;','Noto Sans','Noto Serif','DejaVu','Quivira','Calistoga','Langar','Pattaya','Tac One','Unbounded','Young Serif','Agbalumo','Fruktur','Kavoon','Braah One','Coiny']; // Latin Om (composite)
 myFontSet[3]=['x0A74','Arial Unicode MS','Code2000','Raavi','Noto Sans Gurmukhi','Noto Serif Gurmukhi']; // Ik Onkar (Gurmukhi)
 myFontSet[4]=['x1F549','Symbola','Noto Sans Symbols',"Open Moji Black",'Twitter Color Emoji','Noto Emoji']; // Devanagari Om symbol
 myFontSet[5]=['x0F00','Arial Unicode MS','Tibetan Machine Uni','Monloam_Uni','DDC_Uchen','Kailasa','YagpoSambhotaUni','Qomolangma-Woodblock','Qomolangma-Art','Qomolangma-Edict','BabelStoneTibetan','Qomolangma-Drutsa','Qomolangma-Chuyig','Qomolangma-Betsu','Noto Sans Tibetan','Noto Serif Tibetan']; // Tibetan Om
@@ -133,6 +133,10 @@ myFontSet[50]=['x11011;&#x1102B','Noto Sans Brahmi']; // Brahmi Om
 myFontSet[51]=['xA8FD;','Jaini','Jaini Purva']; // Jaini Om
 myFontSet[52]=['x0950;','Nithya Ranjana DU']; // Ranjana Devanagari Om
 myFontSet[53]=['x11449;','Nithya Ranjana NU']; // Ranjana Newa Om
+myFontSet[54]=['x0913;&#x092E;&#x094D;','Akshar Unicode','Annapurna SIL','Aparajita','Arial Unicode MS','Code2000','Kokila','Mangal','Siddhanta','Utsaah','Jaini','Jaini Purva','Noto Sans Devanagari']; // Devanagari Om
+//myFontSet[55]=['x014C;&#x006D;&#x0310;','Siddhanta','Everson Mono','Quivira','Fascinate Inline']; // Latin Om (composite)
+
+
 var glyphDescriptions = [];
 
 glyphDescriptions[0] = 'Devanagari Om';
@@ -189,6 +193,8 @@ glyphDescriptions[50] = 'Brahmi Om';
 glyphDescriptions[51] = 'Jain Om';
 glyphDescriptions[52] = 'Ranjana Devanagari Om';
 glyphDescriptions[53] = 'Ranjana Newa Om';
+glyphDescriptions[54] = 'Devanagari Om';
+//glyphDescriptions[55] = 'Latin Om';
 
 const defaultMaskStyle = {
     maskSize: '40vw',
@@ -280,7 +286,7 @@ const outlierDefinitions = [
         maskSize: '50vw',
         maskYPosition: '60%',
         maskXPosition: '50%',
-        appliesToGlyphIndices: [0, 13, 24, 37, 38, 50]
+        appliesToGlyphIndices: [0, 13, 24, 37, 38, 50, 54]
     },
 
     // --- LOW Placement (High Y-Position: 65% - 78%) ---

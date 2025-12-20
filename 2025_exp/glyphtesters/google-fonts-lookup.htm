@@ -195,15 +195,16 @@
                 return;
             }
 
-            if (typeof coverageData === 'undefined' || Object.keys(coverageData).length === 0) {
+            if (typeof coveragedata === 'undefined' || !coveragedata || coveragedata.length === 0) {
                 resultsDiv.innerHTML = `<span class="error">No coverage data loaded. Make sure google_font_range_coverage.js is loaded.</span>`;
                 return;
             }
 
             // Find matching fonts
             const matches = [];
+            const covData = coveragedata[0]; // Extract the object from the array
 
-            for (const [fontName, data] of Object.entries(coverageData)) {
+            for (const [fontName, data] of Object.entries(covData)) {
                 for (const [start, end] of data.ranges) {
                     if (codepoint >= start && codepoint <= end) {
                         matches.push({

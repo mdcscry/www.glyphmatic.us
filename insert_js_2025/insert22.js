@@ -7,7 +7,7 @@ var gridSpacingX = 1.75; // horizontal multiplier for glyph size
 var gridSpacingY = 3 // vertical multiplier for glyph size
 var maskDissolveDuration = 5000; // milliseconds
 var glyphColorChangeDuration = 3000; // how often background glyphs change color
-var forceMaskIndex = null; // Set to null for random, or glyph index (0-48) to force specific mask for testing
+var forceMaskIndex = 2; // Set to null for random, or glyph index (0-48) to force specific mask for testing
 
 var container;
 var svgContainer;
@@ -30,7 +30,14 @@ function jsWait() {
 
 function init() {
     // Randomly pick scheme
-    currentScheme = Math.random() < 0.5 ? 'A' : 'B';
+    var rand = Math.random();
+    if (rand < 0.33) {
+        currentScheme = 'A';
+    } else if (rand < 0.66) {
+        currentScheme = 'B';
+    } else {
+        currentScheme = 'C';
+    }
     console.log('Selected Scheme:', currentScheme);
     
     generateSchemeColors();
@@ -48,21 +55,41 @@ function generateSchemeColors() {
         schemeColors.backgroundColor = `hsl(${maskHue}, 80%, 40%)`; // slightly lighter
         schemeColors.brightness = 55; // vivid, not pastel
         schemeColors.saturation = 95; // high saturation
-        
-    } else {
+
+    } else if (currentScheme === 'B') {
         // Scheme B: Light grayscale mask
         var grayValue = Math.floor(Math.random() * 30 + 70); // 70-100% lightness
         schemeColors.maskColor = `hsl(0, 0%, ${grayValue}%)`; // light gray
         schemeColors.backgroundColor = `hsl(0, 0%, ${grayValue - 10}%)`; // slightly darker
-        
+
         // Narrow hue range for background glyphs
         var baseHue = Math.floor(Math.random() * 360);
         schemeColors.baseHue = baseHue;
         schemeColors.hueRange = 40; // +/- 20 degrees
         schemeColors.saturation = 80;
         schemeColors.brightness = 40;
+
+    } else {
+        // Scheme C: Grayscale variations
+        var subVariant = Math.random() < 0.5 ? 'C1' : 'C2';
+
+        if (subVariant === 'C1') {
+            // C1: Light mask on dark background
+            var maskLightness = Math.floor(Math.random() * 15 + 85); // 85-100% (white to light gray)
+            var bgLightness = Math.floor(Math.random() * 15); // 0-15% (black to dark charcoal)
+            schemeColors.maskColor = `hsl(0, 0%, ${maskLightness}%)`;
+            schemeColors.backgroundColor = `hsl(0, 0%, ${bgLightness}%)`;
+        } else {
+            // C2: Dark mask on light background
+            var maskLightness = Math.floor(Math.random() * 15); // 0-15% (black to dark charcoal)
+            var bgLightness = Math.floor(Math.random() * 15 + 85); // 85-100% (white to light gray)
+            schemeColors.maskColor = `hsl(0, 0%, ${maskLightness}%)`;
+            schemeColors.backgroundColor = `hsl(0, 0%, ${bgLightness}%)`;
+        }
+
+        schemeColors.subVariant = subVariant;
     }
-    
+
     console.log('Scheme colors:', schemeColors);
 }
 
@@ -274,10 +301,21 @@ function createBackgroundGlyph(parent, x, y) {
         // Random hue, high saturation, vivid
         var hue = Math.floor(Math.random() * 360);
         color = `hsl(${hue}, ${schemeColors.saturation}%, ${schemeColors.brightness}%)`;
-    } else {
+    } else if (currentScheme === 'B') {
         // Within narrow hue range
         var hue = schemeColors.baseHue + (Math.random() * schemeColors.hueRange - schemeColors.hueRange / 2);
         color = `hsl(${hue}, ${schemeColors.saturation}%, ${schemeColors.brightness}%)`;
+    } else {
+        // Scheme C: Grayscale variations
+        if (schemeColors.subVariant === 'C1') {
+            // C1: White mask on black background - dark glyphs
+            var lightness = Math.floor(Math.random() * 30);
+            color = `hsl(0, 0%, ${lightness}%)`;
+        } else {
+            // C2: Black mask on white background - light glyphs
+            var lightness = Math.floor(Math.random() * 30 + 70);
+            color = `hsl(0, 0%, ${lightness}%)`;
+        }
     }
     
 // Generate the .u#### class from the codepoint
@@ -306,8 +344,10 @@ parent.appendChild(text);
     // Start color animation
     if (currentScheme === 'A') {
         animateGlyphColorA(text);
-    } else {
+    } else if (currentScheme === 'B') {
         animateGlyphColorB(text);
+    } else {
+        animateGlyphColorC(text);
     }
 }
 
@@ -333,6 +373,21 @@ function animateGlyphColorB(element) {
         var color = `hsl(${hue}, ${schemeColors.saturation}%, ${schemeColors.brightness}%)`;
         element.setAttribute('fill', color);
     }, glyphColorChangeDuration / 2); // More frequent changes
+}
+
+function animateGlyphColorC(element) {
+    // Scheme C: Grayscale twinkle
+    setInterval(function() {
+        if (schemeColors.subVariant === 'C1') {
+            // C1: Dark grays (0-30% lightness)
+            var lightness = Math.floor(Math.random() * 30);
+            element.setAttribute('fill', `hsl(0, 0%, ${lightness}%)`);
+        } else {
+            // C2: Light grays (70-100% lightness)
+            var lightness = Math.floor(Math.random() * 30 + 70);
+            element.setAttribute('fill', `hsl(0, 0%, ${lightness}%)`);
+        }
+    }, glyphColorChangeDuration);
 }
 
 function startMaskDissolve() {
@@ -459,10 +514,13 @@ function updateDescriptionLabel(maskIndex) {
     if (currentScheme === 'A') {
         // Scheme A: Use contrasting color (white on dark background)
         descriptionLabel.style.color = getContrastingTextColor(schemeColors.backgroundColor);
-    } else {
+    } else if (currentScheme === 'B') {
         // Scheme B: Use a color from the narrow hue range
         var hue = schemeColors.baseHue + (Math.random() * schemeColors.hueRange - schemeColors.hueRange / 2);
         descriptionLabel.style.color = `hsl(${hue}, ${schemeColors.saturation}%, ${schemeColors.brightness}%)`;
+    } else {
+        // Scheme C: Use contrasting color
+        descriptionLabel.style.color = getContrastingTextColor(schemeColors.backgroundColor);
     }
 }
 

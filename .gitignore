@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-*.lock
-*.toml
-=======
 poetry.lock
 pyproject.toml
->>>>>>> master
+google_font_range_coverage.js
