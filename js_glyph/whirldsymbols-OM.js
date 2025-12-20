@@ -1,11 +1,8 @@
 myFontSet=[];
 
-//𑀑: U+11011 — BRAHMI LETTER O
-//𑀫: U+1102B — BRAHMI LETTER MA
 
-// ا: U+0627 ARABIC LETTER ALEF
-// و: U+0648 ARABIC LETTER WAW
-// م: U+0645 ARABIC LETTER MEEM 
+
+
 
 
 whirldFontArray=[
@@ -127,8 +124,15 @@ myFontSet[45]=['xA98E;&#xA9B4;&#xA980','Noto Sans Javanese']; // Javanese Om (�
 myFontSet[46]=['x0D95;&#x0DB8','Noto Sans Sinhala']; //Sinhala Om (ඕම්)
 myFontSet[47]=['x0D95;&#x0D82','Noto Sans Sinhala']; //Sinhala Om (with circle)
 myFontSet[48]=['x0BD0','Latha','Noto Sans Tamil']; // Tamil Om
-
-
+myFontSet[49]=['x0627;&#x0648;&#x0645;','Noto Sans Arabic','Amiri','Paktype Tehreer','PakType Ajrak',
+'_PDMS_Saleem_QuranFont','jameel noori nastaleeq','fajer noori nastalique',
+'paktype naqsh','lateef','Kinza',
+'Geeza Pro','kufam','Alkalami',
+'Scheherazade New']; // Arabic Om
+myFontSet[50]=['x11011;&#x1102B','Noto Sans Brahmi']; // Brahmi Om
+myFontSet[51]=['xA8FD;','Jaini','Jaini Purva']; // Jaini Om
+myFontSet[52]=['x0950;','Nithya Ranjana DU']; // Ranjana Devanagari Om
+myFontSet[53]=['x11449;','Nithya Ranjana NU']; // Ranjana Newa Om
 var glyphDescriptions = [];
 
 glyphDescriptions[0] = 'Devanagari Om';
@@ -180,6 +184,11 @@ glyphDescriptions[45] = 'Javanese Om';
 glyphDescriptions[46] = 'Sinhala Om';
 glyphDescriptions[47] = 'Sinhala Om';
 glyphDescriptions[48] = 'Tamil Om';
+glyphDescriptions[49] = 'Arabic Om';
+glyphDescriptions[50] = 'Brahmi Om';
+glyphDescriptions[51] = 'Jain Om';
+glyphDescriptions[52] = 'Ranjana Devanagari Om';
+glyphDescriptions[53] = 'Ranjana Newa Om';
 
 const defaultMaskStyle = {
     maskSize: '40vw',
@@ -220,7 +229,7 @@ const outlierDefinitions = [
         maskSize: '41vw',
         maskYPosition: '48%',
         maskXPosition: '50%',
-        appliesToGlyphIndices: [36, 48] // Restored index 48
+        appliesToGlyphIndices: [36, 48,49] // Restored index 48
     },
     {
         id: 'MidCenter-PhagsPa-Standard-34vw', // Ex. Phags-Pa glyphs, mid-center, compact
@@ -271,7 +280,7 @@ const outlierDefinitions = [
         maskSize: '50vw',
         maskYPosition: '60%',
         maskXPosition: '50%',
-        appliesToGlyphIndices: [0, 13, 24, 37, 38]
+        appliesToGlyphIndices: [0, 13, 24, 37, 38, 50]
     },
 
     // --- LOW Placement (High Y-Position: 65% - 78%) ---
@@ -294,7 +303,7 @@ const outlierDefinitions = [
         maskSize: '55vw',
         maskYPosition: '70%',
         maskXPosition: '50%',
-        appliesToGlyphIndices: [7, 11]
+        appliesToGlyphIndices: [7, 11,51]
     },
     {
         id: 'LowLeft-MediumLarge-70vw', // Ex. Medium-large, dropped, slightly left
@@ -302,6 +311,13 @@ const outlierDefinitions = [
         maskYPosition: '70%',
         maskXPosition: '47%',
         appliesToGlyphIndices: [34]
+    },
+    {
+        id: 'LowLeft-MediumLarge-70vw', // Ex. Medium-large, dropped, slightly left
+        maskSize: '50vw',
+        maskYPosition: '80%',
+        maskXPosition: '50%',
+        appliesToGlyphIndices: [52,53]
     },
     {
         id: 'LowCenter-Standard-55vw', // Ex. Standard size, dropped down

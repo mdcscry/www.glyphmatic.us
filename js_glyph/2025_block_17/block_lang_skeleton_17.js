@@ -1,6 +1,6 @@
 block_lang =[{}]
 lang_font =[{}]
- block_lang['Egyptian Hieroglyphs Extended-A']=['egyptianheiroglyphics'];
+ //block_lang['Egyptian Hieroglyphs Extended-A']=['egyptianheiroglyphics'];
  block_lang['Adlam'] = ['adlam'];
  block_lang['Aegean Numbers'] = ['linearb','aegean'];
  block_lang['Ahom'] = ['ahom'];
@@ -395,8 +395,7 @@ lang_font['warangciti'] = [ "Noto Sans Warang Citi"  ]
 lang_font['wancho'] = [ "Noto Sans Wancho"  ]
 lang_font['noto-devanagari'] = [  //has complexity all but a few are covered by devanagari
   "Noto Serif Devanagari",
-  "Noto Sans Devanagari"
-]
+  "Noto Sans Devanagari"]
 lang_font['noto-devanagari-full'] = [  
   "NotoSansDevanagari-local-otf"
 ]
@@ -429,7 +428,7 @@ lang_font['old-north-arabian'] = [ "Noto Sans Old North Arabian"  ]
 lang_font['old-permic'] = [ "Noto Sans Old Permic"  ]
 lang_font['nabataean'] = [ "Noto Sans Nabataean" ]
 lang_font['nandinagari'] = [ "Noto Sans Nandinagari" ]
-lang_font['newa'] = [ "Noto Sans Newa"  ]
+lang_font['newa'] = [ "Noto Sans Newa","Nithya Ranjana NU"]
 lang_font['nko'] = [ "Noto Sans NKo Unjoined","Noto Sans NKo","Conakry-local-fonts"]
 lang_font['nushu'] = [ "Noto Traditional Nushu", "Noto Sans Nushu" ]
 lang_font['nyiakeng-puachue-hmong'] = [ "Noto Serif Nyiakeng Puachue Hmong" ]
@@ -1069,6 +1068,7 @@ lang_font['chinese-simplified'] = [
   "Zhi Mang Xing"
 ]
 lang_font['devanagari'] = [
+  'Nithya Ranjana DU',
 	"Lohit Devanagari",
  	"Noto Sans Devanagari UI",                   
 	"Noto Sans Devanagari",   
