@@ -65,14 +65,38 @@
                 filename = `${fontFormatted}.ttf`;
             }
             
-            const rule = `@font-face {
-                font-family: "${font}";
-                src: url('../${directory}/${filename}');
-            }`;
+            // Normalize directory token and prefer absolute site-root when the token looks like a shared font folder
+            const dirNorm = (directory || '').toString().replace(/^\/+|\/+$/g,'').toLowerCase();
+            const SITE_ROOT_DIRS = new Set(['fonts','tff','ttf','otf']);
+            let srcUrl;
+            if (SITE_ROOT_DIRS.has(dirNorm)) {
+                // Use site-root absolute path so it doesn't resolve relative to the current page (avoids /2025_exp/tff/...)
+                srcUrl = `/${dirNorm}/${filename}`;
+            } else {
+                srcUrl = `../${directory}/${filename}`;
+            }
+            console.log('AutoFont.attachLocalFont: resolved srcUrl', srcUrl, 'for directory token', directory);
+            const rule = `@font-face {\n                font-family: "${font}";\n                src: url('${srcUrl}');\n            }`;
             
-            AutoFont.faceSheet.insertRule(rule, AutoFont.faceSheet.cssRules.length);
+            try{
+                console.log('AutoFont.attachLocalFont: inserting rule for', font, '->', filename, 'dir:', directory, 'srcUrl:', srcUrl);
+                AutoFont.faceSheet.insertRule(rule, AutoFont.faceSheet.cssRules.length);
+                console.log('AutoFont.attachLocalFont: inserted. Total rules now:', AutoFont.faceSheet.cssRules.length);
+            }catch(e){
+                console.error('AutoFont.attachLocalFont error inserting rule for', font, e);
+            }
         },
-        
+
+        // Test helper to attach and inspect faceSheet rules for a given font
+        testAttachLocalFont: function(font, directory='tff'){
+            try{
+                this.attachLocalFont(font, directory);
+                const rules = Array.from(this.faceSheet.cssRules || []).filter(r => (r.cssText || '').includes(`font-family: "${font}"`));
+                console.log('testAttachLocalFont rules found for', font, rules.length);
+                return rules;
+            }catch(e){ console.error('testAttachLocalFont error', e); return []; }
+        },
+
         // Get random element from array
         randomFrom: function(array) {
             return array[Math.floor(Math.random() * array.length)];

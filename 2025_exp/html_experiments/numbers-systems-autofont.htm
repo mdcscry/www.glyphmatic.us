@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Numbers - Systems (AutoFont)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{ --bg:#0f0f12; --panel:#131416; --muted:#9aa0a6; --accent:#ffd166 }
+html, body { height:100%; }
+body { margin: 0; padding: 1em; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background: var(--bg); color: #eee; overflow: hidden; }
+.header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:0.8em }
+.titleMain { font-weight:800; font-size:1.05rem }
+.controls { display:flex; gap:8px; align-items:center; }
+.controls input[type="search"]{ padding:6px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:#ddd }
+.controls select{ padding:6px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:#ddd }
+.controls .swatches{ display:flex; gap:6px; align-items:center; }
+    /* Fixed 4x6 layout sized to viewport (4 rows x 6 cols) */
+    .grid { display:grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(4, 1fr); grid-gap: 14px; height: calc(100vh - 120px); }
+    /* Tile sizing fills grid rows; prevent extra height causing scroll */
+    .tile { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)); border-radius:12px; padding:12px; height:100%; min-height:0; box-shadow: 0 8px 18px rgba(0,0,0,0.6); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; transition: transform 220ms ease, box-shadow 220ms ease; cursor:pointer; position:relative; overflow:visible }
+.tile:hover { transform: translateY(-6px); box-shadow: 0 18px 32px rgba(0,0,0,0.7) }
+    /* Circle scales with viewport and tile size */
+    .tile .circle { width: clamp(64px, 14vmin, 140px); height: clamp(64px, 14vmin, 140px); border-radius:50%; display:flex; align-items:center; justify-content:center; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)); box-shadow: inset 0 -8px 18px rgba(0,0,0,0.25); transition: background-color 350ms ease, transform 300ms cubic-bezier(.2,.9,.2,1); position:relative; overflow:hidden }
+.tile:hover .circle { transform: scale(1.04) }
+.glyph { font-size:48px; line-height:1; display:block; width:100%; text-align:center; color:var(--glyph-color, #fff); opacity:1; transition: transform 260ms ease, opacity 260ms ease }
+	glyph.fade-out { opacity:0; transform:scale(0.92) }
+
+	/* Flash animation for block switch */
+	.flash { animation: flash 420ms ease; }
+	@keyframes flash { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0); } 30% { transform: scale(1.02); box-shadow: 0 12px 30px rgba(255,255,255,0.08); } 100% { transform: scale(1); box-shadow: none; } }
+
+	/* Ensure glyph sits above overlays */
+	.tile .circle .glyph { position: relative; z-index: 2; }
+
+	/* First-glyph temporary highlight (used instead of radial overlay) */
+	.glyph.first-highlight { transform: scale(1.08); color: var(--highlight, #ffd166); text-shadow: 0 8px 18px rgba(0,0,0,0.18), 0 2px 6px rgba(255,209,102,0.06); transition: transform 260ms ease, color 260ms ease; }
+
+	.title { margin-top:10px; font-weight:700; font-size:0.95rem; color:#e7e7e7; text-align:center }
+	.desc { font-size:0.78rem; color:var(--muted); text-align:center; margin-top:6px }
+.controls .count { color:var(--muted); font-size:0.9rem }
+.footer { margin-top:1em; color:#9aa0a6; font-size:0.85em }
+.hidden { display:none !important }
+.small-swatch { width:18px; height:18px; border-radius:4px; border:1px solid rgba(0,0,0,0.35) }
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <div class="titleMain">Numbers — Systems <span style="color:var(--muted); font-weight:600">(AutoFont)</span></div>
+  </div>
+
+  <div class="controls"></div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+
+<!-- Core libraries -->
+<script src="../../js_funct/autoFont.js"></script>
+<script src="../../js_glyph/block_hex_numbers_17.js"></script>
+<script src="../../js_glyph/block_hex_desc_numbers_17.js"></script>
+<script src="../../js_glyph/2025_block_17/block_lang_skeleton_17.js"></script>
+
+<script>
+(async function(){
+    if (typeof AutoFont === 'undefined') { console.error('AutoFont not found'); return; }
+    await AutoFont.init();
+
+    // Wait for data
+    const waitFor = () => new Promise(resolve => {
+        const check = () => {
+            if (typeof blocks !== 'undefined' && typeof block_hex !== 'undefined' && typeof block_hex_desc !== 'undefined' && typeof block_lang !== 'undefined') return resolve();
+            setTimeout(check, 30);
+        }; check();
+    });
+    await waitFor();
+
+    const grid = document.getElementById('grid');
+
+    // Palettes
+    const PALETTES = {
+        default: ['#1F2937','#111827','#0F172A','#111827','#f8fafc'],
+        earth: ['#4A2F2A','#7B5E57','#C7B198','#EDE3D6','#2E2B25'],
+        pastel: ['#F6D0C6','#FDEBD8','#E7F7D9','#DDEBFB','#F3E8FF'],
+        neon: ['#FF2D95','#00E6C3','#FFD300','#00A3FF','#FF6C00'],
+        mono: ['#1B1B1D','#2C2C2F','#3D3D41','#5B5B5F','#7A7A7D']
+    };
+
+
+
+    // Build lookup and normalized system list
+    const blockSystemLookup = {};
+    const allSystemsSet = new Set();
+
+    function findBlockLangKey(blockName) {
+        if (block_lang[blockName]) return blockName;
+        const key1 = blockName.replace(/\s+/g, '_'); if (block_lang[key1]) return key1;
+        const key2 = blockName.replace(/[^A-Za-z0-9]/g, '_'); if (block_lang[key2]) return key2;
+        const normalize = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const target = normalize(blockName);
+        for (const k in block_lang) if (normalize(k) === target) return k;
+        for (const k in block_lang) if (normalize(k).includes(target) || target.includes(normalize(k))) return k;
+        return null;
+    }
+
+    // Strip a leading block-name-like prefix from a description if it repeats the block name.
+    // You can add manual tuning here when simple heuristics fail.
+    const STRIP_PREFIX_OVERRIDES = {
+        // examples: key should be the normalized block name (spaces allowed)
+        'tai tham': ['tham'],
+        'myanmar': ['shan'],
+        'ancient greek numbers': ['greek'],
+        'tai tham': ['hora'],
+        'cjk symbols and punctuation': ['hangzhou'],
+        'myanmar extended-b': ['tai laing'],
+        'sinhala': ['lith'],
+        'arabic': ['indic'],
+        'arabic': ['extended arabic-indic']
+
+    };
+    // Expose for quick runtime tuning: window.StripPrefixOverrides['tai tham'] = ['tham']
+    window.StripPrefixOverrides = STRIP_PREFIX_OVERRIDES;
+
+    function stripLeadingBlockName(desc, blockName){
+        if (!desc || !blockName) return (desc || '').replace(/_/g,' ').trim().toLowerCase();
+        const norm = s => (s||'').replace(/[^A-Za-z0-9]+/g,' ').trim().toLowerCase();
+        let dTokens = norm(desc).split(/\s+/).filter(Boolean);
+        const bTokens = norm(blockName).split(/\s+/).filter(Boolean);
+        if (bTokens.length === 0 || dTokens.length === 0) return (desc || '').replace(/_/g,' ').trim().toLowerCase();
+
+        // Quick direct-strip table for well-known blocks (handles 'hora', 'tham', 'indic', etc.)
+        const DIRECT_STRIP = {
+            'tai tham': ['hora','tham'],
+            'myanmar': ['shan'],
+            'myanmar extended b': ['tai','laing'],
+            'sinhala': ['lith']
+        };
+        for (const k in DIRECT_STRIP){
+            if (norm(blockName).includes(k)){
+                const first = dTokens[0];
+                if (DIRECT_STRIP[k].includes(first)){
+                    const out = dTokens.slice(1).join(' ').trim();
+                    return out;
+                }
+            }
+        }
+
+// If the description starts with the block name tokens, remove that prefix and CONTINUE processing
+    let matches = true;
+    if (dTokens.length >= bTokens.length){
+        for (let i=0;i<bTokens.length;i++) if (dTokens[i] !== bTokens[i]) { matches = false; break; }
+        if (matches){
+            const out = dTokens.slice(bTokens.length).join(' ').trim();
+            if (out){
+                desc = out; // continue processing the remainder
+                dTokens = norm(desc).split(/\s+/).filter(Boolean);
+            }
+        }
+    }
+
+    // Also allow the description to start with only the first token of block name (e.g., 'Adlam DIGIT ZERO') and continue
+    if (dTokens.length >= 1 && bTokens.length >= 1 && dTokens[0] === bTokens[0]){
+        const out = dTokens.slice(1).join(' ').trim();
+        if (out){
+            desc = out;
+            dTokens = norm(desc).split(/\s+/).filter(Boolean);
+        }
+        }
+
+        // Normalize overrides keys/values and try a flexible matching strategy.
+        const normBlockKey = bTokens.join(' ');
+        // Build a normalized overrides map on-the-fly (keys/values lowercased and tokenized)
+        // Support merging multiple raw entries that normalize to the same key and keep phrase tokens
+        const normOverrides = {};
+        for (const rawKey in STRIP_PREFIX_OVERRIDES){
+            const nk = (rawKey||'').replace(/[^A-Za-z0-9]+/g,' ').trim().toLowerCase();
+            if (!nk) continue;
+            const entries = (STRIP_PREFIX_OVERRIDES[rawKey] || []).map(s => (s||'').toLowerCase().replace(/[^A-Za-z0-9]+/g,' ').trim()).filter(Boolean);
+            if (!normOverrides[nk]) normOverrides[nk] = [];
+            for (const e of entries) normOverrides[nk].push(e.split(/\s+/));
+        }
+
+
+        // Quick fallback: if block is Arabic-related, include an explicit token/phrase to strip 'indic' (covers "indic digit one")
+        // broaden detection to any token containing 'arab' so variations like 'arabic' and 'arabicpresentation' match
+        if (bTokens.some(t => t.includes('arab')) || bTokens.some(t => t === 'arabic') || bTokens.join(' ').includes('arab')){
+            if (!normOverrides[normBlockKey]) normOverrides[normBlockKey] = [];
+            const hasIndic = normOverrides[normBlockKey].some(arr => arr.join(' ') === 'indic');
+            const hasArabicIndic = normOverrides[normBlockKey].some(arr => arr.join(' ') === 'arabic indic' || arr.join(' ') === 'arabic-indic');
+            if (!hasIndic) normOverrides[normBlockKey].push(['indic']);
+            if (!hasArabicIndic) normOverrides[normBlockKey].push(['arabic','indic']);
+
+        }
+
+        // Add explicit fallback overrides for blocks that commonly have multiple prefixes or non-standard prefixes
+        const FALLBACK_ADDITIONS = {
+            'tai tham': ['hora','tham'],
+            'myanmar': ['shan','myanmar'],
+            'myanmar extended b': ['tai laing','tai','laing'],
+            'sinhala': ['lith','sinhala']
+        };
+        for (const fk in FALLBACK_ADDITIONS){
+            if (normBlockKey.includes(fk) || bTokens.includes(fk.split(' ')[0])){
+                if (!normOverrides[normBlockKey]) normOverrides[normBlockKey] = [];
+                for (const phrase of FALLBACK_ADDITIONS[fk]){
+                    const toks = phrase.split(/\s+/);
+                    const exists = normOverrides[normBlockKey].some(arr => arr.join(' ') === toks.join(' '));
+                    if (!exists) normOverrides[normBlockKey].push(toks);
+                }
+                console.debug('stripLeadingBlockName: added fallback overrides for', normBlockKey, FALLBACK_ADDITIONS[fk]);
+            }
+        }
+        // Quick fallback: if block is Arabic-related, include an explicit token/phrase to strip 'indic' (covers "indic digit one")
+        if (normBlockKey.includes('arabic')){
+            if (!normOverrides[normBlockKey]) normOverrides[normBlockKey] = [];
+            const hasIndic = normOverrides[normBlockKey].some(arr => arr.join(' ') === 'indic');
+            const hasArabicIndic = normOverrides[normBlockKey].some(arr => arr.join(' ') === 'arabic indic' || arr.join(' ') === 'arabic-indic');
+            if (!hasIndic) normOverrides[normBlockKey].push(['indic']);
+            if (!hasArabicIndic) normOverrides[normBlockKey].push(['arabic','indic']);
+
+        }
+
+        // Helper: try to strip an exact phrase (sequence of tokens) from the start of dTokens
+        const tryApplyPhrase = (phraseTokens) => {
+            if (!phraseTokens || !phraseTokens.length) return null;
+            if (dTokens.length < phraseTokens.length) return null;
+            for (let i=0;i<phraseTokens.length;i++) if (dTokens[i] !== phraseTokens[i]) return null;
+            const out = dTokens.slice(phraseTokens.length).join(' ').trim();
+            return out || null;
+        };
+
+        // Helper: apply a token-set removal (remove any leading tokens that are in the set)
+        const applyTokenSet = (tokenSet) => {
+            if (!tokenSet || tokenSet.size === 0) return null;
+            let i = 0;
+            while (i < dTokens.length && tokenSet.has(dTokens[i])) i++;
+            if (i > 0){ const out = dTokens.slice(i).join(' ').trim(); return out || null; }
+            return null;
+        };
+
+        // 1) direct match by full normalized block name (try phrase-level first, then token set)
+        if (normOverrides[normBlockKey]){
+            for (const phraseTokens of normOverrides[normBlockKey]){
+                const out = tryApplyPhrase(phraseTokens); if (out) { return out; }
+            }
+            const union = new Set(normOverrides[normBlockKey].flat());
+            const out2 = applyTokenSet(union); if (out2) { return out2; }
+        }
+        // 2) match if any token of block name has an override entry, prefer left-most token match
+        for (const bt of bTokens){ if (normOverrides[bt]){
+            for (const phraseTokens of normOverrides[bt]){ const out = tryApplyPhrase(phraseTokens); if (out) { return out; } }
+            const union = new Set(normOverrides[bt].flat()); const out2 = applyTokenSet(union); if (out2) { return out2; }
+        } }
+        // 3) match any override key that is a substring of the normalized block name (covers short keys like 'greek')
+        for (const ok in normOverrides){ if (ok && normBlockKey.includes(ok)){
+            for (const phraseTokens of normOverrides[ok]){ const out = tryApplyPhrase(phraseTokens); if (out) { return out; } }
+            const union = new Set(normOverrides[ok].flat()); const out2 = applyTokenSet(union); if (out2) { return out2; }
+        } }
+
+        // No direct override matched — as a simple fallback, run a longest-first prefix strip using
+        // any override phrases and the block name tokens. This is a brute-force search-and-replace
+        // that handles duplicate/overlapping overrides (e.g., 'arabic' and 'arabic-indic').
+        const candidates = [];
+        for (const k in normOverrides){ for (const phraseTokens of normOverrides[k]) candidates.push(phraseTokens.join(' ')); }
+        candidates.push(normBlockKey);
+        for (const bt of bTokens) candidates.push(bt);
+        const uniq = Array.from(new Set(candidates)).filter(Boolean).sort((a,b)=>b.length-a.length);
+
+        let normDesc = (desc || '').replace(/_/g,' ').trim().toLowerCase();
+        let changed = true;
+        while (changed){
+            changed = false;
+            for (const p of uniq){
+                const safe = p.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+                const re = new RegExp('^\\s*' + safe + '\\b\\s*','i');
+                if (re.test(normDesc)){ normDesc = normDesc.replace(re,'').trim(); changed = true; break; }
+            }
+        }
+
+        return normDesc;
+    }
+
+    const tiles = [];
+
+    // Display window size and exclude problematic blocks
+    const EXCLUDE_BLOCKS = ['Symbols for Legacy Computing Supplement'];
+    const allBlocks = blocks.filter(b => !EXCLUDE_BLOCKS.includes(b));
+    const DISPLAY_COUNT = Math.min(24, allBlocks.length);
+
+    // create randomized cycle (shuffle then iterate sequentially; reshuffle on wrap)
+    function shuffle(arr){
+        const a = arr.slice();
+        for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+        return a;
+    }
+
+    let currentShuffle = shuffle(allBlocks);
+    let shuffleIndex = 0;
+    function nextBlockFromShuffle(){
+        if (shuffleIndex >= currentShuffle.length){
+            // start over at beginning of the same shuffled list
+            shuffleIndex = 0;
+        }
+        return currentShuffle[shuffleIndex++];
+    }
+
+    // initial visible blocks
+    const visibleBlocks = [];
+    for (let i=0;i<DISPLAY_COUNT;i++) visibleBlocks.push(nextBlockFromShuffle());
+
+    function createTile(blockName, idx){
+        const tile = document.createElement('div'); tile.className='tile'; tile.dataset.block=blockName; tile.dataset.idx=idx;
+
+        const circle = document.createElement('div'); circle.className='circle';
+        const glyphSpan = document.createElement('div'); glyphSpan.className='glyph'; glyphSpan.id = 'glyph-' + idx; glyphSpan.innerHTML='&nbsp;';
+        circle.appendChild(glyphSpan);
+
+        const title = document.createElement('div'); title.className='title'; title.textContent=blockName;
+        const descDiv = document.createElement('div'); descDiv.className='desc';
+
+        tile.appendChild(circle);
+        tile.appendChild(title);
+        tile.appendChild(descDiv);
+
+        grid.appendChild(tile);
+
+        const blKey = findBlockLangKey(blockName);
+        const systems = blKey && block_lang[blKey] ? block_lang[blKey] : ['(no system)'];
+        systems.forEach(s => allSystemsSet.add(s));
+        blockSystemLookup[blockName] = systems;
+        // short block description (use the first glyph description as a concise hint)
+        const blockDescArr = block_hex_desc[blockName] || [];
+        let blockDesc = blockDescArr.length ? blockDescArr[0].replace(/_/g,' ') : '';
+        // remove leading block name if present (e.g. "MEETEI MAYEK DIGIT ZERO" -> "DIGIT ZERO")
+        blockDesc = stripLeadingBlockName(blockDesc, blockName);
+        descDiv.textContent = (blockDesc || '').replace(/_/g,' ').trim().toLowerCase();
+
+        const glyphList = (block_hex[blockName] || []).slice();
+        const glyphCount = glyphList.length;
+        // hover-based title removed to avoid hover interactions
+
+        // per-block sequential playback
+        let pausedByUser = false;
+        let playing = true; // convenience; effective playing is !pausedByUser
+        let glyphIndex = 0;
+        const glyphDisplayMs = 6000; // ms per glyph (much slower)
+
+        async function showNextGlyph(){
+            const g = glyphSpan;
+            // respect pause flags (only user pause)
+            if (pausedByUser) return;
+            if (glyphIndex >= glyphList.length){
+                // finished block; switch to next block
+                switchToNextBlock();
+                return;
+            }
+
+            try{
+                // animate out
+                g.classList.add('fade-out');
+                await new Promise(r => setTimeout(r, 160));
+
+                const usedBlock = tile.dataset.block; // capture the block we intend to render for
+                const glyphVal = glyphList[glyphIndex++];
+                const glyphData = AutoFont.generateGlyph(block_hex, block_hex_desc, block_lang, lang_font, true, {blocks:[usedBlock], glyph: glyphVal}, null);
+
+                // Defensive: if the tile's block changed while generating, don't apply this glyph (stale)
+                if (tile.dataset.block !== usedBlock){
+                    console.warn('Ignored stale glyph for', usedBlock, glyphVal, 'now', tile.dataset.block);
+                    return;
+                }
+
+                if (glyphData.fontStack) g.style.fontFamily = glyphData.fontStack;
+                g.innerHTML = '&#x' + glyphVal + ';';
+                // update description text immediately (strip leading block name)
+                const glyphDescClean = stripLeadingBlockName(glyphData.desc.replace(/_/g,' '), blockName);
+                descDiv.textContent = (glyphDescClean || '').replace(/_/g,' ').trim().toLowerCase();
+                // hover-based tooltip removed to avoid hover interactions
+                g.title = '';  
+
+                // If this is the first glyph after a block switch, highlight briefly
+                if (glyphIndex === 1){
+                    g.classList.add('first-highlight');
+                    setTimeout(() => { g.classList.remove('first-highlight'); }, 1200);
+                }
+
+                // animate in
+                g.classList.remove('fade-out');
+            }catch(e){ console.error('showNextGlyph error', blockName, e); }
+
+            // schedule next
+            setTimeout(() => { if (!pausedByUser) showNextGlyph(); }, glyphDisplayMs + Math.floor(Math.random()*800));
+        }
+
+        async function switchToNextBlock(){
+            // flash (subtle scale/pulse only)
+            tile.classList.add('flash');
+            setTimeout(()=> { tile.classList.remove('flash'); }, 700);
+
+
+            // pick next block from shuffle cycle
+            let next = nextBlockFromShuffle();
+            if (!next) next = allBlocks[0];
+
+            // replace
+            tile.dataset.block = next;
+            title.textContent = next;
+
+            // update closure variable so subsequent showNextGlyph uses correct block
+            blockName = next;
+
+            const blKey2 = findBlockLangKey(next);
+            const systems2 = blKey2 && block_lang[blKey2] ? block_lang[blKey2] : ['(no system)'];
+            blockSystemLookup[next] = systems2; // systemsDiv removed; we keep the lookup updated
+
+            // update tiles record if present
+            const tileRecord = tiles.find(t => t.idx === idx);
+            if (tileRecord) { tileRecord.block = next; tileRecord.systems = systems2; }
+
+            // reset glyphList for new block
+            glyphList.length = 0; Array.prototype.push.apply(glyphList, block_hex[next] || []);
+            glyphIndex = 0;
+
+            // update glyphCount hover on the block title
+            title.title = `${glyphList.length} glyphs`;
+
+            // update concise block description (strip leading block-name if present)
+            const blockDescArr2 = block_hex_desc[next] || [];
+            let blockDesc2 = blockDescArr2.length ? blockDescArr2[0].replace(/_/g,' ') : '';
+            blockDesc2 = stripLeadingBlockName(blockDesc2, next);
+            descDiv.textContent = (blockDesc2 || '').replace(/_/g,' ').trim().toLowerCase();
+
+            // clear glyph while switching and ensure any fade is removed so it won't stay hidden
+            glyphSpan.innerHTML = '&nbsp;';
+            glyphSpan.classList.remove('fade-out');
+            glyphSpan.style.opacity = '';
+            // show first glyph immediately for continuity (but do not start the full cycle if paused)
+            if (glyphList.length > 0){
+                try{
+                    const firstVal = glyphList[0];
+                    const usedBlockFirst = tile.dataset.block;
+                    const glyphDataFirst = AutoFont.generateGlyph(block_hex, block_hex_desc, block_lang, lang_font, true, {blocks:[usedBlockFirst], glyph: firstVal}, null);
+                    // Defensive: ensure block hasn't changed while generating first glyph
+                    if (tile.dataset.block !== usedBlockFirst){ console.warn('Skipped first glyph render due to block change', usedBlockFirst); return; }
+                    if (glyphDataFirst.fontStack) glyphSpan.style.fontFamily = glyphDataFirst.fontStack;
+                    glyphSpan.innerHTML = '&#x' + firstVal + ';';
+                    // update visible description for the first glyph (strip leading block name)
+                    const glyphFirstDescClean = stripLeadingBlockName(glyphDataFirst.desc.replace(/_/g,' '), usedBlockFirst);
+                    descDiv.textContent = (glyphFirstDescClean || '').replace(/_/g,' ').trim().toLowerCase();
+                    // tooltip removed
+                    glyphSpan.title = ''; 
+                    // mark as shown so next scheduled glyph advances
+                    glyphIndex = 1;
+                    glyphSpan.classList.add("first-highlight");
+                    setTimeout(() => { glyphSpan.classList.remove('first-highlight'); }, 1200);
+                }catch(e){ console.error('first glyph render error', next, e); }
+            }
+
+            // apply palette recolor immediately (so new tile shows palette color)
+            applyPalette('default');
+
+            // restart playback after a short pause if not paused by user
+            setTimeout(() => { if (!pausedByUser) showNextGlyph(); }, 400);
+        }
+
+        // tile controls (click to toggle pause; hover-based pause removed)
+        tile.addEventListener('click', () => { pausedByUser = !pausedByUser; tile.style.opacity = pausedByUser ? '0.6' : '1'; if (!pausedByUser) showNextGlyph(); });
+
+        // record tile
+        tiles.push({elem:tile, block:blockName, systems, glyphCount, idx, circle, glyphElem:glyphSpan, playing});
+
+        // start sequence
+        setTimeout(() => showNextGlyph(), 80 + Math.floor(Math.random()*400));
+    }
+
+    // create only first DISPLAY_COUNT tiles
+    for (let i=0;i<DISPLAY_COUNT;i++){ createTile(visibleBlocks[i], i); }
+
+    // Apply palette to tiles/glyphs
+    function applyPalette(name){
+        const pal = PALETTES[name] || PALETTES.default;
+        tiles.forEach((t, i) => {
+            const bg = pal[i % pal.length];
+            // circle background and glyph color contrast
+            t.circle.style.background = `linear-gradient(180deg, ${hexMix(bg,0.04)}, ${hexMix(bg,-0.06)})`;
+            t.glyphElem.style.color = pickContrastColor(bg);
+            // set a highlight color variable for the first-glyph accent
+            t.glyphElem.style.setProperty('--highlight', hexMix(bg, 0.5));
+            t.elem.style.border = `1px solid ${hexMix(bg,-0.18)}`;
+        });
+        // call palette preview helper if it's available (some builds omit this helper)
+        if (typeof renderPalettePreview === 'function') renderPalettePreview(name);
+    }
+
+    // small color helpers
+    function hexMix(hex, amt){
+        // hex e.g. #RRGGBB, amt [-1..1]
+        const c = hex.replace('#',''); const num = parseInt(c,16);
+        let r = (num >> 16) + Math.round(255*amt), g = ((num >> 8) & 0xFF) + Math.round(255*amt), b = (num & 0xFF) + Math.round(255*amt);
+        r = Math.max(0,Math.min(255,r)); g = Math.max(0,Math.min(255,g)); b = Math.max(0,Math.min(255,b));
+        return '#' + ((1<<24) + (r<<16) + (g<<8) + b).toString(16).slice(1);
+    }
+
+    function pickContrastColor(hex){
+        // calculate luminance, return black/white variant with slight tint
+        const c = hex.replace('#',''); const r = parseInt(c.substring(0,2),16), g=parseInt(c.substring(2,4),16), b=parseInt(c.substring(4,6),16);
+        const l = 0.2126*r + 0.7152*g + 0.0722*b;
+        return l > 160 ? '#111' : '#fff';
+    }
+
+
+
+    // populate system filter (optional - using search is enough)
+    const systemOptions = Array.from(allSystemsSet).sort();
+
+    // No UI controls per user request; page is automatic.
+
+    // initial
+    applyPalette('default');
+
+    // Expose for debugging
+    window.blockSystemLookup = blockSystemLookup;
+    window.numbersTiles = tiles;
+
+    // --- Lightweight in-page debug panel (togglable with 'D') ---
+    (function(){
+        const logs = [];
+        function addDebug(s){
+            const t = new Date().toLocaleTimeString();
+            logs.push(`${t} ${s}`);
+            while(logs.length>120) logs.shift();
+            renderDebug();
+            console.log('DBG:', s);
+        }
+        function renderDebug(){
+            if (!debugPanel) return;
+            const parts = [];
+            parts.push(`<div style="font-weight:700;margin-bottom:6px">Numbers Debug</div>`);
+            parts.push(`<div style="font-size:0.85rem;color:#ccc;margin-bottom:6px">Shuffle: ${currentShuffle.length} items • index ${shuffleIndex}</div>`);
+            parts.push('<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">');
+            tiles.slice(0,48).forEach((t,i)=>{
+                parts.push(`<div style="min-width:140px;padding:6px;border-radius:6px;background:rgba(255,255,255,0.02);font-size:0.8rem">#${t.idx} <b>${t.block}</b><div style="color:#9aa0a6">playing:${(t.playing && !t.pausedByUser)?'yes':'no'}</div></div>`);
+            });
+            parts.push('</div>');
+            parts.push('<div style="max-height:140px;overflow:auto;font-size:0.75rem;color:#ddd">' + logs.slice(-20).reverse().map(l=>`<div>${l}</div>`).join('') + '</div>');
+            debugPanel.innerHTML = parts.join('\n');
+        }
+        const debugPanel = document.createElement('div');
+        debugPanel.id = 'debug-panel';
+        Object.assign(debugPanel.style, {position:'fixed',right:'12px',bottom:'12px',width:'360px',maxWidth:'40%',background:'rgba(5,7,10,0.75)',color:'#eef',padding:'10px',borderRadius:'8px',fontFamily:'Inter,system-ui,Arial',fontSize:'12px',boxShadow:'0 8px 24px rgba(0,0,0,0.6)',zIndex:999999,display:'none'});
+        document.body.appendChild(debugPanel);
+
+        window.addEventListener('error', (ev)=>{ addDebug('window.error: '+ (ev && ev.message ? ev.message : String(ev))); });
+        window.addEventListener('unhandledrejection', (ev)=>{ addDebug('unhandledrejection: '+ (ev.reason && ev.reason.message ? ev.reason.message : String(ev.reason))); });
+
+        // Patch tiles' record to include pause flags for display
+        tiles.forEach(t=>{ t.pausedByUser = false; });
+
+        // Monkey-patch tile event handlers to keep status in tiles[] record
+        const orig = tiles.slice();
+        tiles.forEach(t=>{
+            const el = t.elem;
+            el.addEventListener('click', ()=>{ t.pausedByUser = el.style.opacity === '0.6'; addDebug('tile '+t.idx+' toggled user pause -> '+t.pausedByUser); renderDebug(); });
+        });
+
+        // Show/hide with D key
+        window.addEventListener('keydown', (e)=>{ if (e.key === 'd' || e.key === 'D'){ debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none'; renderDebug(); } });
+
+        // periodic updater
+        setInterval(()=>{ renderDebug(); }, 1200);
+
+        // helper to dump tiles quickly
+        window.dumpNumbersState = function(){ addDebug('dump: shuffleIndex='+shuffleIndex+' shuffleLen='+currentShuffle.length+' tiles='+tiles.length); console.table(tiles.map(t=>({idx:t.idx,block:t.block,playing:!t.pausedByUser && !t.pausedByHover}))); };
+
+        // Helper: test the stripLeadingBlockName function from the console
+        window.testStrip = function(blockName, desc){ console.debug('testStrip ->', { blockName, desc, result: stripLeadingBlockName(desc, blockName) }); };
+        window.showStripOverrides = function(){
+            const merged = {};
+            for (const k in STRIP_PREFIX_OVERRIDES){ const nk = (k||'').replace(/[^A-Za-z0-9]+/g,' ').trim().toLowerCase(); if (!merged[nk]) merged[nk]=[]; merged[nk] = merged[nk].concat(STRIP_PREFIX_OVERRIDES[k]); }
+            console.debug('StripPrefixOverrides (raw):', STRIP_PREFIX_OVERRIDES, 'merged keys:', Object.keys(merged), 'merged:', merged);
+            return merged;
+        };
+        addDebug('debug panel ready (press D)');
+    })();
+})();
+</script>
+</body>
+</html>

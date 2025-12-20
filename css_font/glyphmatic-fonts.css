@@ -1935,7 +1935,7 @@ ugaritic old persian runic SIL fonts KangxiRadicals AnatolianHeiro Latin Oms
 }
 @font-face {
     font-family: 'Symbola';
-    src: url('../fonts/Symbola.ttf') format('truetype');
+    src: url('/fonts/Symbola.ttf') format('truetype');
 }
 @font-face {
     font-family: 'Paktype Tehreer';
