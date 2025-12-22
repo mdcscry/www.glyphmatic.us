@@ -2152,6 +2152,16 @@ ugaritic old persian runic SIL fonts KangxiRadicals AnatolianHeiro Latin Oms
     src: url('../otf/NithyaRanjanaDU-Regular.otf') format('opentype');
 }
 
+@font-face {
+    font-family: 'Noto Serif TaiYo';
+    src: url('../tff/NotoSerifTaiYo.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Kedebideri';
+    src: url('../fonts/Kedebideri.ttf') format('truetype');
+}
+
 .myanmar-taungyi {
     font-family: 'Myanmar Taungyi', sans-serif;
 }

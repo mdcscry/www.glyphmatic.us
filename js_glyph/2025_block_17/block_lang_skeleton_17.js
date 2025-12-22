@@ -103,7 +103,7 @@ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
  block_lang['Greek and Coptic'] = ['coptic','greek-and-coptic','sil'];
  block_lang['Greek Extended'] = ['latin-ext'];
  block_lang['Gujarati'] = ['gujarati'];
- block_lang['Gunjala Gondi'] = ['gunjala-gondi'];
+ block_lang['Gunjala Gondi'] = ['gunjala-gondi',"Narnoor"];
  block_lang['Gurmukhi'] = ['gurmukhi'];
 // block_lang['Halfwidth and Fullwidth_Forms'] = [''];
  block_lang['Hangul Compatibility Jamo'] = ['korean'];
@@ -331,18 +331,18 @@ block_lang['Todhri'] = [ "todhri" ]
 block_lang['Sunuwar'] = [ "sunuwar" ]
 //block_lang['Egyptian_Hieroglyphs_Extended_A'] = [ "egyptianheiroglyphics" ]
 //block_lang['Gurung_Khema'] = [ "gurung-khema" ]
-//block_lang['Kirat_Rai'] = [ "kirat-rai" ]
+block_lang['Kirat Rai'] = [ "kirat-rai" ]
 block_lang['Symbols for Legacy Computing Supplement'] = [ "pseudographica"]
 //block_lang['Ol_Onal'] = [ "ol-onal" ]
 
 //Unicode 17
 //block_lang['Sidetic'] = [ "sidetic" ]
 //block_lang['Sharada_Supplement'] = [ "sharada" ]
-//block_lang['Tolong_Siki'] = [ "tolong-siki" ]
-//block_lang['Beria_Erfe'] = [ "beria-erfe" ]
+//block_lang['Tolong Siki'] = [ "tolong-siki" ]
+block_lang['Beria Erfe'] = [ "beria-erfe" ]
 //block_lang['Tangut_Components_Supplement'] = [ "tangut" ]
 block_lang['Miscellaneous_Symbols_Supplement'] = [ "symbols2","pseudographica" ]
-//block_lang['Tai_Yo'] = [ "tai-yo" ]
+block_lang['Tai Yo'] = [ "tai-yo" ]
 
 //Unicode 13
 lang_font['khitan-small-script'] = [ 
@@ -377,20 +377,20 @@ lang_font['todhri'] = [ "Noto Serif Todhri" ]
 //lang_font['tulu-tigalari'] = [ "" ]
 lang_font['sunuwar'] = [ "Noto Sans Sunuwar" ] 
 //lang_font['gurung-khema'] = [ "Noto Sans Gurung Khema" ] //started
-//lang_font['kirat-rai'] = [ "" ]
+lang_font['kirat-rai'] = [ "Kanchenjunga" ]
 //lang_font['ol-onal'] = [ "Noto Sans Ol Onal" ] //started
 
 //Unicode17
 //lang_font['sidetic'] = [ "" ]
 //lang_font['tolong-siki'] = [ "" ]
-//lang_font['beria-erfe'] = [ "" ]
-//lang_font['tai-yo'] = [ "" ]
+lang_font['beria-erfe'] = ["Kedebideri-local-fonts"]
+lang_font['tai-yo'] = [ "Noto Serif TaiYo-local" ]
 
 //Before Unicode 13
 //New Noto Fonts since 2020
 lang_font['hentaigana'] = ["Noto Serif Hentaigana"]
 lang_font['zanabazar-square'] = [ "Noto Sans Zanabazar Square",'BabelStone Zanabazar-local-fonts']
-lang_font['yi'] = [ "Noto Sans Yi" ]
+lang_font['yi'] = [ "Noto Sans Yi" ,"Nuosu SIL"]
 lang_font['warangciti'] = [ "Noto Sans Warang Citi"  ]
 lang_font['wancho'] = [ "Noto Sans Wancho"  ]
 lang_font['noto-devanagari'] = [  //has complexity all but a few are covered by devanagari
@@ -428,7 +428,7 @@ lang_font['old-north-arabian'] = [ "Noto Sans Old North Arabian"  ]
 lang_font['old-permic'] = [ "Noto Sans Old Permic"  ]
 lang_font['nabataean'] = [ "Noto Sans Nabataean" ]
 lang_font['nandinagari'] = [ "Noto Sans Nandinagari" ]
-lang_font['newa'] = [ "Noto Sans Newa","Nithya Ranjana NU"]
+lang_font['newa'] = [ "Noto Sans Newa","Nithya Ranjana NU-local-fonts"]
 lang_font['nko'] = [ "Noto Sans NKo Unjoined","Noto Sans NKo","Conakry-local-fonts"]
 lang_font['nushu'] = [ "Noto Traditional Nushu", "Noto Sans Nushu" ]
 lang_font['nyiakeng-puachue-hmong'] = [ "Noto Serif Nyiakeng Puachue Hmong" ]
@@ -499,9 +499,9 @@ lang_font['inscriptionalpahlavi'] = [ "Noto Sans Inscriptional Pahlavi" ]
 lang_font['javanese'] = [ "Noto Sans Javanese" ]
 lang_font['batak'] = ["Noto Sans Batak"]
 lang_font['phoenician'] = ["Noto Sans Phoenician"]
-lang_font['kayahli'] = ["Noto Sans Kayah Li"]
+lang_font['kayahli'] = ["Noto Sans Kayah Li","Kay Pho Du"]
 lang_font['rejang'] = ["Noto Sans Rejang"]  
-lang_font['lepcha'] = ["Noto Sans Lepcha"]
+lang_font['lepcha'] = ["Noto Sans Lepcha","Mingzat"]
 lang_font['thaana'] = ["Noto Sans Thaana"] 
 lang_font['gothic'] = ["Noto Sans Gothic","Sadagolthina-local-fonts","Code2001-local-fonts"] 
 lang_font['cuneiform'] = ["Noto Sans Cuneiform","Akkadian-local-fonts"] 
@@ -512,7 +512,7 @@ lang_font['olchiki'] = ["Noto Sans Ol Chiki"]
 lang_font['shavian'] = ["Noto Sans Shavian",'Code2001-local-fonts']         
 lang_font['tagbanwa'] = ["Noto Sans Tagbanwa"]           
 lang_font['oldturkic'] = ["Noto Sans Old Turkic"]                    
-lang_font['tifinagh'] = ["Noto Sans Tifinagh"]             
+lang_font['tifinagh'] = ["Noto Sans Tifinagh","Tirra","Akatab"]             
 lang_font['deseret'] = ["Noto Sans Deseret","Code2001-local-fonts"]           
 lang_font['cypriot'] = ["Noto Sans Cypriot",'Code2001-local-fonts','Aegean-local-fonts']
 lang_font['olditalic'] = ["Noto Sans Old Italic",'Code2001-local-fonts']
@@ -527,7 +527,7 @@ lang_font['mongolian'] = ["Noto Sans Mongolian"]
 lang_font['kaithi'] = [ "Noto Sans Kaithi" ]
 lang_font['tibetan'] = [ "Noto Serif Tibetan" ]
 lang_font['saurashtra'] = [ "Noto Sans Saurashtra"]
-lang_font['lisu'] = ["Noto Sans Lisu"]
+lang_font['lisu'] = ["Noto Sans Lisu","Lisu Bosa"]
 lang_font['symbols'] = ["Noto Sans Symbols","Symbola-local-fonts"]
 lang_font['symbols2-pseudo'] = ["Noto Sans Symbols 2","BabelStone Pseudographica-local-fonts"]
 lang_font['pseudographica'] = ["BabelStone Pseudographica-local-fonts"]
@@ -563,7 +563,7 @@ lang_font['buginese'] = ["Noto Sans Buginese"]
 lang_font['coptic'] = ["Noto Sans Coptic","Antinoou-local-fonts"]
 lang_font['coptic-epact'] = ["Noto Sans Coptic"]
 lang_font['lydian'] = [ "Noto Sans Lydian" ]
-lang_font['limbu'] = [ "Noto Sans Limbu" ]
+lang_font['limbu'] = [ "Noto Sans Limbu","Namdhinggo" ]
 lang_font['ogham'] = [ "Noto Sans Ogham" ]
 lang_font['mandaic'] = [ "Noto Sans Mandaic" ]	 
 lang_font['oldpersian'] = [ "Noto Sans Old Persian" ,'Code2001-local-fonts']
@@ -575,7 +575,6 @@ lang_font['imperialaramaic'] = [ "Noto Sans Imperial Aramaic" ]
 lang_font['inscriptionalparthian'] = [ "Noto Sans Inscriptional Parthian" ]
 lang_font['anatolianheiroglyphics'] = [ "Noto Sans Anatolian Hieroglyphs"
   ,'Anatolian-local-fonts','Alphabetum-local-otf'
-
 ]
 lang_font['egyptianheiroglyphics'] = [ "Noto Sans Egyptian Hieroglyphs","AegyptusR-local-fonts","AegyptusB-local-fonts",'Aegyptus-local-fonts','Gardiner-local-fonts']
 lang_font['georgian'] = [ 
@@ -599,9 +598,9 @@ lang_font['armenian'] = [
 	"Noto Sans Armenian",
 	"Noto Serif Armenian"
 ]
-lang_font['taiviet'] = ["Noto Sans Tai Viet"]
+lang_font['taiviet'] = ["Noto Sans Tai Viet","Tai Heritage Pro"]
 lang_font['taitham'] = ["Noto Sans Tai Tham"]
-lang_font['newtailue'] = ["Noto Sans New Tai Lue"]
+lang_font['newtailue'] = ["Noto Sans New Tai Lue","Dai Banna SIL"]
 lang_font['taile'] = ["Noto Sans Tai Le"]
 lang_font['lao'] = [
   "Noto Sans Lao",
@@ -1068,7 +1067,8 @@ lang_font['chinese-simplified'] = [
   "Zhi Mang Xing"
 ]
 lang_font['devanagari'] = [
-  'Nithya Ranjana DU',
+  "Annapurna SIL",
+  'Nithya Ranjana DU-local-fonts',
 	"Lohit Devanagari",
  	"Noto Sans Devanagari UI",                   
 	"Noto Sans Devanagari",   

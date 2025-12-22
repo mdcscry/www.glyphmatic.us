@@ -76,7 +76,7 @@
                 srcUrl = `../${directory}/${filename}`;
             }
             console.log('AutoFont.attachLocalFont: resolved srcUrl', srcUrl, 'for directory token', directory);
-            const rule = `@font-face {\n                font-family: "${font}";\n                src: url('${srcUrl}');\n            }`;
+            const rule = `@font-face {\nfont-family: "${font}";\n                src: url('${srcUrl}');\n            }`;
             
             try{
                 console.log('AutoFont.attachLocalFont: inserting rule for', font, '->', filename, 'dir:', directory, 'srcUrl:', srcUrl);
@@ -111,13 +111,13 @@
         selectFont: function(block, blockLang, langFont) {
             const fontArray = blockLang[block];
             if (!fontArray || fontArray.length === 0) {
-                return 'Noto Sans Full-google';
+                return 'Noto Sans-local';
             }
             
             const fontLookup = this.randomFrom(fontArray);
             const fonts = langFont[fontLookup];
             
-            return fonts ? this.randomFrom(fonts) : 'Noto Sans Full-google';
+            return fonts ? this.randomFrom(fonts) : 'Noto Sans-local';
         },
         
         // Build font stack with intelligent fallbacks

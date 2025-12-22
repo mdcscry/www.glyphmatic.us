@@ -1,4 +1,7 @@
-blocks = ['Aegean Numbers','Adlam','Ahom','Ancient Greek Numbers','Arabic','Balinese','Bamum','Basic Latin','Bengali','Bhaiksuki','Brahmi','Chakma','Cham','Chorasmian','CJK Symbols and Punctuation','Common Indic Number Forms','Coptic Epact Numbers','Counting Rod Numerals','Cuneiform Numbers and Punctuation','Devanagari','Dingbats','Enclosed CJK Letters and Months','Ethiopic','Gothic-Runic','Gujarati','Gunjala Gondi','Gurmukhi','Hanifi Rohingya','Hatran','Imperial Aramaic','Indic Siyaq Numbers','Inscriptional Pahlavi','Inscriptional Parthian','Javanese','Kaktovik Numerals','Kanbun','Kannada','Kawi','Kayah Li','Kharoshthi','Khmer','Khudawadi','Lao','Lepcha','Limbu','Malayalam','Manichaean','Masaram Gondi','Mathematical Alphanumeric Symbols','Mayan Numerals','Medefaidrin','Meetei Mayek','Mende Kikakui','Meroitic Cursive','Modi','Mongolian','Mro','Myanmar','Nabataean','Nag Mundari','New Tai Lue','Newa','NKo','Number Forms','Nyiakeng Puachue Hmong','Ol Chiki','Old Hungarian','Old Italic','Old North Arabian','Old Persian','Old Sogdian','Old South Arabian','Oriya','Osmanya','Ottoman Siyaq Numbers','Pahawh Hmong','Palmyrene','Phoenician','Psalter Pahlavi','Rumi Numeral Symbols','Saurashtra','Sharada','Sinhala','Sogdian','Sora Sompeng','Sundanese','Sunuwar','Superscripts and Subscripts','Symbols for Legacy Computing','Tai Tham','Takri','Tamil','Tangsa','Telugu','Thai','Tibetan','Tirhuta','Vai','Wancho','Warang Citi'];
+blocks = ['Aegean Numbers','Adlam','Ahom','Ancient Greek Numbers','Arabic','Balinese','Bamum','Basic Latin','Bengali','Bhaiksuki','Brahmi','Chakma','Cham','Chorasmian','CJK Symbols and Punctuation','Common Indic Number Forms','Coptic Epact Numbers','Counting Rod Numerals','Cuneiform Numbers and Punctuation','Devanagari','Dingbats','Enclosed CJK Letters and Months','Ethiopic','Gothic-Runic','Gujarati','Gunjala Gondi','Gurmukhi','Hanifi Rohingya','Hatran','Imperial Aramaic','Indic Siyaq Numbers','Inscriptional Pahlavi','Inscriptional Parthian','Javanese','Kaktovik Numerals','Kanbun','Kannada','Kawi','Kayah Li','Kharoshthi','Khmer','Khudawadi','Kirat Rai','Lao','Lepcha','Limbu','Malayalam','Manichaean','Masaram Gondi','Mathematical Alphanumeric Symbols','Mayan Numerals','Medefaidrin','Meetei Mayek','Mende Kikakui','Meroitic Cursive','Modi','Mongolian','Mro','Myanmar','Nabataean','Nag Mundari','New Tai Lue','Newa','NKo','Number Forms','Nyiakeng Puachue Hmong','Ol Chiki','Old Hungarian','Old Italic','Old North Arabian','Old Persian','Old Sogdian','Old South Arabian','Oriya','Osmanya','Ottoman Siyaq Numbers','Pahawh Hmong','Palmyrene','Phoenician','Psalter Pahlavi','Rumi Numeral Symbols','Saurashtra','Sharada','Sinhala','Sogdian','Sora Sompeng','Sundanese','Sunuwar','Superscripts and Subscripts','Symbols for Legacy Computing','Tai Tham','Takri','Tamil','Tangsa','Telugu','Thai','Tibetan','Tirhuta',
+ 'Gothic','Runic'
+ ,'Vai','Wancho','Warang Citi'
+ ];
 block_hex = {
 'Aegean Numbers' : {
     'Units': ['10107','10108','10109','1010A','1010B','1010C','1010D','1010E','1010F'],
@@ -86,7 +89,8 @@ block_hex = {
     'Digits': ['1369','136A','136B','136C','136D','136E','136F','1370','1371'],
     'Numbers': ['1372','1373','1374','1375','1376','1377','1378','1379','137A','137B','137C']
 },
-'Gothic-Runic' : ['10341','1034A','16EE','16EF','16F0'],
+'Gothic' : ['10341','1034A','16EE','16EF','16F0'],
+'Runic' : ['10341','1034A','16EE','16EF','16F0'],
 'Gujarati' : ['0AE6','0AE7','0AE8','0AE9','0AEA','0AEB','0AEC','0AED','0AEE','0AEF'],
 'Gunjala Gondi' : ['11DA0','11DA1','11DA2','11DA3','11DA4','11DA5','11DA6','11DA7','11DA8','11DA9'],
 'Gurmukhi' : ['0A66','0A67','0A68','0A69','0A6A','0A6B','0A6C','0A6D','0A6E','0A6F'],
@@ -117,6 +121,7 @@ block_hex = {
 'Kharoshthi' : ['10A40','10A41','10A42','10A43','10A44','10A45','10A46','10A47','10A48'],
 'Khmer' : ['17E0','17E1','17E2','17E3','17E4','17E5','17E6','17E7','17E8','17E9'],
 'Khudawadi' : ['112F0','112F1','112F2','112F3','112F4','112F5','112F6','112F7','112F8','112F9'],
+'Kirat Rai' : ['16D70','16D71','16D72','16D73','16D74','16D75','16D76','16D77','16D78','16D79'],
 'Lao' : ['0ED0','0ED1','0ED2','0ED3','0ED4','0ED5','0ED6','0ED7','0ED8','0ED9'],
 'Lepcha' : ['1C40','1C41','1C42','1C43','1C44','1C45','1C46','1C47','1C48','1C49'],
 'Limbu' : ['1946','1947','1948','1949','194A','194B','194C','194D','194E','194F'],
