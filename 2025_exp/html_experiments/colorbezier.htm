@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BezierLive</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+        }
+        #grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            width: 100vw;
+            height: 100vh;
+            gap: 2px;
+        }
+        .panel {
+            background-color: transparent;
+        }
+        svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            overflow: visible; /* Crucial for SVG */
+        }
+        #info-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-family: sans-serif;
+            z-index: 1000;
+        }
+        #info-panel.expanded {
+            border-radius: 12px;
+            width: 280px;
+            height: auto;
+            padding: 16px;
+            display: block;
+        }
+        #info-panel .circle-icon {
+            display: block;
+            font-size: 18px;
+        }
+        #info-panel.expanded .circle-icon {
+            display: none;
+        }
+        #info-panel .info-content {
+            display: none;
+        }
+        #info-panel.expanded .info-content {
+            display: block;
+        }
+        .info-row {
+            margin: 8px 0;
+            font-size: 12px;
+            font-family: monospace;
+        }
+        .info-label {
+            opacity: 0.7;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .info-value {
+            margin-top: 2px;
+        }
+        .palette-colors {
+            display: flex;
+            gap: 4px;
+            margin-top: 4px;
+        }
+        .palette-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            25% {
+                transform: scale(0.92);
+            }
+            75% {
+                transform: scale(1.08);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        .pulsing-glyph {
+            animation: pulse 10s ease-in-out infinite;
+            transform-origin: center;
+            transform-box: fill-box;
+        }
+    </style>
+</head>
+<body>
+    <div id="grid-container"></div>
+
+    <div id="info-panel">
+        <span class="circle-icon">i</span>
+        <div class="info-content">
+            <div class="info-row">
+                <div class="info-label">Preset</div>
+                <div class="info-value" id="preset-name">-</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Layout</div>
+                <div class="info-value" id="layout-info">-</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Curves</div>
+                <div class="info-value" id="curves-count">-</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Glyphs</div>
+                <div class="info-value" id="glyphs-count">-</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Selected Glyph</div>
+                <div class="info-value" id="selected-glyph">-</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Palette</div>
+                <div class="palette-colors" id="palette-display"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gridContainer = document.getElementById('grid-container');
+
+        let palette = [];
+        let animatedPaths = [];
+        let drawingPaths = [];
+        let currentPreset = null;
+        let selectedPresetIndex = null; // null means random mode
+
+        // Animation presets - different variations we've created
+        const ANIMATION_PRESETS = [
+            {
+                name: "Original Pulse",
+                curveCycle: false, // Curves draw once and stay
+                curveBreathing: false,
+                glyphFadeIn: { min: 300, max: 2000 },
+                drawSpeed: { min: 2000, max: 8000 }
+            },
+            {
+                name: "Slow Emergence",
+                curveCycle: false,
+                curveBreathing: true,
+                glyphFadeIn: { min: 2000, max: 12000 },
+                drawSpeed: { min: 5000, max: 25000 }
+            },
+            {
+                name: "Simple Loop",
+                curveCycle: true,
+                cyclePhases: { draw: 0.5, pause1: 0, undraw: 0.5, pause2: 0 },
+                curveBreathing: true,
+                glyphFadeIn: { min: 1000, max: 6000 },
+                drawSpeed: { min: 3000, max: 15000 },
+                startDrawnPercent: 0
+            },
+            {
+                name: "Breathing Pause",
+                curveCycle: true,
+                cyclePhases: { draw: 0.33, pause1: 0.17, undraw: 0.33, pause2: 0.17 },
+                curveBreathing: true,
+                glyphFadeIn: { min: 2000, max: 12000 },
+                drawSpeed: { min: 5000, max: 25000 },
+                startDrawnPercent: 0
+            },
+            {
+                name: "Balanced Rhythm",
+                curveCycle: true,
+                cyclePhases: { draw: 0.35, pause1: 0.15, undraw: 0.35, pause2: 0.15 },
+                curveBreathing: true,
+                glyphFadeIn: { min: 2000, max: 12000 },
+                drawSpeed: { min: 5000, max: 25000 },
+                startDrawnPercent: 0.1
+            },
+            {
+                name: "Fast Pulse",
+                curveCycle: true,
+                cyclePhases: { draw: 0.4, pause1: 0.1, undraw: 0.4, pause2: 0.1 },
+                curveBreathing: true,
+                glyphFadeIn: { min: 500, max: 3000 },
+                drawSpeed: { min: 1000, max: 8000 },
+                startDrawnPercent: 0.15
+            },
+            {
+                name: "Meditative",
+                curveCycle: true,
+                cyclePhases: { draw: 0.3, pause1: 0.2, undraw: 0.3, pause2: 0.2 },
+                curveBreathing: true,
+                glyphFadeIn: { min: 3000, max: 15000 },
+                drawSpeed: { min: 8000, max: 35000 },
+                startDrawnPercent: 0.05
+            },
+            {
+                name: "Shape Shifter",
+                curveCycle: true,
+                cyclePhases: { draw: 0.35, pause1: 0.15, undraw: 0.35, pause2: 0.15 },
+                curveBreathing: true,
+                glyphFadeIn: { min: 2000, max: 12000 },
+                drawSpeed: { min: 5000, max: 25000 },
+                startDrawnPercent: 0.1,
+                morphCurves: true  // Curves change shape when undrawn
+            },
+            {
+                name: "Slow Shifter",
+                curveCycle: true,
+                cyclePhases: { draw: 0.35, pause1: 0.15, undraw: 0.35, pause2: 0.15 },
+                curveBreathing: true,
+                glyphFadeIn: { min: 4000, max: 24000 },  // Half speed (doubled)
+                drawSpeed: { min: 10000, max: 50000 },   // Half speed (doubled)
+                startDrawnPercent: 0.1,
+                morphCurves: true  // Curves change shape when undrawn
+            }
+        ];
+
+        function generatePalette() {
+            palette = [];
+            const paletteSize = 2 + Math.floor(Math.random() * 5); // 2 to 10 colors
+            const baseHue = Math.random() * 360;
+
+            for (let i = 0; i < paletteSize; i++) {
+                // Using an analogous color scheme for harmony
+                const hue = (baseHue + (i * 25) + (Math.random() * 100)) % 360;
+                const saturation = 10 + Math.random() * 90;
+                const lightness = 10 + Math.random() * 90;
+                palette.push(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
+            }
+        }
+
+        function getRandomColorFromPalette() {
+            return palette[Math.floor(Math.random() * palette.length)];
+        }
+
+        function drawRandomBezierSVG(svgElement, width, height) {
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const startX = Math.random() * width;
+            const startY = Math.random() * height;
+            const endX = Math.random() * width;
+            const endY = Math.random() * height;
+            const cp1X = (Math.random() - 0.5) * width * 2;
+            const cp1Y = (Math.random() - 0.5) * height * 2;
+            const cp2X = (Math.random() - 0.5) * width * 2 + width;
+            const cp2Y = (Math.random() - 0.5) * height * 2 + height;
+
+            const pathData = `M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`;
+            path.setAttribute('d', pathData);
+            path.setAttribute('stroke', getRandomColorFromPalette());
+            path.setAttribute('fill', 'none');
+
+            // Set up animation data
+            const baseWidth = 1 + Math.random() * 2;
+            const baseOpacity = 0.1 + Math.random() * 0.6;
+            const widthVariation = 0.3 + Math.random() * .8; // Vary by 0.3 to 0.9
+            const speed = 0.0001 + Math.random() * 0.0002; // Speed of oscillation
+            const phase = Math.random() * Math.PI * 2; // Random starting phase
+
+            path.setAttribute('stroke-opacity', `${baseOpacity}`);
+
+            svgElement.appendChild(path);
+
+            // Set up drawing animation (stroke-dasharray technique)
+            const pathLength = path.getTotalLength();
+            const drawDuration = currentPreset.drawSpeed.min +
+                Math.random() * (currentPreset.drawSpeed.max - currentPreset.drawSpeed.min);
+            const drawDelay = Math.random() * 10000; // Random delay up to 10 seconds
+
+            // Some curves start fully drawn based on preset
+            const startDrawn = currentPreset.startDrawnPercent &&
+                Math.random() < currentPreset.startDrawnPercent;
+
+            path.style.strokeDasharray = pathLength;
+            path.style.strokeDashoffset = startDrawn ? 0 : pathLength;
+
+            // Add to drawing paths array for centralized animation
+            drawingPaths.push({
+                element: path,
+                pathLength: pathLength,
+                duration: drawDuration,
+                delay: drawDelay,
+                startTime: null,
+                startDrawn: startDrawn,
+                curveCycle: currentPreset.curveCycle,
+                cyclePhases: currentPreset.cyclePhases,
+                width: width,
+                height: height,
+                morphCurves: currentPreset.morphCurves,
+                lastMorphPhase: -1  // Track when we last morphed
+            });
+
+            // Store animation data for breathing effect
+            animatedPaths.push({
+                element: path,
+                baseWidth: baseWidth,
+                widthVariation: widthVariation,
+                speed: speed,
+                phase: phase
+            });
+        }
+
+        // You can mix direct characters and Unicode escape sequences:
+        // '\u{25CB}' for basic Unicode or '\u{1F784}' for extended Unicode
+        // Example: '○' is the same as '\u{25CB}'
+        const SYMBOL_GLYPHS = [
+            '○',        // Can also write as: '\u{25CB}'
+            '🞅',       // Can also write as: '\u{1F785}'
+            '🞄',
+            '●',
+            '◌','⚬','⠈','⬭','⯺','⯼','𐄡','𐄜',
+            '𓇳','𓋪','𓐎','𓏸','𓊗','𓇸','𓆇','𓄹','𓄼','𓄺',
+            '𓃎','🜳','🜛','🝿','🜔','🜚','🤅',
+            '🤇','🤈','𖠁','𖡦','𖥚','𖧾','𖥤','𖥋'
+            ,'𖣐','𖢨','𖡼','𖠟',
+            '𔓷','𔐙','𔓏','𔓐','𔕇','𔗢','𔘒',
+            '𑫏','ⱄ','Ⱉ','Ⱄ','⏾','⌓','⌔',
+            'ᯆ','᯼','ᯅ','᭦','᪣','ᦹ','ᝪ','ᚙ','፨','֍','֎','߷','ࠈ','ࡇ','ࡔ',
+            '৩','ଞ','ஃ','౷','ౚ','ൠ','ෆ','෴','༓','༜','༶','࿂','࿃',
+            '࿀','࿁','ဧ','ဗ',
+            '꧁꧂',
+            '꧞','𐂴','𐇛','𐇣','𐙮',
+            '𐙔','𐘺','𐠗','𐠅'
+        ];
+
+        function drawRandomGlyphSVG(svgElement, width, height, glyphToDraw) {
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+
+            // Position the glyph randomly
+            text.setAttribute('x', `${Math.random() * width}`);
+            text.setAttribute('y', `${Math.random() * height}`);
+
+            // Style the glyph
+            const fontSize = 10 + Math.random() * 80; // Random size from 10px to 90px
+            const targetOpacity = 0.3 + Math.random() * 0.2; // Target opacity
+            const pulseDelay = Math.random() * 3; // Pulse animation delay
+
+            text.setAttribute('fill', getRandomColorFromPalette());
+            text.setAttribute('font-size', `${fontSize}px`);
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('dominant-baseline', 'central');
+            text.setAttribute('class', 'pulsing-glyph');
+            text.setAttribute('style', `animation-delay: ${pulseDelay}s;`); // Set delay from start
+
+            // Start invisible for fade-in animation
+            text.setAttribute('opacity', '0');
+
+            text.textContent = glyphToDraw;
+            svgElement.appendChild(text);
+
+            // Fade-in animation with varying speeds based on preset
+            const fadeInDuration = currentPreset.glyphFadeIn.min +
+                Math.random() * (currentPreset.glyphFadeIn.max - currentPreset.glyphFadeIn.min);
+            const fadeInDelay = Math.random() * 6000; // Random delay up to 6 seconds
+
+            setTimeout(() => {
+                const startTime = performance.now();
+                const animate = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / fadeInDuration, 1);
+                    const currentOpacity = targetOpacity * progress;
+                    text.setAttribute('opacity', currentOpacity);
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        // Fade-in complete, set final opacity
+                        text.setAttribute('opacity', targetOpacity);
+                    }
+                };
+                requestAnimationFrame(animate);
+            }, fadeInDelay);
+        }
+
+        const LAYOUTS = [
+            [1, 1], [1, 2], [2, 1], [2, 2], [2, 3], [3, 2], [2, 4], [4, 2],
+            [3, 4], [4, 3], [4, 4], [3, 6], [4, 5], [5, 4], [4, 6],
+             [5, 5],  [3, 7],  [4, 7], [3, 9],
+            [5, 6], [4, 8]
+        ];
+
+        // Generate a new random bezier path
+        function generateRandomBezierPath(width, height) {
+            const startX = Math.random() * width;
+            const startY = Math.random() * height;
+            const endX = Math.random() * width;
+            const endY = Math.random() * height;
+            const cp1X = (Math.random() - 0.5) * width * 2;
+            const cp1Y = (Math.random() - 0.5) * height * 2;
+            const cp2X = (Math.random() - 0.5) * width * 2 + width;
+            const cp2Y = (Math.random() - 0.5) * height * 2 + height;
+
+            return `M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`;
+        }
+
+        // Animation loop
+        function animatePaths(timestamp) {
+            // Handle drawing/undrawing animations (infinite loop)
+            drawingPaths.forEach((pathData) => {
+                if (pathData.startTime === null) {
+                    // Check if delay has passed
+                    if (!pathData.delayStart) {
+                        pathData.delayStart = timestamp;
+                    }
+                    if (timestamp - pathData.delayStart >= pathData.delay) {
+                        pathData.startTime = timestamp;
+                    }
+                } else {
+                    if (pathData.curveCycle) {
+                        // Continuous draw/undraw cycle with pauses
+                        const elapsed = timestamp - pathData.startTime;
+                        const cycleDuration = pathData.duration * 3; // Full cycle time
+                        let cycleProgress = (elapsed % cycleDuration) / cycleDuration;
+
+                        // If curve starts drawn, offset cycle to begin at undraw phase
+                        if (pathData.startDrawn) {
+                            cycleProgress = (cycleProgress + 0.5) % 1;
+                        }
+
+                        // Use cycle phases from preset
+                        const phases = pathData.cyclePhases;
+                        const drawEnd = phases.draw;
+                        const pause1End = drawEnd + phases.pause1;
+                        const undrawEnd = pause1End + phases.undraw;
+
+                        // Morph the curve during pause2 if enabled
+                        if (pathData.morphCurves && cycleProgress >= undrawEnd) {
+                            const currentCycle = Math.floor(elapsed / cycleDuration);
+                            if (currentCycle !== pathData.lastMorphPhase) {
+                                // Generate new path shape
+                                const newPathData = generateRandomBezierPath(pathData.width, pathData.height);
+                                pathData.element.setAttribute('d', newPathData);
+
+                                // Recalculate path length
+                                pathData.pathLength = pathData.element.getTotalLength();
+                                pathData.element.style.strokeDasharray = pathData.pathLength;
+
+                                // Mark this cycle as morphed
+                                pathData.lastMorphPhase = currentCycle;
+                            }
+                        }
+
+                        let drawProgress;
+                        if (cycleProgress < drawEnd) {
+                            // Drawing phase (0 to 1)
+                            drawProgress = cycleProgress / phases.draw;
+                        } else if (cycleProgress < pause1End) {
+                            // First pause phase (stay at 1)
+                            drawProgress = 1;
+                        } else if (cycleProgress < undrawEnd) {
+                            // Undrawing phase (1 to 0)
+                            drawProgress = 1 - ((cycleProgress - pause1End) / phases.undraw);
+                        } else {
+                            // Second pause phase (stay at 0)
+                            drawProgress = 0;
+                        }
+
+                        const offset = pathData.pathLength * (1 - drawProgress);
+                        pathData.element.style.strokeDashoffset = offset;
+                    } else {
+                        // Draw once and stop
+                        const elapsed = timestamp - pathData.startTime;
+                        const progress = Math.min(elapsed / pathData.duration, 1);
+                        const offset = pathData.pathLength * (1 - progress);
+                        pathData.element.style.strokeDashoffset = offset;
+
+                        if (progress >= 1) {
+                            pathData.element.style.strokeDasharray = 'none';
+                            pathData.element.style.strokeDashoffset = '0';
+                        }
+                    }
+                }
+            });
+
+            // Handle breathing animations (if enabled in preset)
+            if (currentPreset && currentPreset.curveBreathing) {
+                animatedPaths.forEach(pathData => {
+                    const oscillation = Math.sin(timestamp * pathData.speed + pathData.phase);
+                    const width = pathData.baseWidth + (oscillation * pathData.widthVariation);
+                    pathData.element.setAttribute('stroke-width', width);
+                });
+            }
+
+            requestAnimationFrame(animatePaths);
+        }
+
+        function generateArt() {
+            gridContainer.innerHTML = '';
+            animatedPaths = []; // Clear animated paths
+            drawingPaths = []; // Clear drawing paths
+
+            // Select animation preset (either user-selected or random)
+            if (selectedPresetIndex !== null) {
+                currentPreset = ANIMATION_PRESETS[selectedPresetIndex];
+                console.log(`🎨 Animation Preset [${selectedPresetIndex + 1}]: ${currentPreset.name}`);
+            } else {
+                currentPreset = ANIMATION_PRESETS[Math.floor(Math.random() * ANIMATION_PRESETS.length)];
+                console.log(`🎨 Animation Preset [Random]: ${currentPreset.name}`);
+            }
+
+            // Pick a random predefined layout
+            const [rows, cols] = LAYOUTS[Math.floor(Math.random() * LAYOUTS.length)];
+            const totalCells = rows * cols;
+
+            gridContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            gridContainer.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+            generatePalette();
+
+            // Randomize the number of curves, but use the same number for all cells.
+            const numCurves = 4 + Math.floor(Math.random() * 200); // 4 to 200 curves
+            const numGlyphs = 1 + Math.floor(Math.random() * 5); // 5 to 20 glyphs
+            const selectedGlyph = SYMBOL_GLYPHS[Math.floor(Math.random() * SYMBOL_GLYPHS.length)];
+
+            for (let i = 0; i < totalCells; i++) {
+                const panel = document.createElement('div');
+                panel.className = 'panel';
+                gridContainer.appendChild(panel);
+
+                // This needs to be done after the element is in the DOM to get its size
+                const panelWidth = panel.clientWidth;
+                const panelHeight = panel.clientHeight;
+
+                // Always create SVG
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                panel.appendChild(svg);
+
+                // Add random glyphs first, so they are in the background
+                for (let j = 0; j < numGlyphs; j++) {
+                    drawRandomGlyphSVG(svg, panelWidth, panelHeight, selectedGlyph);
+                }
+
+                for (let j = 0; j < numCurves; j++) {
+                    drawRandomBezierSVG(svg, panelWidth, panelHeight);
+                }
+            }
+
+            // Update info panel with current visualization metadata
+            updateInfoPanel(rows, cols, numCurves, numGlyphs, selectedGlyph);
+        }
+
+        // Info panel functions
+        function updateInfoPanel(rows, cols, numCurves, numGlyphs, selectedGlyph) {
+            const infoPanel = document.getElementById('info-panel');
+
+            // Update content
+            document.getElementById('preset-name').textContent = currentPreset.name;
+            document.getElementById('layout-info').textContent = `${cols} × ${rows}`;
+            document.getElementById('curves-count').textContent = `${numCurves} per cell`;
+            document.getElementById('glyphs-count').textContent = `${numGlyphs} per cell`;
+            document.getElementById('selected-glyph').textContent = selectedGlyph;
+
+            // Update palette display
+            const paletteDisplay = document.getElementById('palette-display');
+            paletteDisplay.innerHTML = '';
+            palette.forEach(color => {
+                const colorDiv = document.createElement('div');
+                colorDiv.className = 'palette-color';
+                colorDiv.style.backgroundColor = color;
+                paletteDisplay.appendChild(colorDiv);
+            });
+
+            // Set border color and icon color to first palette color
+            infoPanel.style.borderColor = palette[0];
+            document.querySelector('.circle-icon').style.color = palette[0];
+        }
+
+        // Toggle info panel on click
+        document.getElementById('info-panel').addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent triggering body click
+            document.getElementById('info-panel').classList.toggle('expanded');
+        });
+
+        // Keyboard controls for preset selection
+        document.addEventListener('keydown', (e) => {
+            const key = e.key;
+            if (key >= '0' && key <= '9') {
+                const presetNum = parseInt(key);
+                if (presetNum === 0) {
+                    // Key 0: Return to random mode
+                    selectedPresetIndex = null;
+                    console.log('🎲 Switched to random preset mode');
+                } else if (presetNum <= ANIMATION_PRESETS.length) {
+                    // Keys 1-9: Select specific preset
+                    selectedPresetIndex = presetNum - 1;
+                    console.log(`🎯 Selected preset ${presetNum}: ${ANIMATION_PRESETS[selectedPresetIndex].name}`);
+                }
+                generateArt();
+            }
+        });
+
+        // Initial setup and event listeners
+        generateArt();
+        requestAnimationFrame(animatePaths); // Start animation loop
+
+        window.addEventListener('resize', generateArt);
+
+        document.body.addEventListener('click', generateArt);
+    </script>
+</body>
+</html>

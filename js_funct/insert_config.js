@@ -45,7 +45,6 @@ const INSERT_CONFIG = {
                 positioning: 'scattered'
             }
         },
-        26: { description: 'A high-performance grid of box-drawing characters with a 3-color palette that refreshes periodically.' },
         2: {
             watermarks: {
                 count: 8,
@@ -164,7 +163,7 @@ const INSERT_CONFIG = {
         10: { description: 'Multi-script mandala with rotating glyphs from geometric, Cyrillic, Arabic, Devanagari, and other writing systems using Noto font families with smooth color transitions and webkit text effects.' },
         12: { description: 'Quad grid displaying multi-font Unicode glyphs with hover tooltips showing codepoints and font names, featuring periodic glyph/font/color swaps.' },
         14: { description: 'SVG masked dissolve with multi-glyph layers fading in and out within a shared mask shape that periodically changes to reveal different Unicode symbols.' },
-        15: { description: 'Braided marquee featuring scrolling horizontal and vertical strips in a grid pattern using z-index weaving and OKLCH color harmony schemes.' },
+        15: { description: 'DeGenerator Legacy 8: Split-screen visualization dividing the viewport into left and right halves, each containing 5-20 stacked layers that fade in sequentially with 300ms stagger delays. Box-drawing glyphs from the boxplot.js array render at 70vmin size within layers featuring ultra-transparent RGBA backgrounds (alpha 0.01-0.1) and randomized CSS blend modes.<br><br>Each layer updates independently every 6 seconds with new background colors, blend modes, and glyphs, while a theme color selected from the main palette controls both glyph fills and the full-page background, which changes every 12 seconds. The overlapping semi-transparent layers with varied blend modes create complex optical mixing effects where dozens of box-drawing characters composite together into an evolving abstract composition.<br><br>The combination of long 15-second transitions for colors and blend modes with the 12-second opacity fade creates smooth, meditative cross-fades between states, making the split panels appear to breathe and shift organically as the layered geometric glyphs recombine in continuously varying chromatic and compositional arrangements.' },
         16: { description: 'Emoji grid displaying ZWJ sequences with various backgrounds and 3D twist fade animations cycling through Unicode emoji versions. Uses keyboard to shift through emojis in flavor 3' },
         17: { description: 'DeGenerator Legacy 9: Split-screen with radial gradient backgrounds that cross-fade while displaying box-drawing glyphs with webkit text strokes, shadows, and occasional borders.' },
         18: { description: 'Astronomical orbital animation with classical planets, trans-Neptunian objects, Uranian symbols, and asteroids rotating around a pulsing sun with randomized orbit speeds.' },
@@ -186,6 +185,20 @@ const INSERT_CONFIG = {
                 positioning: 'top-left'
             },
             description: 'Rectangle Tiling: Randomly displays either glyph-based or line-based Mondrian-style recursive rectangle subdivision with OKLCH color harmonies. Uses randomized palette sizes (4-10 colors), subdivision depths (3-7 levels), and contrast ratios (2.0-7.0) for infinite variation. Glyph variant features geometric Unicode symbols with backflip dive animations. Line variant features flowing gradient patterns with controlled animation cycling. Click to regenerate with new random parameters.'
+        },
+        26: {
+            controls: {
+                style: false,
+                html: false,
+                resize: false,
+                moveUpDown: false
+            },
+            watermarks: {
+                count: 1,
+                zIndex: 10,
+                positioning: 'top-left'
+            },
+            description: 'Animated Bezier Curves: A grid-based SVG visualization featuring randomly generated cubic Bezier curves that draw and undraw in continuous cycles with configurable pause phases.<br><br>Each visualization displays 4-200 curves per cell alongside 1-5 pulsing Unicode glyphs from an extended symbol set including ancient scripts (Egyptian hieroglyphs, Phags-Pa, Tai Tham) and geometric forms. Nine distinct animation presets control curve behavior—from static drawings to morphing shapes that transform into entirely new curves during pause phases, with timing ranges from fast (1-8 seconds) to meditative (8-50 seconds).<br><br>The Shape Shifter and Slow Shifter presets feature dynamic curve morphing where paths regenerate at each cycle, creating an ever-evolving composition. Keyboard controls (0-9) allow direct preset selection or random mode, while an expandable info panel displays the active preset name, grid layout, curve/glyph counts, selected symbol, and HSL color palette with matching border accents. Grid layouts vary from minimal (1×1) to complex (5×6), with each regeneration selecting a new random configuration.'
         },
     }
 };

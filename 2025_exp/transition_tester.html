@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transition Engine Tester</title>
+<style>
+    :root {
+        --bg-color: #1a1a1d;
+        --cell-bg-color: #2c2c34;
+        --text-color: #f0f0f0;
+        --border-color: #444;
+        --accent-color: #61dafb;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        font-family: 'SF Mono', 'Consolas', 'Menlo', monospace;
+    }
+    body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+    }
+    #stage {
+        width: 400px;
+        height: 400px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 5px solid var(--border-color);
+        background-color: var(--cell-bg-color);
+        border-radius: 15px;
+        perspective: 1200px; /* For 3D transforms */
+    }
+    #glyph {
+        font-size: 250px;
+        line-height: 1;
+        transform-style: preserve-3d;
+        backface-visibility: hidden;
+        transition: none; /* Animations will be handled by classes */
+    }
+    #metadata-display {
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        width: calc(100% - 20px);
+        max-width: 600px;
+        background: rgba(0,0,0,0.7);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 15px;
+        font-size: 0.8rem;
+        max-height: 25vh;
+        overflow-y: auto;
+    }
+    #captureBtn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        background-color: var(--accent-color);
+        color: #000;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+    <div id="stage">
+        <span id="glyph">&#x2728;</span>
+    </div>
+
+    <div id="metadata-display">
+        <pre>Press a key (1-0, q-p, a-l, z-m) to test a transition. Use Arrow Keys to scroll.</pre>
+    </div>
+
+    <button id="captureBtn">Capture Transition</button>
+
+    <script src="../js_glyph/emoji_versions_data2.js"></script> <!-- For glyphs -->
+    <script src="../js_funct/transition_engine.js"></script>
+</body>
+</html>

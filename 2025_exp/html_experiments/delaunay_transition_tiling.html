@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Delaunay Transition Tiling</title>
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+}
+#canvas {
+    display: block;
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const BORDER_WIDTH = 2; // You can now configure the border width here
+const hexColors = ['#fff', '#fff',
+    '#bbb','#666',
+    '#111','#eee',
+    '#222','#ddd',
+    '#ccc','#333'//,
+    //'#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', 
+   // '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
+   // '#F8B739', '#52B788', '#E63946', '#A8DADC'
+];
+
+const glyphs = ['▲', '▼', '◀', '▶', '◢', '◣', '◤', '◥'];
+
+// --- NEW: Color manipulation functions ---
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (!result) { // Handle 3-digit hex
+        const shortResult = /^#?([a-f\d])([a-f\d])([a-f\d])$/i.exec(hex);
+        if (!shortResult) return { r: 0, g: 0, b: 0 };
+        return {
+            r: parseInt(shortResult[1] + shortResult[1], 16),
+            g: parseInt(shortResult[2] + shortResult[2], 16),
+            b: parseInt(shortResult[3] + shortResult[3], 16)
+        };
+    }
+    return { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) };
+}
+
+function lerpColor(color1, color2, t) {
+    const r = Math.round(color1.r + (color2.r - color1.r) * t);
+    const g = Math.round(color1.g + (color2.g - color1.g) * t);
+    const b = Math.round(color1.b + (color2.b - color1.b) * t);
+    return `rgb(${r},${g},${b})`;
+}
+
+const rgbColors = hexColors.map(hexToRgb);
+
+function randomColor() {
+    return rgbColors[Math.floor(Math.random() * rgbColors.length)];
+}
+
+function randomGlyph() {
+    return glyphs[Math.floor(Math.random() * glyphs.length)];
+}
+
+let triangleObjects = [];
+let lastTime = 0;
+
+// --- Triangle Class with Animation State ---
+class AnimatedTriangle {
+    constructor(vertices) {
+        this.vertices = vertices;
+        this.centroid = this.calculateCentroid();
+        this.area = this.calculateArea();
+        
+        this.color = randomColor();
+        this.borderColor = randomColor();
+        
+        // --- Glyph Properties ---
+        this.glyph = randomGlyph();
+        this.glyphColor = randomColor();
+        this.nextGlyph = null;
+        this.nextColor = null;
+        this.nextBorderColor = null;
+        this.nextGlyphColor = null;
+
+        this.state = 'IDLE'; // IDLE, OUT, IN
+        this.transition = null;
+        this.transitionProgress = 0; // 0 to 2 (0-1 for out, 1-2 for in)
+        this.transitionDuration = 0;
+
+        this.scheduleNextChange();
+    }
+
+    scheduleNextChange() {
+        // --- NEW: Coordinated "Breathing" Animation ---
+        // Calculate distance from the center of the canvas
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const maxDist = Math.sqrt(centerX * centerX + centerY * centerY);
+        const dist = Math.sqrt(Math.pow(this.centroid[0] - centerX, 2) + Math.pow(this.centroid[1] - centerY, 2));
+        
+        // Normalize distance to a 0-1 range
+        const normalizedDist = dist / maxDist;
+
+        // Base delay is shorter, but increases significantly with distance from center
+        const baseDelay = 8000; // Slower base pace (8 seconds)
+        const distanceDelay = normalizedDist * 30000; // Up to 30 extra seconds for edge triangles
+        const totalDelay = baseDelay + distanceDelay + (Math.random() * 8000); // Add more jitter
+        this.nextChangeTime = performance.now() + totalDelay;
+    }
+
+    startTransition() {
+        this.state = 'TRANSITIONING';
+        this.transitionProgress = 0;
+        this.transitionDuration = 4000 + Math.random() * 2000; // Slower 4-6s total transition
+        // Prepare the next glyph that will fade in
+        this.nextGlyph = randomGlyph();
+        this.nextColor = randomColor();
+        this.nextBorderColor = randomColor();
+        this.nextGlyphColor = randomColor();
+        // For this canvas version, we'll use a simple fade/scale transition
+        this.transition = { type: 'fadeAndScale' }; 
+    }
+
+    calculateCentroid() {
+        const x = (this.vertices[0][0] + this.vertices[1][0] + this.vertices[2][0]) / 3;
+        const y = (this.vertices[0][1] + this.vertices[1][1] + this.vertices[2][1]) / 3;
+        return [x, y];
+    }
+
+    calculateArea() {
+        const [ax, ay] = this.vertices[0];
+        const [bx, by] = this.vertices[1];
+        const [cx, cy] = this.vertices[2];
+        return Math.abs((ax * (by - cy) + bx * (cy - ay) + cx * (ay - by)) / 2);
+    }
+
+    update(deltaTime) {
+        if (this.state === 'IDLE' && performance.now() > this.nextChangeTime) {
+            this.startTransition();
+        }
+
+        if (this.state !== 'IDLE') {
+            this.transitionProgress += deltaTime / this.transitionDuration;
+            if (this.transitionProgress >= 2) { // Transition is over when progress hits 2
+                this.state = 'IDLE';
+                // The "next" glyph becomes the current one
+                this.glyph = this.nextGlyph;
+                this.color = this.nextColor;
+                this.borderColor = this.nextBorderColor;
+                this.glyphColor = this.nextGlyphColor;
+                this.scheduleNextChange();
+            }
+        }
+    }
+
+    draw(ctx) {
+        let currentFillColor = `rgb(${this.color.r}, ${this.color.g}, ${this.color.b})`;
+        let currentBorderColor = `rgb(${this.borderColor.r}, ${this.borderColor.g}, ${this.borderColor.b})`;
+
+        // If transitioning, calculate the intermediate color
+        if (this.state === 'TRANSITIONING') {
+            // Use progress / 2 because the full transition takes twice as long (0 to 2)
+            const t = this.transitionProgress / 2;
+            currentFillColor = lerpColor(this.color, this.nextColor, t);
+            currentBorderColor = lerpColor(this.borderColor, this.nextBorderColor, t);
+        }
+
+        ctx.fillStyle = currentFillColor;
+        ctx.beginPath();
+        ctx.moveTo(this.vertices[0][0], this.vertices[0][1]);
+        ctx.lineTo(this.vertices[1][0], this.vertices[1][1]);
+        ctx.lineTo(this.vertices[2][0], this.vertices[2][1]);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = currentBorderColor;
+        ctx.lineWidth = BORDER_WIDTH;
+        ctx.stroke();
+
+        // --- Handle Glyph Drawing and Animation ---
+        const fontSize = Math.sqrt(this.area) * 0.4;
+        ctx.font = `${fontSize}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        if (this.state === 'IDLE') {
+            ctx.fillStyle = `rgb(${this.glyphColor.r}, ${this.glyphColor.g}, ${this.glyphColor.b})`;
+            ctx.fillText(this.glyph, this.centroid[0], this.centroid[1]);
+        } else if (this.state === 'TRANSITIONING') {
+            // Phase 1: Fade out the old glyph (progress from 0 to 1)
+            if (this.transitionProgress < 1) {
+                const easeOut = 1 - Math.pow(1 - this.transitionProgress, 3);
+                const scale = 1 - 0.5 * easeOut;
+                const opacity = 1 - easeOut;
+
+                ctx.save();
+                ctx.globalAlpha = opacity;
+                ctx.translate(this.centroid[0], this.centroid[1]);
+                ctx.scale(scale, scale);
+                ctx.fillStyle = `rgb(${this.glyphColor.r}, ${this.glyphColor.g}, ${this.glyphColor.b})`;
+                ctx.fillText(this.glyph, 0, 0);
+                ctx.restore();
+            }
+            // Phase 2: Fade in the new glyph (progress from 1 to 2)
+            else {
+                const inProgress = this.transitionProgress - 1;
+                const easeIn = inProgress * inProgress * inProgress;
+                const scale = 0.5 + 0.5 * easeIn;
+                const opacity = easeIn;
+
+                ctx.save();
+                ctx.globalAlpha = opacity;
+                ctx.translate(this.centroid[0], this.centroid[1]);
+                ctx.scale(scale, scale);
+                ctx.fillStyle = `rgb(${this.nextGlyphColor.r}, ${this.nextGlyphColor.g}, ${this.nextGlyphColor.b})`;
+                ctx.fillText(this.nextGlyph, 0, 0);
+                ctx.restore();
+            }
+        }
+    }
+}
+
+// --- Delaunay Triangulation Functions (from original file) ---
+function generatePoints(numPoints) {
+    const points = [];
+    points.push([0, 0], [canvas.width, 0], [canvas.width, canvas.height], [0, canvas.height]);
+    for (let i = 0; i < numPoints; i++) {
+        points.push([Math.random() * canvas.width, Math.random() * canvas.height]);
+    }
+    return points;
+}
+
+function delaunay(points) {
+    const superTriangle = [
+        [-10000, -10000], [10000, -10000], [0, 10000]
+    ];
+    let triangles = [superTriangle];
+
+    for (const point of points) {
+        const badTriangles = [];
+        for (const triangle of triangles) {
+            if (inCircumcircle(point, triangle)) {
+                badTriangles.push(triangle);
+            }
+        }
+        const polygon = [];
+        for (const triangle of badTriangles) {
+            for (let i = 0; i < 3; i++) {
+                const edge = [triangle[i], triangle[(i + 1) % 3]];
+                let isShared = false;
+                for (const other of badTriangles) {
+                    if (other === triangle) continue;
+                    if (hasEdge(other, edge)) {
+                        isShared = true;
+                        break;
+                    }
+                }
+                if (!isShared) {
+                    polygon.push(edge);
+                }
+            }
+        }
+        triangles = triangles.filter(t => !badTriangles.includes(t));
+        for (const edge of polygon) {
+            triangles.push([edge[0], edge[1], point]);
+        }
+    }
+
+    triangles = triangles.filter(triangle => {
+        for (const vertex of triangle) {
+            for (const superVertex of superTriangle) {
+                if (vertex[0] === superVertex[0] && vertex[1] === superVertex[1]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    });
+    return triangles;
+}
+
+function inCircumcircle(point, triangle) {
+    const [ax, ay] = triangle[0];
+    const [bx, by] = triangle[1];
+    const [cx, cy] = triangle[2];
+    const [dx, dy] = point;
+    const det = (ax - dx) * ((by - dy) * (cx * cx + cy * cy - dx * dx - dy * dy) - (cy - dy) * (bx * bx + by * by - dx * dx - dy * dy)) +
+                (bx - dx) * ((cy - dy) * (ax * ax + ay * ay - dx * dx - dy * dy) - (ay - dy) * (cx * cx + cy * cy - dx * dx - dy * dy)) +
+                (cx - dx) * ((ay - dy) * (bx * bx + by * by - dx * dx - dy * dy) - (by - dy) * (ax * ax + ay * ay - dx * dx - dy * dy));
+    return det > 0;
+}
+
+function hasEdge(triangle, edge) {
+    for (let i = 0; i < 3; i++) {
+        const v1 = triangle[i];
+        const v2 = triangle[(i + 1) % 3];
+        if ((v1[0] === edge[0][0] && v1[1] === edge[0][1] && v2[0] === edge[1][0] && v2[1] === edge[1][1]) ||
+            (v1[0] === edge[1][0] && v1[1] === edge[1][1] && v2[0] === edge[0][0] && v2[1] === edge[0][1])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// --- Main Setup and Animation Loop ---
+function setup() {
+    const points = generatePoints(50);
+    const delaunayTriangles = delaunay(points);
+    
+    triangleObjects = delaunayTriangles.map(vertices => new AnimatedTriangle(vertices));
+    
+    lastTime = performance.now();
+    animate();
+}
+
+function animate(currentTime) {
+    const deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Update and draw each triangle
+    for (const tri of triangleObjects) {
+        tri.update(deltaTime);
+        tri.draw(ctx);
+    }
+
+    requestAnimationFrame(animate);
+}
+
+function reset() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    setup();
+}
+
+canvas.addEventListener('click', reset);
+window.addEventListener('resize', reset);
+
+// Initial setup
+setup();
+
+</script>
+
+</body>
+</html>

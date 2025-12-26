@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 	<link rel="stylesheet" href="../../css_font/glyphmatic-mono-fonts.css">
+
+    <title>Bool of Bools</title>
+    <style>
+        @property --digit-root-color {
+            syntax: '<color>';
+            inherits: true;
+            initial-value: #4ECDC4;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: #000; /* Deep black background */
+            overflow: hidden; /* Prevents scrollbars */
+            height: 100%;
+            width: 100%;
+        }
+
+        #binary-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: flex-start;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 22px;
+            line-height: 1.2;
+            letter-spacing: 5px;
+            padding: 20px;
+            user-select: none;
+            transition: --digit-root-color 20s ease-in-out; /* Slow transition for the global color */
+        }
+
+        .digit {
+            /* Define default variables */
+            --mix-color: white;
+            --mix-amount: 0%;
+            
+            min-width: 15px; /* Ensure consistent spacing */
+            color: color-mix(in srgb, var(--digit-root-color), var(--mix-color) var(--mix-amount));
+            transition: color .5s ease-in-out;
+        }
+
+        #count-display {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            border: 1px solid #39ff14;
+            cursor: pointer;
+            transition: all 0.4s ease-in-out, border-color s ease-in-out;
+            transform-origin: bottom right;
+            z-index: 100;
+            overflow: hidden; /* Hide text when shrinking */
+        }
+
+        #count-display.hidden {
+            /* Shrink to a dot */
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            border-radius: 50%;
+            color: #000; /* Make text black to hide it */
+            background-color: #000; /* Match page background */
+        }
+
+        /* --- New Mask Styles --- */
+        #mask-overlay {
+            position: fixed;
+            top: 0%;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 50; /* Above grid, below counter */
+            pointer-events: none; /* Allow clicks to pass through */
+            overflow: hidden;
+        }
+
+        #mask-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        #mask-rect {
+            /* Apply the mask to the black rectangle */
+            mask: url(#bool-mask);
+        }
+
+        #mask-text-top, #mask-text-bottom {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-weight: bold;
+            font-size: 18vmax;
+            letter-spacing: -0.3em; /* Pulls glyphs closer together */
+            fill: black;
+        }
+
+        #mask-text-middle {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-weight: bold;
+            font-size: 35vmax;
+            /* In a mask, black creates transparency. */
+            fill: black;
+            letter-spacing: -0.05em; /* Pulls glyphs closer together */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="binary-grid"></div>
+
+    <div id="mask-overlay">
+        <svg id="mask-svg">
+            <defs>
+                <!-- Define all three text elements for the mask -->
+                <text id="mask-text-top" x="-25%" y="15%" text-anchor="left" dominant-baseline="central"></text>
+                <text id="mask-text-middle" x="50%" y="50%" text-anchor="middle" dominant-baseline="central"></text>
+                <text id="mask-text-bottom" x="-25%" y="85%" text-anchor="left" dominant-baseline="central"></text>
+
+                <!-- The mask defines what is visible vs transparent -->
+                <mask id="bool-mask">
+                    <!-- Start with a fully visible (white) area -->
+                    <rect width="100%" height="100%" fill="white" />
+                    <!-- Use all three text shapes (filled with black) to punch holes -->
+                    <use href="#mask-text-top" />
+                    <use href="#mask-text-middle" />
+                    <use href="#mask-text-bottom" />
+                </mask>
+            </defs>
+
+            <!-- This rectangle is the visible black layer, clipped by the path above -->
+            <rect id="mask-rect" width="100%" height="100%" fill="black" />
+        </svg>
+    </div>
+    <div id="count-display" class="hidden"></div>
+
+    <script>
+
+        // Monospace fonts from Google Fonts (excluding barcode/icon fonts)
+// Generated: 2025-12-24T03:49:12.660Z
+// Total fonts: 43
+
+        const MONOSPACE_FONTS = [
+            'Anonymous Pro',
+            'Azeret Mono',
+            'B612 Mono',
+            'Chivo Mono',
+            'Courier Prime',
+            'Cousine',
+            'Cutive Mono',
+            'DM Mono',
+            'Fira Code',
+            'Fira Mono',
+            'Fragment Mono',
+            'Geist Mono',
+            'Google Sans Code',
+            'IBM Plex Mono',
+            'Inconsolata',
+            'Intel One Mono',
+            'JetBrains Mono',
+            'Kode Mono',
+            'LXGW WenKai Mono TC',
+            'Lekton',
+            'Libertinus Mono',
+            'Lilex',
+            'M PLUS 1 Code',
+            'Major Mono Display',
+            'Martian Mono',
+            'Nova Mono',
+            'Overpass Mono',
+            'Oxygen Mono',
+            'PT Mono',
+            'Red Hat Mono',
+            'Reddit Mono',
+            'Roboto Mono',
+            'Share Tech Mono',
+            'Sometype Mono',
+            'Source Code Pro',
+            'Space Mono',
+            'Spline Sans Mono',
+            'Syne Mono',
+            'Ubuntu Mono',
+            'Ubuntu Sans Mono',
+            'VT323',
+            'Victor Mono',
+            'Xanh Mono'
+        ];
+
+        // A selection of nice root colors to start from
+        const rootColorOptions = [
+            '#4ECDC4', '#52B788', '#A8DADC', '#E63946', '#F8B739', 
+            '#BB8FCE', '#FF6B6B', '#45B7D1', '#FFA07A', '#F7DC6F', '#85C1E2'
+        ];
+
+        let shuffledColors = [...rootColorOptions]; // Create a mutable copy to shuffle
+
+        const gridElement = document.getElementById('binary-grid');
+        const countElement = document.getElementById('count-display');
+        const maskTextTop = document.getElementById('mask-text-top');
+        const maskTextMiddle = document.getElementById('mask-text-middle');
+        const maskTextBottom = document.getElementById('mask-text-bottom');
+        let digitElements = [];
+        let currentRootColor;
+        let currentColorIndex = 0;
+        let currentFontName = '';
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function setRandomMonospaceFont() {
+            const randomFont = MONOSPACE_FONTS[Math.floor(Math.random() * MONOSPACE_FONTS.length)];
+            currentFontName = randomFont;
+            const fontStack = `'${randomFont}', Courier, monospace`;
+
+            gridElement.style.fontFamily = fontStack;
+            maskTextTop.style.fontFamily = fontStack;
+            maskTextMiddle.style.fontFamily = fontStack;
+            maskTextBottom.style.fontFamily = fontStack;
+            // Update the display to show the new font name
+            updateCounts();
+        }
+
+        function initializeGrid() {
+            gridElement.innerHTML = '';
+            digitElements = [];
+
+            const charWidth = 15; 
+            const charHeight = 22;
+            const columns = Math.floor(window.innerWidth / charWidth);
+            const rows = Math.floor(window.innerHeight / charHeight);
+            const totalChars = columns * rows;
+
+            for (let i = 0; i < totalChars; i++) {
+                const digitSpan = document.createElement('span');
+                digitSpan.className = 'digit';
+                digitSpan.innerHTML = `<b>${Math.round(Math.random())}</b>`;
+                gridElement.appendChild(digitSpan);
+                digitElements.push(digitSpan);
+                scheduleDigitUpdate(digitSpan);
+            }
+            updateCounts();
+        }
+
+        function scheduleDigitUpdate(digitSpan) {
+            const randomDelay = 500 + Math.random() * 1000;
+            setTimeout(() => {
+                updateDigitColor(digitSpan);
+                scheduleDigitUpdate(digitSpan);
+            }, randomDelay);
+        }
+
+        function updateDigitColor(digitSpan) {
+            const mixAmount = Math.floor(Math.random() * 51);
+            digitSpan.style.setProperty('--mix-color', Math.random() < 0.5 ? 'white' : 'black');
+            digitSpan.style.setProperty('--mix-amount', `${mixAmount}%`);
+            // By setting this, the flickering glyph "jumps ahead" to the new root color, overriding the slow transition.
+            digitSpan.style.setProperty('--digit-root-color', currentRootColor);
+        }
+
+        function updateCounts() {
+            let ones = 0;
+            digitElements.forEach(span => { if (span.textContent === '1') ones++; });
+            if (countElement) {
+                countElement.innerHTML = `Zeros: ${digitElements.length - ones}<br>Ones: ${ones}<br>Font: ${currentFontName}`;
+            }
+        }
+
+        function changeGlobalRootColor() {
+            currentColorIndex = (currentColorIndex + 1) % shuffledColors.length;
+            currentRootColor = shuffledColors[currentColorIndex];
+            countElement.style.borderColor = currentRootColor;
+
+            // Set the root color on the parent grid. The CSS transition will handle the animation.
+            gridElement.style.setProperty('--digit-root-color', currentRootColor);
+        }
+
+        // --- New Mask Logic ---
+        function initializeMask() {
+            // Middle Row (Static)
+            const middleGlyphs = 6;
+            let middleString = '';
+            for (let i = 0; i < middleGlyphs; i++) {
+                middleString += Math.round(Math.random());
+            }
+            maskTextMiddle.textContent = middleString;
+
+            // Top and Bottom Rows (Static, extending off-screen)
+            const sideGlyphs = 40; // Number of glyphs for top and bottom rows
+            let topString = '';
+            let bottomString = '';
+            for (let i = 0; i < sideGlyphs; i++) {
+                topString += Math.round(Math.random()) + ' ';
+                bottomString += Math.round(Math.random()) + ' ';
+            }
+            maskTextTop.textContent = topString;
+            maskTextBottom.textContent = bottomString;
+        }
+
+        // Run on load
+        shuffleArray(shuffledColors);
+        // Fonts are now loaded via external stylesheet
+        setRandomMonospaceFont();
+        changeGlobalRootColor();
+        initializeGrid();
+        initializeMask(); // Set up all three mask rows
+
+        window.addEventListener('resize', initializeGrid);
+        countElement.addEventListener('click', () => {
+            countElement.classList.toggle('hidden');
+        });
+
+        // Set intervals for dynamic changes
+        setInterval(changeGlobalRootColor, 45000); // Change color every 45 seconds
+
+    </script>
+</body>
+</html>

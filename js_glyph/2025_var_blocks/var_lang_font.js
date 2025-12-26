@@ -2404,7 +2404,12 @@ var_lang_font['latin-extended-b-wght'] = [
 var_lang_font['malayalam-wght'] = [
   "Arima",
   "Baloo Chettan 2",
-  "Noto Serif Malayalam"
+  "Noto Serif Malayalam",
+  "Manjari",
+  "Chilanka",
+  "Gayathri",
+  "Anek Malayalam"
+
 ];
 
 var_lang_font['mathematical-operators-wght'] = [

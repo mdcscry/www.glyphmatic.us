@@ -19,14 +19,15 @@ class NavMenu {
      * Initialize the navigation menu
      */
     init() {
-        // Check if any controls are enabled
+        // Check if any controls are enabled or if a description exists
         const anyEnabled = Object.values(this.config.controls).some(val => val === true);
-        
-        if (!anyEnabled) {
-            console.log('All controls disabled for insert', this.insertIndex, '- skipping nav menu creation');
+        const hasDescription = this.config.description && this.config.description !== 'No description available for this insert.';
+
+        if (!anyEnabled && !hasDescription) {
+            console.log('All controls disabled and no description for insert', this.insertIndex, '- skipping nav menu creation');
             return;
         }
-        
+
         // Clean up any existing nav elements first
         this.cleanup();
         this.createSlideOutPanel();
@@ -296,7 +297,7 @@ class NavMenu {
             word-wrap: break-word !important;
             box-sizing: border-box !important;
         `;
-        descDiv.textContent = this.config.description;
+        descDiv.innerHTML = this.config.description;
 
         // Insert at the end of the panel (after controls)
         this.elements.panel.appendChild(descDiv);

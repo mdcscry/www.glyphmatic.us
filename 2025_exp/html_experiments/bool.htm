@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 	<link rel="stylesheet" href="../../css_font/glyphmatic-mono-fonts.css">
+
+    <title>Bools</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: #000; /* Deep black background */
+            overflow: hidden; /* Prevents scrollbars */
+            height: 100%;
+            width: 100%;
+        }
+
+        #binary-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: flex-start;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 22px;
+            line-height: 1.2;
+            letter-spacing: 5px;
+            padding: 20px;
+            user-select: none;
+            transition: --digit-root-color 20s ease-in-out; /* Slow transition for the global color */
+        }
+
+        .digit {
+            /* Define default variables */
+            --digit-root-color: #4ECDC4;
+            --mix-color: white;
+            --mix-amount: 0%;
+            
+            min-width: 15px; /* Ensure consistent spacing */
+            color: color-mix(in srgb, var(--digit-root-color), var(--mix-color) var(--mix-amount));
+            transition: color 0.25s ease-in-out;
+        }
+
+        #count-display {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            border: 1px solid #39ff14;
+            cursor: pointer;
+            transition: all 0.4s ease-in-out, border-color s ease-in-out;
+            transform-origin: bottom right;
+            z-index: 100;
+            overflow: hidden; /* Hide text when shrinking */
+        }
+
+        #count-display.hidden {
+            /* Shrink to a dot */
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            border-radius: 50%;
+            color: #000; /* Make text black to hide it */
+            background-color: #000; /* Match page background */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="binary-grid"></div>
+    <div id="count-display" class="hidden"></div>
+
+    <script>
+        // Monospace fonts from Google Fonts (excluding barcode/icon fonts)
+// Generated: 2025-12-24T03:49:12.660Z
+// Total fonts: 43
+
+        const MONOSPACE_FONTS = [
+            'Anonymous Pro',
+            'Azeret Mono',
+            'B612 Mono',
+            'Chivo Mono',
+            'Courier Prime',
+            'Cousine',
+            'Cutive Mono',
+            'DM Mono',
+            'Fira Code',
+            'Fira Mono',
+            'Fragment Mono',
+            'Geist Mono',
+            'Google Sans Code',
+            'IBM Plex Mono',
+            'Inconsolata',
+            'Intel One Mono',
+            'JetBrains Mono',
+            'Kode Mono',
+            'LXGW WenKai Mono TC',
+            'Lekton',
+            'Libertinus Mono',
+            'Lilex',
+            'M PLUS 1 Code',
+            'Major Mono Display',
+            'Martian Mono',
+            'Nova Mono',
+            'Overpass Mono',
+            'Oxygen Mono',
+            'PT Mono',
+            'Red Hat Mono',
+            'Reddit Mono',
+            'Roboto Mono',
+            'Share Tech Mono',
+            'Sometype Mono',
+            'Source Code Pro',
+            'Space Mono',
+            'Spline Sans Mono',
+            'Syne Mono',
+            'Ubuntu Mono',
+            'Ubuntu Sans Mono',
+            'VT323',
+            'Victor Mono',
+            'Xanh Mono'
+        ];
+
+
+        // A selection of nice root colors to start from
+        const rootColorOptions = [
+            '#4ECDC4', // Teal
+            '#52B788', // Green
+            '#A8DADC', // Light Blue
+            '#E63946', // Red
+            '#F8B739', // Yellow-Orange
+            '#BB8FCE', // Lavender
+            '#FF6B6B', // Coral Red
+            '#45B7D1', // Cerulean
+            '#FFA07A', // Light Salmon
+            '#F7DC6F', // Naples Yellow
+            '#85C1E2'  // Light Cornflower Blue
+        ];
+
+        let shuffledColors = [...rootColorOptions]; // Create a mutable copy to shuffle
+
+        const gridElement = document.getElementById('binary-grid');
+        const countElement = document.getElementById('count-display');
+        let digitElements = [];
+        let currentRootColor;
+        let currentColorIndex = 0;
+        let currentFontName = '';
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function setRandomMonospaceFont() {
+            const randomFont = MONOSPACE_FONTS[Math.floor(Math.random() * MONOSPACE_FONTS.length)];
+            currentFontName = randomFont;
+            const fontStack = `'${randomFont}', Courier, monospace`;
+            gridElement.style.fontFamily = fontStack;
+            countElement.style.fontFamily = fontStack;
+
+            // Update the display to show the new font name
+            updateCounts();
+        }
+
+        function initializeGrid() {
+            gridElement.innerHTML = '';
+            digitElements = [];
+
+            // Calculate how many characters are needed to fill the screen
+            const charWidth = 15; 
+            const charHeight = 22;
+            const columns = Math.floor(window.innerWidth / charWidth);
+            const rows = Math.floor(window.innerHeight / charHeight);
+            const totalChars = columns * rows;
+            
+            let ones = 0;
+            let zeros = 0;
+
+            for (let i = 0; i < totalChars; i++) {
+                const digitSpan = document.createElement('span');
+                digitSpan.className = 'digit';
+                
+                const bit = Math.round(Math.random());
+                digitSpan.innerHTML = `<b>${bit}</b>`;
+                
+                gridElement.appendChild(digitSpan);
+                digitElements.push(digitSpan);
+
+                // Start the individual timer for this digit
+                scheduleDigitUpdate(digitSpan);
+            }
+            updateCounts();
+        }
+
+        function scheduleDigitUpdate(digitSpan) {
+            const randomDelay = 500 + Math.random() * 1000; // Update every 0.5 to 1 seconds
+            setTimeout(() => {
+                // Update its color
+                updateDigitColor(digitSpan);
+
+                // Schedule the next update for this same digit
+                scheduleDigitUpdate(digitSpan);
+            }, randomDelay);
+        }
+
+        function updateDigitColor(digitSpan) {
+            // Use the globally set root color.
+            // The variation comes from the mix amount and type (black/white).
+
+            // Decide whether to mix with black or white, and by how much
+            const mixColor = Math.random() < 0.5 ? 'white' : 'black'; // Mix with both black and white
+            const mixAmount = Math.floor(Math.random() * 51); // 0% to 50%
+
+            // Set the CSS variables on the specific digit's span
+            digitSpan.style.setProperty('--mix-color', mixColor);
+            digitSpan.style.setProperty('--mix-amount', `${mixAmount}%`);
+            // By setting this, the flickering glyph "jumps ahead" to the new root color, overriding the slow transition.
+            digitSpan.style.setProperty('--digit-root-color', currentRootColor);
+        }
+
+        function updateCounts() {
+            let ones = 0;
+            let zeros = 0;
+            digitElements.forEach(span => {
+                if (span.textContent === '1') ones++;
+                else zeros++;
+            });
+            if (countElement) {
+                countElement.innerHTML = `Zeros: ${zeros}<br>Ones: ${ones}<br>Font: ${currentFontName}`;
+            }
+        }
+
+        function changeGlobalRootColor() {
+            currentColorIndex = (currentColorIndex + 1) % shuffledColors.length;
+            currentRootColor = shuffledColors[currentColorIndex];
+            countElement.style.borderColor = currentRootColor;
+            digitElements.forEach(updateDigitColor);
+        }
+
+        // Run on load
+        shuffleArray(shuffledColors);
+        setRandomMonospaceFont();
+        changeGlobalRootColor(); // Set the initial root color and apply it
+        initializeGrid();
+
+        // Set intervals for dynamic changes
+        setInterval(changeGlobalRootColor, 45000); // Change color every 45 seconds
+
+        // Regenerate on window resize to keep it full screen
+        window.addEventListener('resize', initializeGrid);
+
+        // Toggle counter visibility on click
+        countElement.addEventListener('click', () => {
+            countElement.classList.toggle('hidden');
+        });
+
+    </script>
+</body>
+</html>

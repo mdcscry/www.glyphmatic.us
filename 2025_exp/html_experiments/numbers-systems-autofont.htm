@@ -153,6 +153,14 @@ body { margin: 0; padding: 1em; font-family: Inter, system-ui, -apple-system, 'S
         return normalizedDesc; // Return the original (normalized) if no prefix matched.
     }
 
+    // NEW: Helper function to handle special block display names
+    function getDisplayName(blockName) {
+        if (blockName === 'Gothic' || blockName === 'Runic') {
+            return 'Gothic & Runic';
+        }
+        return blockName;
+    }
+
     // --- Intra-application state for cycling through subgroups ---
     const subgroupCycleState = {};
 
@@ -292,7 +300,7 @@ body { margin: 0; padding: 1em; font-family: Inter, system-ui, -apple-system, 'S
         }
 
         // If a sub-system was chosen, prepend it to the title for clarity.
-        title.textContent = blockName;
+        title.textContent = getDisplayName(blockName);
 
         grid.appendChild(tile);
 
@@ -390,7 +398,7 @@ body { margin: 0; padding: 1em; font-family: Inter, system-ui, -apple-system, 'S
 
             // replace
             tile.dataset.block = next;
-            title.textContent = next;
+            title.textContent = getDisplayName(next);
 
             // update closure variable so subsequent showNextGlyph uses correct block
             blockName = next;

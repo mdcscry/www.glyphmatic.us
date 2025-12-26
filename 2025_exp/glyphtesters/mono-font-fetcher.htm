@@ -122,7 +122,7 @@
                 const filteredFonts = json.items.filter(font => {
                     // Must be monospace
                     if (font.category !== 'monospace') {
-                        return false;
+ return false;
                     }
 
                     const fontName = font.family.toLowerCase();
@@ -134,19 +134,83 @@
 
                     // Check specific font name exclusions
                     const isSpecificFontExcluded = excludeSpecificFonts.includes(font.family);
-
+ 
                     return !isKeywordExcluded && !isSpecificFontExcluded;
                 });
 
-                monoFontsArray = filteredFonts.map(font => font.family);
+                monoFontsArray = filteredFonts; // Store full font objects
 
                 // Display the array in proper JavaScript format
-                const arrayString = formatArrayForJS(monoFontsArray);
+                const arrayString = formatOutput(monoFontsArray);
                 outputEl.textContent = arrayString;
 
                 statusEl.textContent = `✓ Success! Found ${monoFontsArray.length} monospace fonts after filtering.`;
                 statusEl.className = 'status success';
                 copyBtn.style.display = 'inline-block';
+
+            } catch (error) {
+                statusEl.textContent = `✗ Error: ${error.message}`;
+                statusEl.className = 'status error';
+                console.error('Fetch error:', error);
+            }
+        }
+
+        function formatOutput(fontsData) {
+            let output = `// Monospace fonts from Google Fonts (excluding barcode/icon fonts)\n`;
+            output += `// Generated: ${new Date().toISOString()}\n`;
+            output += `// Total fonts: ${fontsData.length}\n\n`;
+
+            let importStatements = [];
+            let styleEntries = [];
+            let jsArrayEntries = [];
+
+            fontsData.forEach(font => {
+                const fontFamilyEncoded = encodeURIComponent(font.family.replace(/ /g, '+'));
+                let importUrl = `https://fonts.googleapis.com/css2?family=${fontFamilyEncoded}`;
+                let styleRule = `.font-${font.family.toLowerCase().replace(/[^a-z0-9]/g, '-')}-monospace { font-family: '${font.family}', monospace;`;
+
+                const wghtAxis = font.axes?.find(axis => axis.tag === 'wght');
+                if (wghtAxis) {
+                    importUrl += `:wght@${wghtAxis.start}..${wghtAxis.end}`;
+                    styleRule += ` font-variation-settings: 'wght' ${wghtAxis.start};`;
+                } else if (font.variants && font.variants.length > 0) {
+                    const variants = font.variants.filter(v => v !== 'italic').map(v => v === 'regular' ? '400' : v).join(';');
+                    if (variants) importUrl += `:wght@${variants}`;
+                }
+                importUrl += `&display=swap`;
+                
+                importStatements.push(`@import url('${importUrl}');`);
+                styleEntries.push(`${styleRule} }`);
+                jsArrayEntries.push(`    '${font.family}'`);
+            });
+
+            output += `/* --- @import statements --- */\n`;
+            output += importStatements.join('\n') + '\n\n';
+
+            output += `/* --- Stylesheet entries --- */\n`;
+            output += styleEntries.join('\n') + '\n\n';
+
+            output += `/* --- JavaScript Array for font_utility.js --- */\n`;
+            output += `const MONOSPACE_FONTS = [\n${jsArrayEntries.join(',\n')}\n];\n`;
+
+            return output;
+        }
+
+        function copyToClipboard() {
+            const outputEl = document.getElementById('arrayOutput');
+            const statusEl = document.getElementById('status');
+
+            navigator.clipboard.writeText(outputEl.textContent).then(() => {
+                statusEl.textContent = '✓ Output copied to clipboard!';
+                statusEl.className = 'status success';
+            }).catch(err => {
+                statusEl.textContent = '✗ Failed to copy: ' + err.message;
+                statusEl.className = 'status error';
+            });
+        }
+    </script>
+</body>
+</html>
 
             } catch (error) {
                 statusEl.textContent = `✗ Error: ${error.message}`;

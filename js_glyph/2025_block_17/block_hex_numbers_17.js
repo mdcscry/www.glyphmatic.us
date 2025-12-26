@@ -1,6 +1,18 @@
-blocks = ['Aegean Numbers','Adlam','Ahom','Ancient Greek Numbers','Arabic','Balinese','Bamum','Basic Latin','Bengali','Bhaiksuki','Brahmi','Chakma','Cham','Chorasmian','CJK Symbols and Punctuation','Common Indic Number Forms','Coptic Epact Numbers','Counting Rod Numerals','Cuneiform Numbers and Punctuation','Devanagari','Dingbats','Enclosed CJK Letters and Months','Ethiopic','Gothic-Runic','Gujarati','Gunjala Gondi','Gurmukhi','Hanifi Rohingya','Hatran','Imperial Aramaic','Indic Siyaq Numbers','Inscriptional Pahlavi','Inscriptional Parthian','Javanese','Kaktovik Numerals','Kanbun','Kannada','Kawi','Kayah Li','Kharoshthi','Khmer','Khudawadi','Kirat Rai','Lao','Lepcha','Limbu','Malayalam','Manichaean','Masaram Gondi','Mathematical Alphanumeric Symbols','Mayan Numerals','Medefaidrin','Meetei Mayek','Mende Kikakui','Meroitic Cursive','Modi','Mongolian','Mro','Myanmar','Nabataean','Nag Mundari','New Tai Lue','Newa','NKo','Number Forms','Nyiakeng Puachue Hmong','Ol Chiki','Old Hungarian','Old Italic','Old North Arabian','Old Persian','Old Sogdian','Old South Arabian','Oriya','Osmanya','Ottoman Siyaq Numbers','Pahawh Hmong','Palmyrene','Phoenician','Psalter Pahlavi','Rumi Numeral Symbols','Saurashtra','Sharada','Sinhala','Sogdian','Sora Sompeng','Sundanese','Sunuwar','Superscripts and Subscripts','Symbols for Legacy Computing','Tai Tham','Takri','Tamil','Tangsa','Telugu','Thai','Tibetan','Tirhuta',
- 'Gothic','Runic'
- ,'Vai','Wancho','Warang Citi'
+blocks = ['Aegean Numbers','Adlam','Ahom','Ancient Greek Numbers','Arabic','Balinese','Bamum','Basic Latin',
+    'Bengali','Bhaiksuki','Brahmi','Chakma','Cham','Chorasmian','CJK Symbols and Punctuation',
+    'Common Indic Number Forms','Coptic Epact Numbers','Counting Rod Numerals','Cuneiform Numbers and Punctuation',
+    'Devanagari','Dingbats','Enclosed CJK Letters and Months','Ethiopic','Gothic-Runic',
+    'Gujarati','Gunjala Gondi','Gurmukhi','Hanifi Rohingya','Hatran','Imperial Aramaic','Indic Siyaq Numbers',
+    'Inscriptional Pahlavi','Inscriptional Parthian','Javanese','Kaktovik Numerals','Kanbun','Kannada','Kawi',
+    'Kayah Li','Kharoshthi','Khmer','Khudawadi','Kirat Rai','Lao','Lepcha','Limbu','Malayalam','Manichaean',
+    'Masaram Gondi','Mathematical Alphanumeric Symbols','Mayan Numerals','Medefaidrin','Meetei Mayek',
+    'Mende Kikakui','Meroitic Cursive','Modi','Mongolian','Mro','Myanmar','Nabataean','Nag Mundari',
+    'New Tai Lue','Newa','NKo','Number Forms','Nyiakeng Puachue Hmong','Ol Chiki','Old Hungarian',
+    'Old Italic','Old North Arabian','Old Persian','Old Sogdian','Old South Arabian','Oriya','Osmanya',
+    'Ottoman Siyaq Numbers','Pahawh Hmong','Palmyrene','Phoenician','Psalter Pahlavi','Rumi Numeral Symbols',
+    'Saurashtra','Sharada','Sinhala','Sogdian','Sora Sompeng','Sundanese','Sunuwar','Superscripts and Subscripts',
+    'Symbols for Legacy Computing','Tai Tham','Takri','Tamil','Tangsa','Telugu','Thai','Tibetan','Tirhuta',
+    'Gothic','Runic','Vai','Wancho','Warang Citi'
  ];
 block_hex = {
 'Aegean Numbers' : {

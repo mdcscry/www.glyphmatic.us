@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Christmas Tiling</title>
+<!-- Load Google Sans Flex -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,slnt,wdth,wght,GRAD,ROND@6..144,-10..0,25..151,1..1000,0..100,0..100&family=Google+Sans:ital,opsz,wght,GRAD@0,17..18,400..700,-50..200;1,17..18,400..700,-50..200&display=swap" rel="stylesheet">
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* Background is now set by script */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    transition: background-color 1s ease;
+}
+#card-wrapper {
+    /* This new wrapper will hold the border and shadow */
+    position: relative;
+    padding: 0; /* Padding will be controlled by the border width */
+    transition: all 0.5s ease;
+    display: flex; /* To center the container inside */
+    align-items: center;
+    justify-content: center;
+}
+#container {
+    position: relative;
+    transition: width 0.5s ease, height 0.5s ease;
+    /* The container itself is now borderless and shadowless */
+    overflow: hidden; /* This clips the internal rectangles to the container's shape */
+    flex-shrink: 0; /* Prevent the container from shrinking inside the wrapper */
+}
+.rectangle {
+    position: absolute;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    overflow: hidden; /* Prevent text from bleeding out of its box */
+    border-radius: 6px; /* Add slightly rounded corners */
+}
+.word {
+    font-family: 'Google Sans Flex', sans-serif;
+    text-align: center;
+    user-select: none;
+    line-height: 1.1;
+    word-wrap: break-word; /* Allow long phrases to wrap */
+}
+
+/* --- NEW: Glowing effect for a small percentage of cells --- */
+.rectangle.glowing {
+    /* The --glow-color will be set by the script */
+    animation: pulse-glow 4s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 12px 2px var(--glow-color);
+    }
+    50% {
+        box-shadow: 0 0 20px 6px var(--glow-color);
+    }
+}
+</style>
+</head>
+<body>
+<!-- New wrapper div for the border and shadow -->
+<div id="card-wrapper">
+    <div id="container"></div>
+</div>
+
+<script src="../../js_funct/contrast_tester.js"></script>
+
+<script>
+// ============================================
+// CONFIGURATION - Adjust these settings
+// ============================================
+const CONFIG = {
+    // Maximum subdivision depth (4-6 recommended for this style)
+    maxDepth: 5,
+
+    // Minimum contrast ratio for text (3.0-7.0 recommended)
+    minContrast: 5.0,
+
+    // Maximum attempts to find contrasting color before giving up
+    maxAttempts: 50,
+
+    // --- NEW: Tunable parameters for text fitting algorithms ---
+    fitText: {
+        // For HORIZONTAL text
+        charAspectRatio: 0.69,   // Estimated width-to-height ratio of an average character.
+        paddingFactor: 0.90,    // Overall padding inside the box (0.95 = 5% padding).
+        lineHeightFactor: 1.05,  // Estimated line height relative to font size.
+
+        // For VERTICAL text
+        verticalPadding: 0.95,   // Padding for vertical text (0.9 = 10% padding).
+        verticalCharHeight: 1.1 // How much vertical space a single character takes.
+    }
+};
+// ============================================
+
+const container = document.getElementById('container');
+const cardWrapper = document.getElementById('card-wrapper');
+
+// --- NEW: Variable to hold the accent choice for the current generation ---
+let generationAccentType;
+
+// --- CHRISTMAS DATA ---
+const christmasPalette = {
+    reds: ['#D22B2B', '#A42A28', '#C04040', '#B22222','#8B0000','#720000'
+
+    ],
+    greens: ['#006400', '#228B22', '#008000', '#556B2F','#06402B'
+
+    ],
+    golds: ['#FFD700', '#DAA520', '#D4AF37', '#D3AF37'
+    ],
+    silvers: ['#C0C0C0', '#E8E8E8', '#B0C4DE','#BCC6CC'
+    ,'#E5E4E2' // Platinum
+    ],
+    whites: ['#FFFFFF'
+    ],
+    goldsWhites: ['#FDE3A7', '#FADDAF', '#FFE8BF' // Light gold, not white-gold
+    ]
+
+};
+
+const christmasWordsAndPhrases = [
+    'Xmas', 'Merry Christmas', 'NOEL', 'Silent Night', 'Joy!', 'Peace', 'Love', 'Hope','Yule Log','Yuletide',
+    'Jingle Bells', 'Santa Claus', 'Reindeer', 'Rudolph', 'Frosty the Snowman',
+    'Let it Snow', 'Winter Wonderland', 'Sleigh Ride', 'Chestnuts Roasting',
+    'O Holy Night', 'Deck the Halls', 'Fa La La La La', 'Good Tidings', 'Cheer',
+    'Believe', 'Miracle', 'Starlight', 'Angel', 'Mistletoe', 'Holly', 'Ivy',
+    'Presents', 'Tidings of <br>Comfort and Joy', 'We Wish You a Merry Christmas',
+    'Happy New Year', 'Feliz Navidad', 'Joyeux Noël', 'Buon Natale',
+    'God Rest Ye Merry Gentlemen', 'Hark! The Herald Angels Sing','Silver Bells',
+    'Glory to the Newborn King', 'O Come All Ye Faithful', 'Joyful and Triumphant',
+    'The First Noel', 'Go Tell It on the Mountain', 'What Child Is This?',
+    'We Three Kings Of Orient Are 👑', 'Little Drummer Boy', 'Pa Rum Pum Pum Pum',
+    'Silver Bells', 'White Christmas', 'I\'m Dreaming', 'Twas the Night Before Christmas',
+    'Not a creature was stirring', 'Not even a mouse',
+      'Christmas', 'Merry', 'Festive', 'Jolly', 'Holiday', 'Winter', 'Snow',
+
+  // More words
+  'Cheerful', 'Glowing', 'Sparkle', 'Glitter', 'Twinkle', 'Comfort',
+  'Tidings', 'Yuletide', 'Noel', 'Celebrate', 'Gathering', 'Traditions',
+  'Togetherness', 'December', 'Blizzard', 'Icicles', 'Cold', 'Chilly',
+  'Frozen', 'Snowball', 'Snowman', 'Fireplace', 'Crackling', 'Warmth',
+  'Cozy','Family', 'Peaceful',
+  // Characters & Lore
+  'Santa', 'Claus', 'St. Nick', 'Nicholas', 'Elf', 'Elves', 'Reindeer',
+  'Rudolph the Red Nosed Reindeer', 'Dasher', 'Dancer', 'Prancer', 'Vixen', 'Comet', 'Cupid',
+  'Donner', 'Blitzen', 'Grinch', 'Jack Frost', 'Mrs. Claus', 'Father Christmas',
+  'Elves Workshop', 'North Pole', 'Chimney', 'Sleigh', 'Toys', 'Beard',
+  'Naughty or Nice','Good Shepherd', 'Angels', 'Magi',
+  'Wisemen', 'Jesus', 'Mary', 'Joseph', 'Birth', 'Babe', 'Nativity Scenes',
+  'Bethlehem', 'Manger', 'Star', 'Sacred', 'Blessed', 'Divine',
+
+  // Decorations
+  'Christmas Trees', 'Evergreen', 'Firs', 'Pine', 'Bough', 'Wreath', 'Holly',
+  'Mistletoe', 'Ornaments', 'Lights', 'Tinsel', 'Garland',
+  'Bells', 'Candle', 'Candles', 'Stockings', 'Bows', 'Ribbons',
+  'Nutcracker', 'Poinsettia', 'Tinsel', 'Gifts',
+  'Presents', 'Wrapping Paper', 'Icicles', 'Snowflakes', 'Christmas Cards',
+  // Food & Drink
+  'Eggnog', 'Cookies', 'Gingerbread', 'Candy', 'Candy Cane',
+  'Fruitcake', 'Figgy Pudding', 'Plum Pudding', 'Mince Pie', 
+  'Stuffing', 'Cinnamon', 'Spice', 'Sweets',
+
+  // Phrases & Songs (camelCased for array-friendliness)
+  'Jingle Bells', 'Silent Night', 'Merry Christmas', 'Happy Holidays',
+  'Seasons Greetings', 'Glad Tidings', 'Peace On Earth', 'Little Drummer Boy',
+  'White Christmas', 'Joy To The World', 'Hark!',
+   'Carols','The 12 days of Christmas',
+
+  "Returning Light","Held Still","Quiet Becoming","Soft Arrival","Darkness Thinning","Gentle Turning","Breath and Frost","Light Remembering","Between Nights","Warmth Kept","Low Voices","Winter Listening","Light Practiced","Snowfall Slow","Time Softened","Near to Dawn",
+  "Night Opening","Hope Without Words","The Long Pause","Kindness Moving","Still Enough","Cold Made Kind","Earth Holding","Light at Rest","Silence Warmed","Glow Sustained","Frost and Mercy","Darkness Learning","Hands of Light","Quiet Given","The Turning Near","Breath Held",
+  "Light Remaining","Snow Remembered","Night Giving","The Soft Center","Winter Yielding","Peace Unnamed","Dawn Waiting","The Slow Yes","Light Carrying","Time Lowered","Still Becoming","Warmth Returning","Dark Held","Glow Between","Silence Keeping","The Gentle After","Light Without Hurry",
+
+   "A Partridge in a Pear Tree","Turtle Doves","French Hens","Calling Birds",
+  "Golden Rings","Leaping Lords","Ladies Dancing","Maids a-Milking",
+  "Swimming Swans","Pipers Piping","Drummers Drumming",
+
+    "Evergreen Hush","Frosted Needles","Cold Sun","Blue Dusk","Snow Breath","Bare Branches","Ice Light","Still Pines",
+  "Lantern Glow","Frozen Earth","Night Wind","White Silence","Low Stars","Winter Air","Soft Dark","Quiet Field",
+  "Cedar Smoke","Moon Frost","Deep Cold","Long Night","Slow Dawn","Pale Morning","Held Light","Snow Quiet"
+
+
+
+];
+
+const christmasEmojis = [
+  '🎄','🛷' ,'🎅', '🕯️', '🎅🏻','🎅🏼','🎅🏽','🎅🏾','🎅🏿', '🤶🏻',
+  '🤶🏼','🤶🏽','🤶🏾','🤶🏿', '🤶', '🎁', '🔔', '🌠' ,'❄️', '⛄',
+  '🌟', '✨', '🦌', '🕊️'
+];
+
+const christmasWords = [...christmasWordsAndPhrases, ...christmasEmojis];
+function randomColor() {
+    // Determine which "white" palette to use based on the accent type.
+    const whitePalette = (generationAccentType === 'golds')
+        ? christmasPalette.goldsWhites
+        : christmasPalette.whites;
+
+    const combinedPalette = [
+        ...christmasPalette.reds,
+        ...christmasPalette.greens,
+        ...christmasPalette[generationAccentType],
+        ...whitePalette
+    ];
+    return combinedPalette[Math.floor(Math.random() * combinedPalette.length)];
+}
+
+function randomBackgroundColor() {
+    const rand = Math.random();
+    let colorGroup;
+    const palette = christmasPalette;
+    const whitePalette = (generationAccentType === 'golds') ? palette.goldsWhites : palette.whites;
+
+    if (rand < 0.48) { // 48% chance for red
+        colorGroup = palette.reds;
+    } else if (rand < 0.96) { // 48% chance for green (total 96% for red/green)
+        colorGroup = palette.greens;
+    } else if (rand < 0.98) { // 2% chance for the current accent color (gold OR silver)
+        colorGroup = palette[generationAccentType];
+    } else if (rand < 1) { // 2% chance for the appropriate white
+        colorGroup = whitePalette;
+    } else {
+        // Fallback, should rarely be hit
+        colorGroup = whitePalette;
+    }
+    return colorGroup[Math.floor(Math.random() * colorGroup.length)];
+}
+
+// Get a color with good contrast against the background
+function getContrastingColor(bgColor, minContrast = CONFIG.minContrast) {
+    // --- RESTORED: Contrast-checking logic ---
+    let attempts = 0;
+    let fgColor;
+
+    // 1. First, try to find a contrasting color from the combined palette.
+    // This allows for tone-on-tone combinations like dark red on light red.
+    do {
+        fgColor = randomColor();
+        attempts++;
+        if (getContrastRatio(bgColor, fgColor) >= minContrast) {
+            return fgColor;
+        }
+    } while (attempts < CONFIG.maxAttempts);
+
+    // 2. As a fallback, if no suitable color is found, pick from the whites or accent palettes,
+    // which are more likely to contrast with a dark background.
+    const bgRgb = colorToRgb(bgColor);
+    const lum = getLuminance(bgRgb);
+    if (lum < 0.5) { // If background is dark
+        const whitePalette = (generationAccentType === 'golds') ? christmasPalette.goldsWhites : christmasPalette.whites;
+        const lightColors = [...whitePalette, ...christmasPalette[generationAccentType]];
+        return lightColors[Math.floor(Math.random() * lightColors.length)];
+    }
+    return fgColor; // Return the last attempted color if background is light.
+}
+
+// --- VARIABLE FONT FUNCTIONS ---
+function getRandomFontVariationSettings() {
+    // Using all available axes for Google Sans Flex
+    const GRAD = Math.random() * 90+10;
+    const ROND = Math.random() * 80+20;
+    const opsz = 6 + Math.random() * (138);
+    const slnt = -10 + Math.random() * 10;
+    const wdth = 25 + Math.random() * (126);
+    const wght = 1 + Math.random() * 999;
+
+    return `'GRAD' ${GRAD.toFixed(2)}, 'ROND' ${ROND.toFixed(2)}, 'opsz' ${opsz.toFixed(2)}, ` +
+           `'slnt' ${slnt.toFixed(2)}, 'wdth' ${wdth.toFixed(2)}, 'wght' ${wght.toFixed(2)}`;
+}
+
+function fitHorizontalText(span, rectWidth, rectHeight) {
+    const { charAspectRatio, paddingFactor, lineHeightFactor } = CONFIG.fitText;
+    const phrase = span.innerHTML.replace(/<br\s*\/?>/gi, ' ').trim();
+    if (!phrase) return;
+
+    // Find the longest word to determine the minimum font size required to fit horizontally.
+    const words = phrase.split(/[\s-]+/);
+    const longestWord = words.reduce((a, b) => a.length > b.length ? a : b, '');
+
+    // Calculate the total number of "character widths" in the phrase.
+    const totalCharWidths = phrase.length;
+
+    // Iteratively find the optimal font size.
+    let finalSize = 12; // Start with a minimum font size.
+    for (let fs = 12; fs < 300; fs++) { // Iterate up to a max practical font size.
+        // How many characters can fit on one line at the current font size `fs`?
+        const charsPerLine = rectWidth / (fs * charAspectRatio);
+        if (charsPerLine === 0) continue;
+
+        // Does the longest word fit on a line?
+        const longestWordFits = longestWord.length <= charsPerLine;
+
+        // How many lines will the whole phrase take up?
+        const numLines = Math.ceil(totalCharWidths / charsPerLine);
+
+        // What is the total height the text would occupy?
+        const textHeight = numLines * fs * lineHeightFactor;
+
+        // If both the longest word fits and the total height fits, this font size is valid.
+        if (longestWordFits && textHeight < rectHeight) {
+            finalSize = fs; // This size works, let's see if we can go bigger.
+        } else {
+            break; // This font size is too big, so we stop and use the last valid one.
+        }
+    }
+
+    span.style.fontSize = `${finalSize * paddingFactor}px`;
+}
+
+function fitVerticalText(span, rectWidth, rectHeight) {
+    // This new algorithm is analogous to fitHorizontalText, but with axes swapped.
+    // It finds the largest font size where text can wrap into multiple columns.
+    const { charAspectRatio, paddingFactor, lineHeightFactor } = CONFIG.fitText;
+    const phrase = span.innerHTML.replace(/<br\s*\/?>/gi, ' ').trim(); // Treat <br> as space for wrapping
+    if (!phrase) return;
+
+    // In vertical text, a "word" is what goes in a single column before a space forces a new column.
+    const words = phrase.split(/[\s]+/);
+    const longestWord = words.reduce((a, b) => a.length > b.length ? a : b, '');
+
+    let finalSize = 12; // Start with a minimum font size.
+
+    // Iterate upwards to find the best font size
+    for (let fs = 12; fs < 300; fs++) { // Max practical font size of 300
+        // Constraint 1: The font size can't be wider than the box itself.
+        if (fs > rectWidth) {
+            break;
+        }
+
+        // Constraint 2: The longest word must fit vertically within the box's height.
+        // We use lineHeightFactor here to approximate the height of a character.
+        const longestWordHeight = longestWord.length * fs * lineHeightFactor;
+        if (longestWordHeight > rectHeight) {
+            break;
+        }
+
+        // If we've passed both checks, this font size is valid.
+        // Let's try to go bigger on the next loop.
+        finalSize = fs;
+    }
+
+    // Apply the largest valid font size found, with a small padding factor.
+    span.style.fontSize = `${finalSize * paddingFactor}px`;
+}
+
+function fitEmoji(span, rectWidth, rectHeight) {
+    const { paddingFactor } = CONFIG.fitText;
+    // For a single emoji, the font size is simply the smaller of the two dimensions.
+    const size = Math.min(rectWidth, rectHeight);
+    span.style.fontSize = `${size * paddingFactor}px`;
+    // Emojis often have extra vertical space, this helps center them better.
+    span.style.lineHeight = '1';
+}
+
+function subdivideRectangle(x, y, width, height, depth, maxDepth, parentElement, wordGetter) {
+    // Ensure minimum depth before allowing stops
+    const minDepth = maxDepth - 5;
+    const canStop = depth <= minDepth;
+
+    // Base case: stop subdividing and draw the rectangle
+    if (depth === 0 || (canStop && ((width < 60 && height < 60) || Math.random() < 0.15))) {
+        // Create rectangle div
+        const rect = document.createElement('div');
+        rect.className = 'rectangle';
+        rect.style.left = x + 'px';
+        rect.style.top = y + 'px';
+        rect.style.width = width + 'px';
+        rect.style.height = height + 'px';
+
+        // Set background color
+        const bgColor = randomBackgroundColor(); // CORRECT: Use the percentage-based function
+        rect.style.backgroundColor = bgColor;
+
+        const span = document.createElement('span');
+        span.className = 'word';
+        
+        // Get a word and contrasting color
+        const { word, isEmoji } = wordGetter();
+        span.innerHTML = word; // Use innerHTML to render <br> tags
+        const fillColor = getContrastingColor(bgColor);
+        const strokeColor = randomColor();
+        span.style.webkitTextFillColor = fillColor;
+        span.style.color = fillColor; // Fallback for non-webkit browsers
+
+        //Make stroke more subtle: 50% chance of a 1px stroke
+        // if (Math.random() > 0.1) {
+        //     span.style.webkitTextStroke = `1px ${strokeColor}`;
+        // }
+
+        // Apply random variable font settings
+        span.style.fontVariationSettings = getRandomFontVariationSettings();
+
+        // Add a hard drop-shadow for an embossed/stamped look
+        if (Math.random() > 0.4) { // 60% chance of having a shadow
+            const shadowColor = getContrastingColor(bgColor, 2.5); // Find a contrasting shadow color
+            const shadowX = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 2) + 0); // +/- 2px or 3px
+            const shadowY = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 2) + 0); // +/- 2px or 3px
+            
+            // A light-on-dark embossed effect
+            const lightShadowColor = getContrastingColor(bgColor, 6.0); // High contrast for the light edge
+            
+            // Apply a multi-layer shadow for a more pronounced effect
+            span.style.textShadow = `${shadowX}px ${shadowY}px 0 ${shadowColor}, ${-shadowX/2}px ${-shadowY/2}px 0 ${lightShadowColor}`;
+        }
+
+        // Orient text based on aspect ratio
+        const aspectRatio = width / height;
+        let isVertical = false;
+
+        if (!isEmoji && aspectRatio < 0.6 && word.length < 20) { // Tall box, not too long word, AND not an emoji
+            isVertical = true;
+            span.style.writingMode = 'vertical-rl';
+            span.style.transform = 'rotate(180deg)';
+            span.style.textAlign = 'center';
+            span.style.lineHeight = '0.9';
+        } else {
+            // Horizontal for wide boxes or if the word is an emoji
+            span.style.padding = '2px';
+        }
+
+        // Fit text or emoji to the box
+        if (isEmoji) {
+            fitEmoji(span, width, height);
+        } else {
+            if (isVertical) {
+                fitVerticalText(span, width, height);
+            } else {
+                fitHorizontalText(span, width, height);
+            }
+        }
+        
+        parentElement.appendChild(rect);
+        rect.appendChild(span);
+        return;
+    }
+
+    // Decide whether to split horizontally or vertically
+    const aspectRatio = width / height;
+    let splitHorizontally;
+
+    if (aspectRatio > 1.5) {
+        splitHorizontally = true;
+    } else if (aspectRatio < 0.67) {
+        splitHorizontally = false;
+    } else {
+        splitHorizontally = Math.random() < 0.5;
+    }
+
+    if (splitHorizontally) {
+        // Split vertically (into left and right parts)
+        const splitRatio = 0.3 + Math.random() * 0.4;
+        const splitX = width * splitRatio;
+
+        subdivideRectangle(x, y, splitX, height, depth - 1, maxDepth, parentElement, wordGetter);
+        subdivideRectangle(x + splitX, y, width - splitX, height, depth - 1, maxDepth, parentElement, wordGetter);
+    } else {
+        // Split horizontally (into top and bottom parts)
+        const splitRatio = 0.3 + Math.random() * 0.4;
+        const splitY = height * splitRatio;
+
+        subdivideRectangle(x, y, width, splitY, depth - 1, maxDepth, parentElement, wordGetter);
+        subdivideRectangle(x, y + splitY, width, height - splitY, depth - 1, maxDepth, parentElement, wordGetter);
+    }
+}
+
+function generate() {
+    // Clear container
+    container.innerHTML = '';
+
+    // --- NEW: Choose accent for this generation (gold or silver) ---
+    generationAccentType = Math.random() < 0.5 ? 'golds' : 'silvers';
+
+    // Set a random background for the entire page
+    const pageBgColor = randomBackgroundColor();
+    //const pageBgColor ='#AAA'
+    document.body.style.backgroundColor = pageBgColor;
+    
+    // Randomly set container to portrait or landscape, filling more of the viewport
+    if (Math.random() > 0.55) {
+        // Portrait
+        container.style.width = '60vw';
+        container.style.height = '85vh';
+    } else {
+        // Landscape
+        container.style.width = '85vw';
+        container.style.height = '70vh';
+    }
+
+    // --- ADD RANDOM BORDER AND SHADOW TO THE WRAPPER ---
+    let borderColor;
+    do {
+        borderColor = randomBackgroundColor();
+    } while (borderColor === pageBgColor); // Ensure border is not the same as the page background
+
+    // Random width from 5px to 40px
+    const borderWidth = Math.floor(Math.random() * 1) + 2;
+    // Random radius from 15px (squarish) to 50px (very rounded)
+    const borderRadius = Math.floor(Math.random() * 3) + 1;
+
+    // --- NEW: Add a small gap between the card and the border ---
+    const gap = Math.floor(Math.random() * 15) + 7; // 2px to 6px gap
+    cardWrapper.style.padding = `${gap}px`;
+
+    cardWrapper.style.border = `${borderWidth}px solid ${borderColor}`;
+    cardWrapper.style.borderRadius = `${borderRadius}px`;
+    // The container inside needs to match the wrapper's rounding to clip correctly
+    container.style.borderRadius = `calc(${borderRadius}px - ${borderWidth}px)`;
+
+    // --- REMOVED DROP SHADOW ---
+    cardWrapper.style.boxShadow = 'none';
+
+    // Create a mutable copy of the words for this generation
+    let availableWords = [...christmasWordsAndPhrases];
+    let availableEmojis = [...christmasEmojis];
+
+    // Function to get a unique random word for this generation
+    function getUniqueRandomWord() {
+        // 95% chance for a word, 5% for an emoji
+        if (Math.random() > 0.05 && availableWords.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableWords.length);
+            return { word: availableWords.splice(randomIndex, 1)[0], isEmoji: false };
+        } else if (availableEmojis.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableEmojis.length);
+            return { word: availableEmojis.splice(randomIndex, 1)[0], isEmoji: true };
+        } else {
+            // Fallback to words if we run out of emojis
+            if (availableWords.length === 0) availableWords = [...christmasWordsAndPhrases]; // Reshuffle if empty
+            const randomIndex = Math.floor(Math.random() * availableWords.length);
+            return { word: availableWords.splice(randomIndex, 1)[0], isEmoji: false };
+        }
+    }
+
+    // Get the dimensions of the container to generate the tiling within it
+    const containerRect = container.getBoundingClientRect();
+
+    // Generate the tiling
+    subdivideRectangle(0, 0, containerRect.width, containerRect.height, CONFIG.maxDepth, CONFIG.maxDepth, container, getUniqueRandomWord);
+}
+
+// Initial generation
+generate();
+
+// Regenerate on click
+container.addEventListener('click', generate);
+
+// Handle window resize
+window.addEventListener('resize', () => {
+    generate();
+});
+
+</script>
+
+</body>
+</html>

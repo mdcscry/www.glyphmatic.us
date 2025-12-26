@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Azeret+Mono:ital,wght@0,100..900;1,100..900&family=B612+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Chivo+Mono:ital,wght@0,100..900;1,100..900&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Cousine:ital,wght@0,400;0,700;1,400;1,700&family=Cutive+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Fira+Code:wght@300..700&family=Fira+Mono:wght@400;500;700&family=Fragment+Mono:ital@0;1&family=Geist+Mono:wght@100..900&family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Kode+Mono:wght@400..700&display=swap');
+
+
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=LXGW+WenKai+Mono+TC&family=Libertinus+Mono&family=Lilex:ital,wght@0,100..700;1,100..700&family=M+PLUS+2:wght@100..900&family=Major+Mono+Display&family=Martian+Mono:wght@100..800&family=Nova+Mono&family=Overpass+Mono:wght@300..700&family=Oxygen+Mono&family=PT+Mono&family=Red+Hat+Mono:ital,wght@0,300..700;1,300..700&family=Reddit+Mono:wght@200..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=VT323:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400..800&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Ubuntu+Sans+Mono:ital,wght@0,400..700;1,400..700&family=Victor+Mono:ital,wght@0,100..700;1,100..700&family=Xanh+Mono:ital@0;1&display=swap');
+
+
+/* --- Stylesheet entries --- */
+.font-anonymous-pro-monospace { font-family: 'Anonymous Pro', monospace; }
+.font-azeret-mono-monospace { font-family: 'Azeret Mono', monospace; }
+.font-b612-mono-monospace { font-family: 'B612 Mono', monospace; }
+.font-chivo-mono-monospace { font-family: 'Chivo Mono', monospace; }
+.font-courier-prime-monospace { font-family: 'Courier Prime', monospace; }
+.font-cousine-monospace { font-family: 'Cousine', monospace; }
+.font-cutive-mono-monospace { font-family: 'Cutive Mono', monospace; }
+.font-dm-mono-monospace { font-family: 'DM Mono', monospace; }
+.font-fira-code-monospace { font-family: 'Fira Code', monospace; }
+.font-fira-mono-monospace { font-family: 'Fira Mono', monospace; }
+.font-fragment-mono-monospace { font-family: 'Fragment Mono', monospace; }
+.font-geist-mono-monospace { font-family: 'Geist Mono', monospace; }
+.font-google-sans-code-monospace { font-family: 'Google Sans Code', monospace; }
+.font-ibm-plex-mono-monospace { font-family: 'IBM Plex Mono', monospace; }
+.font-inconsolata-monospace { font-family: 'Inconsolata', monospace; }
+.font-intel-one-mono-monospace { font-family: 'Intel One Mono', monospace; }
+.font-jetbrains-mono-monospace { font-family: 'JetBrains Mono', monospace; }
+.font-kode-mono-monospace { font-family: 'Kode Mono', monospace; }
+.font-lxgw-wenkai-mono-tc-monospace { font-family: 'LXGW WenKai Mono TC', monospace; }
+.font-lekton-monospace { font-family: 'Lekton', monospace; }
+.font-libertinus-mono-monospace { font-family: 'Libertinus Mono', monospace; }
+.font-lilex-monospace { font-family: 'Lilex', monospace; }
+.font-m-plus-1-code-monospace { font-family: 'M PLUS 1 Code', monospace; }
+.font-major-mono-display-monospace { font-family: 'Major Mono Display', monospace; }
+.font-martian-mono-monospace { font-family: 'Martian Mono', monospace; }
+.font-nova-mono-monospace { font-family: 'Nova Mono', monospace; }
+.font-overpass-mono-monospace { font-family: 'Overpass Mono', monospace; }
+.font-oxygen-mono-monospace { font-family: 'Oxygen Mono', monospace; }
+.font-pt-mono-monospace { font-family: 'PT Mono', monospace; }
+.font-red-hat-mono-monospace { font-family: 'Red Hat Mono', monospace; }
+.font-reddit-mono-monospace { font-family: 'Reddit Mono', monospace; }
+.font-roboto-mono-monospace { font-family: 'Roboto Mono', monospace; }
+.font-share-tech-mono-monospace { font-family: 'Share Tech Mono', monospace; }
+.font-sometype-mono-monospace { font-family: 'Sometype Mono', monospace; }
+.font-source-code-pro-monospace { font-family: 'Source Code Pro', monospace; }
+.font-space-mono-monospace { font-family: 'Space Mono', monospace; }
+.font-spline-sans-mono-monospace { font-family: 'Spline Sans Mono', monospace; }
+.font-syne-mono-monospace { font-family: 'Syne Mono', monospace; }
+.font-ubuntu-mono-monospace { font-family: 'Ubuntu Mono', monospace; }
+.font-ubuntu-sans-mono-monospace { font-family: 'Ubuntu Sans Mono', monospace; }
+.font-vt323-monospace { font-family: 'VT323', monospace; }
+.font-victor-mono-monospace { font-family: 'Victor Mono', monospace; }
+.font-xanh-mono-monospace { font-family: 'Xanh Mono', monospace; }
