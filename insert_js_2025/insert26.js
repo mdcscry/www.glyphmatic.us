@@ -3,6 +3,21 @@
 
 console.log('insert26.js loaded');
 
+// Load contrast_tester.js if not already loaded
+let contrastTesterReady = typeof getContrastRatio !== 'undefined';
+
+if (!contrastTesterReady) {
+    const script = document.createElement('script');
+    script.src = './js_funct/contrast_tester.js';
+    script.type = 'text/JavaScript';
+    script.onload = () => {
+        contrastTesterReady = true;
+        console.log('contrast_tester.js loaded');
+    };
+    document.head.appendChild(script);
+    console.log('Loading contrast_tester.js...');
+}
+
 // Define stub function expected by g.us3.htm watermark onclick
 function changeHtmlDisplayInline() {
     // No-op - insert26 doesn't need this functionality
@@ -18,6 +33,9 @@ let drawingPaths = [];
 let currentPreset = null;
 let selectedPresetIndex = null; // null means random mode
 let gridContainer;
+
+// EASY TOGGLE: Set to false to disable random backgrounds
+let useRandomBackground = true;
 
 // ============================================
 // ANIMATION PRESETS
@@ -119,7 +137,13 @@ const SYMBOL_GLYPHS = [
     '࿀','࿁','ဧ','ဗ',
     '꧁꧂',
     '꧞','𐂴','𐇛','𐇣','𐙮',
-    '𐙔','𐘺','𐠗','𐠅'
+    '𐙔','𐘺','𐠗','𐠅',
+    '𐤏','𐤈','𐦈','𐫲','𐫱','𐬾','𐮙','𐮚','𐮛','𐮜',
+    '𐲗','𑁍','𑅀','𑄚','𑈥','𑊩','𑋄','𑍝','𑑛','𑑝',
+    '𖢞','𖢏','𖦧','𖧵','𞋇','𞢓','𞡯',
+    '\u{1FBEA}','\u{1FBEB}','\u{1FBE8}','\u{1FBE9}',
+    '\u{1CC46}','\u{1CC47}','\u{1CE00}','\u{1CE01}',
+    '\u{1CE0B}','\u{1CE0C}','\u{1CDFD}','\u{1CDFE}','\u{1CDFF}'
 ];
 
 const LAYOUTS = [
@@ -139,8 +163,9 @@ function injectStyles() {
         body, html {
             margin: 0;
             padding: 0;
-            background-color: #000;
             overflow: hidden;
+            font-family: 'BabelStone Pseudographica','Noto Sans Symbols', 
+            'Noto Sans Symbols2', sans-serif;            
         }
         #grid-container {
             position: fixed;
@@ -169,7 +194,7 @@ function injectStyles() {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.8);
+            background: var(--bg-color, rgba(0, 0, 0, 0.8));
             color: white;
             border-radius: 50%;
             width: 30px;
@@ -190,6 +215,7 @@ function injectStyles() {
             height: auto;
             padding: 16px;
             display: block;
+            background: rgba(0, 0, 0, 0.85) !important;
         }
         #info-panel .circle-icon {
             display: block;
@@ -207,7 +233,7 @@ function injectStyles() {
         .info-row {
             margin: 8px 0;
             font-size: 12px;
-            font-family: sans-serif;
+            font-family: monospace;
         }
         .info-label {
             opacity: 0.7;
@@ -217,6 +243,10 @@ function injectStyles() {
         }
         .info-value {
             margin-top: 2px;
+        }
+        #selected-glyph {
+            font-family: 'BabelStone Pseudographica','Noto Sans Symbols',
+            'Noto Sans Symbols2', sans-serif;
         }
         .palette-colors {
             display: flex;
@@ -261,9 +291,9 @@ function generatePalette() {
     const baseHue = Math.random() * 360;
 
     for (let i = 0; i < paletteSize; i++) {
-        const hue = (baseHue + (i * 25) + (Math.random() * 100)) % 360;
-        const saturation = 10 + Math.random() * 90;
-        const lightness = 10 + Math.random() * 90;
+        const hue = Math.round((baseHue + (i * 25) + (Math.random() * 100)) % 360);
+        const saturation = Math.round(10 + Math.random() * 90);
+        const lightness = Math.round(10 + Math.random() * 90);
         palette.push(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
     }
 }
@@ -482,9 +512,6 @@ function updateInfoPanel(rows, cols, numCurves, numGlyphs, selectedGlyph) {
         colorDiv.style.backgroundColor = color;
         paletteDisplay.appendChild(colorDiv);
     });
-
-    infoPanel.style.borderColor = palette[0];
-    document.querySelector('.circle-icon').style.color = palette[0];
 }
 
 // ============================================
@@ -512,8 +539,45 @@ function generateArt() {
 
     generatePalette();
 
+    // Generate background separately from palette to keep curves visible
+    let bgColor;
+    if (useRandomBackground && Math.random() < 0.35) {
+        // 35% chance: Generate a background color with extreme lightness
+        const baseHue = Math.random() * 360;
+        const saturation = 10 + Math.random() * 40; // Lower saturation
+        const lightness = Math.random() < 0.3
+            ? 5 + Math.random() * 15    // Very dark (5-20%) - 30% of colored backgrounds
+            : 80 + Math.random() * 15;  // Very light (80-95%) - 70% of colored backgrounds
+        bgColor = `hsl(${baseHue}, ${saturation}%, ${lightness}%)`;
+        console.log(`🎨 Random background: ${bgColor} (lightness: ${lightness}%)`);
+    } else {
+        // 65% chance: Use black
+        bgColor = '#000';
+        console.log('🎨 Background: black');
+    }
+    document.body.style.backgroundColor = bgColor;
+
+    // Match info panel background when collapsed, with contrasting border/icon
+    const infoPanel = document.getElementById('info-panel');
+    infoPanel.style.setProperty('--bg-color', bgColor);
+
+    // Find the palette color with best contrast against background
+    let bestContrast = 0;
+    let accentColor = palette[0]; // Default to first palette color
+
+    palette.forEach(color => {
+        const contrast = getContrastRatio(bgColor, color);
+        if (contrast > bestContrast) {
+            bestContrast = contrast;
+            accentColor = color;
+        }
+    });
+
+    infoPanel.style.border = `2px solid ${accentColor}`;
+    document.querySelector('.circle-icon').style.color = accentColor;
+
     const numCurves = 4 + Math.floor(Math.random() * 200);
-    const numGlyphs = 1 + Math.floor(Math.random() * 5);
+    const numGlyphs = 3 + Math.floor(Math.random() * 15);
     const selectedGlyph = SYMBOL_GLYPHS[Math.floor(Math.random() * SYMBOL_GLYPHS.length)];
 
     for (let i = 0; i < totalCells; i++) {
@@ -527,10 +591,12 @@ function generateArt() {
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         panel.appendChild(svg);
 
+        // Add glyphs first (background layer)
         for (let j = 0; j < numGlyphs; j++) {
             drawRandomGlyphSVG(svg, panelWidth, panelHeight, selectedGlyph);
         }
 
+        // Add curves on top
         for (let j = 0; j < numCurves; j++) {
             drawRandomBezierSVG(svg, panelWidth, panelHeight);
         }
@@ -545,6 +611,9 @@ function generateArt() {
 
 function init() {
     injectStyles();
+
+    // Set initial background
+    document.body.style.backgroundColor = '#000';
 
     // Create grid container
     gridContainer = document.createElement('div');
@@ -604,6 +673,11 @@ function init() {
                 console.log(`🎯 Selected preset ${presetNum}: ${ANIMATION_PRESETS[selectedPresetIndex].name}`);
             }
             generateArt();
+        } else if (key === 'b' || key === 'B') {
+            // Toggle background palette
+            useRandomBackground = !useRandomBackground;
+            console.log(`🎨 Random background: ${useRandomBackground ? 'ON' : 'OFF (black)'}`);
+            generateArt();
         }
     });
 
@@ -618,9 +692,18 @@ function init() {
     console.log('Insert26 initialized - Animated Bezier Curves');
 }
 
-// Start when DOM is ready
+// Start when DOM is ready AND contrast_tester.js is loaded
+function startWhenReady() {
+    if (typeof getContrastRatio !== 'undefined') {
+        init();
+    } else {
+        // Wait a bit and try again
+        setTimeout(startWhenReady, 50);
+    }
+}
+
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', startWhenReady);
 } else {
-    init();
+    startWhenReady();
 }

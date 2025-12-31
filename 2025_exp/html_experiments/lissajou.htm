@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sine Wave Grid</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a0f;
+      overflow: hidden;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      padding: 20px;
+    }
+
+    .box {
+      width: 100px;
+      height: 100px;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .dot {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      filter: blur(1px);
+      box-shadow: 
+        0 0 10px currentColor,
+        0 0 20px currentColor,
+        0 0 30px currentColor;
+    }
+
+    @property --wave-x {
+      syntax: '<number>';
+      inherits: false;
+      initial-value: 0;
+    }
+
+    @property --wave-y {
+      syntax: '<number>';
+      inherits: false;
+      initial-value: 0;
+    }
+
+    @keyframes wave-x {
+      0%, 100% { --wave-x: 0; }
+      50% { --wave-x: 1; }
+    }
+
+    @keyframes wave-y {
+      0%, 100% { --wave-y: 0; }
+      50% { --wave-y: 1; }
+    }
+
+    .dot {
+      --amplitude: 35;
+      --offset-x: 50;
+      --offset-y: 50;
+      
+      animation: 
+        wave-x var(--duration-x, 2s) ease-in-out infinite,
+        wave-y var(--duration-y, 3s) ease-in-out infinite;
+      
+      left: calc(var(--offset-x) * 1% + (var(--wave-x) - 0.5) * var(--amplitude) * 1px);
+      top: calc(var(--offset-y) * 1% + (var(--wave-y) - 0.5) * var(--amplitude) * 1px);
+    }
+  </style>
+</head>
+<body>
+  <div class="grid" id="grid"></div>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const boxCount = 25;
+
+    for (let i = 0; i < boxCount; i++) {
+      const box = document.createElement('div');
+      box.className = 'box';
+
+      // Create multiple dots per box for richer effect
+      const dotCount = 2 + Math.floor(Math.random() * 3); // 2-4 dots
+      
+      for (let j = 0; j < dotCount; j++) {
+        const dot = document.createElement('div');
+        dot.className = 'dot';
+
+        // Randomize parameters
+        const hue = Math.random() * 360;
+        const saturation = 70 + Math.random() * 30;
+        const lightness = 50 + Math.random() * 20;
+        
+        const durationX = 1.5 + Math.random() * 3;
+        const durationY = 1.5 + Math.random() * 3;
+        const delayX = Math.random() * -5;
+        const delayY = Math.random() * -5;
+        const amplitude = 25 + Math.random() * 20;
+
+        dot.style.cssText = `
+          --duration-x: ${durationX}s;
+          --duration-y: ${durationY}s;
+          --amplitude: ${amplitude};
+          animation-delay: ${delayX}s, ${delayY}s;
+          color: hsl(${hue}, ${saturation}%, ${lightness}%);
+          background: hsl(${hue}, ${saturation}%, ${lightness}%);
+          opacity: ${0.6 + Math.random() * 0.4};
+          width: ${10 + Math.random() * 10}px;
+          height: ${10 + Math.random() * 10}px;
+        `;
+
+        box.appendChild(dot);
+      }
+
+      grid.appendChild(box);
+    }
+  </script>
+</body>
+</html>

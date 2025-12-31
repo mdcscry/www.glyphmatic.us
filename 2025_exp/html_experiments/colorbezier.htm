@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../../css_font/glyphmatic-fonts.css">
+    <script src="../../js_funct/contrast_tester.js"></script>
+
     <title>BezierLive</title>
     <style>
         body, html {
             margin: 0;
             padding: 0;
             background-color: #000;
+            font-family: 'BabelStone Pseudographica','Noto Sans Symbols', 
+            'Noto Sans Symbols2', sans-serif;
         }
         #grid-container {
             display: grid;
@@ -31,7 +36,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.8);
+            background: var(--bg-color, rgba(0, 0, 0, 0.8));
             color: white;
             border-radius: 50%;
             width: 30px;
@@ -52,6 +57,7 @@
             height: auto;
             padding: 16px;
             display: block;
+            background: rgba(0, 0, 0, 0.85) !important;
         }
         #info-panel .circle-icon {
             display: block;
@@ -79,6 +85,10 @@
         }
         .info-value {
             margin-top: 2px;
+        }
+        #selected-glyph {
+            font-family: 'BabelStone Pseudographica','Noto Sans Symbols',
+            'Noto Sans Symbols2', sans-serif;
         }
         .palette-colors {
             display: flex;
@@ -152,6 +162,9 @@
         let drawingPaths = [];
         let currentPreset = null;
         let selectedPresetIndex = null; // null means random mode
+
+        // EASY TOGGLE: Set to false to disable random backgrounds
+        let useRandomBackground = true;
 
         // Animation presets - different variations we've created
         const ANIMATION_PRESETS = [
@@ -340,7 +353,13 @@
             '࿀','࿁','ဧ','ဗ',
             '꧁꧂',
             '꧞','𐂴','𐇛','𐇣','𐙮',
-            '𐙔','𐘺','𐠗','𐠅'
+            '𐙔','𐘺','𐠗','𐠅',
+            '𐤏','𐤈','𐦈','𐫲','𐫱','𐬾','𐮙','𐮚','𐮛','𐮜',
+            '𐲗','𑁍','𑅀','𑄚','𑈥','𑊩','𑋄','𑍝','𑑛','𑑝',
+            '𖢞','𖢏','𖦧','𖧵','𞋇','𞢓','𞡯',
+            '\u{1FBEA}','\u{1FBEB}','\u{1FBE8}','\u{1FBE9}',
+            '\u{1CC46}','\u{1CC47}','\u{1CE00}','\u{1CE01}',
+            '\u{1CE0B}','\u{1CE0C}','\u{1CDFD}','\u{1CDFE}','\u{1CDFF}' 
         ];
 
         function drawRandomGlyphSVG(svgElement, width, height, glyphToDraw) {
@@ -527,6 +546,50 @@
 
             generatePalette();
 
+            // Generate background separately from palette to keep curves visible
+            let bgColor;
+            if (useRandomBackground && Math.random() < 0.25) {
+                // 25% chance: Generate a background color with extreme lightness (very dark or very light)
+                // to contrast with the palette colors
+                const baseHue = Math.random() * 360;
+                const saturation = 10 + Math.random() * 40; // Lower saturation
+                const lightness = Math.random() < 0.5
+                    ? 5 + Math.random() * 15    // Very dark (5-20%)
+                    : 80 + Math.random() * 15;  // Very light (80-95%)
+                bgColor = `hsl(${baseHue}, ${saturation}%, ${lightness}%)`;
+            } else {
+                // 75% chance: Use black
+                bgColor = '#000';
+            }
+            document.body.style.backgroundColor = bgColor;
+
+            // Match info panel background when collapsed, with contrasting border/icon
+            const infoPanel = document.getElementById('info-panel');
+            infoPanel.style.setProperty('--bg-color', bgColor);
+
+            // Find the palette color with best contrast against background
+            // Require minimum contrast ratio of 3.5 for readability
+            let bestContrast = 0;
+            let accentColor = null;
+
+            palette.forEach(color => {
+                const contrast = getContrastRatio(bgColor, color);
+                if (contrast >= 3.5 && contrast > bestContrast) {
+                    bestContrast = contrast;
+                    accentColor = color;
+                }
+            });
+
+            // If no good palette color found, use white or black (whichever contrasts better)
+            if (!accentColor) {
+                const whiteContrast = getContrastRatio(bgColor, '#fff');
+                const blackContrast = getContrastRatio(bgColor, '#000');
+                accentColor = whiteContrast > blackContrast ? '#fff' : '#000';
+            }
+
+            infoPanel.style.borderColor = accentColor;
+            document.querySelector('.circle-icon').style.color = accentColor;
+
             // Randomize the number of curves, but use the same number for all cells.
             const numCurves = 4 + Math.floor(Math.random() * 200); // 4 to 200 curves
             const numGlyphs = 1 + Math.floor(Math.random() * 5); // 5 to 20 glyphs
@@ -605,6 +668,11 @@
                     selectedPresetIndex = presetNum - 1;
                     console.log(`🎯 Selected preset ${presetNum}: ${ANIMATION_PRESETS[selectedPresetIndex].name}`);
                 }
+                generateArt();
+            } else if (key === 'b' || key === 'B') {
+                // Toggle background palette
+                useRandomBackground = !useRandomBackground;
+                console.log(`🎨 Random background: ${useRandomBackground ? 'ON' : 'OFF (black)'}`);
                 generateArt();
             }
         });

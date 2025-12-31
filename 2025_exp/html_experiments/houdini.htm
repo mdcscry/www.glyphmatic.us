@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generative CSS Art - Cosmic Flow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --scroll-progress: 0;
+            --hue-shift: 0;
+            --pattern-seed: 42;
+            --pattern-density: 80;
+            --wave-amplitude: 30;
+            --rotation: 0deg;
+        }
+
+        body {
+            min-height: 300vh;
+            background: linear-gradient(180deg, #0a0a0a, #1a0033);
+            overflow-x: hidden;
+            font-family: system-ui;
+        }
+
+        /* Scroll-driven animation setup */
+        @supports (animation-timeline: scroll()) {
+            body {
+                animation: scroll-tracker linear both;
+                animation-timeline: scroll();
+            }
+        }
+
+        @keyframes scroll-tracker {
+            to {
+                --scroll-progress: 1;
+                --hue-shift: 360;
+                --pattern-seed: 1337;
+                --rotation: 720deg;
+            }
+        }
+
+        /* Main canvas with Houdini Paint API */
+        .generative-canvas {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: min(90vw, 90vh);
+            height: min(90vw, 90vh);
+            transform: translate(-50%, -50%) rotate(var(--rotation));
+            background-image: paint(cosmicFlow);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 100px hsla(calc(var(--hue-shift) * 1deg), 100%, 50%, 0.3),
+                inset 0 0 100px rgba(255, 255, 255, 0.05);
+            filter: hue-rotate(calc(var(--hue-shift) * 1deg));
+            mix-blend-mode: screen;
+        }
+
+        /* Trigonometric orbital elements */
+        .orbit-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 100vw;
+            height: 100vh;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .orbital {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, 
+                hsla(calc(var(--hue-shift) * 1deg + var(--offset, 0) * 60deg), 100%, 70%, 1),
+                hsla(calc(var(--hue-shift) * 1deg + var(--offset, 0) * 60deg), 100%, 50%, 0)
+            );
+            border-radius: 50%;
+            box-shadow: 0 0 20px currentColor;
+            animation: orbit 10s infinite linear;
+            animation-delay: calc(var(--offset, 0) * -1s);
+        }
+
+        /* Using CSS trig functions for perfect circular motion */
+        @keyframes orbit {
+            from {
+                transform: 
+                    translate(-50%, -50%)
+                    translateX(calc(var(--radius, 200px) * cos(0deg + var(--offset, 0) * 72deg)))
+                    translateY(calc(var(--radius, 200px) * sin(0deg + var(--offset, 0) * 72deg)))
+                    scale(calc(1 + 0.5 * sin(var(--scroll-progress) * 360deg)));
+            }
+            to {
+                transform: 
+                    translate(-50%, -50%)
+                    translateX(calc(var(--radius, 200px) * cos(360deg + var(--offset, 0) * 72deg)))
+                    translateY(calc(var(--radius, 200px) * sin(360deg + var(--offset, 0) * 72deg)))
+                    scale(calc(1 + 0.5 * sin(var(--scroll-progress) * 360deg + 180deg)));
+            }
+        }
+
+        /* Generate multiple orbitals */
+        .orbital:nth-child(1) { --offset: 0; --radius: 150px; left: 50%; top: 50%; }
+        .orbital:nth-child(2) { --offset: 1; --radius: 180px; left: 50%; top: 50%; }
+        .orbital:nth-child(3) { --offset: 2; --radius: 210px; left: 50%; top: 50%; }
+        .orbital:nth-child(4) { --offset: 3; --radius: 240px; left: 50%; top: 50%; }
+        .orbital:nth-child(5) { --offset: 4; --radius: 270px; left: 50%; top: 50%; }
+        .orbital:nth-child(6) { --offset: 5; --radius: 300px; left: 50%; top: 50%; }
+
+        /* Wave patterns using trig */
+        .wave-layer {
+            position: fixed;
+            bottom: 0;
+            width: 200%;
+            height: 200px;
+            background: linear-gradient(
+                to top,
+                hsla(calc(200 + var(--hue-shift) * 0.5deg), 70%, 50%, 0.3),
+                transparent
+            );
+            transform: translateX(calc(sin(var(--scroll-progress) * 360deg) * 10%));
+            clip-path: polygon(
+                0% 100%,
+                0% calc(50% + sin(0deg) * var(--wave-amplitude) * 1px),
+                10% calc(50% + sin(36deg) * var(--wave-amplitude) * 1px),
+                20% calc(50% + sin(72deg) * var(--wave-amplitude) * 1px),
+                30% calc(50% + sin(108deg) * var(--wave-amplitude) * 1px),
+                40% calc(50% + sin(144deg) * var(--wave-amplitude) * 1px),
+                50% calc(50% + sin(180deg) * var(--wave-amplitude) * 1px),
+                60% calc(50% + sin(216deg) * var(--wave-amplitude) * 1px),
+                70% calc(50% + sin(252deg) * var(--wave-amplitude) * 1px),
+                80% calc(50% + sin(288deg) * var(--wave-amplitude) * 1px),
+                90% calc(50% + sin(324deg) * var(--wave-amplitude) * 1px),
+                100% calc(50% + sin(360deg) * var(--wave-amplitude) * 1px),
+                100% 100%
+            );
+        }
+
+        /* Instructions */
+        .info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 300px;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .info h1 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Fallback for browsers without Houdini support */
+        @supports not (background: paint(something)) {
+            .generative-canvas {
+                background: conic-gradient(
+                    from 0deg at 50% 50%,
+                    hsl(0, 100%, 50%),
+                    hsl(60, 100%, 50%),
+                    hsl(120, 100%, 50%),
+                    hsl(180, 100%, 50%),
+                    hsl(240, 100%, 50%),
+                    hsl(300, 100%, 50%),
+                    hsl(360, 100%, 50%)
+                );
+                animation: rotate 20s infinite linear;
+            }
+            
+            @keyframes rotate {
+                to { transform: translate(-50%, -50%) rotate(360deg); }
+            }
+            
+            .info::after {
+                content: "Note: Your browser doesn't support CSS Paint API. Showing fallback animation.";
+                display: block;
+                margin-top: 10px;
+                color: #ff6b6b;
+                font-size: 12px;
+            }
+        }
+
+        /* Style container queries for responsive adjustments */
+        @container style(--scroll-progress: 0.5) {
+            .generative-canvas {
+                filter: hue-rotate(180deg) contrast(1.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h1>Cosmic Flow</h1>
+        <p>Scroll to evolve the generative patterns. This demo combines:</p>
+        <ul style="margin: 10px 0; padding-left: 20px; font-size: 12px;">
+            <li>CSS Paint API (Houdini)</li>
+            <li>Scroll-driven animations</li>
+            <li>CSS trigonometric functions</li>
+            <li>Dynamic custom properties</li>
+        </ul>
+        <p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">Keep scrolling to see the magic unfold...</p>
+    </div>
+
+    <div class="generative-canvas"></div>
+    
+    <div class="orbit-container">
+        <div class="orbital"></div>
+        <div class="orbital"></div>
+        <div class="orbital"></div>
+        <div class="orbital"></div>
+        <div class="orbital"></div>
+        <div class="orbital"></div>
+    </div>
+
+    <div class="wave-layer"></div>
+
+    <script>
+        // Register the Paint Worklet
+        if ('CSS' in window && 'paintWorklet' in CSS) {
+            // Create and register the worklet
+            const workletCode = `
+                class CosmicFlow {
+                    static get inputProperties() {
+                        return ['--pattern-seed', '--pattern-density', '--hue-shift', '--scroll-progress'];
+                    }
+
+                    paint(ctx, size, props) {
+                        const seed = parseInt(props.get('--pattern-seed')) || 42;
+                        const density = parseInt(props.get('--pattern-density')) || 80;
+                        const hueShift = parseFloat(props.get('--hue-shift')) || 0;
+                        const scrollProgress = parseFloat(props.get('--scroll-progress')) || 0;
+                        
+                        const width = size.width;
+                        const height = size.height;
+                        const centerX = width / 2;
+                        const centerY = height / 2;
+                        
+                        // Pseudo-random number generator
+                        let rng = seed;
+                        const random = () => {
+                            rng = (rng * 1103515245 + 12345) % 2147483647;
+                            return rng / 2147483647;
+                        };
+                        
+                        // Create gradient background
+                        const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height) / 2);
+                        gradient.addColorStop(0, 'hsla(' + hueShift + ', 100%, 10%, 0.5)');
+                        gradient.addColorStop(0.5, 'hsla(' + (hueShift + 180) + ', 100%, 20%, 0.3)');
+                        gradient.addColorStop(1, 'hsla(' + (hueShift + 90) + ', 100%, 5%, 0.8)');
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(0, 0, width, height);
+                        
+                        // Draw generative particles
+                        for (let i = 0; i < density; i++) {
+                            const angle = (i / density) * Math.PI * 2 + scrollProgress * Math.PI * 2;
+                            const radius = random() * Math.min(width, height) / 2;
+                            const x = centerX + Math.cos(angle) * radius;
+                            const y = centerY + Math.sin(angle) * radius;
+                            const particleSize = random() * 4 + 1;
+                            
+                            ctx.fillStyle = 'hsla(' + (hueShift + random() * 60) + ', 100%, ' + (50 + random() * 50) + '%, ' + (0.5 + random() * 0.5) + ')';
+                            ctx.beginPath();
+                            ctx.arc(x, y, particleSize, 0, Math.PI * 2);
+                            ctx.fill();
+                            
+                            // Connect nearby particles
+                            if (i > 0 && random() > 0.7) {
+                                const prevAngle = ((i - 1) / density) * Math.PI * 2 + scrollProgress * Math.PI * 2;
+                                const prevRadius = random() * Math.min(width, height) / 2;
+                                const prevX = centerX + Math.cos(prevAngle) * prevRadius;
+                                const prevY = centerY + Math.sin(prevAngle) * prevRadius;
+                                
+                                ctx.strokeStyle = 'hsla(' + (hueShift + 30) + ', 100%, 70%, 0.2)';
+                                ctx.lineWidth = 0.5;
+                                ctx.beginPath();
+                                ctx.moveTo(x, y);
+                                ctx.lineTo(prevX, prevY);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                }
+                
+                registerPaint('cosmicFlow', CosmicFlow);
+            `;
+            
+            const blob = new Blob([workletCode], { type: 'application/javascript' });
+            const workletURL = URL.createObjectURL(blob);
+            CSS.paintWorklet.addModule(workletURL);
+        }
+
+        // Update CSS custom properties on scroll for browsers without native scroll-driven animations
+        if (!CSS.supports('animation-timeline', 'scroll()')) {
+            window.addEventListener('scroll', () => {
+                const scrollProgress = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+                document.documentElement.style.setProperty('--scroll-progress', scrollProgress);
+                document.documentElement.style.setProperty('--hue-shift', scrollProgress * 360);
+                document.documentElement.style.setProperty('--rotation', `${scrollProgress * 720}deg`);
+                document.documentElement.style.setProperty('--pattern-seed', Math.floor(42 + scrollProgress * 1295));
+            });
+        }
+    </script>
+</body>
+</html>

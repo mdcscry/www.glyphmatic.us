@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Bam</title>
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: background-color 2s ease;
+}
+#container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+.rectangle {
+    position: absolute;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    border: none; /* Invisible tiling */
+}
+.glyph {
+    text-align: center;
+    user-select: none;
+    display: inline-block;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    font-family: "Noto Sans Bamum", "Segoe UI Historic", "Segoe UI Symbol", sans-serif;
+}
+</style>
+</head>
+<body>
+
+<div id="container"></div>
+
+<!-- Load dependencies -->
+<script src="../../js_funct/contrast_tester.js"></script>
+<script src="../../js_funct/colorpalette.js"></script>
+<script src="../../js_funct/transition_engine.js"></script>
+
+<script>
+// ============================================
+// CONFIGURATION - All settings in one place
+// ============================================
+const CONFIG = {
+    // === Unicode Range ===
+    bamumStart: 0x16800,
+    bamumEnd: 0x16A38,
+    excludeCodes: [
+        0x16941  // Add any problematic characters here
+    ],
+
+    // === Treemap Subdivision ===
+    maxDepth: 4,
+    minRectSize: 300,
+    maxRectSize: 500,
+
+    // === Transition Settings ===
+    numTransitions: 40,
+    transitionDurationMin: 4.0, // seconds
+    transitionDurationMax: 8.0, // seconds
+    transitionIntervalMin: 15000, // milliseconds
+    transitionIntervalMax: 40000, // milliseconds
+    maxSimultaneousTransitions: 2,
+    transitionStartDelayMax: 16000, // milliseconds (0-8 seconds random delay)
+    transitionCooldownMin: 5000,  // milliseconds - minimum pause after all transitions finish
+    transitionCooldownMax: 15000, // milliseconds - maximum pause after all transitions finish
+
+    // === Glyph Appearance ===
+    glyphSizeMultiplier: 1.1, // 80% of cell size
+
+    // === Color Palette ===
+    paletteMinSize: 4,
+    paletteMaxSize: 8,
+    minContrast: 4.5,
+
+    // === Empty Cell Settings (Ranges) ===
+    emptyPercentageMin: 0.5,    // 50%
+    emptyPercentageMax: 0.7,    // 70%
+    quadrantFillThresholdMin: 15,  // Spawn if quadrant fill drops below this % (min)
+    quadrantFillThresholdMax: 20,  // Spawn if quadrant fill drops below this % (max)
+    spawnCheckInterval: 5000,      // 5 seconds between spawn checks
+    disappearChanceMin: 0.3,       // 30%
+    disappearChanceMax: 0.45,      // 45%
+
+    // === Runtime Values (set during initialization) ===
+    emptyPercentage: 0,
+    quadrantFillThreshold: 0,
+    disappearChance: 0
+};
+
+function getBamumCharacters() {
+    const chars = [];
+    for (let code = CONFIG.bamumStart; code <= CONFIG.bamumEnd; code++) {
+        // Skip excluded codes
+        if (!CONFIG.excludeCodes.includes(code)) {
+            chars.push(String.fromCodePoint(code));
+        }
+    }
+    return chars;
+}
+
+const bamumChars = getBamumCharacters();
+console.log(`Loaded ${bamumChars.length} Bamum Supplement characters`);
+
+// ============================================
+// HARMONIOUS PALETTE GENERATION
+// ============================================
+function generateHarmoniousPalette(bgColor, count) {
+    const strategies = ['analogous', 'monochromatic', 'complementary', 'similar-saturation'];
+    const strategy = strategies[Math.floor(Math.random() * strategies.length)];
+
+    console.log(`Using ${strategy} color harmony`);
+
+    // Base hue for the palette
+    const baseHue = Math.random() * 360;
+
+    // Determine if background is light or dark
+    const bgOklch = ColorPalette.parseOKLCH(bgColor);
+    const isLightBg = bgOklch && bgOklch.l > 0.5;
+
+    const palette = [];
+    const minContrast = CONFIG.minContrast;
+
+    switch(strategy) {
+        case 'analogous':
+            // Colors within 60° of base hue
+            const hueRange = 60;
+            for (let i = 0; i < count; i++) {
+                const hue = baseHue + (Math.random() - 0.5) * hueRange;
+                const l = isLightBg ? 0.3 + Math.random() * 0.3 : 0.6 + Math.random() * 0.3;
+                const c = 0.1 + Math.random() * 0.15; // Moderate, consistent chroma
+                const color = ColorPalette.generateOKLCH(l, c, hue);
+
+                if (getContrastRatio(color, bgColor) >= minContrast) {
+                    palette.push(color);
+                }
+            }
+            break;
+
+        case 'monochromatic':
+            // Same hue, varying lightness and chroma
+            for (let i = 0; i < count; i++) {
+                const l = isLightBg ? 0.2 + Math.random() * 0.4 : 0.5 + Math.random() * 0.4;
+                const c = 0.05 + Math.random() * 0.2;
+                const color = ColorPalette.generateOKLCH(l, c, baseHue);
+
+                if (getContrastRatio(color, bgColor) >= minContrast) {
+                    palette.push(color);
+                }
+            }
+            break;
+
+        case 'complementary':
+            // Use complementary and triadic color relationships
+            const relationships = [0, 60, 120, 180, 240, 300]; // Triadic + complementary
+            for (let i = 0; i < count; i++) {
+                const hue = baseHue + relationships[i % relationships.length];
+                const l = isLightBg ? 0.3 + Math.random() * 0.3 : 0.6 + Math.random() * 0.3;
+                const c = 0.12 + Math.random() * 0.1; // Consistent chroma
+                const color = ColorPalette.generateOKLCH(l, c, hue);
+
+                if (getContrastRatio(color, bgColor) >= minContrast) {
+                    palette.push(color);
+                }
+            }
+            break;
+
+        case 'similar-saturation':
+            // Random hues but consistent chroma and lightness range
+            const targetChroma = 0.1 + Math.random() * 0.1;
+            const targetLightness = isLightBg ? 0.35 : 0.7;
+
+            for (let i = 0; i < count; i++) {
+                const hue = Math.random() * 360;
+                const l = targetLightness + (Math.random() - 0.5) * 0.15;
+                const c = targetChroma + (Math.random() - 0.5) * 0.05;
+                const color = ColorPalette.generateOKLCH(l, c, hue);
+
+                if (getContrastRatio(color, bgColor) >= minContrast) {
+                    palette.push(color);
+                }
+            }
+            break;
+    }
+
+    // Fallback: ensure we have enough colors
+    while (palette.length < count) {
+        const hue = baseHue + Math.random() * 60;
+        const l = isLightBg ? 0.3 + Math.random() * 0.3 : 0.6 + Math.random() * 0.3;
+        const c = 0.1 + Math.random() * 0.15;
+        const color = ColorPalette.generateOKLCH(l, c, hue);
+
+        if (getContrastRatio(color, bgColor) >= minContrast) {
+            palette.push(color);
+        }
+    }
+
+    return palette.slice(0, count);
+}
+
+// ============================================
+// GLYPH MANAGER
+// ============================================
+class GlyphManager {
+    constructor(transitionEngine, display) {
+        this.transitionEngine = transitionEngine;
+        this.display = display; // Reference to BamumDisplay for color palette
+        this.glyphs = [];
+        this.emptyCells = []; // Track cells without glyphs
+        this.maxSimultaneous = CONFIG.maxSimultaneousTransitions;
+        this.currentlyAnimating = 0;
+        this.lastSpawnCheck = Date.now();
+        this.nextTransitionAllowedTime = Date.now(); // Cooldown tracking
+    }
+
+    registerGlyph(glyphElement) {
+        // Fully random initial delay - no sequential bias
+        const randomDelay = Math.random() * CONFIG.transitionIntervalMax;
+
+        this.glyphs.push({
+            element: glyphElement,
+            isAnimating: false,
+            nextTransitionTime: Date.now() + randomDelay
+        });
+    }
+
+    registerEmptyCell(rectElement) {
+        this.emptyCells.push({
+            rect: rectElement
+        });
+    }
+
+    randomBamumChar() {
+        return bamumChars[Math.floor(Math.random() * bamumChars.length)];
+    }
+
+    // Called when a transition finishes to potentially set cooldown
+    onTransitionEnd() {
+        this.currentlyAnimating--;
+
+        // If all transitions finished, set cooldown period
+        if (this.currentlyAnimating === 0) {
+            const cooldown = CONFIG.transitionCooldownMin +
+                Math.random() * (CONFIG.transitionCooldownMax - CONFIG.transitionCooldownMin);
+            this.nextTransitionAllowedTime = Date.now() + cooldown;
+            console.log(`[COOLDOWN] All transitions finished. Next allowed in ${(cooldown/1000).toFixed(1)}s`);
+        }
+    }
+
+    update() {
+        const now = Date.now();
+
+        // Check for spawning glyphs in empty cells
+        if (now - this.lastSpawnCheck >= CONFIG.spawnCheckInterval) {
+            console.log('%c\n========== SPAWN CHECK CYCLE START ==========', 'color: #00aaff; font-weight: bold;');
+            this.checkSpawning(now);
+            this.lastSpawnCheck = now;
+            console.log('%c========== SPAWN CHECK CYCLE END ==========\n', 'color: #00aaff; font-weight: bold;');
+        }
+
+        // Check if we can start more transitions
+        if (this.currentlyAnimating >= this.maxSimultaneous) {
+            return;
+        }
+
+        // Check if we're in cooldown period
+        if (now < this.nextTransitionAllowedTime) {
+            return;
+        }
+
+        // Find glyphs ready to transition
+        for (const glyph of this.glyphs) {
+            if (this.currentlyAnimating >= this.maxSimultaneous) {
+                break;
+            }
+
+            if (!glyph.isAnimating && now >= glyph.nextTransitionTime) {
+                this.startTransition(glyph);
+            }
+        }
+    }
+
+    // Get the quadrant (0-5) for a given rectangle element
+    // 2 rows × 3 columns layout
+    getCellQuadrant(rect) {
+        const left = parseInt(rect.style.left);
+        const top = parseInt(rect.style.top);
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        const thirdWidth = width / 3;
+        const midHeight = height / 2;
+
+        // Determine column: 0=left, 1=center, 2=right
+        let col;
+        if (left < thirdWidth) {
+            col = 0; // left
+        } else if (left < thirdWidth * 2) {
+            col = 1; // center
+        } else {
+            col = 2; // right
+        }
+
+        // Determine row: 0=top, 1=bottom
+        const row = top < midHeight ? 0 : 1;
+
+        // Return quadrant index (0-5)
+        // Top row: 0=top-left, 1=top-center, 2=top-right
+        // Bottom row: 3=bottom-left, 4=bottom-center, 5=bottom-right
+        return row * 3 + col;
+    }
+
+    // Calculate the area overlap between a rect and a quadrant
+    getRectQuadrantOverlap(rect, quadrantIndex) {
+        const rectLeft = parseInt(rect.style.left);
+        const rectTop = parseInt(rect.style.top);
+        const rectWidth = parseInt(rect.style.width);
+        const rectHeight = parseInt(rect.style.height);
+
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        const thirdWidth = screenWidth / 3;
+        const midHeight = screenHeight / 2;
+
+        // Define quadrant boundaries
+        const quadrants = [
+            { left: 0, right: thirdWidth, top: 0, bottom: midHeight },
+            { left: thirdWidth, right: thirdWidth * 2, top: 0, bottom: midHeight },
+            { left: thirdWidth * 2, right: screenWidth, top: 0, bottom: midHeight },
+            { left: 0, right: thirdWidth, top: midHeight, bottom: screenHeight },
+            { left: thirdWidth, right: thirdWidth * 2, top: midHeight, bottom: screenHeight },
+            { left: thirdWidth * 2, right: screenWidth, top: midHeight, bottom: screenHeight }
+        ];
+
+        const quad = quadrants[quadrantIndex];
+
+        // Calculate intersection rectangle
+        const overlapLeft = Math.max(rectLeft, quad.left);
+        const overlapTop = Math.max(rectTop, quad.top);
+        const overlapRight = Math.min(rectLeft + rectWidth, quad.right);
+        const overlapBottom = Math.min(rectTop + rectHeight, quad.bottom);
+
+        // If no overlap, return 0
+        if (overlapLeft >= overlapRight || overlapTop >= overlapBottom) {
+            return 0;
+        }
+
+        // Return overlap area
+        return (overlapRight - overlapLeft) * (overlapBottom - overlapTop);
+    }
+
+    // Calculate percentage of each quadrant that is filled with glyphs
+    getQuadrantFillPercentages() {
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        const quadrantArea = (screenWidth / 3) * (screenHeight / 2);
+
+        const filledAreas = [0, 0, 0, 0, 0, 0];
+
+        // Sum up filled area in each quadrant from all glyphs
+        for (const glyph of this.glyphs) {
+            const rect = glyph.element.parentElement;
+            if (rect) {
+                for (let q = 0; q < 6; q++) {
+                    filledAreas[q] += this.getRectQuadrantOverlap(rect, q);
+                }
+            }
+        }
+
+        // Convert to percentages
+        return filledAreas.map(area => (area / quadrantArea) * 100);
+    }
+
+    // Get quadrant counts (for display purposes)
+    getQuadrantCounts() {
+        const counts = [0, 0, 0, 0, 0, 0];
+
+        for (const glyph of this.glyphs) {
+            const rect = glyph.element.parentElement;
+            if (rect) {
+                const quadrant = this.getCellQuadrant(rect);
+                counts[quadrant]++;
+            }
+        }
+
+        return counts;
+    }
+
+    // Get the least populated quadrants (based on empty percentage)
+    getLeastPopulatedQuadrants() {
+        const fillPercentages = this.getQuadrantFillPercentages();
+        const minFill = Math.min(...fillPercentages);
+
+        // Return array of quadrant indices that have the minimum fill (most empty)
+        return fillPercentages.map((fill, index) => fill === minFill ? index : -1)
+                              .filter(index => index !== -1);
+    }
+
+    checkSpawning(now) {
+        if (this.emptyCells.length === 0) {
+            console.log('[SPAWN] No empty cells available');
+            return;
+        }
+
+        // Get quadrant distribution
+        const quadrantCounts = this.getQuadrantCounts();
+        const fillPercentages = this.getQuadrantFillPercentages();
+        const quadrantNames = ['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right'];
+
+        console.log(`[SPAWN CHECK] Empty cells: ${this.emptyCells.length} | Active glyphs: ${this.glyphs.length}`);
+        console.log(`[SPAWN CHECK] Glyph counts: TL:${quadrantCounts[0]} TC:${quadrantCounts[1]} TR:${quadrantCounts[2]} BL:${quadrantCounts[3]} BC:${quadrantCounts[4]} BR:${quadrantCounts[5]}`);
+        console.log(`[SPAWN CHECK] Fill %: TL:${fillPercentages[0].toFixed(1)}% TC:${fillPercentages[1].toFixed(1)}% TR:${fillPercentages[2].toFixed(1)}% BL:${fillPercentages[3].toFixed(1)}% BC:${fillPercentages[4].toFixed(1)}% BR:${fillPercentages[5].toFixed(1)}%`);
+        console.log(`[SPAWN CHECK] Threshold: ${CONFIG.quadrantFillThreshold.toFixed(1)}%`);
+
+        // Group empty cells by quadrant
+        const cellsByQuadrant = [[], [], [], [], [], []]; // 6 quadrants
+        this.emptyCells.forEach(cell => {
+            const quadrant = this.getCellQuadrant(cell.rect);
+            cellsByQuadrant[quadrant].push(cell);
+        });
+
+        // Log empty cells per quadrant
+        const emptyCellCounts = cellsByQuadrant.map(cells => cells.length);
+        console.log(`[SPAWN CHECK] Empty cells per quadrant: TL:${emptyCellCounts[0]} TC:${emptyCellCounts[1]} TR:${emptyCellCounts[2]} BL:${emptyCellCounts[3]} BC:${emptyCellCounts[4]} BR:${emptyCellCounts[5]}`);
+
+        // Find quadrants below threshold
+        const quadrantsBelowThreshold = [];
+        for (let q = 0; q < 6; q++) {
+            if (fillPercentages[q] < CONFIG.quadrantFillThreshold) {
+                quadrantsBelowThreshold.push(q);
+            }
+        }
+
+        if (quadrantsBelowThreshold.length > 0) {
+            console.log(`[SPAWN CHECK] Quadrants below threshold: ${quadrantsBelowThreshold.map(q => quadrantNames[q]).join(', ')}`);
+        }
+
+        let spawnsThisRound = 0;
+
+        // Spawn in quadrants below threshold
+        for (const quadrant of quadrantsBelowThreshold) {
+            const cellsInQuadrant = cellsByQuadrant[quadrant];
+
+            // Spawn in ONE random empty cell in this quadrant (if available)
+            if (cellsInQuadrant.length > 0) {
+                const randomCell = cellsInQuadrant[Math.floor(Math.random() * cellsInQuadrant.length)];
+                const cellIndex = this.emptyCells.indexOf(randomCell);
+
+                if (cellIndex !== -1) {
+                    this.spawnGlyph(randomCell.rect);
+                    spawnsThisRound++;
+                    this.emptyCells.splice(cellIndex, 1);
+
+                    console.log(`%c🟢 SPAWN SUCCESS!%c Spawned in ${quadrantNames[quadrant]} (fill was ${fillPercentages[quadrant].toFixed(1)}%, threshold is ${CONFIG.quadrantFillThreshold.toFixed(1)}%)`, 'color: #00ff00; font-weight: bold; font-size: 14px;', 'color: inherit');
+                }
+            }
+        }
+
+        if (spawnsThisRound > 0) {
+            console.log(`%c[SPAWN SUMMARY]%c Spawned ${spawnsThisRound} glyphs\n`, 'color: #ffaa00; font-weight: bold;', 'color: inherit');
+        } else {
+            console.log(`[SPAWN SUMMARY] No spawns needed (all quadrants above threshold)\n`);
+        }
+    }
+
+    spawnGlyph(rectElement) {
+        // Safety check: remove any existing glyphs first
+        const existingGlyphs = rectElement.querySelectorAll('.glyph');
+        if (existingGlyphs.length > 0) {
+            console.warn(`Spawning in non-empty rect! Removing ${existingGlyphs.length} existing glyph(s)`);
+            existingGlyphs.forEach(g => g.remove());
+        }
+
+        // Create a new glyph in the empty cell
+        const fontSize = Math.min(
+            parseInt(rectElement.style.width),
+            parseInt(rectElement.style.height)
+        ) * CONFIG.glyphSizeMultiplier;
+
+        const span = document.createElement('span');
+        span.className = 'glyph';
+        const char = this.randomBamumChar();
+        span.textContent = char;
+        span.style.fontSize = fontSize + 'px';
+        span.style.color = this.display.randomGlyphColor();
+        span.style.lineHeight = '1';
+        span.style.opacity = '0'; // Start invisible
+
+        // Add Unicode hex code as tooltip
+        const codePoint = char.codePointAt(0);
+        const hexCode = codePoint.toString(16).toUpperCase();
+        span.title = `U+${hexCode}`;
+
+        rectElement.appendChild(span);
+
+        // Animate in immediately
+        setTimeout(() => {
+            span.style.opacity = '1';
+            span.style.transition = 'opacity 2s ease-in';
+        }, 50);
+
+        // Register the glyph for future transitions
+        this.registerGlyph(span);
+    }
+
+    startTransition(glyph) {
+        if (glyph.isAnimating || this.currentlyAnimating >= this.maxSimultaneous) return;
+
+        glyph.isAnimating = true;
+        this.currentlyAnimating++;
+        const transition = this.transitionEngine.getRandomTransition();
+
+        // Add random delay to decouple simultaneous transitions
+        const startDelay = Math.random() * CONFIG.transitionStartDelayMax;
+
+        setTimeout(() => {
+            // Apply the 'out' animation
+            glyph.element.className = `glyph ${transition.name}-out`;
+
+        // Wait for 'out' animation to finish
+        setTimeout(() => {
+            // Randomly decide if glyph should disappear
+            if (Math.random() < CONFIG.disappearChance) {
+                // Glyph disappears permanently
+                const rectElement = glyph.element.parentElement;
+                glyph.element.remove();
+
+                // Remove from glyphs array
+                const index = this.glyphs.indexOf(glyph);
+                if (index > -1) {
+                    this.glyphs.splice(index, 1);
+                }
+
+                // Add parent rect to empty cells
+                this.emptyCells.push({
+                    rect: rectElement
+                });
+
+                this.onTransitionEnd();
+            } else {
+                // Change character and color when invisible
+                const char = this.randomBamumChar();
+                glyph.element.textContent = char;
+                glyph.element.style.color = this.display.randomGlyphColor();
+
+                // Update Unicode hex code tooltip
+                const codePoint = char.codePointAt(0);
+                const hexCode = codePoint.toString(16).toUpperCase();
+                glyph.element.title = `U+${hexCode}`;
+
+                // Apply the 'in' animation
+                glyph.element.className = `glyph ${transition.name}-in`;
+
+                // Wait for 'in' animation to finish
+                setTimeout(() => {
+                    glyph.element.className = 'glyph';
+                    // Clear any inline transition styles that might interfere
+                    glyph.element.style.transition = '';
+                    glyph.isAnimating = false;
+                    this.onTransitionEnd();
+                    // Set next transition with configured interval
+                    const nextInterval = CONFIG.transitionIntervalMin +
+                        Math.random() * (CONFIG.transitionIntervalMax - CONFIG.transitionIntervalMin);
+                    glyph.nextTransitionTime = Date.now() + nextInterval;
+                }, transition.in.duration * 1000);
+            }
+
+        }, transition.out.duration * 1000);
+        }, startDelay); // Close the random delay setTimeout
+    }
+}
+
+// ============================================
+// TREEMAP SUBDIVISION
+// ============================================
+function subdivideRectangle(x, y, width, height, depth, maxDepth, parentElement, glyphManager, display) {
+    // Force split if cell is too large
+    const isTooLarge = width > CONFIG.maxRectSize || height > CONFIG.maxRectSize;
+
+    // Calculate stop chance based on size (larger cells = less likely to stop)
+    const cellSize = Math.min(width, height);
+    const sizeRatio = cellSize / CONFIG.maxRectSize;
+    const stopChance = Math.max(0.05, 0.2 * (1 - sizeRatio)); // 5-20% based on size
+
+    // Stop subdividing based on depth, minimum size, or random chance (but not if too large)
+    const shouldStop = depth === 0 ||
+                       (width < CONFIG.minRectSize && height < CONFIG.minRectSize) ||
+                       (!isTooLarge && Math.random() < stopChance);
+
+    if (shouldStop && !isTooLarge) {
+        // Create rectangle div (invisible, just for positioning)
+        const rect = document.createElement('div');
+        rect.className = 'rectangle';
+        rect.style.left = x + 'px';
+        rect.style.top = y + 'px';
+        rect.style.width = width + 'px';
+        rect.style.height = height + 'px';
+        rect.style.backgroundColor = 'transparent'; // Invisible
+
+        // Randomly vary alignment
+        const alignments = ['flex-start', 'center', 'flex-end'];
+        const randomHAlign = alignments[Math.floor(Math.random() * alignments.length)];
+        const randomVAlign = alignments[Math.floor(Math.random() * alignments.length)];
+
+        rect.style.justifyContent = randomHAlign; // left, center, right
+        rect.style.alignItems = randomVAlign; // top, center, bottom
+
+        // Decide if this cell starts empty
+        const startEmpty = Math.random() < CONFIG.emptyPercentage;
+
+        if (startEmpty) {
+            // Register as empty cell
+            glyphManager.registerEmptyCell(rect);
+        } else {
+            // Create glyph
+            const fontSize = Math.min(width, height) * CONFIG.glyphSizeMultiplier;
+
+            const span = document.createElement('span');
+            span.className = 'glyph';
+            const char = glyphManager.randomBamumChar();
+            span.textContent = char;
+            span.style.fontSize = fontSize + 'px';
+            span.style.color = display.randomGlyphColor();
+            span.style.lineHeight = '1';
+
+            // Add Unicode hex code as tooltip
+            const codePoint = char.codePointAt(0);
+            const hexCode = codePoint.toString(16).toUpperCase();
+            span.title = `U+${hexCode}`;
+
+            rect.appendChild(span);
+            glyphManager.registerGlyph(span);
+        }
+
+        parentElement.appendChild(rect);
+        return;
+    }
+
+    // Decide whether to split horizontally or vertically
+    const aspectRatio = width / height;
+    let splitHorizontally;
+
+    if (aspectRatio > 1.5) {
+        splitHorizontally = true;
+    } else if (aspectRatio < 0.67) {
+        splitHorizontally = false;
+    } else {
+        splitHorizontally = Math.random() < 0.5;
+    }
+
+    if (splitHorizontally) {
+        // Split vertically (into left and right parts)
+        const splitRatio = 0.3 + Math.random() * 0.4;
+        const splitX = width * splitRatio;
+
+        subdivideRectangle(x, y, splitX, height, depth - 1, maxDepth, parentElement, glyphManager, display);
+        subdivideRectangle(x + splitX, y, width - splitX, height, depth - 1, maxDepth, parentElement, glyphManager, display);
+    } else {
+        // Split horizontally (into top and bottom parts)
+        const splitRatio = 0.3 + Math.random() * 0.4;
+        const splitY = height * splitRatio;
+
+        subdivideRectangle(x, y, width, splitY, depth - 1, maxDepth, parentElement, glyphManager, display);
+        subdivideRectangle(x, y + splitY, width, height - splitY, depth - 1, maxDepth, parentElement, glyphManager, display);
+    }
+}
+
+// ============================================
+// MAIN APPLICATION
+// ============================================
+class BamumDisplay {
+    constructor() {
+        this.container = document.getElementById('container');
+        this.transitionEngine = null;
+        this.glyphManager = null;
+        this.backgroundColor = null;
+
+        this.init();
+    }
+
+    init() {
+        // Set empty cell percentages for this rendering using configured ranges
+        CONFIG.emptyPercentage = CONFIG.emptyPercentageMin + Math.random() * (CONFIG.emptyPercentageMax - CONFIG.emptyPercentageMin);
+        CONFIG.quadrantFillThreshold = CONFIG.quadrantFillThresholdMin + Math.random() * (CONFIG.quadrantFillThresholdMax - CONFIG.quadrantFillThresholdMin);
+        CONFIG.disappearChance = CONFIG.disappearChanceMin + Math.random() * (CONFIG.disappearChanceMax - CONFIG.disappearChanceMin);
+        console.log(`Empty cells: ${(CONFIG.emptyPercentage * 100).toFixed(1)}%, Quadrant fill threshold: ${CONFIG.quadrantFillThreshold.toFixed(1)}%, Disappear chance: ${(CONFIG.disappearChance * 100).toFixed(1)}%`);
+
+        // Initialize transition engine with configuration
+        this.transitionEngine = new TransitionEngine({
+            count: CONFIG.numTransitions,
+            prefix: 'bamum-transition',
+            durationMin: CONFIG.transitionDurationMin,
+            durationMax: CONFIG.transitionDurationMax,
+            styleElementId: 'bamum-transition-styles'
+        });
+        console.log(`Generated ${this.transitionEngine.transitions.length} transition recipes`);
+
+        // Initialize glyph manager
+        this.glyphManager = new GlyphManager(this.transitionEngine, this);
+
+        // Generate a light or dark background color using ColorPalette
+        const useLightBg = Math.random() > 0.5;
+        if (useLightBg) {
+            // Light background: high lightness (0.85-0.95), low chroma
+            const l = 0.85 + Math.random() * 0.1;
+            const c = Math.random() * 0.05;
+            const h = Math.random() * 360;
+            this.backgroundColor = ColorPalette.generateOKLCH(l, c, h);
+        } else {
+            // Dark background: low lightness (0.1-0.25), low chroma
+            const l = 0.1 + Math.random() * 0.15;
+            const c = Math.random() * 0.05;
+            const h = Math.random() * 360;
+            this.backgroundColor = ColorPalette.generateOKLCH(l, c, h);
+        }
+        document.body.style.backgroundColor = this.backgroundColor;
+        console.log('Background:', this.backgroundColor, useLightBg ? '(light)' : '(dark)');
+
+        // Generate harmonious glyph palette
+        const paletteSize = CONFIG.paletteMinSize + Math.floor(Math.random() * (CONFIG.paletteMaxSize - CONFIG.paletteMinSize + 1));
+        this.glyphColors = generateHarmoniousPalette(this.backgroundColor, paletteSize);
+        console.log(`Generated ${this.glyphColors.length} colors for palette`);
+
+        // Generate treemap
+        this.generate();
+
+        // Start animation loop
+        this.animate();
+    }
+
+    randomGlyphColor() {
+        if (!this.glyphColors || this.glyphColors.length === 0) {
+            return 'oklch(0.5 0.1 180)'; // Fallback
+        }
+        return this.glyphColors[Math.floor(Math.random() * this.glyphColors.length)];
+    }
+
+    generate() {
+        // Clear container
+        this.container.innerHTML = '';
+        this.glyphManager.glyphs = [];
+        this.glyphManager.emptyCells = [];
+
+        // Generate the treemap tiling
+        subdivideRectangle(
+            0, 0,
+            window.innerWidth,
+            window.innerHeight,
+            CONFIG.maxDepth,
+            CONFIG.maxDepth,
+            this.container,
+            this.glyphManager,
+            this
+        );
+
+        console.log(`Created ${this.glyphManager.glyphs.length} Bamum glyphs`);
+
+        // Log initial quadrant distribution
+        const initialCounts = this.glyphManager.getQuadrantCounts();
+        const initialFillPercentages = this.glyphManager.getQuadrantFillPercentages();
+        const quadrantNames = ['TL', 'TC', 'TR', 'BL', 'BC', 'BR'];
+        console.log(`[INITIAL STATE] Glyph counts: ${quadrantNames.map((name, i) => `${name}:${initialCounts[i]}`).join(' ')}`);
+        console.log(`[INITIAL STATE] Fill percentages: ${quadrantNames.map((name, i) => `${name}:${initialFillPercentages[i].toFixed(1)}%`).join(' ')}`);
+        console.log(`[INITIAL STATE] Empty cells: ${this.glyphManager.emptyCells.length}`);
+        console.log(`[SPAWN CONFIG] Quadrant fill threshold: ${CONFIG.quadrantFillThreshold.toFixed(1)}% (spawns when quadrant drops below this)`);
+        console.log(`[SPAWN CONFIG] Check interval: ${CONFIG.spawnCheckInterval/1000}s`);
+        console.log('Spawn system active - will spawn in sparse quadrants...\n');
+    }
+
+    animate() {
+        this.glyphManager.update();
+        requestAnimationFrame(() => this.animate());
+    }
+}
+
+// ============================================
+// INITIALIZE
+// ============================================
+window.addEventListener('load', () => {
+    if (typeof getContrastRatio === 'function') {
+        const display = new BamumDisplay();
+
+        // Click to reload with new palette
+        document.body.addEventListener('click', () => {
+            location.reload();
+        });
+
+        console.log('Bamum Display initialized. Click to regenerate.');
+    } else {
+        console.error('Required libraries not loaded! (contrast_tester.js)');
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #f5f5dc;
+    height: 100vh;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+.strip {
+    position: absolute;
+    width: 100vw;
+    height: 30vh;
+    background-color: #f5f5dc;
+    background-image: repeating-linear-gradient(
+        90deg,
+        #4169e1 0px,
+        #4169e1 1.5px,
+        transparent 1.5px,
+        transparent 2.5px,
+        #00ced1 2.5px,
+        #00ced1 4px,
+        transparent 4px,
+        transparent 5px
+    );
+    background-size: 100% 100px;
+    opacity: .7;
+    left: 0;
+    animation: flow-horizontal .5s linear infinite;
+}
+
+.strip-vertical {
+    position: absolute;
+    width: 100vw;
+    height: 30vh;
+    background-color: #f5f5dc;
+    background-image: repeating-linear-gradient(
+        0deg,
+        #dc143c 0px,
+        #dc143c 1.5px,
+        transparent 1.5px,
+        transparent 2.5px,
+        #ff8c00 2.5px,
+        #ff8c00 4px,
+        transparent 4px,
+        transparent 5px
+    );
+    background-size: 100px 100%;
+    opacity: .7;
+    left: 0;
+    animation: flow-vertical .5s linear infinite;
+}
+
+@keyframes flow-vertical {
+    0% {
+        background-position-y: 0px;
+    }
+    100% {
+        background-position-y: 5px;
+    }
+}
+
+@keyframes flow-horizontal {
+    0% {
+        background-position-x: 0px;
+    }
+    100% {
+        background-position-x: 5px;
+    }
+}
+
+</style>
+</head>
+<body>
+
+<script>
+const container = document.body;
+
+// Random value generator
+function rand(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+// Create 15 strips stacked vertically like pancakes
+for (let i = 0; i < 10; i++) {
+    const strip = document.createElement('div');
+    // Odd indices get vertical red/orange gradients, even get horizontal blue/cyan
+    strip.className = (i % 2 === 1) ? 'strip-vertical' : 'strip';
+    strip.style.top = (i * 7) + 'vh';
+
+    // Apply random 3D transforms
+    const skewX = rand(-8, 8);
+    const skewY = rand(-8, 8);
+    const rotateX = rand(-15, 15);
+    const rotateY = rand(-15, 15);
+    const rotateZ = rand(-5, 5);
+
+    strip.style.transform = `skewX(${skewX}deg) skewY(${skewY}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg)`;
+    strip.style.transformStyle = 'preserve-3d';
+
+    container.appendChild(strip);
+}
+
+// Create 6th strip above strip 1, bleeding down into it
+const strip6 = document.createElement('div');
+strip6.className = 'strip-vertical';
+strip6.style.top = '-20vh';
+strip6.style.zIndex = '-1';
+
+// Apply random 3D transforms to 6th strip
+const skewX6 = rand(-8, 8);
+const skewY6 = rand(-8, 8);
+const rotateX6 = rand(-15, 15);
+const rotateY6 = rand(-15, 15);
+const rotateZ6 = rand(-5, 5);
+
+strip6.style.transform = `skewX(${skewX6}deg) skewY(${skewY6}deg) rotateX(${rotateX6}deg) rotateY(${rotateY6}deg) rotateZ(${rotateZ6}deg)`;
+strip6.style.transformStyle = 'preserve-3d';
+
+container.appendChild(strip6);
+</script>
+
+</body>
+</html>

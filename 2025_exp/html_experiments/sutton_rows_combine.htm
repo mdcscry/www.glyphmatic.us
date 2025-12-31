@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sutton SignWriting Rows</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SignWriting&display=swap');
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Noto Sans SignWriting', sans-serif;
+        }
+
+        #container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            font-size: 160px;
+            line-height: 1;
+            letter-spacing: 0px;
+            margin-left: -10%;
+            margin-top: -55px;
+        }
+
+        .row:first-child {
+            margin-top: -40px;
+        }
+
+        .glyph {
+            display: block;
+            margin: 0px -60px;
+            transition: color 2s ease, opacity 0.15s ease;
+        }
+
+        .glyph.fading {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+
+    <script>
+        // GLYPH FADE TOGGLE: Set to false to disable fade effect on glyph changes
+        const USE_GLYPH_FADE = true;
+
+        // TEST MODE: Set this to an array of hex codes to override the full set
+        // Just paste hex codes like: const TEST_GLYPHS = ['1D800', '1D801', '1D802'];
+        // Set to null to use all glyphs
+        const TEST_GLYPHS = null//[ '1DA2A'//,
+            // '1DA67','1DA36','1DA6C','1DA2A','1DA87','1D9DE','1D9D1','1D98F',
+            //  '1D993','1D992','1D994','1D99C','1D99D','1D99E', //tall arrows
+            // '1D9A8' //curvy arrows
+        //];
+
+        // Sutton SignWriting Unicode block: U+1D800 to U+1DA8B
+        const SUTTON_START = 0x1D800;
+        // 0x1D9F3;
+        const SUTTON_END = 0x1DA8B
+        //0x1DA6A;
+
+        // Generate array of all Sutton SignWriting characters
+        function generateSuttonGlyphs() {
+            // If test mode is active, convert hex codes to glyphs
+            if (TEST_GLYPHS) {
+                // Handle both single string and array
+                const hexCodes = Array.isArray(TEST_GLYPHS) ? TEST_GLYPHS : [TEST_GLYPHS];
+                return hexCodes.map(hex => String.fromCodePoint(parseInt(hex, 16)));
+            }
+
+            const glyphs = [];
+            for (let codePoint = SUTTON_START; codePoint <= SUTTON_END; codePoint++) {
+                glyphs.push(String.fromCodePoint(codePoint));
+            }
+            return glyphs;
+        }
+
+        // Global palette for animation
+        let palette = [];
+
+        // Generate a 3-color palette
+        function generatePalette() {
+            palette = [];
+            const baseHue = Math.random() * 360;
+
+            for (let i = 0; i < 3; i++) {
+                const hue = (baseHue + (i * 120) + (Math.random() * 180)) % 360;
+                const saturation = 20 + Math.random() * 60;
+                const lightness = 15 + Math.random() * 85;
+                palette.push(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
+            }
+
+            return palette;
+        }
+
+        // Generate random background color
+        function generateBackgroundColor() {
+            const hue = Math.random() * 360;
+            const saturation = 20 + Math.random() * 40;
+            const lightness = Math.random() < 0.5
+                ? 10 + Math.random() * 20  // Dark background
+                : 70 + Math.random() * 20; // Light background
+            return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        }
+
+        // Get random color from palette
+        function getRandomColor(palette) {
+            return palette[Math.floor(Math.random() * palette.length)];
+        }
+
+        // Get random glyph from array
+        function getRandomGlyph(glyphs) {
+            return glyphs[Math.floor(Math.random() * glyphs.length)];
+        }
+
+        // Generate the artwork
+        function generate() {
+            const container = document.getElementById('container');
+            container.innerHTML = '';
+
+            // Set background color
+            document.body.style.backgroundColor = generateBackgroundColor();
+
+            // Generate palette
+            const palette = generatePalette();
+
+            // Generate Sutton glyphs array
+            const suttonGlyphs = generateSuttonGlyphs();
+
+            // Number of rows (random between 40-60)
+            const numRows = 35;
+
+            // Create rows
+            for (let i = 0; i < numRows; i++) {
+                const row = document.createElement('div');
+                row.className = 'row';
+
+                // Number of glyphs per row (random between 40-80)
+                const glyphsPerRow = 100;
+
+                // Each row uses a single glyph repeated
+                const rowGlyph = getRandomGlyph(suttonGlyphs);
+                // Each row uses a single color
+                const rowColor = getRandomColor(palette);
+
+                for (let j = 0; j < glyphsPerRow; j++) {
+                    const glyphSpan = document.createElement('span');
+                    glyphSpan.className = 'glyph';
+                    const glyph = rowGlyph;
+                    glyphSpan.textContent = glyph;
+                    glyphSpan.style.color = rowColor;
+                    // Add hex code to hover tooltip
+                    const hexCode = glyph.codePointAt(0).toString(16).toUpperCase().padStart(4, '0');
+                    //glyphSpan.title = `U+${hexCode}`;
+                    row.appendChild(glyphSpan);
+                }
+
+                container.appendChild(row);
+            }
+        }
+
+        // Color cycling animation - TWO competing sweeps
+        let animationRunning = false;
+
+        // Bottom-right to top-left sweep with overlapping rows
+        function animateBottomRight() {
+            if (!animationRunning) return;
+
+            const rows = document.querySelectorAll('.row');
+            let paletteIndex = 0; // Cycle through palette colors
+
+            // Animate a single row from right to left
+            function animateRow(rowIndex) {
+                if (!animationRunning || rowIndex < 0) {
+                    if (rowIndex < 0) {
+                        // Loop back to bottom
+                        setTimeout(() => animateRow(rows.length - 1), 100);
+                    }
+                    return;
+                }
+
+                const row = rows[rowIndex];
+                const glyphs = row.querySelectorAll('.glyph');
+                const rowColor = palette[paletteIndex % palette.length]; // Cycle through palette
+                paletteIndex++;
+                let glyphIndex = glyphs.length - 1;
+
+                function animateNextGlyph() {
+                    if (!animationRunning || glyphIndex < 0) return;
+
+                    glyphs[glyphIndex].style.color = rowColor;
+                    glyphIndex--;
+
+                    if (glyphIndex >= 0) {
+                        setTimeout(animateNextGlyph, 205); // Slower glyph-by-glyph
+                    }
+                }
+
+                animateNextGlyph();
+
+                // Start next row after small delay (before current row finishes)
+                setTimeout(() => animateRow(rowIndex - 1), 300);
+            }
+
+            // Start from bottom row
+            animateRow(rows.length - 1);
+        }
+
+        // Top-down sweep (entire row at once)
+        function animateTopDown() {
+            if (!animationRunning) return;
+
+            const rows = document.querySelectorAll('.row');
+            let currentRowIndex = 0;
+            let paletteIndex = 0; // Cycle through palette colors
+
+            function cycleNextRow() {
+                if (!animationRunning) return;
+
+                const row = rows[currentRowIndex];
+                const glyphs = row.querySelectorAll('.glyph');
+                const newColor = palette[paletteIndex % palette.length]; // Cycle through palette
+                paletteIndex++;
+
+                glyphs.forEach(glyph => {
+                    glyph.style.color = newColor;
+                });
+
+                currentRowIndex++;
+
+                if (currentRowIndex >= rows.length) {
+                    currentRowIndex = 0;
+                }
+
+                const delay = 50 + Math.random() * 100;
+                setTimeout(cycleNextRow, delay);
+            }
+
+            cycleNextRow();
+        }
+
+        // Third animation: Change the actual glyph by row from bottom to top (glyph by glyph)
+        function animateGlyphChange() {
+            if (!animationRunning) return;
+
+            const rows = document.querySelectorAll('.row');
+            const suttonGlyphs = generateSuttonGlyphs();
+            let currentRowIndex = rows.length - 1; // Start from bottom
+
+            function changeNextRow() {
+                if (!animationRunning || currentRowIndex < 0) {
+                    if (currentRowIndex < 0) {
+                        // Loop back to bottom
+                        setTimeout(() => {
+                            currentRowIndex = rows.length - 1;
+                            changeNextRow();
+                        }, 100);
+                    }
+                    return;
+                }
+
+                const row = rows[currentRowIndex];
+                const glyphs = row.querySelectorAll('.glyph');
+                const newGlyph = getRandomGlyph(suttonGlyphs);
+                const hexCode = newGlyph.codePointAt(0).toString(16).toUpperCase().padStart(4, '0');
+                let glyphIndex = 0;
+
+                function changeNextGlyph() {
+                    if (!animationRunning || glyphIndex >= glyphs.length) return;
+
+                    const currentGlyph = glyphs[glyphIndex];
+
+                    if (USE_GLYPH_FADE) {
+                        // Fade out
+                        currentGlyph.classList.add('fading');
+
+                        // Wait for fade out, then change glyph and fade in
+                        setTimeout(() => {
+                            currentGlyph.textContent = newGlyph;
+                            currentGlyph.title = `U+${hexCode}`;
+
+                            // Fade in
+                            setTimeout(() => {
+                                currentGlyph.classList.remove('fading');
+                            }, 10);
+                        }, 150); // Match CSS transition duration
+                    } else {
+                        // Instant change (no fade)
+                        currentGlyph.textContent = newGlyph;
+                        currentGlyph.title = `U+${hexCode}`;
+                    }
+
+                    glyphIndex++;
+
+                    if (glyphIndex < glyphs.length) {
+                        setTimeout(changeNextGlyph, 100); // Faster glyph-by-glyph to avoid blank spots
+                    }
+                }
+
+                changeNextGlyph();
+
+                // Move to next row after small delay (before current row finishes)
+                setTimeout(() => {
+                    currentRowIndex--;
+                    changeNextRow();
+                }, 3000);
+            }
+
+            changeNextRow();
+        }
+
+        function animateRowColors() {
+            // Start all three animations simultaneously
+            animateBottomRight();
+            animateTopDown();
+            animateGlyphChange();
+        }
+
+        function startAnimation() {
+            animationRunning = true;
+            animateRowColors();
+            evolvePalette();
+        }
+
+        function stopAnimation() {
+            animationRunning = false;
+        }
+
+        // Palette evolution - replace one color every 30 seconds
+        function evolvePalette() {
+            if (!animationRunning) return;
+
+            // Remove a random color from the palette
+            const removeIndex = Math.floor(Math.random() * palette.length);
+
+            // Generate a new color with better contrast (avoid background color ranges)
+            const hue = Math.random() * 360;
+            const saturation = 70 + Math.random() * 30;  // Higher saturation: 70-100%
+            const lightness = 40 + Math.random() * 25;   // Tighter range: 40-65% (avoids both dark and light backgrounds)
+            const newColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+
+            // Replace the color
+            palette[removeIndex] = newColor;
+
+            // Continue evolving
+            const delay = 25000 + Math.random() * 10000; // 25-35 seconds
+            setTimeout(evolvePalette, delay);
+        }
+
+        // Initial generation
+        generate();
+
+        // Start animation after generation
+        setTimeout(startAnimation, 500);
+
+        // Regenerate on click (and restart animation)
+        document.body.addEventListener('click', () => {
+            stopAnimation();
+            generate();
+            setTimeout(startAnimation, 500);
+        });
+
+        // Regenerate on window resize
+        window.addEventListener('resize', () => {
+            stopAnimation();
+            generate();
+            setTimeout(startAnimation, 500);
+        });
+    </script>
+</body>
+</html>

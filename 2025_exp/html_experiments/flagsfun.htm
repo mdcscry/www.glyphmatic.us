@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flags Fun - Glyphmatic</title>
+
+  <!-- Glyphmatic fonts -->
+  <link rel="stylesheet" href="../../css_font/glyphmatic-fonts.css">
+
+  <!-- Country glyphs data and font skeleton -->
+  <script src="../../js_funct/country_glyphs.js"></script>
+  <script src="../../js_glyph/2025_block_17/block_lang_skeleton_17.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #1a1a1a;;
+      color: #fff;
+      font-family: 'Noto Sans', sans-serif;
+      min-height: 100vh;
+      padding: 0px;
+      overflow: hidden;
+    }
+
+    /* Two-row layout: top text (5 rows), bottom with floats */
+    .glyph-wrapper {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .top-row {
+      overflow: hidden;
+      word-break: break-all;
+      font-size: 22px;
+      line-height: 1.4;
+      text-align: left;
+      height: calc(7 * 22px * 1.4);
+    }
+
+    .bottom-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .bottom-panel {
+      overflow: hidden;
+      word-break: break-all;
+      font-size: 22px;
+      line-height: 1.4;
+      text-align: left;
+    }
+
+    /* Floats centered vertically to match flag emoji position */
+    .bottom-panel-left .flag-half {
+      float: right;
+      width: 240px;
+      height: 320px;
+      margin-top: calc(50vh - 360px);
+    }
+
+    .bottom-panel-right .flag-half {
+      float: left;
+      width: 240px;
+      height: 320px;
+      margin-top: calc(50vh - 360px);
+    }
+
+    .glyph {
+      vertical-align: top;
+      letter-spacing: 0.1em;
+    }
+
+    /* Generic Flag - fixed center overlay */
+    .flag-generic {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+
+    .flag-emoji {
+      font-size: 420px;
+      line-height: 1;
+      display: block;
+      filter: drop-shadow(0 10px 40px rgba(0,0,0,0.5));
+    }
+
+    .recipe-info {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-family: monospace;
+      z-index: 10000;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      max-width: 300px;
+    }
+
+    .recipe-info .title {
+      font-weight: bold;
+    }
+
+    .recipe-info .meta-list {
+      display: none;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,0.3);
+      font-size: 10px;
+      line-height: 1.6;
+    }
+
+    .recipe-info .meta-label {
+      font-weight: bold;
+      margin-top: 6px;
+    }
+
+    .recipe-info .meta-label:first-child {
+      margin-top: 0;
+    }
+
+    .recipe-info.expanded {
+      border-radius: 12px;
+    }
+
+    .recipe-info.expanded .meta-list {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="flag-container" id="flagContainer"></div>
+  <div class="recipe-info" id="recipeInfo" onclick="toggleRecipeInfo()">
+    <div class="title"></div>
+    <div class="meta-list"></div>
+  </div>
+
+  <script>
+    console.log('=== Flags Fun Script Started ===');
+
+    // Toggle recipe info expanded/collapsed
+    function toggleRecipeInfo() {
+      const recipeInfo = document.getElementById('recipeInfo');
+      recipeInfo.classList.toggle('expanded');
+    }
+
+    // ===========================================
+    // FLAG RECIPES - uses countries from country_glyphs.js
+    // ===========================================
+    const FLAG_RECIPES = countries.map(country => ({
+      id: country,
+      name: country.charAt(0).toUpperCase() + country.slice(1),
+      country: country,
+      layout: 'generic-tricolor'
+    }));
+
+    let currentRecipeIndex = 0;
+    let dataLoaded = false;
+    let currentCountry = null;
+    let currentColors = [];
+    let currentAnimationId = null;
+
+    // Get font stack for a block using block_lang and lang_font
+    function getFontForBlock(blockName) {
+      const langKeys = block_lang[blockName];
+      if (!langKeys || langKeys.length === 0) {
+        console.warn(`No lang mapping for block: ${blockName}`);
+        return "'Noto Sans', sans-serif";
+      }
+
+      // Get font stack from lang_font
+      const langKey = langKeys[0];
+      const fonts = lang_font[langKey];
+      if (!fonts || fonts.length === 0) {
+        return "'Noto Sans', sans-serif";
+      }
+
+      return fonts.join(', ') + ", 'Noto Sans', sans-serif";
+    }
+
+    // Build flattened glyph array with block info for a country
+    function getFlattenedGlyphs(countryId) {
+      const countryData = countryGlyphs[countryId];
+      if (!countryData) return [];
+
+      const flattened = [];
+      for (const blockKey of Object.keys(countryData)) {
+        const glyphs = countryData[blockKey];
+        for (const glyph of glyphs) {
+          flattened.push({ glyph, blockKey });
+        }
+      }
+      return flattened;
+    }
+
+    // Cache for flattened glyphs
+    let flattenedGlyphsCache = null;
+
+    // Generate glyph text using countryGlyphs with random flag colors
+    function generateGlyphText(length, colors) {
+      if (!currentCountry || !countryGlyphs[currentCountry]) {
+        console.error('No country set or no glyphs for country');
+        return '';
+      }
+
+      // Build or use cached flattened array
+      if (!flattenedGlyphsCache) {
+        flattenedGlyphsCache = getFlattenedGlyphs(currentCountry);
+      }
+
+      if (flattenedGlyphsCache.length === 0) {
+        console.error('No glyphs available for country');
+        return '';
+      }
+
+      let html = '';
+      for (let i = 0; i < length; i++) {
+        try {
+          // Pick random glyph from flattened array
+          const entry = flattenedGlyphsCache[Math.floor(Math.random() * flattenedGlyphsCache.length)];
+
+          // Convert to hex for HTML entity
+          const hex = entry.glyph.codePointAt(0).toString(16);
+
+          // Get font stack for this glyph's block
+          const fontStack = getFontForBlock(entry.blockKey);
+
+          // Random color from flag
+          const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+          html += `<span class="glyph" style="font-family: ${fontStack}; color: ${randomColor}; transition: color 3s ease;">&#x${hex};</span>`;
+        } catch (error) {
+          // Skip failed glyphs
+        }
+      }
+      return html;
+    }
+
+    // Animate glyph colors - slowly morph to other flag colors
+    function animateGlyphColors(colors) {
+      if (currentAnimationId) {
+        cancelAnimationFrame(currentAnimationId);
+      }
+
+      const glyphs = document.querySelectorAll('.glyph');
+      if (glyphs.length === 0) return;
+
+      function morphColors() {
+        // Each frame, randomly pick some glyphs to change color
+        const numToChange = Math.ceil(glyphs.length * 0.002); // Change 0.2% per frame
+        for (let i = 0; i < numToChange; i++) {
+          const randomGlyph = glyphs[Math.floor(Math.random() * glyphs.length)];
+          const newColor = colors[Math.floor(Math.random() * colors.length)];
+          randomGlyph.style.color = newColor;
+        }
+        currentAnimationId = requestAnimationFrame(morphColors);
+      }
+      morphColors();
+    }
+
+    // Render generic flag layout with glyphs flowing around it
+    function renderGenericFlag(countryId) {
+      currentCountry = countryId;
+      currentColors = countryColors[countryId] || ['#fff'];
+      flattenedGlyphsCache = null; // Clear cache for new country
+
+      console.log(`Rendering ${countryId} with colors:`, currentColors);
+      console.log(`Available blocks:`, Object.keys(countryGlyphs[countryId] || {}));
+
+      // Generate glyphs for each section
+      const topGlyphs = generateGlyphText(700, currentColors);
+      const leftGlyphs = generateGlyphText(1200, currentColors);
+      const rightGlyphs = generateGlyphText(1200, currentColors);
+
+      // Get flag emoji for this country
+      const flagEmoji = getCountryFlagEmoji(countryId);
+
+      const html = `
+        <div class="glyph-wrapper">
+          <div class="top-row">${topGlyphs}</div>
+          <div class="bottom-row">
+            <div class="bottom-panel bottom-panel-left">
+              <div class="flag-half"></div>
+              ${leftGlyphs}
+            </div>
+            <div class="bottom-panel bottom-panel-right">
+              <div class="flag-half"></div>
+              ${rightGlyphs}
+            </div>
+          </div>
+        </div>
+        <div class="flag-generic">
+          <span class="flag-emoji">${flagEmoji}</span>
+        </div>
+      `;
+
+      return { html, colors: currentColors };
+    }
+
+    // Main render function
+    function renderRecipe(recipeIndex) {
+      if (!dataLoaded) {
+        console.warn('Data not loaded yet');
+        return;
+      }
+
+      // Cancel any existing animation
+      if (currentAnimationId) {
+        cancelAnimationFrame(currentAnimationId);
+        currentAnimationId = null;
+      }
+
+      // Pick random country if no specific index given, or if index is out of range
+      if (recipeIndex === undefined || recipeIndex >= FLAG_RECIPES.length) {
+        recipeIndex = Math.floor(Math.random() * FLAG_RECIPES.length);
+      }
+
+      currentRecipeIndex = recipeIndex;
+      const recipe = FLAG_RECIPES[recipeIndex];
+      const container = document.getElementById('flagContainer');
+      const recipeInfo = document.getElementById('recipeInfo');
+
+      console.log(`Rendering flag: ${recipe.name}`);
+
+      // All flags use generic layout now
+      const result = renderGenericFlag(recipe.country);
+
+      container.innerHTML = result.html;
+
+      // Update recipe info box
+      const infoColor = result.colors[Math.floor(Math.random() * result.colors.length)] || '#333';
+
+      // Determine text color based on background brightness
+      const isLight = infoColor.toLowerCase() === '#ffffff' || infoColor.toLowerCase() === '#fff' ||
+                      infoColor === '#F4F5F8' || infoColor === '#ffdf00' || infoColor === '#FCDD09';
+      const textColor = isLight ? '#000' : '#fff';
+
+      recipeInfo.style.background = infoColor;
+      recipeInfo.style.color = textColor;
+      recipeInfo.classList.remove('expanded');
+
+      recipeInfo.querySelector('.title').textContent = `${recipeIndex}: ${recipe.name}`;
+
+      // Build meta list with languages and blocks
+      const langData = countryData[recipe.country]?.languages || { national: [], other: [] };
+      const glyphsData = countryGlyphs[recipe.country] || {};
+      const blocks = Object.keys(glyphsData);
+
+      let metaHtml = '';
+      metaHtml += `<div class="meta-label">National:</div>`;
+      metaHtml += `<div>${langData.national.join(', ') || 'N/A'}</div>`;
+      if (langData.other && langData.other.length > 0) {
+        metaHtml += `<div class="meta-label">Other:</div>`;
+        metaHtml += `<div>${langData.other.join(', ')}</div>`;
+      }
+      metaHtml += `<div class="meta-label">Blocks:</div>`;
+      metaHtml += `<div>${blocks.join(', ')}</div>`;
+      recipeInfo.querySelector('.meta-list').innerHTML = metaHtml;
+
+      // Start color morphing animation
+      if (result.colors.length > 0) {
+        // Small delay to let DOM render
+        setTimeout(() => animateGlyphColors(result.colors), 100);
+      }
+    }
+
+    // Keyboard controls
+    document.addEventListener('keydown', function(event) {
+      const key = event.key;
+
+      if (key >= '0' && key <= '9') {
+        const index = parseInt(key);
+        if (index < FLAG_RECIPES.length) {
+          renderRecipe(index);
+        }
+      }
+    });
+
+    // Wait for data to load
+    function checkDataLoaded() {
+      console.log('Checking if data is loaded...');
+
+      if (typeof countryGlyphs !== "undefined" &&
+          typeof countryColors !== "undefined" &&
+          typeof countryLanguages !== "undefined" &&
+          typeof block_lang !== "undefined" &&
+          typeof lang_font !== "undefined") {
+
+        initialize();
+      } else {
+        console.log('Data not ready yet, checking again in 100ms...');
+        setTimeout(checkDataLoaded, 100);
+      }
+    }
+
+    // Function to get URL parameters
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    // New logic to handle URL parameter
+    function initialize() {
+        console.log('All data loaded!');
+        console.log('Countries available:', countries);
+        dataLoaded = true;
+
+        const countryCode = getQueryParam('country');
+        if (countryCode) {
+            const countryIndex = FLAG_RECIPES.findIndex(recipe =>
+                recipe.id.toLowerCase() === countryCode.toLowerCase() ||
+                (countryData[recipe.id] && countryData[recipe.id].iso.toLowerCase() === countryCode.toLowerCase())
+            );
+            if (countryIndex !== -1) {
+                console.log(`Country from URL: ${countryCode}, index: ${countryIndex}`);
+                renderRecipe(countryIndex);
+            } else {
+                console.log(`Country code '${countryCode}' not found. Loading random country.`);
+                renderRecipe(); // Fallback to random
+            }
+        } else {
+            renderRecipe(); // Start with random country if no param
+        }
+    }
+
+    console.log('Starting data load check...');
+    checkDataLoaded();
+  </script>
+</body>
+</html>
