@@ -1,0 +1,19 @@
+registerCountry("curacao", {
+  iso: 'CW',
+  colors: ['#002B7F', '#FFD100', '#FFFFFF'],
+  languages: {
+    national: ['Dutch', 'Papiamento', 'English'],
+    other: ['Spanish', 'Portuguese']
+  },
+  glyphs: {
+    'Basic Latin': [
+      'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+      'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+      'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+      'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+    ],
+    'Latin-1 Supplement': [
+      'À', 'à', 'È', 'è', 'É', 'é', 'Ò', 'ò', 'Ó', 'ó', 'Ù', 'ù', 'Ú', 'ú', 'Ñ', 'ñ'
+    ]
+  }
+});

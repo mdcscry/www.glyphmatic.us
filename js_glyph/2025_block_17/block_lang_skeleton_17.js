@@ -16,6 +16,8 @@ lang_font =[{}]
  block_lang['Arabic Presentation Forms-A'] = ['noto-arabic'];
  block_lang['Arabic Presentation Forms-B'] = ['noto-arabic'];
  block_lang['Arabic Supplement'] = ['noto-arabic'];
+ block_lang['Arabic-nastalique-flags'] = ['arabic-nastalique'];
+ block_lang['Arabic-flags'] = ['arabic-reduced'];
  block_lang['Armenian'] = ['armenian'];
  block_lang['Arrows'] = ['symbols'];
  block_lang['Avestan'] = ['avestan'];
@@ -56,6 +58,7 @@ lang_font =[{}]
  block_lang['Combining Diacritical Marks'] = ['noto-full'];
  block_lang['Combining Diacritical Marks for Symbols'] = ['symbola'];
  block_lang['Combining Diacritical Marks Supplement'] = ['noto-full'];
+ block_lang['Combining Forms-flag'] = ['noto-full'];
  block_lang['Combining Half Marks'] =  ['noto-full'];
  block_lang['Common Indic Number Forms'] = ['noto-devanagari'];
 // block_lang['Control_Pictures'] = ['symbols2'];
@@ -787,8 +790,17 @@ lang_font['arabic-reduced'] = [
   "Noto Kufi Arabic",
   "Noto Naskh Arabic",
   "Noto Sans Arabic",
-  "Scheherazade New",  
+  "Scheherazade New"
 ]
+
+
+lang_font['arabic-nastalique'] = [
+  "Noto Nastaliq Urdu"
+  ,"Jameel Noori Nastaleeq-local-fonts"
+  ,"Fajeer Noori Nastaleeq-local-fonts"
+  ,"Awami Nastaliq-local-fonts"
+];
+
 
 lang_font['arabic'] = [
   "Amiri",

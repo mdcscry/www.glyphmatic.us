@@ -1,0 +1,228 @@
+* {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #1a1a1a;;
+      color: #fff;
+      font-family: 'Noto Sans', sans-serif;
+      min-height: 100vh;
+      padding: 0px;
+      overflow: hidden;
+    }
+
+    /* Two-row layout: top text (5 rows), bottom with floats */
+    .glyph-wrapper {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .top-row {
+      overflow: hidden;
+      word-break: break-all;
+      font-size: 22px;
+      line-height: 1.4;
+      text-align: left;
+      height: calc(7 * 22px * 1.4);
+    }
+
+    .bottom-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .bottom-panel {
+      overflow: hidden;
+      word-break: break-all;
+      font-size: 22px;
+      line-height: 1.4;
+      text-align: left;
+    }
+
+    /* Floats centered vertically to match flag emoji position */
+    .bottom-panel-left .flag-half {
+      float: right;
+      width: 240px;
+      height: 320px;
+      margin-top: calc(50vh - 360px);
+    }
+
+    .bottom-panel-right .flag-half {
+      float: left;
+      width: 240px;
+      height: 320px;
+      margin-top: calc(50vh - 360px);
+    }
+
+    .glyph {
+      vertical-align: top;
+      letter-spacing: 0.1em;
+    }
+
+    /* Generic Flag - fixed center overlay */
+    .flag-generic {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+
+    .flag-emoji {
+      font-size: 420px;
+      line-height: 1;
+      display: block;
+      filter: drop-shadow(0 10px 40px rgba(0,0,0,0.5));
+    }
+
+    .recipe-info {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-family: monospace;
+      z-index: 10000;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      max-width: 300px;
+    }
+
+    .recipe-info .title {
+      font-weight: bold;
+    }
+
+    .recipe-info .meta-list {
+      display: none;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,0.3);
+      font-size: 10px;
+      line-height: 1.6;
+    }
+
+    .recipe-info .meta-label {
+      font-weight: bold;
+      margin-top: 6px;
+    }
+
+    .recipe-info .meta-label:first-child {
+      margin-top: 0;
+    }
+
+    .recipe-info.expanded {
+      border-radius: 12px;
+    }
+
+    .recipe-info.expanded .meta-list {
+      display: block;
+    }
+
+/*
+  This file will contain hover effects for glyph blocks.
+  The hover state will be triggered by JavaScript by adding a class to a parent element.
+*/
+
+/* Example for Basic Latin */
+body.hover-block-basic-latin .glyph.block-basic-latin {
+  font-size: 1.5em;
+  color: #ffffff !important; /* Use !important to override inline color styles */
+  font-weight: bold;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+  z-index: 100;
+  position: relative;
+}
+
+/* Added rules for other blocks */
+body.hover-block-latin-1-supplement .glyph.block-latin-1-supplement,
+body.hover-block-latin-extended-a .glyph.block-latin-extended-a,
+body.hover-block-latin-extended-b .glyph.block-latin-extended-b,
+body.hover-block-cyrillic .glyph.block-cyrillic,
+body.hover-block-cyrillic-supplement .glyph.block-cyrillic-supplement,
+body.hover-block-greek-and-coptic .glyph.block-greek-and-coptic,
+body.hover-block-devanagari .glyph.block-devanagari,
+body.hover-block-arabic .glyph.block-arabic,
+body.hover-block-tamil .glyph.block-tamil,
+body.hover-block-bengali .glyph.block-bengali,
+body.hover-block-ethiopic .glyph.block-ethiopic,
+body.hover-block-tifinagh .glyph.block-tifinagh,
+body.hover-block-hangul-jamo .glyph.block-hangul-jamo,
+body.hover-block-hiragana .glyph.block-hiragana,
+body.hover-block-katakana .glyph.block-katakana,
+body.hover-block-cjk-radicals-supplement .glyph.block-cjk-radicals-supplement,
+body.hover-block-kangxi-radicals .glyph.block-kangxi-radicals,
+body.hover-block-cjk-strokes .glyph.block-cjk-strokes,
+body.hover-block-bopomofo .glyph.block-bopomofo,
+body.hover-block-spacing-modifier-letters .glyph.block-spacing-modifier-letters,
+body.hover-block-hebrew .glyph.block-hebrew,
+body.hover-block-syriac .glyph.block-syriac,
+body.hover-block-armenian .glyph.block-armenian,
+body.hover-block-sinhala .glyph.block-sinhala,
+body.hover-block-tibetan .glyph.block-tibetan,
+body.hover-block-thaana .glyph.block-thaana,
+body.hover-block-limbu .glyph.block-limbu,
+body.hover-block-arabic-extended .glyph.block-arabic-extended,
+body.hover-block-georgian .glyph.block-georgian,
+body.hover-block-thai .glyph.block-thai,
+body.hover-block-myanmar .glyph.block-myanmar,
+body.hover-block-khmer .glyph.block-khmer,
+body.hover-block-lao .glyph.block-lao,
+body.hover-block-javanese .glyph.block-javanese,
+body.hover-block-balinese .glyph.block-balinese,
+body.hover-block-tagalog .glyph.block-tagalog,
+body.hover-block-mongolian .glyph.block-mongolian {
+  font-size: 1.2em;
+  color: #ffffff !important;
+  font-weight: bold;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+  z-index: 100;
+  position: relative;
+}
+
+/* Override hover color to orange when flag contains white */
+body.flag-has-white.hover-block-basic-latin .glyph.block-basic-latin,
+body.flag-has-white.hover-block-latin-1-supplement .glyph.block-latin-1-supplement,
+body.flag-has-white.hover-block-latin-extended-a .glyph.block-latin-extended-a,
+body.flag-has-white.hover-block-latin-extended-b .glyph.block-latin-extended-b,
+body.flag-has-white.hover-block-cyrillic .glyph.block-cyrillic,
+body.flag-has-white.hover-block-cyrillic-supplement .glyph.block-cyrillic-supplement,
+body.flag-has-white.hover-block-greek-and-coptic .glyph.block-greek-and-coptic,
+body.flag-has-white.hover-block-devanagari .glyph.block-devanagari,
+body.flag-has-white.hover-block-arabic .glyph.block-arabic,
+body.flag-has-white.hover-block-tamil .glyph.block-tamil,
+body.flag-has-white.hover-block-bengali .glyph.block-bengali,
+body.flag-has-white.hover-block-ethiopic .glyph.block-ethiopic,
+body.flag-has-white.hover-block-tifinagh .glyph.block-tifinagh,
+body.flag-has-white.hover-block-hangul-jamo .glyph.block-hangul-jamo,
+body.flag-has-white.hover-block-hiragana .glyph.block-hiragana,
+body.flag-has-white.hover-block-katakana .glyph.block-katakana,
+body.flag-has-white.hover-block-cjk-radicals-supplement .glyph.block-cjk-radicals-supplement,
+body.flag-has-white.hover-block-kangxi-radicals .glyph.block-kangxi-radicals,
+body.flag-has-white.hover-block-cjk-strokes .glyph.block-cjk-strokes,
+body.flag-has-white.hover-block-bopomofo .glyph.block-bopomofo,
+body.flag-has-white.hover-block-spacing-modifier-letters .glyph.block-spacing-modifier-letters,
+body.flag-has-white.hover-block-hebrew .glyph.block-hebrew,
+body.flag-has-white.hover-block-syriac .glyph.block-syriac,
+body.flag-has-white.hover-block-armenian .glyph.block-armenian,
+body.flag-has-white.hover-block-sinhala .glyph.block-sinhala,
+body.flag-has-white.hover-block-tibetan .glyph.block-tibetan,
+body.flag-has-white.hover-block-thaana .glyph.block-thaana,
+body.flag-has-white.hover-block-limbu .glyph.block-limbu,
+body.flag-has-white.hover-block-arabic-extended .glyph.block-arabic-extended,
+body.flag-has-white.hover-block-georgian .glyph.block-georgian,
+body.flag-has-white.hover-block-thai .glyph.block-thai,
+body.flag-has-white.hover-block-myanmar .glyph.block-myanmar,
+body.flag-has-white.hover-block-khmer .glyph.block-khmer,
+body.flag-has-white.hover-block-lao .glyph.block-lao,
+body.flag-has-white.hover-block-javanese .glyph.block-javanese,
+body.flag-has-white.hover-block-balinese .glyph.block-balinese,
+body.flag-has-white.hover-block-tagalog .glyph.block-tagalog,
+body.flag-has-white.hover-block-mongolian .glyph.block-mongolian {
+  color: #ff8c00 !important;
+  text-shadow: 0 0 4px rgba(255, 140, 0, 0.8);
+}

@@ -2162,6 +2162,24 @@ ugaritic old persian runic SIL fonts KangxiRadicals AnatolianHeiro Latin Oms
     src: url('../fonts/Kedebideri.ttf') format('truetype');
 }
 
+@font-face {
+    font-family: 'Jameel Noori Nastaleeq';
+    src: url('../fonts/jameelnoori.ttf.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Fajeer Noori Nastaleeq';
+    src: url('../fonts/jameelnoori.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Awami Nastaliq';
+    src: url('../fonts/AwamiNastaliq.ttf') format('truetype');
+}
+
+
+
+
 .myanmar-taungyi {
     font-family: 'Myanmar Taungyi', sans-serif;
 }

@@ -7,137 +7,9 @@
 
   <!-- Glyphmatic fonts -->
   <link rel="stylesheet" href="../../css_font/glyphmatic-fonts.css">
-
-  <!-- Country glyphs data and font skeleton -->
-  <script src="../../js_funct/country_glyphs.js"></script>
+  <link rel="stylesheet" href="../../css/flagsfun.css">
   <script src="../../js_glyph/2025_block_17/block_lang_skeleton_17.js"></script>
-
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      background: #1a1a1a;;
-      color: #fff;
-      font-family: 'Noto Sans', sans-serif;
-      min-height: 100vh;
-      padding: 0px;
-      overflow: hidden;
-    }
-
-    /* Two-row layout: top text (5 rows), bottom with floats */
-    .glyph-wrapper {
-      display: grid;
-      grid-template-rows: auto 1fr;
-      width: 100vw;
-      height: 100vh;
-    }
-
-    .top-row {
-      overflow: hidden;
-      word-break: break-all;
-      font-size: 22px;
-      line-height: 1.4;
-      text-align: left;
-      height: calc(7 * 22px * 1.4);
-    }
-
-    .bottom-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .bottom-panel {
-      overflow: hidden;
-      word-break: break-all;
-      font-size: 22px;
-      line-height: 1.4;
-      text-align: left;
-    }
-
-    /* Floats centered vertically to match flag emoji position */
-    .bottom-panel-left .flag-half {
-      float: right;
-      width: 240px;
-      height: 320px;
-      margin-top: calc(50vh - 360px);
-    }
-
-    .bottom-panel-right .flag-half {
-      float: left;
-      width: 240px;
-      height: 320px;
-      margin-top: calc(50vh - 360px);
-    }
-
-    .glyph {
-      vertical-align: top;
-      letter-spacing: 0.1em;
-    }
-
-    /* Generic Flag - fixed center overlay */
-    .flag-generic {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 10;
-    }
-
-    .flag-emoji {
-      font-size: 420px;
-      line-height: 1;
-      display: block;
-      filter: drop-shadow(0 10px 40px rgba(0,0,0,0.5));
-    }
-
-    .recipe-info {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-family: monospace;
-      z-index: 10000;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      max-width: 300px;
-    }
-
-    .recipe-info .title {
-      font-weight: bold;
-    }
-
-    .recipe-info .meta-list {
-      display: none;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid rgba(255,255,255,0.3);
-      font-size: 10px;
-      line-height: 1.6;
-    }
-
-    .recipe-info .meta-label {
-      font-weight: bold;
-      margin-top: 6px;
-    }
-
-    .recipe-info .meta-label:first-child {
-      margin-top: 0;
-    }
-
-    .recipe-info.expanded {
-      border-radius: 12px;
-    }
-
-    .recipe-info.expanded .meta-list {
-      display: block;
-    }
-  </style>
+  <script src="../../js_glyph/country_glyphs.js"></script>
 </head>
 <body>
   <div class="flag-container" id="flagContainer"></div>
@@ -155,15 +27,28 @@
       recipeInfo.classList.toggle('expanded');
     }
 
+    // Helper to create a CSS-safe class name from a block name
+    function getBlockClassName(blockName) {
+      // e.g. "Basic Latin" -> "block-basic-latin"
+      const standardName = getStandardBlockName(blockName);
+      return 'block-' + standardName.toLowerCase().replace(/ /g, '-');
+    }
+
+    // Helper to get a display-friendly name for a block
+    function getStandardBlockName(blockName) {
+      if (blockName === 'Combining Forms-flag') {
+        return 'Basic Latin';
+      }
+      if (blockName.startsWith('Arabic-')) {
+        return 'Arabic';
+      }
+      return blockName;
+    }
+
     // ===========================================
     // FLAG RECIPES - uses countries from country_glyphs.js
     // ===========================================
-    const FLAG_RECIPES = countries.map(country => ({
-      id: country,
-      name: country.charAt(0).toUpperCase() + country.slice(1),
-      country: country,
-      layout: 'generic-tricolor'
-    }));
+    let FLAG_RECIPES = [];
 
     let currentRecipeIndex = 0;
     let dataLoaded = false;
@@ -173,9 +58,10 @@
 
     // Get font stack for a block using block_lang and lang_font
     function getFontForBlock(blockName) {
-      const langKeys = block_lang[blockName];
+      const standardBlockName = getStandardBlockName(blockName);
+      const langKeys = block_lang[standardBlockName];
       if (!langKeys || langKeys.length === 0) {
-        console.warn(`No lang mapping for block: ${blockName}`);
+        console.warn(`No lang mapping for block: ${blockName} (looked for ${standardBlockName})`);
         return "'Noto Sans', sans-serif";
       }
 
@@ -191,16 +77,31 @@
 
     // Build flattened glyph array with block info for a country
     function getFlattenedGlyphs(countryId) {
-      const countryData = countryGlyphs[countryId];
-      if (!countryData) return [];
+      const glyphsData = countryGlyphs[countryId];
+      if (!glyphsData) return [];
 
       const flattened = [];
-      for (const blockKey of Object.keys(countryData)) {
-        const glyphs = countryData[blockKey];
+      for (const blockKey of Object.keys(glyphsData)) {
+        const glyphs = glyphsData[blockKey];
         for (const glyph of glyphs) {
           flattened.push({ glyph, blockKey });
         }
       }
+
+      // Add special glyphs with their explicit styling
+      const data = countryData[countryId];
+      if (data && data.specialGlyphs) {
+        for (const special of data.specialGlyphs) {
+          flattened.push({
+            glyph: special.glyph,
+            blockKey: 'Miscellaneous Symbols',
+            special: true,
+            background: special.background,
+            color: special.color
+          });
+        }
+      }
+
       return flattened;
     }
 
@@ -230,16 +131,19 @@
           // Pick random glyph from flattened array
           const entry = flattenedGlyphsCache[Math.floor(Math.random() * flattenedGlyphsCache.length)];
 
-          // Convert to hex for HTML entity
-          const hex = entry.glyph.codePointAt(0).toString(16);
-
           // Get font stack for this glyph's block
           const fontStack = getFontForBlock(entry.blockKey);
 
-          // Random color from flag
-          const randomColor = colors[Math.floor(Math.random() * colors.length)];
+          const blockClass = getBlockClassName(entry.blockKey);
 
-          html += `<span class="glyph" style="font-family: ${fontStack}; color: ${randomColor}; transition: color 3s ease;">&#x${hex};</span>`;
+          // Special glyphs have explicit colors and backgrounds
+          if (entry.special) {
+            html += `<span class="glyph ${blockClass} special-glyph" style="font-family: ${fontStack}; display: inline-flex; align-items: center; justify-content: center; width: .8em; height: .8em; color: ${entry.color}; background: ${entry.background}; border-radius: 50%;">${entry.glyph}</span>`;
+          } else {
+            // Random color from flag
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            html += `<span class="glyph ${blockClass}" style="font-family: ${fontStack}; color: ${randomColor}; transition: color 3s ease;">${entry.glyph}</span>`;
+          }
         } catch (error) {
           // Skip failed glyphs
         }
@@ -253,7 +157,8 @@
         cancelAnimationFrame(currentAnimationId);
       }
 
-      const glyphs = document.querySelectorAll('.glyph');
+      // Exclude special glyphs from color animation
+      const glyphs = document.querySelectorAll('.glyph:not(.special-glyph)');
       if (glyphs.length === 0) return;
 
       function morphColors() {
@@ -269,11 +174,21 @@
       morphColors();
     }
 
+    // Check if a color is white (handles various formats)
+    function isWhiteColor(color) {
+      const c = color.toLowerCase().trim();
+      return c === '#fff' || c === '#ffffff' || c === 'white' || c === '#f4f5f8';
+    }
+
     // Render generic flag layout with glyphs flowing around it
     function renderGenericFlag(countryId) {
       currentCountry = countryId;
       currentColors = countryColors[countryId] || ['#fff'];
       flattenedGlyphsCache = null; // Clear cache for new country
+
+      // Add class to body if flag contains white (for hover color adjustment)
+      const hasWhite = currentColors.some(isWhiteColor);
+      document.body.classList.toggle('flag-has-white', hasWhite);
 
       console.log(`Rendering ${countryId} with colors:`, currentColors);
       console.log(`Available blocks:`, Object.keys(countryGlyphs[countryId] || {}));
@@ -327,6 +242,7 @@
       }
 
       currentRecipeIndex = recipeIndex;
+      alphaIndex = recipeIndex; // Keep alpha index in sync
       const recipe = FLAG_RECIPES[recipeIndex];
       const container = document.getElementById('flagContainer');
       const recipeInfo = document.getElementById('recipeInfo');
@@ -353,20 +269,61 @@
       recipeInfo.querySelector('.title').textContent = `${recipeIndex}: ${recipe.name}`;
 
       // Build meta list with languages and blocks
-      const langData = countryData[recipe.country]?.languages || { national: [], other: [] };
+      const currentCountryData = countryData[recipe.country];
+      const langData = currentCountryData?.languages || { national: [], other: [] };
       const glyphsData = countryGlyphs[recipe.country] || {};
-      const blocks = Object.keys(glyphsData);
+      const rawBlocks = Object.keys(glyphsData);
+      const displayBlocks = [...new Set(rawBlocks.map(getStandardBlockName))];
 
-      let metaHtml = '';
-      metaHtml += `<div class="meta-label">National:</div>`;
-      metaHtml += `<div>${langData.national.join(', ') || 'N/A'}</div>`;
-      if (langData.other && langData.other.length > 0) {
-        metaHtml += `<div class="meta-label">Other:</div>`;
-        metaHtml += `<div>${langData.other.join(', ')}</div>`;
+      const metaList = recipeInfo.querySelector('.meta-list');
+      metaList.innerHTML = ''; // Clear existing
+
+      // Function to add a new meta entry
+      const addMetaEntry = (label, value) => {
+        const labelDiv = document.createElement('div');
+        labelDiv.className = 'meta-label';
+        labelDiv.textContent = label;
+        metaList.appendChild(labelDiv);
+        const valueDiv = document.createElement('div');
+        valueDiv.textContent = value;
+        metaList.appendChild(valueDiv);
+      };
+
+      if (currentCountryData?.iso) {
+        addMetaEntry('Country Code:', currentCountryData.iso);
       }
-      metaHtml += `<div class="meta-label">Blocks:</div>`;
-      metaHtml += `<div>${blocks.join(', ')}</div>`;
-      recipeInfo.querySelector('.meta-list').innerHTML = metaHtml;
+      addMetaEntry('National Language:', langData.national.join(', ') || 'N/A');
+      if (langData.other && langData.other.length > 0) {
+        addMetaEntry('Other:', langData.other.join(', '));
+      }
+
+      // Handle Blocks separately for interactivity
+      const blocksLabel = document.createElement('div');
+      blocksLabel.className = 'meta-label';
+      blocksLabel.textContent = 'Blocks:';
+      metaList.appendChild(blocksLabel);
+
+      const blocksValueDiv = document.createElement('div');
+      displayBlocks.forEach((blockName, i) => {
+        const blockSpan = document.createElement('span');
+        blockSpan.textContent = blockName;
+        blockSpan.style.cursor = 'pointer';
+        
+        const hoverClass = 'hover-' + getBlockClassName(blockName);
+
+        blockSpan.addEventListener('mouseover', () => document.body.classList.add(hoverClass));
+        blockSpan.addEventListener('mouseout', () => document.body.classList.remove(hoverClass));
+        
+        blocksValueDiv.appendChild(blockSpan);
+        if (i < displayBlocks.length - 1) {
+          blocksValueDiv.append(', ');
+        }
+      });
+      metaList.appendChild(blocksValueDiv);
+
+      if (currentCountryData?.notes) {
+        addMetaEntry('Notes:', currentCountryData.notes);
+      }
 
       // Start color morphing animation
       if (result.colors.length > 0) {
@@ -382,20 +339,43 @@
       if (key >= '0' && key <= '9') {
         const index = parseInt(key);
         if (index < FLAG_RECIPES.length) {
+          alphaIndex = index;
           renderRecipe(index);
         }
+      } else if (key === 'ArrowRight' || key === ' ' || key === 'n') {
+        // Next country
+        alphaIndex = (alphaIndex + 1) % FLAG_RECIPES.length;
+        renderRecipe(alphaIndex);
+      } else if (key === 'ArrowLeft' || key === 'p') {
+        // Previous country
+        alphaIndex = (alphaIndex - 1 + FLAG_RECIPES.length) % FLAG_RECIPES.length;
+        renderRecipe(alphaIndex);
+      } else if (key === 'r') {
+        // Random country
+        renderRecipe();
       }
     });
 
     // Wait for data to load
-    function checkDataLoaded() {
-      console.log('Checking if data is loaded...');
+    async function checkDataLoaded() {
+      console.log('Waiting for country data to load...');
 
+      // Wait for async country loading to complete
+      if (window.countryDataLoaded) {
+        await window.countryDataLoaded;
+      }
+
+      // Check that all required data is available
+      // Note: var_block_lang comes from var_block_skeleton.js, block_lang from block_lang_skeleton_17.js
+      const hasBlockLang = typeof block_lang !== "undefined" || typeof var_block_lang !== "undefined";
+      const hasLangFont = typeof lang_font !== "undefined" || typeof var_lang_font !== "undefined";
       if (typeof countryGlyphs !== "undefined" &&
           typeof countryColors !== "undefined" &&
-          typeof countryLanguages !== "undefined" &&
-          typeof block_lang !== "undefined" &&
-          typeof lang_font !== "undefined") {
+          typeof countryData !== "undefined" &&
+          hasBlockLang &&
+          hasLangFont &&
+          typeof countries !== "undefined" &&
+          countries.length > 0) {
 
         initialize();
       } else {
@@ -406,35 +386,94 @@
 
     // Function to get URL parameters
     function getQueryParam(param) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(param);
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
     }
+
+    // Non-UN entities: territories, dependencies, and easter eggs
+    const NON_UN_ENTITIES = [
+      // Easter eggs
+      'pirate', 'pride', 'trans',
+      // Sub-national flags
+      'england', 'scotland', 'wales',
+      // Territories and dependencies
+      'aland_islands', 'american_samoa', 'anguilla', 'antarctica', 'aruba',
+      'bermuda', 'british_indian_ocean_territory', 'british_virgin_islands',
+      'caribbean_netherlands', 'cayman_islands', 'christmas_island', 'cocos_islands',
+      'cook_islands', 'curacao', 'falkland_islands', 'faroe_islands', 'french_guiana',
+      'french_polynesia', 'french_southern_territories', 'gibraltar', 'greenland',
+      'guadeloupe', 'guam', 'guernsey', 'hong_kong', 'isle_of_man', 'jersey',
+      'macau', 'martinique', 'mayotte', 'montserrat', 'new_caledonia', 'niue',
+      'norfolk_island', 'northern_mariana_islands', 'pitcairn_islands', 'puerto_rico',
+      'reunion', 'saint_barthelemy', 'saint_martin', 'sint_maarten', 'south_georgia',
+      'svalbard', 'tokelau', 'turks_and_caicos', 'us_virgin_islands', 'wallis_and_futuna',
+      'western_sahara', 'taiwan', 'palestine', 'kosovo'
+    ];
+
+    let alphaMode = false;
+    let alphaIndex = 0;
 
     // New logic to handle URL parameter
     function initialize() {
         console.log('All data loaded!');
-        console.log('Countries available:', countries);
+
+        // Build base recipes from all countries
+        let filteredCountries = [...countries];
+
+        // Check for filter mode
+        const mode = getQueryParam('mode');
+        if (mode === 'UN') {
+          filteredCountries = countries.filter(c => !NON_UN_ENTITIES.includes(c));
+          console.log('UN mode: showing only UN member states');
+        } else if (mode === 'NON-UN') {
+          filteredCountries = countries.filter(c => NON_UN_ENTITIES.includes(c));
+          console.log('NON-UN mode: showing only territories and special flags');
+        }
+
+        // Check for alpha mode
+        if (getQueryParam('alpha') !== null) {
+          alphaMode = true;
+          filteredCountries.sort((a, b) => a.localeCompare(b));
+          console.log('Alpha mode: sequential alphabetical order');
+        }
+
+        FLAG_RECIPES = filteredCountries.map(country => ({
+          id: country,
+          name: country.charAt(0).toUpperCase() + country.slice(1),
+          country: country,
+          layout: 'generic-tricolor'
+        }));
+
+        console.log('Countries available:', FLAG_RECIPES.length);
         dataLoaded = true;
 
         const countryCode = getQueryParam('country');
         if (countryCode) {
-            const countryIndex = FLAG_RECIPES.findIndex(recipe =>
-                recipe.id.toLowerCase() === countryCode.toLowerCase() ||
-                (countryData[recipe.id] && countryData[recipe.id].iso.toLowerCase() === countryCode.toLowerCase())
-            );
+            const countryIndex = FLAG_RECIPES.findIndex(recipe => {
+                const country = countryData[recipe.id];
+                if (!country) return false;
+
+                const code = countryCode.toLowerCase();
+                const recipeIdMatch = recipe.id.toLowerCase() === code;
+                const isoMatch = country.iso && country.iso.toLowerCase() === code;
+
+                return recipeIdMatch || isoMatch;
+            });
             if (countryIndex !== -1) {
                 console.log(`Country from URL: ${countryCode}, index: ${countryIndex}`);
+                alphaIndex = countryIndex;
                 renderRecipe(countryIndex);
             } else {
                 console.log(`Country code '${countryCode}' not found. Loading random country.`);
-                renderRecipe(); // Fallback to random
+                renderRecipe(alphaMode ? 0 : undefined);
             }
         } else {
-            renderRecipe(); // Start with random country if no param
+            renderRecipe(alphaMode ? 0 : undefined); // Start at beginning if alpha mode
         }
     }
 
     console.log('Starting data load check...');
+    window.countryDataLoaded = loadCountryData('../../js_glyph');
     checkDataLoaded();
   </script>
 </body>
