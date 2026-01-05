@@ -5,6 +5,7 @@ registerCountry("vietnam", {
       national: ['Vietnamese'],
       other: []
     },
+    scripts: ["New Tai Lue"],
     glyphs: {
       'Basic Latin': [
         'A', 'B', 'C', 'D', 'E', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'X', 'Y',

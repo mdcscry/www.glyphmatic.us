@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../../css_font/glyphmatic-fonts.css">
   <link rel="stylesheet" href="../../css/flagsfun.css">
   <script src="../../js_glyph/2025_block_17/block_lang_skeleton_17.js"></script>
+  <script src="../../js_funct/autoFont.js"></script>
   <script src="../../js_glyph/country_glyphs.js"></script>
 </head>
 <body>
@@ -42,6 +43,9 @@
       if (blockName.startsWith('Arabic-')) {
         return 'Arabic';
       }
+      if (blockName.startsWith('Bengali-')) {
+        return 'Bengali';
+      }
       return blockName;
     }
 
@@ -56,34 +60,53 @@
     let currentColors = [];
     let currentAnimationId = null;
 
-    // Get font stack for a block using block_lang and lang_font
+    // Get font stack for a block using AutoFont engine
+    // Track warned blocks to avoid spam
+    const warnedBlocks = new Set();
     function getFontForBlock(blockName) {
       const standardBlockName = getStandardBlockName(blockName);
-      const langKeys = block_lang[standardBlockName];
-      if (!langKeys || langKeys.length === 0) {
-        console.warn(`No lang mapping for block: ${blockName} (looked for ${standardBlockName})`);
-        return "'Noto Sans', sans-serif";
+
+      // Use AutoFont to select and load a single appropriate font
+      const fontDuJour = AutoFont.selectFont(blockName, block_lang, lang_font);
+      if (fontDuJour === 'Noto Sans-local') {
+        if (!warnedBlocks.has(blockName)) {
+          console.warn(`No font mapping for block: ${blockName}`);
+          warnedBlocks.add(blockName);
+        }
       }
 
-      // Get font stack from lang_font
-      const langKey = langKeys[0];
-      const fonts = lang_font[langKey];
-      if (!fonts || fonts.length === 0) {
-        return "'Noto Sans', sans-serif";
-      }
-
-      return fonts.join(', ') + ", 'Noto Sans', sans-serif";
+      // Load the font and get proper fallback stack
+      return AutoFont.loadFont(fontDuJour);
     }
 
     // Build flattened glyph array with block info for a country
     function getFlattenedGlyphs(countryId) {
       const glyphsData = countryGlyphs[countryId];
-      if (!glyphsData) return [];
+      if (!glyphsData) {
+        console.error(`No glyphsData for country: ${countryId}`);
+        return [];
+      }
 
+      console.log(`getFlattenedGlyphs for ${countryId}:`);
       const flattened = [];
       for (const blockKey of Object.keys(glyphsData)) {
         const glyphs = glyphsData[blockKey];
+        if (!glyphs || !Array.isArray(glyphs)) {
+          console.error(`  Block "${blockKey}" has invalid glyphs:`, glyphs);
+          continue;
+        }
+        console.log(`  Block "${blockKey}": ${glyphs.length} glyphs`);
         for (const glyph of glyphs) {
+          if (typeof glyph !== 'string') {
+            console.error(`  Invalid glyph in "${blockKey}":`, glyph);
+            continue;
+          }
+          // Check for zero-width or control characters
+          const hasZeroWidth = /[\u200B-\u200F\u2028-\u202F\uFEFF]/.test(glyph);
+          const hasControl = /[\x00-\x1F\x7F-\x9F]/.test(glyph);
+          if (hasZeroWidth || hasControl) {
+            console.warn(`  Suspicious glyph in "${blockKey}": "${glyph}" (len=${glyph.length}, codes=${[...glyph].map(c => 'U+' + c.codePointAt(0).toString(16).toUpperCase()).join(' ')})`);
+          }
           flattened.push({ glyph, blockKey });
         }
       }
@@ -102,6 +125,7 @@
         }
       }
 
+      console.log(`  Total flattened glyphs: ${flattened.length}`);
       return flattened;
     }
 
@@ -125,11 +149,17 @@
         return '';
       }
 
+      // Strip ALL invisible/control characters that could cause line breaks
+      const stripInvisible = (str) => str.replace(/[\x00-\x1F\x7F-\x9F\u00AD\u034F\u061C\u115F\u1160\u17B4\u17B5\u180B-\u180E\u200B-\u200F\u202A-\u202E\u2028-\u202F\u2060-\u206F\u3164\uFE00-\uFE0F\uFEFF\uFFA0\uFFF0-\uFFFF]/g, '');
+
       let html = '';
       for (let i = 0; i < length; i++) {
         try {
           // Pick random glyph from flattened array
           const entry = flattenedGlyphsCache[Math.floor(Math.random() * flattenedGlyphsCache.length)];
+
+          // Clean the glyph of invisible characters
+          const cleanGlyph = stripInvisible(entry.glyph);
 
           // Get font stack for this glyph's block
           const fontStack = getFontForBlock(entry.blockKey);
@@ -138,11 +168,11 @@
 
           // Special glyphs have explicit colors and backgrounds
           if (entry.special) {
-            html += `<span class="glyph ${blockClass} special-glyph" style="font-family: ${fontStack}; display: inline-flex; align-items: center; justify-content: center; width: .8em; height: .8em; color: ${entry.color}; background: ${entry.background}; border-radius: 50%;">${entry.glyph}</span>`;
+            html += `<span class="glyph ${blockClass} special-glyph" style="font-family: ${fontStack}; display: inline-flex; align-items: center; justify-content: center; width: .8em; height: .8em; color: ${entry.color}; background: ${entry.background}; border-radius: 50%;">${cleanGlyph}</span>`;
           } else {
             // Random color from flag
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            html += `<span class="glyph ${blockClass}" style="font-family: ${fontStack}; color: ${randomColor}; transition: color 3s ease;">${entry.glyph}</span>`;
+            html += `<span class="glyph ${blockClass}" style="font-family: ${fontStack}; color: ${randomColor}; transition: color 3s ease;">${cleanGlyph}</span>`;
           }
         } catch (error) {
           // Skip failed glyphs
@@ -194,7 +224,7 @@
       console.log(`Available blocks:`, Object.keys(countryGlyphs[countryId] || {}));
 
       // Generate glyphs for each section
-      const topGlyphs = generateGlyphText(700, currentColors);
+      const topGlyphs = generateGlyphText(775, currentColors);
       const leftGlyphs = generateGlyphText(1200, currentColors);
       const rightGlyphs = generateGlyphText(1200, currentColors);
 
@@ -414,7 +444,9 @@
     let alphaIndex = 0;
 
     // New logic to handle URL parameter
-    function initialize() {
+    async function initialize() {
+        // Initialize AutoFont engine
+        await AutoFont.init();
         console.log('All data loaded!');
 
         // Build base recipes from all countries

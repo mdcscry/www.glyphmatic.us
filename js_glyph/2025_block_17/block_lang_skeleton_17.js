@@ -18,6 +18,11 @@ lang_font =[{}]
  block_lang['Arabic Supplement'] = ['noto-arabic'];
  block_lang['Arabic-nastalique-flags'] = ['arabic-nastalique'];
  block_lang['Arabic-flags'] = ['arabic-reduced'];
+ block_lang['Arabic-Jawi'] = ['arabic-reduced'];
+ block_lang['Arabic-Persian'] = ['arabic-nastalique'];
+ block_lang['Arabic-Urdu'] = ['arabic-nastalique'];
+ block_lang['Arabic-Pashto'] = ['arabic-nastalique'];
+ block_lang['Arabic-Saudi'] = ['arabic-saudi'];
  block_lang['Armenian'] = ['armenian'];
  block_lang['Arrows'] = ['symbols'];
  block_lang['Avestan'] = ['avestan'];
@@ -28,6 +33,8 @@ lang_font =[{}]
  block_lang['Bassa Vah'] = ['bassa-vah'];
  block_lang['Batak'] = ['batak'];
  block_lang['Bengali'] = ['bengali'];
+ block_lang['Bengali-India'] = ['bengali-india']; 
+ block_lang['Bengali-Bangla'] = ['bengali-bangla']; 
  block_lang['Bhaiksuki'] = ['bhaiksuki'];
  block_lang['Block Elements'] = ['noto-mono'];
  block_lang['Bopomofo'] = ['noto-simple-chinese','noto-trad-chinese','noto-hongkong','noto-japanese']; 
@@ -88,7 +95,7 @@ lang_font =[{}]
  block_lang['Emoticons'] = ['emoji-bw'];
  block_lang['Enclosed Alphanumeric Supplement'] = ['symbols'];
  block_lang['Enclosed Alphanumerics'] = ['symbols'];
-block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
+ block_lang['Enclosed CJK Letters and Months'] = ['noto-japanese'];
 // block_lang['Enclosed Ideographic Supplement'] = [''];
  block_lang['Ethiopic'] = ['ethiopic'];
  block_lang['Ethiopic Extended'] = ['ethiopic'];
@@ -431,7 +438,7 @@ lang_font['old-north-arabian'] = [ "Noto Sans Old North Arabian"  ]
 lang_font['old-permic'] = [ "Noto Sans Old Permic"  ]
 lang_font['nabataean'] = [ "Noto Sans Nabataean" ]
 lang_font['nandinagari'] = [ "Noto Sans Nandinagari" ]
-lang_font['newa'] = [ "Noto Sans Newa","Nithya Ranjana NU-local-fonts"]
+lang_font['newa'] = [ "Noto Sans Newa","Nithya Ranjana NU-local-otf"]
 lang_font['nko'] = [ "Noto Sans NKo Unjoined","Noto Sans NKo","Conakry-local-fonts"]
 lang_font['nushu'] = [ "Noto Traditional Nushu", "Noto Sans Nushu" ]
 lang_font['nyiakeng-puachue-hmong'] = [ "Noto Serif Nyiakeng Puachue Hmong" ]
@@ -748,6 +755,25 @@ lang_font['bengali'] = [
   "Noto Serif Bengali",
   "Tiro Bangla"
 ]
+lang_font['bengali-india'] = [
+  "Alkatra",
+  "Atma",
+  "Baloo Da 2",
+  "Galada",
+  "Hind Siliguri",
+  "Mina",
+  "Noto Sans Bengali",
+  "Noto Serif Bengali",
+] 
+
+lang_font['bengali-bangla'] = [
+  "Tiro Bangla",
+  "Nikosh-local-fonts",
+  "SolaimanLipi-local-fonts",
+  "Siyamrupali-local-fonts",
+  "Anek Bangla"
+]
+
 
 lang_font['tamil-supplement'] = [
   "Noto Sans Tamil Supplement"
@@ -793,12 +819,17 @@ lang_font['arabic-reduced'] = [
   "Scheherazade New"
 ]
 
-
 lang_font['arabic-nastalique'] = [
   "Noto Nastaliq Urdu"
   ,"Jameel Noori Nastaleeq-local-fonts"
   ,"Fajeer Noori Nastaleeq-local-fonts"
   ,"Awami Nastaliq-local-fonts"
+];
+
+lang_font['arabic-saudi'] = [
+  "Al Awwal-local-otf",
+  "Saudi-local-otf",
+  "Al Mamask-local-otf"
 ];
 
 
@@ -1080,7 +1111,7 @@ lang_font['chinese-simplified'] = [
 ]
 lang_font['devanagari'] = [
   "Annapurna SIL",
-  'Nithya Ranjana DU-local-fonts',
+  'Nithya Ranjana DU-local-otf',
 	"Lohit Devanagari",
  	"Noto Sans Devanagari UI",                   
 	"Noto Sans Devanagari",   
@@ -1457,7 +1488,6 @@ lang_font['latin'] = [
   "Brygada 1918",
   "Bubblegum Sans",
   "Bubbler One",
-  "Buda",
   "Buenard",
   "Bungee",
   "Bungee Hairline",
@@ -1552,7 +1582,6 @@ lang_font['latin'] = [
   "Convergence",
   "Cookie",
   "Copse",
-  "Coral Pixels",
   "Corben",
   "Corinthia",
   "Cormorant",
@@ -1704,7 +1733,6 @@ lang_font['latin'] = [
   "Flow Block",
   "Flow Circular",
   "Flow Rounded",
-  "Foldit",
   "Fondamento",
   "Fontdiner Swanky",
   "Forum",
@@ -1827,7 +1855,6 @@ lang_font['latin'] = [
   "Holtwood One SC",
   "Homemade Apple",
   "Homenaje",
-  "Honk",
   "Host Grotesk",
   "Hubballi",
   "Hubot Sans",
@@ -1861,14 +1888,6 @@ lang_font['latin'] = [
   "Italiana",
   "Italianno",
   "Itim",
-  "Jacquard 12",
-  "Jacquard 12 Charted",
-  "Jacquard 24",
-  "Jacquard 24 Charted",
-  "Jacquarda Bastarda 9",
-  "Jacquarda Bastarda 9 Charted",
-  "Jacques Francois",
-  "Jacques Francois Shadow",
   "Jaini",
   "Jaini Purva",
   "Jaldi",
@@ -1901,7 +1920,6 @@ lang_font['latin'] = [
   "Kaisei Tokumin",
   "Kalam",
   "Kalnia",
-  "Kalnia Glaze",
   "Kameron",
   "Kanchenjunga",
   "Kanit",
@@ -1984,13 +2002,6 @@ lang_font['latin'] = [
   "Libertinus Sans",
   "Libertinus Serif",
   "Libertinus Serif Display",
-  "Libre Barcode 128",
-  "Libre Barcode 128 Text",
-  "Libre Barcode 39",
-  "Libre Barcode 39 Extended",
-  "Libre Barcode 39 Extended Text",
-  "Libre Barcode 39 Text",
-  "Libre Barcode EAN13 Text",
   "Libre Baskerville",
   "Libre Bodoni",
   "Libre Caslon Display",
@@ -2118,7 +2129,6 @@ lang_font['latin'] = [
   "Mohave",
   "Moirai One",
   "Molengo",
-  "Molle",
   "Mona Sans",
   "Monda",
   "Monofett",
@@ -2568,7 +2578,6 @@ lang_font['latin'] = [
   "Supermercado One",
   "Sura",
   "Suranna",
-  "Suraam",
   "Suwannaphum",
   "Swanky and Moo Moo",
   "Syncopate",
@@ -2637,7 +2646,6 @@ lang_font['latin'] = [
   "Uncial Antiqua",
   "Underdog",
   "Unica One",
-  "UnifrakturCook",
   "UnifrakturMaguntia",
   "Unkempt",
   "Unlock",
@@ -2687,10 +2695,6 @@ lang_font['latin'] = [
   "Yaldevi",
   "Yanone Kaffeesatz",
   "Yantramanav",
-  "Yarndings 12",
-  "Yarndings 12 Charted",
-  "Yarndings 20",
-  "Yarndings 20 Charted",
   "Yatra One",
   "Yellowtail",
   "Yeon Sung",
@@ -3087,7 +3091,6 @@ lang_font['latin-ext'] = [
   "Concert One",
   "Condiment",
   "Convergence",
-  "Coral Pixels",
   "Corben",
   "Corinthia",
   "Cormorant",
@@ -3210,7 +3213,6 @@ lang_font['latin-ext'] = [
   "Flow Block",
   "Flow Circular",
   "Flow Rounded",
-  "Foldit",
   "Fondamento",
   "Forum",
   "Fragment Mono",
@@ -3378,7 +3380,6 @@ lang_font['latin-ext'] = [
   "Kaisei Tokumin",
   "Kalam",
   "Kalnia",
-  "Kalnia Glaze",
   "Kameron",
   "Kanit",
   "Kantumruy Pro",
@@ -3542,7 +3543,6 @@ lang_font['latin-ext'] = [
   "Mohave",
   "Moirai One",
   "Molengo",
-  "Molle",
   "Mona Sans",
   "Monda",
   "Monofett",

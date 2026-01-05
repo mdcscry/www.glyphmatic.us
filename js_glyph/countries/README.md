@@ -48,7 +48,15 @@ registerBlock("Devanagari", [
 - `Devanagari` - Hindi, Marathi, Sanskrit, Fiji Hindi (~300 glyphs with conjuncts)
 - `Arabic-reduced` - Standard Arabic with presentation forms
 - `Arabic-nastalique-flags` - Arabic + Urdu/Persian extensions (پ, چ, گ, etc.)
+- `Arabic-Jawi` - Jawi extensions to the Arabic script (ڠ, ݢ, ۏ, ڽ, چ, ڤ)
+- `Arabic-Saudi` - Saudi Arabic (same chars as Arabic-reduced, different fonts: Al-Awwal, Al-Naseeb, Saudi)
 - `Tamil` - Tamil script base characters
+- `Bengali` - Bengali script with conjuncts
+- `Bengali-India` - Bengali for India/West Bengal (same chars, different fonts)
+- `Bengali-Bangla` - Bengali for Bangladesh (same chars, different fonts: Nikosh, Siyamrupali, SolaimanLipi)
+- `Mongolian` - Traditional Mongolian script (ᠠ-ᡂ)
+- `New Tai Lue` - Tai Lü script (U+1980–U+19DF) - Used in China, Laos, Myanmar, Thailand, Vietnam
+- `Cyrillic` - Standard Cyrillic alphabet (А-я)
 - `Kangxi Radicals` - 214 traditional Chinese radicals (U+2F00–U+2FD5)
 - `CJK Strokes` - 36 basic strokes for CJK characters (U+31C0–U+31E3)
 - `CJK Radicals Supplement` - Additional CJK radical forms (U+2E80–U+2EFF)
@@ -71,9 +79,9 @@ registerCountry("india", {
     national: ['Hindi', 'English'],
     other: ['Bengali', 'Telugu', 'Tamil', ...]
   },
-  scripts: ["Devanagari", "Tamil"],  // ← pulls from shared blocks
+  scripts: ["Devanagari", "Tamil", "Bengali"],  // ← pulls from shared blocks
   glyphs: {
-    'Bengali': [...]  // ← country-specific, inline
+    'SomeOtherGlyph': [...]  // ← country-specific, inline
   }
 });
 ```
@@ -168,9 +176,21 @@ The following blocks have hover effects implemented in `flagsfun.css`.  When a n
 - `Lao` (`block-lao`)
 - `Javanese` (`block-javanese`)
 - `Balinese` (`block-balinese`)
+- `Sundanese` (`block-sundanese`)
+- `Batak` (`block-batak`)
+- `Buginese` (`block-buginese`)
 - `Tagalog` (`block-tagalog`)
 - `Mongolian` (`block-mongolian`)
-
+- `New Tai Lue` (`block-new-tai-lue`)
+- `Gurmukhi` (`block-gurmukhi`)
+- `Gujarati` (`block-gujarati`)
+- `Kannada` (`block-kannada`)
+- `Telugu` (`block-telugu`)
+- `Malayalam` (`block-malayalam`)
+- `Oriya` (`block-oriya`)
+- `Arabic-Jawi` (`block-arabic-jawi`)
+- `Yi Syllables` (`block-yi-syllables`)
+- `Cyrillic Supplement` (`block-cyrillic-supplement`)
 
 
 ## Adding a New Country
@@ -219,12 +239,6 @@ glyphs: {
 </script>
 ```
 
-## File Count
-
-- ~101 country files
-- 7 shared block files
-- Countries with `scripts` references: India, Chad, Mauritius, Fiji, Comoros, China, Taiwan, Japan
-
 ## TODO
 
 ### Indic Scripts (all need corpus analysis for real-world usage)
@@ -248,15 +262,6 @@ glyphs: {
 
 ```javascript
 const indicScripts = [
-  'Devanagari',           // ✓ DONE
-  'Bengali',              // ✓ DONE (inline in India, needs shared block)
-  'Tamil',                // ✓ DONE (needs corpus analysis)
-  'Gurmukhi',             // Punjabi
-  'Gujarati',
-  'Oriya',
-  'Telugu',
-  'Kannada',
-  'Malayalam',
   'Meetei Mayek',         // Manipuri - 1.8M speakers
   'Ol Chiki',             // Santali - 7.6M speakers
   'Saurashtra',
@@ -281,9 +286,15 @@ const indicScripts = [
 ```
 
 ### Other TODO
+### Combining Form Fixes (Brahmic Scripts)
 
-- [ ] **Tamil corpus analysis** - current block has all valid combinations, needs analysis of actual usage
-- [ ] Add Bengali as shared block (currently inline in India)
-- [ ] Add full Arabic (vs reduced)
-- [ ] Add notes to CN,JP,Taiwan, Korea indicating that Ideograms, Kanji and Wansung-hyeong or Hangul Syllables aren't represented due to the size of the sets and the desire to represent the components of the languages..The the words of the languages.  I wonder if we could create those notes in the languages.
+These scripts have standalone combining vowel marks (matras) that display as floating marks. Need to extract properly formed syllables from real text:
+
+- [ ] **Javanese** - Indonesia's inline Javanese block has combining form issues
+- [ ] **Balinese** - Indonesia's inline Balinese block has combining form issues
+
+### Font Support
+
+- [ ] **Saudi Arabia fonts** - Need Arabic-Saudi variant with Al-Awwal, Al-Naseeb, Saudi fonts for proper Saudi Arabic rendering
+- [ ] **Bangladesh/Bangla fonts** - Bangladesh and West Bengal need different Bengali font treatments
 

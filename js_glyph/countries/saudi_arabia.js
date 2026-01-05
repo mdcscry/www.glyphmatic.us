@@ -5,6 +5,6 @@ registerCountry("saudi_arabia", {
     national: ['Arabic'],
     other: ['Najdi Arabic', 'Hejazi Arabic', 'Gulf Arabic']
   },
-  scripts: ["Arabic-reduced"],
+  scripts: ["Arabic-Saudi"],
   glyphs: {}
 });

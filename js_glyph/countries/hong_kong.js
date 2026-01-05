@@ -5,7 +5,7 @@ registerCountry("hong_kong", {
     national: ['Cantonese', 'English'],
     other: ['Mandarin', 'Hakka', 'Hokkien']
   },
-  scripts: ["Kangxi-Radicals", "CJK-Strokes", "CJK-Radicals-Supplement"],
+  scripts: ["Kangxi Radicals", "CJK Strokes", "CJK Radicals Supplement"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

@@ -6,5 +6,7 @@ registerCountry("iran", {
     other: ['Azerbaijani', 'Kurdish', 'Luri', 'Gilaki', 'Mazanderani', 'Arabic', 'Balochi', 'Turkmen']
   },
   scripts: ["Arabic-nastalique-flags"],
-  glyphs: {}
+  glyphs: {
+    'Arabic-Persian': ['پ', 'چ', 'ژ', 'گ']
+  }
 });

@@ -54,15 +54,16 @@
                 // console.log('this.faceSheet:', this.faceSheet);
                 // console.log('AutoFont.faceSheet:', AutoFont.faceSheet);
 
-            const fontFormatted = font.replace(/ /g, '');
+            const fontFormatted = font.replace(/ /g, ''); // "Font Name" -> "FontName"
             let filename;
             
-            if (directory === 'otf') {
-                filename = `${fontFormatted}-Regular.otf`;
-            } else if (directory === 'tff') {
+            // Only append '-Regular' for the default 'tff' directory case.
+            if (directory === 'tff') {
                 filename = `${fontFormatted}-Regular.ttf`;
+            } else if (directory === 'otf') {
+                filename = `${fontFormatted}-Regular.otf`;
             } else {
-                filename = `${fontFormatted}.ttf`;
+                filename = `${fontFormatted}.ttf`; // Covers 'fonts' and any other case
             }
             
             // Normalize directory token and prefer absolute site-root when the token looks like a shared font folder
@@ -117,7 +118,11 @@
             const fontLookup = this.randomFrom(fontArray);
             const fonts = langFont[fontLookup];
             
-            return fonts ? this.randomFrom(fonts) : 'Noto Sans-local';
+            if (!fonts || fonts.length === 0) {
+                return 'Noto Sans-local';
+            }
+            
+            return this.randomFrom(fonts);
         },
         
         // Build font stack with intelligent fallbacks

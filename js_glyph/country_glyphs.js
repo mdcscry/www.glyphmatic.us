@@ -38,7 +38,23 @@ const BLOCK_FILES = [
   'tamil',
   'kangxi_radicals',
   'cjk_strokes',
-  'cjk_radicals_supplement'
+  'cjk_radicals_supplement',
+  'gujarati',
+  'gurmukhi',
+  'kannada',
+  'malayalam',
+  'oriya',
+  'sinhala',
+  'telugu',
+  'tibetan',
+  'bengali',
+  'bengali_india',
+  'bengali_bangla',
+  'arabic-jawi',
+  'arabic_saudi',
+  'mongolian',
+  'new_tai_lue',
+  'cyrillic'
 ];
 
 // List of all country files to load (matches actual files in countries/ directory)

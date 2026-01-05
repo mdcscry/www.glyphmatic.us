@@ -2177,6 +2177,35 @@ ugaritic old persian runic SIL fonts KangxiRadicals AnatolianHeiro Latin Oms
     src: url('../fonts/AwamiNastaliq.ttf') format('truetype');
 }
 
+/* Saudi */
+@font-face {
+    font-family: 'Al Awwal';
+    src: url('../otf/AlAwwal-Regular.otf') format('opentype');
+}
+    @font-face {
+    font-family: 'Saudi';
+    src: url('../otf/Saudi-Regular.otf') format('opentype');
+}
+    @font-face {
+    font-family: 'Al mamask';
+    src: url('../otf/AlMamask-Regular.otf') format('opentype');
+}
+/* Bangla */
+@font-face {
+    font-family: 'Siyamrupali';
+    src: url('../fonts/Siyamrupali.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Nikosh';
+    src: url('../fonts/Nikosh.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'SolaimanLipi';
+    src: url('../fonts/SolaimanLipi.ttf') format('truetype');
+}
+
 
 
 

@@ -7,8 +7,7 @@ registerCountry("afghanistan", {
   },
   scripts: ["Arabic-nastalique-flags"],
   glyphs: {
-    'Arabic Extended': [
-      'ٻ', 'ټ', 'ځ', 'څ', 'ډ', 'ړ', 'ږ', 'ښ', 'ګ', 'ڼ', 'ۀ', 'ې', 'ۍ', 'ئ'
-    ]
+    'Arabic-Persian': ['پ', 'چ', 'ژ', 'گ'],
+    'Arabic-Pashto': ['ټ', 'ځ', 'څ', 'ډ', 'ړ', 'ږ', 'ښ', 'ګ', 'ڼ', 'ې', 'ۍ']
   }
 });

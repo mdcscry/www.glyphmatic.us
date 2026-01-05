@@ -24,7 +24,7 @@
     .top-row {
       overflow: hidden;
       word-break: break-all;
-      font-size: 22px;
+      font-size: 26px;
       line-height: 1.4;
       text-align: left;
       height: calc(7 * 22px * 1.4);
@@ -38,7 +38,7 @@
     .bottom-panel {
       overflow: hidden;
       word-break: break-all;
-      font-size: 22px;
+      font-size: 26px;
       line-height: 1.4;
       text-align: left;
     }
@@ -59,8 +59,24 @@
     }
 
     .glyph {
+      display: inline-block;
       vertical-align: top;
       letter-spacing: 0.1em;
+      line-height: 1;
+    }
+
+    /* Scale up sparse scripts to fill display */
+    .glyph.block-arabic,
+    .glyph.block-arabic-supplement {
+      font-size: 1.5em;
+    }
+
+    .glyph.block-tibetan {
+      font-size: 1.8em;
+    }
+
+    .glyph.block-thaana {
+      font-size: 1.4em;
     }
 
     /* Generic Flag - fixed center overlay */
@@ -147,6 +163,7 @@ body.hover-block-cyrillic-supplement .glyph.block-cyrillic-supplement,
 body.hover-block-greek-and-coptic .glyph.block-greek-and-coptic,
 body.hover-block-devanagari .glyph.block-devanagari,
 body.hover-block-arabic .glyph.block-arabic,
+body.hover-block-arabic-saudi .glyph.block-arabic-saudi,
 body.hover-block-tamil .glyph.block-tamil,
 body.hover-block-bengali .glyph.block-bengali,
 body.hover-block-ethiopic .glyph.block-ethiopic,
@@ -174,8 +191,21 @@ body.hover-block-khmer .glyph.block-khmer,
 body.hover-block-lao .glyph.block-lao,
 body.hover-block-javanese .glyph.block-javanese,
 body.hover-block-balinese .glyph.block-balinese,
+body.hover-block-sundanese .glyph.block-sundanese,
+body.hover-block-batak .glyph.block-batak,
+body.hover-block-buginese .glyph.block-buginese,
 body.hover-block-tagalog .glyph.block-tagalog,
-body.hover-block-mongolian .glyph.block-mongolian {
+body.hover-block-gurmukhi .glyph.block-gurmukhi,
+body.hover-block-gujarati .glyph.block-gujarati,
+body.hover-block-kannada .glyph.block-kannada,
+body.hover-block-telugu .glyph.block-telugu,
+body.hover-block-malayalam .glyph.block-malayalam,
+body.hover-block-oriya .glyph.block-oriya,
+body.hover-block-arabic-jawi .glyph.block-arabic-jawi,
+body.hover-block-mongolian .glyph.block-mongolian,
+body.hover-block-yi-syllables .glyph.block-yi-syllables,
+body.hover-block-new-tai-lue .glyph.block-new-tai-lue,
+body.hover-block-cyrillic-supplement .glyph.block-cyrillic-supplement {
   font-size: 1.2em;
   color: #ffffff !important;
   font-weight: bold;
@@ -194,6 +224,7 @@ body.flag-has-white.hover-block-cyrillic-supplement .glyph.block-cyrillic-supple
 body.flag-has-white.hover-block-greek-and-coptic .glyph.block-greek-and-coptic,
 body.flag-has-white.hover-block-devanagari .glyph.block-devanagari,
 body.flag-has-white.hover-block-arabic .glyph.block-arabic,
+body.flag-has-white.hover-block-arabic-saudi .glyph.block-arabic-saudi,
 body.flag-has-white.hover-block-tamil .glyph.block-tamil,
 body.flag-has-white.hover-block-bengali .glyph.block-bengali,
 body.flag-has-white.hover-block-ethiopic .glyph.block-ethiopic,
@@ -221,8 +252,21 @@ body.flag-has-white.hover-block-khmer .glyph.block-khmer,
 body.flag-has-white.hover-block-lao .glyph.block-lao,
 body.flag-has-white.hover-block-javanese .glyph.block-javanese,
 body.flag-has-white.hover-block-balinese .glyph.block-balinese,
+body.flag-has-white.hover-block-sundanese .glyph.block-sundanese,
+body.flag-has-white.hover-block-batak .glyph.block-batak,
+body.flag-has-white.hover-block-buginese .glyph.block-buginese,
 body.flag-has-white.hover-block-tagalog .glyph.block-tagalog,
-body.flag-has-white.hover-block-mongolian .glyph.block-mongolian {
+body.flag-has-white.hover-block-gurmukhi .glyph.block-gurmukhi,
+body.flag-has-white.hover-block-gujarati .glyph.block-gujarati,
+body.flag-has-white.hover-block-kannada .glyph.block-kannada,
+body.flag-has-white.hover-block-telugu .glyph.block-telugu,
+body.flag-has-white.hover-block-malayalam .glyph.block-malayalam,
+body.flag-has-white.hover-block-oriya .glyph.block-oriya,
+body.flag-has-white.hover-block-arabic-jawi .glyph.block-arabic-jawi,
+body.flag-has-white.hover-block-mongolian .glyph.block-mongolian,
+body.flag-has-white.hover-block-yi-syllables .glyph.block-yi-syllables,
+body.flag-has-white.hover-block-new-tai-lue .glyph.block-new-tai-lue,
+body.flag-has-white.hover-block-cyrillic-supplement .glyph.block-cyrillic-supplement {
   color: #ff8c00 !important;
   text-shadow: 0 0 4px rgba(255, 140, 0, 0.8);
 }

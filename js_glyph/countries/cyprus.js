@@ -5,7 +5,8 @@ window.__COUNTRY_DATA_MODULES__['cyprus'] = {
   "iso": "CY",
   "colors": [
     "#D47600",
-    "#FFFFFF"
+    "#FFFFFF",
+    "#4E5B31"
   ],
   "languages": {
     "national": [

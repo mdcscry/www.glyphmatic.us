@@ -6,5 +6,7 @@ registerCountry("pakistan", {
     other: ['Punjabi', 'Sindhi', 'Pashto', 'Balochi', 'Saraiki', 'Hindko', 'Brahui']
   },
   scripts: ["Arabic-nastalique-flags"],
-  glyphs: {}
+  glyphs: {
+    'Arabic-Urdu': ['پ', 'چ', 'ژ', 'گ', 'ٹ', 'ڈ', 'ڑ', 'ں', 'ھ', 'ہ', 'ۂ', 'ے', 'ۓ']
+  }
 });

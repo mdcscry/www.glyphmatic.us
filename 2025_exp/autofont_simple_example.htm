@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>AutoFont.js Simple Example</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        #glyph-container {
+            font-size: 4em;
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #444;
+            border-radius: 10px;
+            background-color: #2c2c34;
+        }
+        #glyph-container span {
+            margin: 0 0.1em;
+            padding: 0.1em;
+        }
+        /* Fallback font for glyphs that might not be covered */
+        @font-face {
+            font-family: 'Noto Sans Full';
+            src: url('../tff/NotoSans-Regular.ttf') format('truetype');
+        }
+    </style>
+</head>
+<body>
+
+    <div id="glyph-container">
+        <!-- Glyphs will be inserted here by the script -->
+        Loading...
+    </div>
+
+    <!-- Link to the main CSS file.
+         By placing this in the body before the scripts, we ensure it's parsed and
+         available in `document.styleSheets` before the autoFont engine tries to access it.
+    -->
+    <link rel="stylesheet" href="../css_font/glyphmatic-fonts.css">
+
+    <!-- 1. CORE SCRIPT -->
+    <!-- Load the main engine. -->
+    <script src="../js_funct/autoFont.js"></script>
+    
+    <!-- Load color and contrast utility scripts.
+         - contrast_tester.js: Provides getContrastRatio() for accessibility checks.
+         - colorpalette.js:    Provides ColorPalette object for generating colors.
+    -->
+    <script src="../js_funct/contrast_tester.js"></script>
+    <script src="../js_funct/colorpalette.js"></script>
+
+    <!-- 2. DATA FILES -->
+    <!-- These files contain the data autofont.js needs. They define global variables.
+         - block_hex_17.js      -> `block_hex` (Unicode blocks and their glyphs)
+         - block_hex_desc_17.js -> `block_hex_desc` (Descriptions for each glyph)
+         - block_lang_skeleton_17.js -> `block_lang` and `lang_font` (Mappings from blocks to fonts)
+    -->
+    <script src="../js_glyph/2025_block_17/block_hex_17.js"></script>
+    <script src="../js_glyph/2025_block_17/block_hex_desc_17.js"></script>
+    <script src="../js_glyph/2025_block_17/block_lang_skeleton_17.js"></script>
+
+    <script>
+        /**
+         * =================================================================================
+         * Main Execution Script for AutoFont.js Simple Example
+         * =================================================================================
+         *
+         * This script serves as the orchestrator for the page. Its primary responsibilities are:
+         * 1.  **Dependency Management**: It ensures all necessary JavaScript files (the AutoFont
+         *     engine, data files, and utility scripts) are fully loaded before executing any logic.
+         * 2.  **Initialization**: It initializes the AutoFont engine and the ColorPalette utility.
+         * 3.  **Glyph Generation**: It calls the AutoFont engine to generate glyph data.
+         * 4.  **Rendering**: It uses the data from the engine, along with colors from the
+         *     palette utility, to construct and inject HTML into the DOM.
+         *
+         * This file is intentionally designed to be a "dead simple" standalone example.
+         * It treats `autoFont.js` as a black box, using only its public API to render glyphs and
+         * display debug information. It also demonstrates using `colorpalette.js`
+         * to generate random, contrast-safe colors for each glyph individually.
+         */
+
+        // --- Configuration ---
+        // Set testMode to `false` for fully random glyph generation.
+        // When `true`, you can specify a block or a single glyph to test.
+        const CONFIG = {
+            testMode: false,
+            testGlyph: null,      // e.g., '1F600'
+            testBlocks: ["Wancho"] // e.g., ["Emoticons", "Symbols for Legacy Computing"]
+        };
+
+        /**
+         * Waits for all required data files to be loaded before proceeding.
+         *
+         * HOW IT WORKS:
+         * Each of the data scripts (`block_hex_17.js`, etc.) is expected to declare a global
+         * "signal" variable at the end of its file (e.g., `var blockHexWait = true;`).
+         * This function continuously checks for the existence of these global variables,
+         * as well as the main `AutoFont` and `ColorPalette` objects.
+         *
+         * WHY THIS METHOD:
+         * This polling approach (`setTimeout`) is a classic, albeit somewhat dated, way to handle
+         * dependencies for scripts that are loaded traditionally via `<script>` tags without
+         * using modules or more modern Promise-based loaders. It's simple and effective for
+         * this self-contained example.
+         */
+        function waitForDependencies() {
+            // Check if AutoFont and all data files are ready.
+            if (
+                typeof AutoFont !== "undefined" &&
+                typeof ColorPalette !== "undefined" &&
+                typeof getContrastRatio !== "undefined" &&
+                typeof blockHexWait !== "undefined" &&
+                typeof blockHexDescWait !== "undefined" &&
+                typeof blockHexSkeletonWait !== "undefined"
+            ) {
+                // All scripts are loaded, proceed to initialization.
+                console.log("All dependencies loaded. Initializing...");
+                initialize();
+            } else {
+                // One or more scripts are not ready yet, check again in 100ms.
+                console.log("Waiting for dependencies...");
+                setTimeout(waitForDependencies, 100);
+            }
+        }
+
+        /**
+         * Deduces font selection logic for debugging and tooltip information.
+         *
+         * PURPOSE:
+         * The `AutoFont.generateGlyph` function returns the final `fontStack`, but not the
+         * intermediate `block_lang` or `lang_font` keys it used to make that selection.
+         * For debugging and creating an informative tooltip, it's useful to know which
+         * logic path was taken. This function reverse-engineers that information.
+         *
+         * HOW IT WORKS:
+         * 1. It extracts the primary font from the `fontStack` (e.g., "Noto Sans" from "'Noto Sans', 'Noto Sans Full'").
+         * 2. It looks up all possible language keys for the given Unicode block in the `block_lang` object.
+         * 3. It iterates through those keys, checking the `lang_font` object to see which key's font list
+         *    contains the primary font that was chosen. The first match is assumed to be the one used.
+         *
+         * @param {object} glyphData - The data object from AutoFont.generateGlyph.
+         * @returns {object} An object containing `blockLangKeys` and the deduced `chosenLangKey`.
+         */
+        function getDebugInfo(glyphData) {
+            const blockName = glyphData.block;
+            const fontStack = glyphData.fontStack;
+            const blockLangKeys = block_lang[blockName] || ['(unknown)'];
+            let chosenLangKey = '(unknown)';
+
+            // Extract the primary font from the stack. It's always the first one.
+            // e.g., "'Noto Sans', 'Noto Sans Full', sans-serif" -> "Noto Sans"
+            const primaryFont = fontStack.split(',')[0].replace(/['"]/g, '').trim();
+
+            // Search for the key that could have produced this primary font.
+            for (const key of blockLangKeys) {
+                const fontsForKey = lang_font[key] || [];
+                if (fontsForKey.some(fontNameInList => fontNameInList.startsWith(primaryFont))) {
+                    chosenLangKey = key;
+                    break; // Found a match
+                }
+            }
+
+            return {
+                blockLangKeys: blockLangKeys.join(', '),
+                chosenLangKey: chosenLangKey
+            };
+        }
+
+        /**
+         * Generates a string of HTML containing styled glyphs.
+         * @param {number} numberOfGlyphs - The number of glyphs to generate.
+         * @returns {string} An HTML string of <span> elements.
+         */
+        function generateGlyphRow(numberOfGlyphs) {
+            /*
+             * This function is the heart of the example, demonstrating the combined use of the libraries.
+             *
+             * 1.  `autoFont.js`:
+             *     `AutoFont.generateGlyph()` is called to get a random glyph and its appropriate `fontStack`.
+             *
+             * 2.  `colorpalette.js`:
+             *     `ColorPalette.generateOKLCH()` is used to create random, perceptually uniform colors.
+             *     The library has two modes: a dynamic OKLCH generator (used here) and a fixed-palette manager.
+             *     The dynamic mode requires `ColorPalette.init()` to be called first.
+             *
+             * 3.  `contrast_tester.js`:
+             *     `getContrastRatio()` is used to ensure the generated glyph color is readable against its background color.
+            */
+            let htmlString = '';
+            const fallbackFont = "'Noto Sans Full', sans-serif";
+
+            for (let i = 0; i < numberOfGlyphs; i++) {
+                try {
+                    // --- 1. Get Glyph and Font Data from AutoFont Engine ---
+                    const glyphData = AutoFont.generateGlyph(
+                        block_hex,          // The object containing all Unicode blocks and their glyph arrays.
+                        block_hex_desc,     // The object containing descriptions for each glyph.
+                        block_lang,         // The mapping from a Unicode block name to its language/font system key(s).
+                        lang_font,          // The mapping from a language key to an array of font names.
+                        CONFIG.testMode,    // A boolean flag to enable or disable test mode.
+                        { blocks: CONFIG.testBlocks, glyph: CONFIG.testGlyph }, // Test mode options
+                        null                // Exclusions (not used in this simple example)
+                    );
+
+                    // --- 2. Generate Contrast-Safe Colors with ColorPalette & Contrast Tester ---
+                    // First, generate a random background color for this specific glyph's <span> container.
+                    // We use OKLCH because it's a perceptually uniform color space, which produces
+                    // more aesthetically pleasing and consistent random colors than RGB or HSL.
+                    const bgColor = ColorPalette.generateOKLCH();
+
+                    // Now, find a foreground (text) color that has a sufficient contrast ratio against the background.
+                    // This loop tries up to 50 times to find a color that meets the 4.5:1 contrast ratio,
+                    // which is the minimum for normal text under WCAG AA accessibility guidelines.
+                    let fgColor;
+                    let attempts = 0;
+                    const minContrast = 4.5;
+                    const maxAttempts = 50;
+                    do {
+                        fgColor = ColorPalette.generateOKLCH();
+                        attempts++;
+                    } while (getContrastRatio(bgColor, fgColor) < minContrast && attempts < maxAttempts);
+
+                    // Call our helper function to get the debug info for the tooltip.
+                    const debugInfo = getDebugInfo(glyphData);
+
+                    // Construct the detailed tooltip string.
+                    // Using a template literal with newlines makes the code readable.
+                    // We build an array and join it with newlines to keep the code indented
+                    // without adding extra spaces to the tooltip text.
+                    const titleText = [
+                        `Unicode: ${glyphData.glyph} - ${glyphData.desc.replace(/_/g, ' ')}`,
+                        `Block: ${glyphData.block}`,
+                        `Block_Lang: [${debugInfo.blockLangKeys}]`,
+                        `Lang_Font: ${debugInfo.chosenLangKey}`,
+                        `Font_Stack: ${glyphData.fontStack}`
+                    ].join('\n');
+
+                    // Finally, build the HTML for the current glyph.
+                    // We apply the generated font stack, background color, and foreground color as inline styles.
+                    // The `title` attribute is set to our detailed debug string for mouse-over inspection.
+                    htmlString += `<span style="font-family: ${glyphData.fontStack || fallbackFont}; background-color: ${bgColor}; color: ${fgColor};" title="${titleText}">&#x${glyphData.glyph};</span>`;
+
+                } catch (error) {
+                    console.error(`Error generating glyph at position ${i}:`, error);
+                    htmlString += `<span title="Error">?</span>`; // Add a placeholder on error
+                }
+            }
+            return htmlString;
+        }
+
+        /**
+         * Initializes the application after all dependencies are loaded.
+         * This function is `async` because `AutoFont.init()` returns a Promise.
+         */
+        async function initialize() {
+            // 3. INITIALIZE THE ENGINE
+            // This step creates the <style> sheets in the document's <head> that the engine
+            // will use to dynamically inject @font-face and @import rules.
+            // We `await` it to ensure the stylesheets are ready before we try to generate glyphs.
+            await AutoFont.init();
+            
+            // Initialize the ColorPalette's dynamic color generator. This sets up its internal
+            // state and is required before calling `generateOKLCH()`.
+            ColorPalette.init();
+
+            // 4. GENERATE AND DISPLAY
+            const glyphContainer = document.getElementById('glyph-container');
+            glyphContainer.innerHTML = generateGlyphRow(20); // Generate and display 20 glyphs.
+        }
+
+        // This is the entry point. It starts the dependency-checking process.
+        waitForDependencies();
+
+    </script>
+
+</body>
+</html>

@@ -2,7 +2,7 @@
 const CONFIG = {
     testMode: false,
     testGlyph: null,
-    testBlocks: ["Gujarati"]
+    testBlocks: ["Tai Yo"]
 };
 
 // Data variant selection
