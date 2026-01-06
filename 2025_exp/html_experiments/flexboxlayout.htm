@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexbox Layout</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        .flexbox-container {
+            display: flex;
+            flex-direction: column;
+            width: 80vw;
+            height: 80vh;
+            background-color: #ddd;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .top-row {
+            height: 20%; /* 20% of the flexbox height */
+            background-color: #ff7f50; /* Coral color for visualization */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            border: 1px solid black;
+        }
+
+        .bottom-section {
+            height: 80%; /* 80% of the flexbox height */
+            display: flex;
+            flex-direction: row;
+            /* width implicitly 100% of parent */
+        }
+
+        .column {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            border: 1px solid black;
+        }
+
+        .column-left {
+            width: 45%;
+            background-color: #4682b4; /* SteelBlue */
+        }
+
+        .column-center {
+            width: 10%;
+            background-color: #32cd32; /* LimeGreen */
+        }
+
+        .column-right {
+            width: 45%;
+            background-color: #4682b4; /* SteelBlue */
+        }
+    </style>
+</head>
+<body>
+    <div class="flexbox-container">
+        <div class="top-row">
+            Top Row (20% H)
+        </div>
+        <div class="bottom-section">
+            <div class="column column-left">
+                Left Column (45% W)
+            </div>
+            <div class="column column-center">
+                Center Column (10% W)
+            </div>
+            <div class="column column-right">
+                Right Column (45% W)
+            </div>
+        </div>
+    </div>
+</body>
+</html>

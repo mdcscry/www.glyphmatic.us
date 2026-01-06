@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mad Punctuation</title>
+
+    <STYLE>
+
+        @font-face {
+            font-family: 'Symbols2';
+            src: url('../../../tff/NotoSansSymbols2-Regular.ttf');
+        }
+
+        body {
+            font-family: 'Symbols2','Courier New', Courier, monospace;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #container {
+            width: 80vw;
+            height: 80vh;
+            border: 1px solid #444;
+            display: grid; /* Changed to grid */
+            gap: 15px; /* A small gap between cells */
+            /*box-shadow: 0 4px 8px rgba(0,0,0,0.1);*/
+            padding: 2px; /* Padding to contain the grid gap */
+        }
+
+        .grid-cell {
+            box-sizing: border-box;
+            /* This cell is now a flex container for its internal layout */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- Styles for the layout INSIDE each grid cell --- */
+        .cell-top-row {
+            height: 20%; /* Explicitly set to 20% of the cell height */
+            padding-bottom:0px;
+        }
+
+        .cell-bottom-section {
+            height: 80%; /* Explicitly set to 80% of the cell height */
+            display: flex;
+            flex-direction: row;
+            padding-top:0px;
+        }
+
+        .cell-left-col, .cell-right-col {
+            width: 45%;
+        }
+
+        .cell-middle-col {
+            width: 10%;
+            text-align: center; /* Center the middle glyph */
+            border-left: 1px solid rgba(128, 128, 128, 0.25);
+            border-right: 1px solid rgba(128, 128, 128, 0.25);
+        }
+
+        /* Common class for the areas that will hold glyphs */
+        .glyph-area {
+            font-family: 'Symbols2','Courier New', Courier, monospace;
+           
+            overflow: hidden;
+            word-break: break-all; /* Allow long strings of glyphs to wrap */
+            font-size: 1.2em;
+            line-height: 1.2;
+            text-align: justify;
+            padding: 10px;
+            box-sizing: border-box; /* Ensure padding is included in width/height */
+        }
+        /* --- End of inner layout styles --- */
+
+        .char {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+
+    <!-- Link to the main CSS file.
+         By placing this in the body before the scripts, we ensure it's parsed and
+         available in `document.styleSheets` before the autoFont engine tries to access it.
+         This is crucial for the engine to inject Google Font @import rules.
+    -->
+
+    <script src="../../js_glyph/boxplot.js"></script>
+    <script src="../../js_funct/contrast_tester.js"></script>
+    <script src="../../js_funct/colorpalette.js"></script>
+    <script>
+        // Character set
+        // A wide variety of punctuation and symbols for looks 1-5.
+        const punctuationChars = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~¡¢£¤¥¦§¨©ª«¬®¯°±´µ¶·¸»¿×÷‐‑‒–—―‖‗‘’‚‛“”„‟†‡•…‰‱′″‴‵‶‷‹›※‼‽‾⁄⁅⁆⁇⁈⁉⁊⁎⁏─━│┃┄┅┆┇┈┉┊┋┌┍┎┏┐┑┒┓└┕┖┗┘┙┚┛├┝┞┟┠┡┢┣┤┥┦┧┨┩┪┫┬┭┮┯┰┱┲┳┴┵┶┷┸┹┺┻┼┽┾┿╀╁╂╃╄╅╆╇╈╉╊╋╌╍╎╏═║╒╓╔╕╖╗╘╙╚╛╜╝╞╟╠╡╢╣╤╥╦╧╨╩╪╫╬╭╮╯╰╱╲╳╴╵╶╷╸╹╺╻╼╽╾╿';
+        let glyphData = {}; // Object with {main: [...], middle: '...'}
+
+        // Generate new random character sets for looks 1-5
+        function generateNewString() {
+            // Convert the punctuation string to an array of hex codes
+            const punctuationHex = punctuationChars.split('').map(char => char.charCodeAt(0).toString(16).toUpperCase());
+
+            // Combine the legacy symbols from boxplot.js with our punctuation
+            const combinedGlyphSource = allBlockSymbols.concat(punctuationHex);
+
+            // Select 4 random characters from the main 'chars' string.
+            const selectedChars = new Set();
+            while (selectedChars.size < 4) {
+                const randomHex = combinedGlyphSource[Math.floor(Math.random() * combinedGlyphSource.length)];
+                selectedChars.add(randomHex);
+            }
+            const charArray = Array.from(selectedChars);
+
+            // The first 3 are for the main areas, the 4th is for the middle column.
+            const mainChars = charArray.slice(0, 3);
+            const middleChar = charArray[3];
+
+            glyphData = {
+                main: mainChars,
+                middle: middleChar
+            }
+        }
+
+        // Initialize with first string
+        generateNewString();
+
+        // Parse OKLCH color to get L, C, H values
+        function parseOKLCH(oklchString) {
+            const match = oklchString.match(/oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/);
+            if (!match) return { l: 0.5, c: 0.15, h: 0 };
+            return {
+                l: parseFloat(match[1]),
+                c: parseFloat(match[2]),
+                h: parseFloat(match[3])
+            };
+        }
+
+        // Interpolate between two OKLCH colors
+        function interpolateOKLCH(color1, color2, factor) {
+            const c1 = parseOKLCH(color1);
+            const c2 = parseOKLCH(color2);
+
+            const l = c1.l + (c2.l - c1.l) * factor;
+            const c = c1.c + (c2.c - c1.c) * factor;
+            const h = c1.h + (c2.h - c1.h) * factor;
+
+            return `oklch(${l} ${c} ${h})`;
+        }
+
+        // Interpolate between two hex grayscale colors
+        function interpolateGrayscale(hex1, hex2, factor) {
+            const val1 = parseInt(hex1, 16);
+            const val2 = parseInt(hex2, 16);
+            const interpolated = Math.round(val1 + (val2 - val1) * factor);
+            const hex = interpolated.toString(16).toUpperCase().padStart(2, '0');
+            return `#${hex}${hex}${hex}`;
+        }
+
+        // Generate colors based on look type
+        function generateColors(lookType) {
+            let backgroundColor;
+            let characterColors = [];
+
+            if (lookType === 1) {
+                // Look 1: Rainbow HSL gradient on black background
+                backgroundColor = '#000000';
+                const startHue = Math.random() * 360;
+                for (let i = 0; i < 200; i++) {
+                    const hue = (startHue + (i / 200) * 360 * 3) % 360;
+                    characterColors.push(`hsl(${hue}, 100%, 60%)`);
+                }
+            } else if (lookType === 2) {
+                // Look 2: Random grayscale background + OKLCH palette gradient
+                const grayValues = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
+                const randomGray = grayValues[Math.floor(Math.random() * grayValues.length)];
+                backgroundColor = `#${randomGray}${randomGray}${randomGray}${randomGray}${randomGray}${randomGray}`;
+
+                const palette = ColorPalette.init(5, 6);
+                const glyphColors = palette.glyphColors;
+                const segmentSize = 200 / glyphColors.length;
+
+                for (let i = 0; i < 200; i++) {
+                    const segmentIndex = Math.floor(i / segmentSize);
+                    const nextSegmentIndex = (segmentIndex + 1) % glyphColors.length;
+                    const positionInSegment = i % segmentSize;
+                    const factor = positionInSegment / segmentSize;
+                    const color = interpolateOKLCH(glyphColors[segmentIndex], glyphColors[nextSegmentIndex], factor);
+                    characterColors.push(color);
+                }
+            } else if (lookType === 3) {
+                // Look 3: Black background, gradient 333 -> AAA
+                backgroundColor = '#000000';
+                for (let i = 0; i < 200; i++) {
+                    const factor = i / 200;
+                    characterColors.push(interpolateGrayscale('44', 'AA', factor));
+                }
+            } else if (lookType === 4) {
+                // Look 4: Very light off-white background, gradient 888 -> DDD
+                backgroundColor = '#F5F5F5';
+                for (let i = 0; i < 200; i++) {
+                    const factor = i / 200;
+                    characterColors.push(interpolateGrayscale('77', 'DD', factor));
+                }
+            } else if (lookType === 5) {
+                // Look 5: Pure white background, gradient 000 -> BBB
+                backgroundColor = '#FFFFFF';
+                for (let i = 0; i < 200; i++) {
+                    const factor = i / 200;
+                    characterColors.push(interpolateGrayscale('33', 'FF', factor));
+                }
+            }
+
+            return { backgroundColor, characterColors };
+        }
+
+        // Function to populate a container with repeating characters
+        function populateContent(element, characters, colors) {
+            let html = '';
+            // Fill the element with about 2000 characters
+            for (let i = 0; i < 2500; i++) { // User request: Keep at 2000
+                const hexCode = characters[Math.floor(Math.random() * characters.length)];
+                const color = colors[i % colors.length];
+                const char = String.fromCodePoint(parseInt(hexCode, 16));
+                html += `<span class="char" style="color: ${color};">${char}</span>`;
+            }
+            element.innerHTML = html;
+        }
+
+        // Build and display content based on look
+        function displayLook(lookType) {
+            // Stop any previous animation when a new look is generated
+            stopMiddleColumnAnimation();
+
+            const { backgroundColor, characterColors } = generateColors(lookType);
+
+            // --- Create a "see-saw" color palette for static grayscale looks ---
+            let staticColors;
+            if (lookType >= 3 && lookType <= 5) {
+                const reversed = [...characterColors].reverse();
+                staticColors = characterColors.concat(reversed);
+            } else {
+                staticColors = [...characterColors]; // Use a copy
+            }
+
+            document.body.style.backgroundColor = backgroundColor;
+            // Generate one set of characters to be used by all grid cells
+            generateNewString();
+
+            const container = document.getElementById('container');
+            container.style.backgroundColor = backgroundColor; // Match gap color to page background
+            container.innerHTML = ''; // Clear previous grid
+
+            // --- DYNAMIC GRID LOGIC ---
+            const layouts = [
+                { rows: 1, cols: 1 }, // 1 cell
+                { rows: 1, cols: 2 }, // 2 cells
+                { rows: 2, cols: 2 }, // 4 cells
+                { rows: 3, cols: 3 }  // 9 cells
+            ];
+            const layout = layouts[Math.floor(Math.random() * layouts.length)];
+
+            // Set grid template styles on the container
+            container.style.gridTemplateRows = `repeat(${layout.rows}, 1fr)`;
+            container.style.gridTemplateColumns = `repeat(${layout.cols}, 1fr)`;
+
+            const cellCount = layout.rows * layout.cols;
+            const cells = [];
+
+            // Create and append the grid cells
+            for (let i = 0; i < cellCount; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell'; // This is the main quadrant
+
+                // Use the single background color generated at the start of the function
+                const cellBg = backgroundColor;
+                cell.style.backgroundColor = cellBg;
+
+                // --- Create the inner 2-row, 3-column structure ---
+                const topRow = document.createElement('div');
+                topRow.className = 'cell-top-row glyph-area';
+
+                const bottomSection = document.createElement('div');
+                bottomSection.className = 'cell-bottom-section';
+
+                const leftCol = document.createElement('div');
+                leftCol.className = 'cell-left-col glyph-area';
+
+                const middleCol = document.createElement('div');
+                middleCol.className = 'cell-middle-col glyph-area';
+
+                const rightCol = document.createElement('div');
+                rightCol.className = 'cell-right-col glyph-area';
+
+                // Populate the inner structure
+                populateContent(topRow, glyphData.main, staticColors);
+                populateContent(leftCol, glyphData.main, staticColors);
+                populateContent(middleCol, [glyphData.middle], characterColors);
+                populateContent(rightCol, glyphData.main, staticColors);
+
+                // Assemble the cell
+                bottomSection.append(leftCol, middleCol, rightCol);
+                cell.append(topRow, bottomSection);
+                container.appendChild(cell);
+            }
+
+            // Start the animation for the newly created middle columns
+            startMiddleColumnAnimation(characterColors, lookType);
+        }
+
+        // Keyboard listener for looks 1-7
+        document.addEventListener('keydown', function(e) {
+            if (e.key >= '1' && e.key <= '5') {
+                const lookNum = parseInt(e.key);
+                displayLook(lookNum);
+            }
+        });
+
+        // --- NEW: Animation for the middle column ---
+        let animationFrameId = null;
+
+        function stopMiddleColumnAnimation() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+        }
+
+        function startMiddleColumnAnimation(originalColors, lookType) {
+            stopMiddleColumnAnimation(); // Ensure no multiple loops are running
+
+            const middleCols = document.querySelectorAll('.cell-middle-col');
+            if (middleCols.length === 0) return;
+
+            let colorOffset = 0;
+            let animationColors;
+
+            // --- FIX 2: Implement see-saw logic for grayscale gradients ---
+            if (lookType >= 3 && lookType <= 5) {
+                // Create a "ping-pong" or "see-saw" color array
+                const reversedColors = [...originalColors].reverse();
+                // This creates an array that goes [black...white...black...]
+                animationColors = originalColors.concat(reversedColors);
+            } else {
+                // Use the original color array for other looks
+                animationColors = [...originalColors];
+            }
+
+            let lastUpdateTime = 0;
+            // --- FIX 1: Make Look 1 slower ---
+            const updateInterval = (lookType === 1) ? 150 : 50; // Slower interval for rainbow
+
+            function animate(timestamp) {
+                if (!lastUpdateTime) lastUpdateTime = timestamp;
+                const elapsed = timestamp - lastUpdateTime;
+
+                if (elapsed > updateInterval) {
+                    lastUpdateTime = timestamp - (elapsed % updateInterval);
+
+                    // Always just move forward through the (potentially extended) color array
+                    colorOffset = (colorOffset + 1) % animationColors.length;
+
+                    middleCols.forEach(col => {
+                        const spans = col.querySelectorAll('.char');
+                        spans.forEach((span, i) => {
+                            const colorIndex = (i + colorOffset) % animationColors.length;
+                            span.style.color = animationColors[colorIndex];
+                        });
+                    });
+                }
+
+                animationFrameId = requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // Initialize after AutoFont is ready
+        function init() {
+            // Initialize with random look (1-5)
+            const randomLook = Math.floor(Math.random() * 5) + 1;
+            displayLook(randomLook);
+        }
+
+        init();
+    </script>
+</body>
+</html>
