@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circle Pack Triangulation Grid</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a0a15;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            color: #e6edf3;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 0;
+            right: 1rem;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 1rem;
+            border-radius: 8px 8px 0 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: none;
+            transform: translateY(calc(100% - 3rem));
+            transition: transform 0.3s ease;
+        }
+
+        .controls.expanded {
+            transform: translateY(0);
+        }
+
+        .controls-toggle {
+            background: transparent;
+            border: none;
+            color: #58a6ff;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0;
+            margin-left: 0.5rem;
+            line-height: 1;
+            display: inline;
+        }
+
+        .controls-toggle:hover {
+            color: #79c0ff;
+        }
+
+        .controls h3 {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #58a6ff;
+            display: inline;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .controls h3:hover {
+            color: #79c0ff;
+        }
+
+        .controls button {
+            display: block;
+            width: 100%;
+            margin: 0.3rem 0;
+            padding: 0.5rem;
+            background: rgba(88, 166, 255, 0.2);
+            border: 1px solid rgba(88, 166, 255, 0.5);
+            color: #e6edf3;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .controls button:hover {
+            background: rgba(88, 166, 255, 0.3);
+        }
+
+        .controls button.active {
+            background: rgba(88, 166, 255, 0.5);
+            border-color: #58a6ff;
+        }
+
+        #grid-container {
+            display: grid;
+            gap: 0.5rem;
+            width: 100vw;
+            height: 100vh;
+            padding: 0.5rem;
+            box-sizing: border-box;
+        }
+
+        .grid-2x2 { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
+        .grid-3x3 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
+        .grid-4x4 { grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); }
+        .grid-5x5 { grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); }
+        .grid-6x6 { grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); }
+        .grid-8x8 { grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); }
+        .grid-10x10 { grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(10, 1fr); }
+        .grid-5x4 { grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(4, 1fr); }
+        .grid-6x4 { grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(4, 1fr); }
+        .grid-8x4 { grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(4, 1fr); }
+
+        .pack-cell {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .pack-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .triangle-fill {
+            stroke: none;
+        }
+
+        .edge {
+            fill: none;
+            stroke-width: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls" id="controls-panel">
+        <div id="controls-header">
+            <h3 id="controls-title">Grid Layout</h3>
+            <button class="controls-toggle" id="controls-toggle" title="Toggle controls">▼</button>
+        </div>
+        <button class="grid-btn active" data-layout="2x2">2×2</button>
+        <button class="grid-btn" data-layout="3x3">3×3</button>
+        <button class="grid-btn" data-layout="4x4">4×4</button>
+        <button class="grid-btn" data-layout="5x5">5×5</button>
+        <button class="grid-btn" data-layout="6x6">6×6</button>
+        <button class="grid-btn" data-layout="8x8">8×8</button>
+        <button class="grid-btn" data-layout="10x10">10×10</button>
+        <button class="grid-btn" data-layout="5x4">5×4</button>
+        <button class="grid-btn" data-layout="6x4">6×4</button>
+        <button class="grid-btn" data-layout="8x4">8×4</button>
+        <hr style="margin: 0.5rem 0; border-color: rgba(255,255,255,0.1);">
+        <button id="regenerate-btn">Regenerate</button>
+    </div>
+
+    <div id="grid-container" class="grid-2x2"></div>
+
+    <!-- Load contrast tester (required by ColorPalette) -->
+    <script src="../js_funct/contrast_tester.js"></script>
+    <!-- Load ColorPalette utility -->
+    <script src="../js_funct/colorpalette.js"></script>
+
+    <script>
+        const gridContainer = document.getElementById('grid-container');
+        const gridButtons = document.querySelectorAll('.grid-btn');
+        const regenerateBtn = document.getElementById('regenerate-btn');
+        const controlsPanel = document.getElementById('controls-panel');
+        const controlsToggle = document.getElementById('controls-toggle');
+        const controlsTitle = document.getElementById('controls-title');
+
+        let currentLayout = '2x2';
+        let edgeColor = '#f778ba';
+        let triangleColor = 'rgba(247, 120, 186, 0.15)';
+        let cellBgColor = 'rgba(0, 0, 0, 0.3)';
+        let controlsExpanded = false;
+        let cellPackData = []; // Store pack data for each cell
+        let animationInterval = null;
+
+        // Grid configurations
+        const gridConfigs = {
+            '2x2': { cols: 2, rows: 2 },
+            '3x3': { cols: 3, rows: 3 },
+            '4x4': { cols: 4, rows: 4 },
+            '5x5': { cols: 5, rows: 5 },
+            '6x6': { cols: 6, rows: 6 },
+            '8x8': { cols: 8, rows: 8 },
+            '10x10': { cols: 10, rows: 10 },
+            '5x4': { cols: 5, rows: 4 },
+            '6x4': { cols: 6, rows: 4 },
+            '8x4': { cols: 8, rows: 4 }
+        };
+
+        function distance(p1, p2) {
+            return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+        }
+
+        function generateCirclePacking(width, height) {
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const boundaryRadius = Math.min(width, height) * 0.4;
+
+            const numBoundary = 4 + Math.floor(Math.random() * 8); // 4-11
+            const numInterior = 3 + Math.floor(Math.random() * 8); // 3-10
+
+            const circles = [];
+
+            // Generate boundary circles
+            for (let i = 0; i < numBoundary; i++) {
+                const angle = (2 * Math.PI * i / numBoundary) - Math.PI / 2;
+                const x = centerX + boundaryRadius * Math.cos(angle);
+                const y = centerY + boundaryRadius * Math.sin(angle);
+                const r = 10 + Math.random() * 8;
+                circles.push({ x, y, r, type: 'boundary', id: i });
+            }
+
+            // Generate interior circles
+            for (let i = 0; i < numInterior; i++) {
+                let x, y, r;
+                let attempts = 0;
+                do {
+                    const angle = Math.random() * 2 * Math.PI;
+                    const dist = Math.random() * boundaryRadius * 0.6;
+                    x = centerX + dist * Math.cos(angle);
+                    y = centerY + dist * Math.sin(angle);
+                    r = 12 + Math.random() * 12;
+                    attempts++;
+                } while (attempts < 50 && circles.some(c => distance({x, y}, c) < r + c.r + 5));
+
+                circles.push({ x, y, r, type: 'interior', id: numBoundary + i });
+            }
+
+            // Relaxation
+            for (let iter = 0; iter < 80; iter++) {
+                for (let i = 0; i < circles.length; i++) {
+                    if (circles[i].type === 'boundary') continue;
+
+                    let fx = 0, fy = 0;
+
+                    fx += (centerX - circles[i].x) * 0.01;
+                    fy += (centerY - circles[i].y) * 0.01;
+
+                    for (let j = 0; j < circles.length; j++) {
+                        if (i === j) continue;
+                        const d = distance(circles[i], circles[j]);
+                        const minDist = circles[i].r + circles[j].r;
+                        if (d < minDist * 1.5) {
+                            const force = (minDist * 1.5 - d) / d;
+                            fx += (circles[i].x - circles[j].x) * force * 0.3;
+                            fy += (circles[i].y - circles[j].y) * force * 0.3;
+                        }
+                    }
+
+                    circles[i].x += fx;
+                    circles[i].y += fy;
+
+                    const maxDist = boundaryRadius - circles[i].r;
+                    const d = distance(circles[i], {x: centerX, y: centerY});
+                    if (d > maxDist) {
+                        const scale = maxDist / d;
+                        circles[i].x = centerX + (circles[i].x - centerX) * scale;
+                        circles[i].y = centerY + (circles[i].y - centerY) * scale;
+                    }
+                }
+            }
+
+            return { circles, edges: [], triangles: [] };
+        }
+
+        function generateTriangulation(packData) {
+            const { circles } = packData;
+            const edges = [];
+            const triangles = [];
+
+            // Connect boundary points
+            const boundaryCircles = circles.filter(c => c.type === 'boundary');
+            for (let i = 0; i < boundaryCircles.length; i++) {
+                const next = (i + 1) % boundaryCircles.length;
+                edges.push([boundaryCircles[i].id, boundaryCircles[next].id]);
+            }
+
+            // Connect interior to nearby circles
+            const interiorCircles = circles.filter(c => c.type === 'interior');
+
+            for (const interior of interiorCircles) {
+                const sorted = [...circles]
+                    .filter(c => c.id !== interior.id)
+                    .sort((a, b) => distance(interior, a) - distance(interior, b));
+
+                const connectCount = Math.min(4 + Math.floor(Math.random() * 3), sorted.length);
+                for (let i = 0; i < connectCount; i++) {
+                    const edge = [interior.id, sorted[i].id].sort((a, b) => a - b);
+                    if (!edges.some(e => e[0] === edge[0] && e[1] === edge[1])) {
+                        edges.push(edge);
+                    }
+                }
+            }
+
+            // Find triangles
+            for (let i = 0; i < edges.length; i++) {
+                for (let j = i + 1; j < edges.length; j++) {
+                    const shared = edges[i].filter(v => edges[j].includes(v));
+                    if (shared.length === 1) {
+                        const others = [...edges[i], ...edges[j]].filter(v => v !== shared[0]);
+                        const edge3 = others.sort((a, b) => a - b);
+                        if (edges.some(e => e[0] === edge3[0] && e[1] === edge3[1])) {
+                            const tri = [shared[0], ...others].sort((a, b) => a - b);
+                            if (!triangles.some(t => t[0] === tri[0] && t[1] === tri[1] && t[2] === tri[2])) {
+                                triangles.push(tri);
+                            }
+                        }
+                    }
+                }
+            }
+
+            packData.edges = edges;
+            packData.triangles = triangles;
+            return packData;
+        }
+
+        function renderPack(packData, width, height) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.classList.add('pack-svg');
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+            const { circles, triangles, edges } = packData;
+
+            // Draw triangles
+            triangles.forEach(tri => {
+                const c1 = circles.find(c => c.id === tri[0]);
+                const c2 = circles.find(c => c.id === tri[1]);
+                const c3 = circles.find(c => c.id === tri[2]);
+
+                const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                polygon.setAttribute('points', `${c1.x},${c1.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
+                polygon.classList.add('triangle-fill');
+                polygon.style.fill = triangleColor;
+                svg.appendChild(polygon);
+            });
+
+            // Draw edges
+            edges.forEach(edge => {
+                const c1 = circles.find(c => c.id === edge[0]);
+                const c2 = circles.find(c => c.id === edge[1]);
+
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', c1.x);
+                line.setAttribute('y1', c1.y);
+                line.setAttribute('x2', c2.x);
+                line.setAttribute('y2', c2.y);
+                line.classList.add('edge');
+                line.style.stroke = edgeColor;
+                svg.appendChild(line);
+            });
+
+            return svg;
+        }
+
+        function generateGrid() {
+            const config = gridConfigs[currentLayout];
+            const cellCount = config.cols * config.rows;
+
+            // Clear existing
+            gridContainer.innerHTML = '';
+            cellPackData = [];
+
+            // Generate cells
+            for (let i = 0; i < cellCount; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'pack-cell';
+                cell.style.backgroundColor = cellBgColor;
+                cell.dataset.cellIndex = i;
+
+                // Generate random packing for this cell
+                const packData = generateCirclePacking(400, 400);
+                generateTriangulation(packData);
+
+                // Store pack data for animation
+                cellPackData.push(packData);
+
+                const svg = renderPack(packData, 400, 400);
+                cell.appendChild(svg);
+                gridContainer.appendChild(cell);
+            }
+        }
+
+        function updateCell(cellIndex) {
+            const cell = gridContainer.querySelector(`[data-cell-index="${cellIndex}"]`);
+            if (!cell || !cellPackData[cellIndex]) return;
+
+            const packData = cellPackData[cellIndex];
+            const { circles } = packData;
+
+            const totalPoints = circles.length;
+            const width = 400;
+            const height = 400;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const boundaryRadius = Math.min(width, height) * 0.4;
+
+            // Randomly choose to add or remove a point
+            const shouldAdd = Math.random() < 0.5;
+
+            if (shouldAdd && totalPoints < 30) {
+                // ADD A POINT
+                // Randomly choose to add boundary or interior point
+                const addBoundary = Math.random() < 0.5;
+
+                if (addBoundary) {
+                    // Add a new boundary point
+                    const newId = circles.length;
+                    const angle = Math.random() * 2 * Math.PI - Math.PI / 2;
+                    const x = centerX + boundaryRadius * Math.cos(angle);
+                    const y = centerY + boundaryRadius * Math.sin(angle);
+                    const r = 10 + Math.random() * 8;
+
+                    circles.push({ x, y, r, type: 'boundary', id: newId });
+                } else {
+                    // Add a new interior point
+                    const newId = circles.length;
+                    const angle = Math.random() * 2 * Math.PI;
+                    const dist = Math.random() * boundaryRadius * 0.6;
+                    const x = centerX + dist * Math.cos(angle);
+                    const y = centerY + dist * Math.sin(angle);
+                    const r = 12 + Math.random() * 12;
+
+                    circles.push({ x, y, r, type: 'interior', id: newId });
+                }
+            } else if (!shouldAdd && totalPoints > 6) {
+                // REMOVE A POINT
+                // Don't remove if we're at minimum
+                // Randomly choose to remove boundary or interior point
+                const boundaryCircles = circles.filter(c => c.type === 'boundary');
+                const interiorCircles = circles.filter(c => c.type === 'interior');
+
+                const removeBoundary = Math.random() < 0.5 && boundaryCircles.length > 3;
+
+                if (removeBoundary) {
+                    // Remove a random boundary point
+                    const randomIndex = Math.floor(Math.random() * boundaryCircles.length);
+                    const toRemove = boundaryCircles[randomIndex];
+                    const circleIndex = circles.findIndex(c => c.id === toRemove.id);
+                    if (circleIndex !== -1) {
+                        circles.splice(circleIndex, 1);
+                    }
+                } else if (interiorCircles.length > 0) {
+                    // Remove a random interior point
+                    const randomIndex = Math.floor(Math.random() * interiorCircles.length);
+                    const toRemove = interiorCircles[randomIndex];
+                    const circleIndex = circles.findIndex(c => c.id === toRemove.id);
+                    if (circleIndex !== -1) {
+                        circles.splice(circleIndex, 1);
+                    }
+                }
+            } else {
+                // No change, just return
+                return;
+            }
+
+            // Run a few relaxation iterations
+            for (let iter = 0; iter < 30; iter++) {
+                for (let i = 0; i < circles.length; i++) {
+                    if (circles[i].type === 'boundary') continue;
+
+                    let fx = 0, fy = 0;
+                    fx += (centerX - circles[i].x) * 0.01;
+                    fy += (centerY - circles[i].y) * 0.01;
+
+                    for (let j = 0; j < circles.length; j++) {
+                        if (i === j) continue;
+                        const d = distance(circles[i], circles[j]);
+                        const minDist = circles[i].r + circles[j].r;
+                        if (d < minDist * 1.5) {
+                            const force = (minDist * 1.5 - d) / d;
+                            fx += (circles[i].x - circles[j].x) * force * 0.3;
+                            fy += (circles[i].y - circles[j].y) * force * 0.3;
+                        }
+                    }
+
+                    circles[i].x += fx;
+                    circles[i].y += fy;
+
+                    const maxDist = boundaryRadius - circles[i].r;
+                    const d = distance(circles[i], {x: centerX, y: centerY});
+                    if (d > maxDist) {
+                        const scale = maxDist / d;
+                        circles[i].x = centerX + (circles[i].x - centerX) * scale;
+                        circles[i].y = centerY + (circles[i].y - centerY) * scale;
+                    }
+                }
+            }
+
+            // Regenerate triangulation
+            generateTriangulation(packData);
+
+            // Re-render this cell
+            cell.innerHTML = '';
+            const svg = renderPack(packData, 400, 400);
+            cell.appendChild(svg);
+        }
+
+        function scheduleNextAnimation() {
+            const minDelay = 600;
+            const maxDelay = 3000;
+            const delay = minDelay + Math.random() * (maxDelay - minDelay);
+
+            animationInterval = setTimeout(() => {
+                if (cellPackData.length > 0) {
+                    const randomCell = Math.floor(Math.random() * cellPackData.length);
+                    updateCell(randomCell);
+                }
+                scheduleNextAnimation();
+            }, delay);
+        }
+
+        function stopAnimation() {
+            if (animationInterval) {
+                clearTimeout(animationInterval);
+                animationInterval = null;
+            }
+        }
+
+        function initializePalette() {
+            if (typeof ColorPalette === 'undefined') {
+                setTimeout(initializePalette, 100);
+                return;
+            }
+
+            ColorPalette.init();
+
+            // Stop any existing animation
+            stopAnimation();
+
+            // Randomly select a grid layout
+            const layoutKeys = Object.keys(gridConfigs);
+            const randomLayout = layoutKeys[Math.floor(Math.random() * layoutKeys.length)];
+            currentLayout = randomLayout;
+            gridContainer.className = `grid-${currentLayout}`;
+
+            // Update active button
+            gridButtons.forEach(btn => {
+                if (btn.dataset.layout === currentLayout) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Generate 4-color palette with contrast testing
+            // Color 1: Grid background (dark)
+            const gridBgColor = ColorPalette.generateOKLCH(0.15 + Math.random() * 0.2, 0.05, Math.random() * 360);
+
+            // Color 2: Cell background (must contrast with grid background)
+            let cellBgColor_base;
+            let attempts = 0;
+            const minContrast = 3.5;
+            const maxAttempts = 100;
+            do {
+                cellBgColor_base = ColorPalette.generateOKLCH(0.2 + Math.random() * 0.3, 0.08 + Math.random() * 0.1, Math.random() * 360);
+                attempts++;
+            } while (getContrastRatio(gridBgColor, cellBgColor_base) < minContrast && attempts < maxAttempts);
+
+            // Color 3: Edge color (must contrast with cell background)
+            let edgeColor_temp;
+            attempts = 0;
+            do {
+                edgeColor_temp = ColorPalette.generateOKLCH(0.4 + Math.random() * 0.5, 0.1 + Math.random() * 0.15, Math.random() * 360);
+                attempts++;
+            } while (getContrastRatio(cellBgColor_base, edgeColor_temp) < 4.5 && attempts < maxAttempts);
+
+            // Color 4: Triangle fill (must contrast with cell background, can be softer)
+            let triangleColor_temp;
+            attempts = 0;
+            do {
+                triangleColor_temp = ColorPalette.generateOKLCH(0.3 + Math.random() * 0.4, 0.08 + Math.random() * 0.12, Math.random() * 360);
+                attempts++;
+            } while (getContrastRatio(cellBgColor_base, triangleColor_temp) < 3 && attempts < maxAttempts);
+
+            // Assign colors
+            edgeColor = edgeColor_temp;
+            triangleColor = triangleColor_temp;
+            cellBgColor = cellBgColor_base;
+
+            // Make triangle color more transparent
+            const match = triangleColor.match(/oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/);
+            if (match) {
+                const l = parseFloat(match[1]);
+                const c = parseFloat(match[2]);
+                const h = parseFloat(match[3]);
+                triangleColor = `oklch(${l} ${c} ${h} / 0.25)`;
+            }
+
+            // Make cell background slightly transparent
+            const cellMatch = cellBgColor.match(/oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/);
+            if (cellMatch) {
+                const l = parseFloat(cellMatch[1]);
+                const c = parseFloat(cellMatch[2]);
+                const h = parseFloat(cellMatch[3]);
+                cellBgColor = `oklch(${l} ${c} ${h} / 0.4)`;
+            }
+
+            // Set body background
+            document.body.style.backgroundColor = gridBgColor;
+
+            generateGrid();
+
+            // Start animation after a brief delay
+            setTimeout(() => {
+                scheduleNextAnimation();
+            }, 1000);
+        }
+
+        // Event listeners
+        function toggleControls() {
+            controlsExpanded = !controlsExpanded;
+            if (controlsExpanded) {
+                controlsPanel.classList.add('expanded');
+                controlsToggle.textContent = '▼';
+            } else {
+                controlsPanel.classList.remove('expanded');
+                controlsToggle.textContent = '▲';
+            }
+        }
+
+        controlsToggle.addEventListener('click', toggleControls);
+        controlsTitle.addEventListener('click', toggleControls);
+
+        gridButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                gridButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentLayout = btn.dataset.layout;
+                gridContainer.className = `grid-${currentLayout}`;
+                stopAnimation();
+                generateGrid();
+                setTimeout(() => {
+                    scheduleNextAnimation();
+                }, 1000);
+            });
+        });
+
+        regenerateBtn.addEventListener('click', () => {
+            initializePalette();
+        });
+
+        // Initialize
+        initializePalette();
+    </script>
+</body>
+</html>

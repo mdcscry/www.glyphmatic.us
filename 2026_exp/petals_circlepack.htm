@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petals Circle Packing</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a15 100%);
+            overflow: hidden;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        #packing-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .lotus-container {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            pointer-events: auto;
+            opacity: 0;
+            cursor: pointer;
+            transition: all 1s ease;
+        }
+
+        .lotus-container.focused {
+            z-index: 9999;
+            cursor: pointer;
+        }
+
+        .lotus-container.hidden {
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+
+        .lotus-container.visible {
+            opacity: 1;
+        }
+
+        .lotus-container.rotating-cw {
+            animation: rotateLotus-cw var(--rotation-duration, 20s) linear infinite;
+        }
+
+        .lotus-container.rotating-ccw {
+            animation: rotateLotus-ccw var(--rotation-duration, 20s) linear infinite;
+        }
+
+        .lotus-container.fading-out {
+            opacity: 0;
+        }
+
+        @keyframes rotateLotus-cw {
+            from {
+                transform: translate(-50%, -50%) rotate(0deg) scale(var(--lotus-scale, 1));
+            }
+            to {
+                transform: translate(-50%, -50%) rotate(360deg) scale(var(--lotus-scale, 1));
+            }
+        }
+
+        @keyframes rotateLotus-ccw {
+            from {
+                transform: translate(-50%, -50%) rotate(0deg) scale(var(--lotus-scale, 1));
+            }
+            to {
+                transform: translate(-50%, -50%) rotate(-360deg) scale(var(--lotus-scale, 1));
+            }
+        }
+
+        @keyframes rotateClockwise {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes rotateCounterClockwise {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
+        }
+
+        .lotus-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .rotating-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            transform-origin: center center;
+        }
+
+        .lotus-circle {
+            position: absolute;
+            border-radius: 50%;
+            border-width: calc(1.5px * var(--border-scale, 1));
+            border-style: solid;
+            background: transparent;
+            pointer-events: none;
+        }
+
+        .lotus-concentric-ring {
+            position: absolute;
+            border-radius: 50%;
+            border-width: calc(2px * var(--border-scale, 1));
+            border-style: solid;
+            pointer-events: none;
+        }
+
+        .lotus-fol-circle {
+            position: absolute;
+            border-radius: 50%;
+            border-width: calc(1.5px * var(--border-scale, 1));
+            border-style: solid;
+            background: transparent;
+        }
+
+        .lotus-center-circle {
+            border-width: calc(2px * var(--border-scale, 1)) !important;
+        }
+
+        .lotus-petal {
+            position: absolute;
+            font-family: 'Shippori Mincho B1', serif;
+            font-weight: 100;
+            line-height: 1;
+            pointer-events: none;
+            transform-origin: center center;
+            z-index: -1;
+        }
+
+        .center-glow {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .outer-ring {
+            position: absolute;
+            border-radius: 50%;
+            border-width: calc(2px * var(--border-scale, 1));
+            border-style: solid;
+            background: transparent;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .debug-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px dashed rgba(255, 0, 0, 0.3);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <div id="packing-container"></div>
+
+    <!-- Load contrast tester (required by ColorPalette) -->
+    <script src="../js_funct/contrast_tester.js"></script>
+    <!-- Load ColorPalette utility -->
+    <script src="../js_funct/colorpalette.js"></script>
+
+    <script>
+        const container = document.getElementById('packing-container');
+        let circles = [];
+        let lotusElements = [];
+        const DEBUG = false;
+        let focusedLotus = null;
+
+        function distance(p1, p2) {
+            return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+        }
+
+        function generateCirclePacking() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const centerX = width / 2;
+            const centerY = height / 2;
+
+            circles = [];
+
+            const minRadius = 80;
+            const maxRadius = 270;
+
+            const numBoundaryPoints = 6 + Math.random() * 5;
+
+            for (let i = 0; i < numBoundaryPoints; i++) {
+                const angle = (2 * Math.PI / numBoundaryPoints) * i;
+                const r = minRadius + Math.random() * (maxRadius - minRadius);
+
+                let x, y;
+                const side = i % 4;
+
+                if (side === 0) {
+                    x = r + Math.random() * (width - 2 * r);
+                    y = r;
+                } else if (side === 1) {
+                    x = width - r;
+                    y = r + Math.random() * (height - 2 * r);
+                } else if (side === 2) {
+                    x = r + Math.random() * (width - 2 * r);
+                    y = height - r;
+                } else {
+                    x = r;
+                    y = r + Math.random() * (height - 2 * r);
+                }
+
+                circles.push({ x, y, r, type: 'boundary', id: i });
+            }
+
+            const targetInterior = Math.floor(5 + Math.random() * 10);
+            let interiorPlaced = 0;
+
+            for (let i = 0; i < targetInterior; i++) {
+                let x, y, r;
+                let attempts = 0;
+                let placed = false;
+                let currentMaxRadius = maxRadius;
+                let currentMinRadius = minRadius;
+
+                if (i > 6) {
+                    currentMinRadius = 40;
+                }
+
+                while (attempts < 2000 && !placed && currentMaxRadius > 30) {
+                    r = currentMinRadius + Math.random() * (currentMaxRadius - currentMinRadius);
+
+                    if (width < 2 * r || height < 2 * r) {
+                        currentMaxRadius *= 0.9;
+                        attempts++;
+                        continue;
+                    }
+
+                    x = r + Math.random() * (width - 2 * r);
+                    y = r + Math.random() * (height - 2 * r);
+
+                    let overlaps = false;
+                    let minGap = 3;
+                    for (let c of circles) {
+                        const d = distance({x, y}, c);
+                        if (d < r + c.r + minGap) {
+                            overlaps = true;
+                            break;
+                        }
+                    }
+
+                    if (!overlaps) {
+                        placed = true;
+                        circles.push({ x, y, r, type: 'interior', id: numBoundaryPoints + interiorPlaced });
+                        interiorPlaced++;
+                    }
+
+                    attempts++;
+
+                    if (attempts % 100 === 0) {
+                        currentMaxRadius *= 0.9;
+                    }
+                }
+
+                if (!placed) {
+                    console.log(`Stopped placing at ${interiorPlaced} circles after ${i} attempts`);
+                    break;
+                }
+            }
+
+            console.log(`Placed ${interiorPlaced} interior circles (target: ${targetInterior})`);
+
+            for (let iter = 0; iter < 100; iter++) {
+                for (let i = 0; i < circles.length; i++) {
+                    if (circles[i].type === 'boundary') continue;
+
+                    let fx = 0, fy = 0;
+
+                    fx += (centerX - circles[i].x) * 0.002;
+                    fy += (centerY - circles[i].y) * 0.002;
+
+                    for (let j = 0; j < circles.length; j++) {
+                        if (i === j) continue;
+                        const d = distance(circles[i], circles[j]);
+                        const minDist = circles[i].r + circles[j].r + 3;
+
+                        if (d < minDist) {
+                            const force = (minDist - d) / Math.max(d, 1);
+                            fx += (circles[i].x - circles[j].x) * force * 0.5;
+                            fy += (circles[i].y - circles[j].y) * force * 0.5;
+                        }
+                    }
+
+                    circles[i].x += fx;
+                    circles[i].y += fy;
+
+                    const r = circles[i].r;
+                    circles[i].x = Math.max(r, Math.min(width - r, circles[i].x));
+                    circles[i].y = Math.max(r, Math.min(height - r, circles[i].y));
+                }
+            }
+
+            for (let i = 0; i < circles.length; i++) {
+                for (let j = i + 1; j < circles.length; j++) {
+                    const d = distance(circles[i], circles[j]);
+                    const minDist = circles[i].r + circles[j].r;
+                    if (d < minDist) {
+                        console.warn(`Overlap detected: circles ${i} and ${j}, distance ${d.toFixed(1)} < ${minDist.toFixed(1)}`);
+                    }
+                }
+            }
+        }
+
+        function createLotus(circle) {
+            const lotusDiv = document.createElement('div');
+            lotusDiv.className = 'lotus-container';
+            lotusDiv.style.left = `${circle.x}px`;
+            lotusDiv.style.top = `${circle.y}px`;
+            lotusDiv.style.width = `${circle.r * 2}px`;
+            lotusDiv.style.height = `${circle.r * 2}px`;
+
+            lotusDiv.circleData = circle;
+
+            const inner = document.createElement('div');
+            inner.className = 'lotus-inner';
+            lotusDiv.appendChild(inner);
+
+            // Base size for the mandala design (from lotus_redo.htm)
+            const baseSize = 800;
+            const scale = (circle.r * 2) / baseSize;
+            const centerX = circle.r;
+            const centerY = circle.r;
+
+            // Generate palette
+            const paletteSize = 2 + Math.floor(Math.random() * 3);
+            const palette = [];
+            for (let i = 0; i < paletteSize; i++) {
+                palette.push(ColorPalette.generateOKLCH());
+            }
+
+            // Apply radial gradient background using palette colors
+            const gradientColor = palette[0];
+            inner.style.background = `radial-gradient(
+                circle,
+                ${gradientColor.replace(')', ' / 0.5)')} 0%,
+                ${gradientColor.replace(')', ' / 0.4)')} 8%,
+                ${gradientColor.replace(')', ' / 0.35)')} 16%,
+                ${gradientColor.replace(')', ' / 0.3)')} 24%,
+                ${gradientColor.replace(')', ' / 0.25)')} 32%,
+                ${gradientColor.replace(')', ' / 0.2)')} 40%,
+                ${gradientColor.replace(')', ' / 0.15)')} 48%,
+                ${gradientColor.replace(')', ' / 0.1)')} 56%,
+                ${gradientColor.replace(')', ' / 0.05)')} 70%,
+                transparent 87.5%
+            )`;
+
+            // Create two rotating containers
+            const mainRotatingContainer = document.createElement('div');
+            mainRotatingContainer.className = 'rotating-layer';
+            const folRotatingContainer = document.createElement('div');
+            folRotatingContainer.className = 'rotating-layer';
+
+            // Random rotation direction and speed
+            // Main layer and flower of life rotate in opposite directions at different speeds
+            const rotationDirection = Math.random() < 0.5 ? 'rotateClockwise' : 'rotateCounterClockwise';
+            const oppositeDirection = rotationDirection === 'rotateClockwise' ? 'rotateCounterClockwise' : 'rotateClockwise';
+
+            // Rotation speeds - flower of life slower, still counter-rotating
+            const mainSpeed = 100 + Math.random() * 60; // 100-160 seconds for main layer
+            const folSpeed = 60 + Math.random() * 60; // 60-120 seconds for flower of life
+
+            mainRotatingContainer.style.animation = `${rotationDirection} ${mainSpeed}s linear infinite`;
+            folRotatingContainer.style.animation = `${oppositeDirection} ${folSpeed}s linear infinite`;
+
+            // Add data attributes for debugging
+            mainRotatingContainer.dataset.layer = 'main';
+            mainRotatingContainer.dataset.direction = rotationDirection;
+            mainRotatingContainer.dataset.speed = mainSpeed;
+            folRotatingContainer.dataset.layer = 'fol';
+            folRotatingContainer.dataset.direction = oppositeDirection;
+            folRotatingContainer.dataset.speed = folSpeed;
+
+            inner.appendChild(mainRotatingContainer);
+            inner.appendChild(folRotatingContainer);
+
+            // Flower of Life
+            const folCircleRadius = 50 * scale;
+            const folOffset = 50 * scale;
+
+            // Concentric rings
+            const innerRadius = 100 * scale;
+            const outerRadius = 350 * scale;
+
+            // Random number of inner rings: 4-7
+            const innerRingCount = 4 + Math.floor(Math.random() * 4);
+            const totalRings = innerRingCount + 2;
+
+            const concentricRadii = [];
+            for (let i = 0; i < totalRings; i++) {
+                const radius = innerRadius + (outerRadius - innerRadius) * (i / (totalRings - 1));
+                concentricRadii.push(radius);
+            }
+
+            // Add flower of life edge ring (first concentric ring at innerRadius)
+            const folEdgeRing = document.createElement('div');
+            folEdgeRing.className = 'lotus-concentric-ring';
+            folEdgeRing.style.width = `${innerRadius * 2}px`;
+            folEdgeRing.style.height = `${innerRadius * 2}px`;
+            folEdgeRing.style.left = `${centerX - innerRadius}px`;
+            folEdgeRing.style.top = `${centerY - innerRadius}px`;
+            folEdgeRing.style.borderColor = palette[0];
+            mainRotatingContainer.appendChild(folEdgeRing);
+
+            // Add remaining concentric rings
+            concentricRadii.forEach((radius, index) => {
+                const ring = document.createElement('div');
+                ring.className = 'lotus-concentric-ring';
+                ring.style.width = `${radius * 2}px`;
+                ring.style.height = `${radius * 2}px`;
+                ring.style.left = `${centerX - radius}px`;
+                ring.style.top = `${centerY - radius}px`;
+                ring.style.borderColor = palette[index % palette.length];
+                mainRotatingContainer.appendChild(ring);
+            });
+
+            // Radial spokes - create clipping container
+            const spokesContainer = document.createElement('div');
+            spokesContainer.style.position = 'absolute';
+            spokesContainer.style.width = '100%';
+            spokesContainer.style.height = '100%';
+            spokesContainer.style.overflow = 'hidden';
+            spokesContainer.style.borderRadius = '50%';
+            spokesContainer.style.clipPath = `circle(${outerRadius}px at ${centerX}px ${centerY}px)`;
+            mainRotatingContainer.appendChild(spokesContainer);
+
+            // Inner mask
+            const innerMask = document.createElement('div');
+            innerMask.style.position = 'absolute';
+            innerMask.style.width = `${innerRadius * 2}px`;
+            innerMask.style.height = `${innerRadius * 2}px`;
+            innerMask.style.left = `${centerX - innerRadius}px`;
+            innerMask.style.top = `${centerY - innerRadius}px`;
+            innerMask.style.background = 'radial-gradient(circle, #1a1a2e 0%, #1a1a2e 100%)';
+            innerMask.style.borderRadius = '50%';
+            innerMask.style.zIndex = '5';
+            spokesContainer.appendChild(innerMask);
+
+            // Spoke circles
+            const spokeCircleDiameter = 371 * scale;
+            const spokeCircleRadius = spokeCircleDiameter / 2;
+            const spokeCount = [18, 36, 54, 72, 108][Math.floor(Math.random() * 5)];
+
+            for (let i = 0; i < spokeCount; i++) {
+                const angle = (2 * Math.PI / spokeCount) * i - Math.PI / 2;
+                const x = centerX + spokeCircleRadius * Math.cos(angle);
+                const y = centerY + spokeCircleRadius * Math.sin(angle);
+
+                const spokeCircle = document.createElement('div');
+                spokeCircle.className = 'lotus-circle';
+                spokeCircle.style.width = `${spokeCircleDiameter}px`;
+                spokeCircle.style.height = `${spokeCircleDiameter}px`;
+                spokeCircle.style.left = `${x - spokeCircleDiameter / 2}px`;
+                spokeCircle.style.top = `${y - spokeCircleDiameter / 2}px`;
+                spokeCircle.style.borderColor = palette[i % palette.length];
+                spokeCircle.style.zIndex = '1';
+                spokesContainer.appendChild(spokeCircle);
+            }
+
+            // Outer ring
+            const outerMask = document.createElement('div');
+            outerMask.className = 'outer-ring';
+            outerMask.style.width = `${outerRadius * 2}px`;
+            outerMask.style.height = `${outerRadius * 2}px`;
+            outerMask.style.left = `${centerX - outerRadius}px`;
+            outerMask.style.top = `${centerY - outerRadius}px`;
+            outerMask.style.borderColor = palette[palette.length - 1];
+            mainRotatingContainer.appendChild(outerMask);
+
+            // Flower of Life - all 7 circles
+            const folColor = palette[1] || palette[0];
+
+            // Center circle
+            const centerCircle = document.createElement('div');
+            centerCircle.className = 'lotus-fol-circle lotus-center-circle';
+            centerCircle.style.width = `${folCircleRadius * 2}px`;
+            centerCircle.style.height = `${folCircleRadius * 2}px`;
+            centerCircle.style.left = `${centerX - folCircleRadius}px`;
+            centerCircle.style.top = `${centerY - folCircleRadius}px`;
+            centerCircle.style.borderColor = folColor;
+            centerCircle.style.zIndex = '10';
+            folRotatingContainer.appendChild(centerCircle);
+
+            // Six surrounding circles
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i - Math.PI / 2;
+                const x = centerX + folOffset * Math.cos(angle);
+                const y = centerY + folOffset * Math.sin(angle);
+
+                const fol = document.createElement('div');
+                fol.className = 'lotus-fol-circle';
+                fol.style.width = `${folCircleRadius * 2}px`;
+                fol.style.height = `${folCircleRadius * 2}px`;
+                fol.style.left = `${x - folCircleRadius}px`;
+                fol.style.top = `${y - folCircleRadius}px`;
+                fol.style.borderColor = folColor;
+                fol.style.zIndex = '10';
+                folRotatingContainer.appendChild(fol);
+            }
+
+            // Center glow
+            const glow = document.createElement('div');
+            glow.className = 'center-glow';
+            const glowSize = 500 * scale;
+            glow.style.width = `${glowSize}px`;
+            glow.style.height = `${glowSize}px`;
+            glow.style.left = `${centerX - glowSize / 2}px`;
+            glow.style.top = `${centerY - glowSize / 2}px`;
+            glow.style.zIndex = '10';
+            const glowColor = palette[palette.length - 1];
+            glow.style.background = `radial-gradient(
+                circle,
+                ${glowColor.replace(')', ' / 0.4)')} 0%,
+                ${glowColor.replace(')', ' / 0.3)')} 15%,
+                ${glowColor.replace(')', ' / 0.2)')} 30%,
+                ${glowColor.replace(')', ' / 0.1)')} 50%,
+                ${glowColor.replace(')', ' / 0.05)')} 70%,
+                transparent 90%
+            )`;
+            mainRotatingContainer.appendChild(glow);
+
+            // Debug circle
+            if (DEBUG) {
+                const debugCircle = document.createElement('div');
+                debugCircle.className = 'debug-circle';
+                debugCircle.style.left = `${circle.x}px`;
+                debugCircle.style.top = `${circle.y}px`;
+                debugCircle.style.width = `${circle.r * 2}px`;
+                debugCircle.style.height = `${circle.r * 2}px`;
+                container.appendChild(debugCircle);
+            }
+
+            // Click handler
+            lotusDiv.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (focusedLotus) {
+                    unfocusLotus();
+                    regeneratePage();
+                } else {
+                    focusLotus(lotusDiv);
+                }
+            });
+
+            return lotusDiv;
+        }
+
+        function focusLotus(lotus) {
+            focusedLotus = lotus;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const centerX = vw / 2;
+            const centerY = vh / 2;
+
+            const currentSize = parseFloat(lotus.style.width);
+            const targetSize = vh * 0.995;
+            const scale = targetSize / currentSize;
+
+            lotusElements.forEach(el => {
+                if (el !== lotus) {
+                    el.classList.add('hidden');
+                }
+            });
+
+            lotus.classList.add('focused');
+            lotus.style.left = `${centerX}px`;
+            lotus.style.top = `${centerY}px`;
+
+            // Apply scale directly as transform
+            lotus.style.transform = `translate(-50%, -50%) scale(${scale})`;
+            lotus.style.transformOrigin = 'center center';
+
+            lotus.style.setProperty('--border-scale', 1 / scale);
+
+            // Slow down the internal counter-rotation when focused
+            const inner = lotus.querySelector('.lotus-inner');
+            const rotatingLayers = inner.querySelectorAll('.rotating-layer');
+
+            rotatingLayers.forEach((layer, index) => {
+                // Store original animation
+                const currentAnimation = window.getComputedStyle(layer).animation;
+                layer.dataset.originalAnimation = layer.style.animation;
+
+                // Parse current animation and multiply duration by 2.5 for slower focus rotation
+                const animMatch = layer.style.animation.match(/(rotateClockwise|rotateCounterClockwise)\s+([\d.]+)s/);
+                if (animMatch) {
+                    const direction = animMatch[1];
+                    const duration = parseFloat(animMatch[2]);
+                    const newDuration = duration * 2.5; // Slow down by 2.5x when focused
+                    layer.style.animation = `${direction} ${newDuration}s linear infinite`;
+                }
+            });
+        }
+
+        function unfocusLotus() {
+            if (!focusedLotus) return;
+
+            // Restore original rotation speeds
+            const inner = focusedLotus.querySelector('.lotus-inner');
+            const rotatingLayers = inner.querySelectorAll('.rotating-layer');
+            rotatingLayers.forEach(layer => {
+                if (layer.dataset.originalAnimation) {
+                    layer.style.animation = layer.dataset.originalAnimation;
+                }
+            });
+
+            // Reset transform to default position
+            focusedLotus.style.transform = 'translate(-50%, -50%) scale(1)';
+
+            focusedLotus.classList.remove('focused');
+            focusedLotus = null;
+        }
+
+        function regeneratePage() {
+            lotusElements.forEach(el => el.remove());
+            lotusElements = [];
+            focusedLotus = null;
+
+            generateCirclePacking();
+            render();
+
+            setTimeout(startRotation, 1000);
+        }
+
+        function generateNewLotusCircle() {
+            if (Math.random() < 0.1) {
+                console.log('Randomly skipping lotus creation for density control');
+                return null;
+            }
+
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const minRadius = 50;
+            const maxRadius = 270;
+
+            let attempts = 0;
+            let currentMaxRadius = maxRadius;
+            let currentMinRadius = minRadius;
+
+            while (attempts < 250 && currentMaxRadius >= currentMinRadius) {
+                const r = currentMinRadius + Math.random() * (currentMaxRadius - currentMinRadius);
+
+                if (width < 2 * r || height < 2 * r) {
+                    currentMaxRadius *= 0.9;
+                    attempts++;
+                    continue;
+                }
+
+                const x = r + Math.random() * (width - 2 * r);
+                const y = r + Math.random() * (height - 2 * r);
+
+                let overlaps = false;
+                const minGap = 3;
+                for (let c of circles) {
+                    if (c.type !== 'interior') continue;
+                    const d = distance({x, y}, c);
+                    if (d < r + c.r + minGap) {
+                        overlaps = true;
+                        break;
+                    }
+                }
+
+                if (!overlaps) {
+                    return { x, y, r, type: 'interior', id: Date.now() };
+                }
+
+                attempts++;
+
+                if (attempts % 30 === 0) {
+                    currentMaxRadius *= 0.9;
+                }
+            }
+
+            console.log('Could not place new lotus - maintaining current density');
+            return null;
+        }
+
+        function createNewLotus() {
+            const circle = generateNewLotusCircle();
+
+            if (!circle) {
+                console.log('Skipping lotus creation - maintaining lower density');
+                return null;
+            }
+
+            circles.push(circle);
+
+            const lotus = createLotus(circle);
+            container.appendChild(lotus);
+
+            const fadeInDuration = 2000 + Math.random() * 5000;
+            lotus.style.transition = `opacity ${fadeInDuration}ms ease`;
+
+            setTimeout(() => {
+                lotus.classList.add('visible');
+            }, 100);
+
+            return lotus;
+        }
+
+        function render() {
+            lotusElements.forEach(el => el.remove());
+            lotusElements = [];
+
+            const interiorCircles = circles.filter(c => c.type === 'interior');
+
+            interiorCircles.forEach((circle, index) => {
+                const lotus = createLotus(circle);
+                container.appendChild(lotus);
+                lotusElements.push(lotus);
+
+                const fadeInDuration = 2000 + Math.random() * 3000;
+                lotus.style.transition = `opacity ${fadeInDuration}ms ease`;
+
+                setTimeout(() => {
+                    lotus.classList.add('visible');
+                }, 100 * index);
+            });
+        }
+
+        function startRotation() {
+            function fadeRandomLotus() {
+                if (lotusElements.length === 0) {
+                    setTimeout(fadeRandomLotus, 1000);
+                    return;
+                }
+
+                if (focusedLotus) {
+                    setTimeout(fadeRandomLotus, 1000);
+                    return;
+                }
+
+                const randomIndex = Math.floor(Math.random() * lotusElements.length);
+                const selectedLotus = lotusElements[randomIndex];
+
+                if (selectedLotus.classList.contains('fading-out')) {
+                    setTimeout(fadeRandomLotus, 500);
+                    return;
+                }
+
+                // Calculate display duration based on lotus size
+                const radius = selectedLotus.circleData.r;
+                const sizeRatio = radius / 80;
+                const minTime = 10 * sizeRatio;
+                const maxTime = 45 * sizeRatio;
+                const displayTime = minTime * 1000 + Math.random() * (maxTime - minTime) * 1000;
+
+                setTimeout(() => {
+                    if (focusedLotus) {
+                        return;
+                    }
+
+                    const fadeOutDuration = 4000 + Math.random() * 7000 + (sizeRatio * 2000);
+                    selectedLotus.style.transition = `opacity ${fadeOutDuration}ms ease`;
+                    selectedLotus.classList.add('fading-out');
+
+                    setTimeout(() => {
+                        if (focusedLotus) {
+                            return;
+                        }
+
+                        if (selectedLotus.circleData) {
+                            const circleIndex = circles.findIndex(c => c.id === selectedLotus.circleData.id);
+                            if (circleIndex !== -1) {
+                                circles.splice(circleIndex, 1);
+                            }
+                        }
+
+                        selectedLotus.remove();
+                        const indexToRemove = lotusElements.indexOf(selectedLotus);
+                        if (indexToRemove !== -1) {
+                            lotusElements.splice(indexToRemove, 1);
+                        }
+
+                        const newLotus = createNewLotus();
+                        if (newLotus) {
+                            lotusElements.push(newLotus);
+                        }
+                    }, fadeOutDuration);
+                }, displayTime);
+
+                const nextDelay = 1000 + Math.random() * 3000;
+                setTimeout(fadeRandomLotus, nextDelay);
+            }
+
+            const numConcurrent = 3 + Math.floor(Math.random() * 3);
+            for (let i = 0; i < numConcurrent; i++) {
+                setTimeout(fadeRandomLotus, 1000 + i * 4000);
+            }
+        }
+
+        function init() {
+            if (typeof ColorPalette !== 'undefined') {
+                ColorPalette.init();
+                generateCirclePacking();
+                render();
+                setTimeout(startRotation, 1000);
+            } else {
+                setTimeout(init, 100);
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            lotusElements.forEach(el => el.remove());
+            lotusElements = [];
+            focusedLotus = null;
+
+            generateCirclePacking();
+            render();
+            setTimeout(startRotation, 1000);
+        });
+
+        init();
+    </script>
+</body>
+</html>

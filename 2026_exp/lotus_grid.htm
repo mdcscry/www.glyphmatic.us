@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotus Grid</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a0a15;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            color: #e6edf3;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 0;
+            right: 1rem;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 1rem;
+            border-radius: 8px 8px 0 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: none;
+            transform: translateY(calc(100% - 3rem));
+            transition: transform 0.3s ease;
+        }
+
+        .controls.expanded {
+            transform: translateY(0);
+        }
+
+        .controls-toggle {
+            background: transparent;
+            border: none;
+            color: #58a6ff;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0;
+            margin-left: 0.5rem;
+            line-height: 1;
+            display: inline;
+        }
+
+        .controls-toggle:hover {
+            color: #79c0ff;
+        }
+
+        .controls h3 {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #58a6ff;
+            display: inline;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .controls h3:hover {
+            color: #79c0ff;
+        }
+
+        .controls button {
+            display: block;
+            width: 100%;
+            margin: 0.3rem 0;
+            padding: 0.5rem;
+            background: rgba(88, 166, 255, 0.2);
+            border: 1px solid rgba(88, 166, 255, 0.5);
+            color: #e6edf3;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .controls button:hover {
+            background: rgba(88, 166, 255, 0.3);
+        }
+
+        .controls button.active {
+            background: rgba(88, 166, 255, 0.5);
+            border-color: #58a6ff;
+        }
+
+        #grid-container {
+            display: grid;
+            gap: 0.5rem;
+            width: 100vw;
+            height: 100vh;
+            padding: 0.5rem;
+            box-sizing: border-box;
+        }
+
+        .grid-2x2 { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
+        .grid-3x3 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
+        .grid-4x4 { grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); }
+        .grid-5x5 { grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); }
+        .grid-6x6 { grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); }
+        .grid-8x8 { grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); }
+        .grid-10x10 { grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(10, 1fr); }
+        .grid-5x4 { grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(4, 1fr); }
+        .grid-6x4 { grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(4, 1fr); }
+        .grid-8x4 { grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(4, 1fr); }
+
+        .lotus-cell {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lotus-container {
+            position: relative;
+            width: 90%;
+            height: 90%;
+            max-width: 90vh;
+            max-height: 90vh;
+            opacity: 0;
+            transition: opacity 1s ease;
+            transform-origin: center center;
+        }
+
+        .lotus-container.visible {
+            opacity: 1;
+        }
+
+        .lotus-container.rotating-cw {
+            animation: rotateLotus-cw linear infinite;
+        }
+
+        .lotus-container.rotating-ccw {
+            animation: rotateLotus-ccw linear infinite;
+        }
+
+        @keyframes rotateLotus-cw {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes rotateLotus-ccw {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
+        }
+
+        .lotus-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .lotus-circle {
+            position: absolute;
+            border-radius: 50%;
+            border-width: 1.5px;
+            border-style: solid;
+            background: transparent;
+            pointer-events: none;
+        }
+
+        .lotus-concentric-ring {
+            position: absolute;
+            border-radius: 50%;
+            border-width: 2px;
+            border-style: solid;
+            pointer-events: none;
+        }
+
+        .lotus-fol-circle {
+            position: absolute;
+            border-radius: 50%;
+            border-width: 1.5px;
+            border-style: solid;
+            background: transparent;
+        }
+
+        .lotus-center-circle {
+            border-width: 2px !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls" id="controls-panel">
+        <div id="controls-header">
+            <h3 id="controls-title">Grid Layout</h3>
+            <button class="controls-toggle" id="controls-toggle" title="Toggle controls">▼</button>
+        </div>
+        <button class="grid-btn active" data-layout="2x2">2×2</button>
+        <button class="grid-btn" data-layout="3x3">3×3</button>
+        <button class="grid-btn" data-layout="4x4">4×4</button>
+        <button class="grid-btn" data-layout="5x5">5×5</button>
+        <button class="grid-btn" data-layout="6x6">6×6</button>
+        <button class="grid-btn" data-layout="8x8">8×8</button>
+        <button class="grid-btn" data-layout="10x10">10×10</button>
+        <button class="grid-btn" data-layout="5x4">5×4</button>
+        <button class="grid-btn" data-layout="6x4">6×4</button>
+        <button class="grid-btn" data-layout="8x4">8×4</button>
+        <button id="regenerate-btn" style="margin-top: 0.5rem; background: rgba(255, 100, 100, 0.2); border-color: rgba(255, 100, 100, 0.5);">Regenerate</button>
+    </div>
+
+    <div id="grid-container" class="grid-2x2"></div>
+
+    <script src="../js_funct/contrast_tester.js"></script>
+    <script src="../js_funct/colorpalette.js"></script>
+
+    <script>
+        const gridContainer = document.getElementById('grid-container');
+        const gridButtons = document.querySelectorAll('.grid-btn');
+        const regenerateBtn = document.getElementById('regenerate-btn');
+        const controlsPanel = document.getElementById('controls-panel');
+        const controlsToggle = document.getElementById('controls-toggle');
+        const controlsTitle = document.getElementById('controls-title');
+
+        let currentLayout = '2x2';
+        let cellBgColor = 'rgba(0, 0, 0, 0.3)';
+        let controlsExpanded = false;
+
+        // Grid configurations
+        const gridConfigs = {
+            '2x2': { cols: 2, rows: 2 },
+            '3x3': { cols: 3, rows: 3 },
+            '4x4': { cols: 4, rows: 4 },
+            '5x5': { cols: 5, rows: 5 },
+            '6x6': { cols: 6, rows: 6 },
+            '8x8': { cols: 8, rows: 8 },
+            '10x10': { cols: 10, rows: 10 },
+            '5x4': { cols: 5, rows: 4 },
+            '6x4': { cols: 6, rows: 4 },
+            '8x4': { cols: 8, rows: 4 }
+        };
+
+        function createLotus(color1, color2, size) {
+            const lotusDiv = document.createElement('div');
+            lotusDiv.className = 'lotus-container';
+            lotusDiv.style.width = `${size}px`;
+            lotusDiv.style.height = `${size}px`;
+
+            const inner = document.createElement('div');
+            inner.className = 'lotus-inner';
+
+            // Randomly add gradient background (50% chance)
+            if (Math.random() < 0.5) {
+                const gradientStyle = Math.random() < 0.5 ?
+                    `radial-gradient(circle at center, ${color1}22 0%, ${color2}11 50%, transparent 70%)` :
+                    `radial-gradient(circle at center, ${color2}22 0%, ${color1}11 50%, transparent 70%)`;
+                inner.style.background = gradientStyle;
+            }
+
+            lotusDiv.appendChild(inner);
+
+            // Lotus elements are sized proportionally to container
+            // Base size is 400px, scale everything from that
+            const scale = size / 400;
+            const centerX = size / 2;
+            const centerY = size / 2;
+
+            // Flower of Life (scaled)
+            const folCircleRadius = 25 * scale;
+            const folOffset = 25 * scale;
+
+            // Center circle
+            const centerCircle = document.createElement('div');
+            centerCircle.className = 'lotus-fol-circle lotus-center-circle';
+            centerCircle.style.width = `${folCircleRadius * 2}px`;
+            centerCircle.style.height = `${folCircleRadius * 2}px`;
+            centerCircle.style.left = `${centerX - folCircleRadius}px`;
+            centerCircle.style.top = `${centerY - folCircleRadius}px`;
+            centerCircle.style.borderColor = color2;
+            inner.appendChild(centerCircle);
+
+            // Outer 6 circles
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i - Math.PI / 2;
+                const x = centerX + folOffset * Math.cos(angle);
+                const y = centerY + folOffset * Math.sin(angle);
+
+                const fol = document.createElement('div');
+                fol.className = 'lotus-fol-circle';
+                fol.style.width = `${folCircleRadius * 2}px`;
+                fol.style.height = `${folCircleRadius * 2}px`;
+                fol.style.left = `${x - folCircleRadius}px`;
+                fol.style.top = `${y - folCircleRadius}px`;
+                fol.style.borderColor = color1;
+                inner.appendChild(fol);
+            }
+
+            // Concentric rings
+            const innerRadius = 50 * scale;
+            const outerRadius = 175 * scale;
+            const concentricRadii = [50, 75, 100, 125, 150, 175].map(r => r * scale);
+
+            concentricRadii.forEach((radius, index) => {
+                const ring = document.createElement('div');
+                ring.className = 'lotus-concentric-ring';
+                ring.style.width = `${radius * 2}px`;
+                ring.style.height = `${radius * 2}px`;
+                ring.style.left = `${centerX - radius}px`;
+                ring.style.top = `${centerY - radius}px`;
+
+                // Gradient between the two colors
+                const ratio = index / (concentricRadii.length - 1);
+                ring.style.borderColor = ratio < 0.5 ? color1 : color2;
+                ring.style.opacity = 0.6 + (ratio * 0.4);
+                inner.appendChild(ring);
+            });
+
+            // Toroidal circles
+            const torusDiameter = (outerRadius - innerRadius);
+            const torusCenterRadius = (innerRadius + outerRadius) / 2;
+            // Random number of circles - multiples of 12
+            const torusOptions = [24, 36, 48, 60, 72, 84];
+            const numTorusCircles = torusOptions[Math.floor(Math.random() * torusOptions.length)];
+
+            for (let i = 0; i < numTorusCircles; i++) {
+                const angle = (2 * Math.PI / numTorusCircles) * i - Math.PI / 2;
+                const x = centerX + torusCenterRadius * Math.cos(angle);
+                const y = centerY + torusCenterRadius * Math.sin(angle);
+
+                const tc = document.createElement('div');
+                tc.className = 'lotus-circle';
+                tc.style.width = `${torusDiameter}px`;
+                tc.style.height = `${torusDiameter}px`;
+                tc.style.left = `${x - torusDiameter / 2}px`;
+                tc.style.top = `${y - torusDiameter / 2}px`;
+
+                // Alternate between the two colors
+                tc.style.borderColor = i % 2 === 0 ? color1 : color2;
+                tc.style.opacity = 0.5;
+                inner.appendChild(tc);
+            }
+
+            // Random rotation direction and speed
+            const direction = Math.random() < 0.5 ? 'cw' : 'ccw';
+            const duration = 15 + Math.random() * 25; // 15-40 seconds
+            lotusDiv.classList.add(`rotating-${direction}`);
+            lotusDiv.style.animationDuration = `${duration}s`;
+
+            // Fade in
+            setTimeout(() => {
+                lotusDiv.classList.add('visible');
+            }, 100);
+
+            return lotusDiv;
+        }
+
+        function generateGrid() {
+            const config = gridConfigs[currentLayout];
+            const cellCount = config.cols * config.rows;
+
+            // Clear existing
+            gridContainer.innerHTML = '';
+
+            // Generate cells
+            for (let i = 0; i < cellCount; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'lotus-cell';
+                cell.style.backgroundColor = cellBgColor;
+
+                // Generate unique palette for this cell
+                const bodyBgColor = document.body.style.backgroundColor || '#0a0a15';
+                const palette = ColorPalette.generateGlyphPalette(bodyBgColor, 6, 4, 8);
+
+                // Pick 2 different colors from the palette
+                const color1 = palette[Math.floor(Math.random() * palette.length)];
+                let color2 = palette[Math.floor(Math.random() * palette.length)];
+                while (color2 === color1 && palette.length > 1) {
+                    color2 = palette[Math.floor(Math.random() * palette.length)];
+                }
+
+                // Calculate lotus size based on cell dimensions
+                // Will be 90% of cell size, and cell size adapts to grid
+                const cellWidth = gridContainer.offsetWidth / config.cols - 8; // Account for gap
+                const cellHeight = gridContainer.offsetHeight / config.rows - 8;
+                const lotusSize = Math.min(cellWidth, cellHeight) * 0.9;
+
+                const lotus = createLotus(color1, color2, lotusSize);
+                cell.appendChild(lotus);
+                gridContainer.appendChild(cell);
+            }
+        }
+
+        function initializePalette() {
+            if (typeof ColorPalette === 'undefined') {
+                setTimeout(initializePalette, 100);
+                return;
+            }
+
+            ColorPalette.init();
+
+            // Randomly select a grid layout
+            const layoutKeys = Object.keys(gridConfigs);
+            const randomLayout = layoutKeys[Math.floor(Math.random() * layoutKeys.length)];
+            currentLayout = randomLayout;
+            gridContainer.className = `grid-${currentLayout}`;
+
+            // Update active button
+            gridButtons.forEach(btn => {
+                if (btn.dataset.layout === currentLayout) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Generate grid background color
+            const gridBgColor = ColorPalette.generateOKLCH(0.15 + Math.random() * 0.2, 0.05, Math.random() * 360);
+
+            // Generate cell background color with contrast
+            let cellBgColor_base;
+            let attempts = 0;
+            const minContrast = 3.5;
+            const maxAttempts = 100;
+            do {
+                cellBgColor_base = ColorPalette.generateOKLCH(0.2 + Math.random() * 0.3, 0.08 + Math.random() * 0.1, Math.random() * 360);
+                attempts++;
+            } while (getContrastRatio(gridBgColor, cellBgColor_base) < minContrast && attempts < maxAttempts);
+
+            cellBgColor = cellBgColor_base;
+
+            // Make cell background slightly transparent
+            const cellMatch = cellBgColor.match(/oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/);
+            if (cellMatch) {
+                const l = parseFloat(cellMatch[1]);
+                const c = parseFloat(cellMatch[2]);
+                const h = parseFloat(cellMatch[3]);
+                cellBgColor = `oklch(${l} ${c} ${h} / 0.4)`;
+            }
+
+            // Set body background
+            document.body.style.backgroundColor = gridBgColor;
+
+            generateGrid();
+        }
+
+        // Event listeners
+        function toggleControls() {
+            controlsExpanded = !controlsExpanded;
+            if (controlsExpanded) {
+                controlsPanel.classList.add('expanded');
+                controlsToggle.textContent = '▼';
+            } else {
+                controlsPanel.classList.remove('expanded');
+                controlsToggle.textContent = '▲';
+            }
+        }
+
+        controlsToggle.addEventListener('click', toggleControls);
+        controlsTitle.addEventListener('click', toggleControls);
+
+        gridButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                gridButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentLayout = btn.dataset.layout;
+                gridContainer.className = `grid-${currentLayout}`;
+                generateGrid();
+            });
+        });
+
+        regenerateBtn.addEventListener('click', () => {
+            initializePalette();
+        });
+
+        // Initialize
+        initializePalette();
+    </script>
+</body>
+</html>

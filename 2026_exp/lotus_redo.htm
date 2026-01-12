@@ -1,0 +1,427 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotus Mandala - Flower of Life</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a15 100%);
+            overflow: hidden;
+        }
+
+        .mandala-container {
+            position: relative;
+            width: 90vh;
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            /* Background gradient will be set dynamically by JavaScript */
+        }
+
+        @keyframes rotateClockwise {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes rotateCounterClockwise {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 1.5px solid;
+            background: transparent;
+            pointer-events: none;
+            /* Border color will be set dynamically by JavaScript */
+        }
+
+        .concentric-ring {
+            position: absolute;
+            border-radius: 50%;
+            border-width: 2px;
+            border-style: solid;
+            pointer-events: none;
+        }
+
+        .fol-circle {
+            width: 100px;
+            height: 100px;
+        }
+
+        .fol-center-circle {
+            width: 100px;
+            height: 100px;
+            border-width: 2px;
+            /* Border color will be set dynamically by JavaScript */
+        }
+
+        .center-glow {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            /* Width, height, and background gradient will be set dynamically by JavaScript */
+        }
+
+        .lotus-petal {
+            position: absolute;
+            font-family: 'Shippori Mincho B1', serif;
+            font-size: 25vh;
+            font-weight: 100;
+            line-height: 1;
+            pointer-events: none;
+            transform-origin: center center;
+            z-index: -1;
+            /* Color will be set dynamically by JavaScript */
+        }
+
+        .outer-ring {
+            position: absolute;
+            border-radius: 50%;
+            border-width: 2px;
+            border-style: solid;
+            border-color: #000;
+            background: transparent;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .info-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(26, 26, 46, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px 15px;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .info-panel:hover {
+            background: rgba(26, 26, 46, 0.95);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .info-panel.collapsed .info-content {
+            display: none;
+        }
+
+        .info-panel .info-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .info-panel.collapsed .info-header::after {
+            content: ' [+]';
+        }
+
+        .info-panel:not(.collapsed) .info-header::after {
+            content: ' [−]';
+        }
+    </style>
+</head>
+<body>
+    <div class="mandala-container" id="mandala">
+    </div>
+
+    <div class="info-panel" id="infoPanel">
+        <div class="info-header">Info</div>
+        <div class="info-content">
+            <div>Spoke Count: <span id="spokeCount">--</span></div>
+        </div>
+    </div>
+
+    <!-- Color Palette Library -->
+    <script src="../js_funct/colorpalette.js"></script>
+
+    <script>
+        // Wait for ColorPalette to load before initializing
+        function waitForColorPalette() {
+            if (typeof ColorPalette !== "undefined") {
+                console.log("ColorPalette loaded. Initializing...");
+                initialize();
+            } else {
+                console.log("Waiting for ColorPalette...");
+                setTimeout(waitForColorPalette, 100);
+            }
+        }
+
+        function initialize() {
+            // Initialize ColorPalette for random color generation
+            ColorPalette.init();
+
+            createMandala();
+        }
+
+        function createMandala() {
+        const container = document.getElementById('mandala');
+
+        // Use a base reference size of 800px for calculations, elements will scale with container
+        const baseSize = 800;
+        const centerX = baseSize / 2;
+        const centerY = baseSize / 2;
+
+        // Create two rotating containers - one for flower of life, one for everything else
+        const mainRotatingContainer = document.createElement('div');
+        mainRotatingContainer.style.position = 'absolute';
+        mainRotatingContainer.style.width = '100%';
+        mainRotatingContainer.style.height = '100%';
+
+        const folRotatingContainer = document.createElement('div');
+        folRotatingContainer.style.position = 'absolute';
+        folRotatingContainer.style.width = '100%';
+        folRotatingContainer.style.height = '100%';
+
+        // Random rotation: direction and speed
+        const rotationDirection = Math.random() < 0.5 ? 'rotateClockwise' : 'rotateCounterClockwise';
+        const oppositeDirection = rotationDirection === 'rotateClockwise' ? 'rotateCounterClockwise' : 'rotateClockwise';
+        const rotationSpeed = 60 + Math.random() * 120; // 60-180 seconds
+
+        mainRotatingContainer.style.animation = `${rotationDirection} ${rotationSpeed}s linear infinite`;
+        folRotatingContainer.style.animation = `${oppositeDirection} ${rotationSpeed}s linear infinite`;
+
+        container.appendChild(mainRotatingContainer);
+        container.appendChild(folRotatingContainer);
+
+        // Generate a palette of 2-4 colors
+        const paletteSize = 2 + Math.floor(Math.random() * 3); // Random between 2-4
+        const palette = [];
+        for (let i = 0; i < paletteSize; i++) {
+            palette.push(ColorPalette.generateOKLCH());
+        }
+
+        // Apply radial gradient background using palette colors
+        const gradientColor = palette[0]; // Use first palette color for gradient
+        container.style.background = `radial-gradient(
+            circle,
+            ${gradientColor.replace(')', ' / 0.5)')} 0%,
+            ${gradientColor.replace(')', ' / 0.4)')} 8%,
+            ${gradientColor.replace(')', ' / 0.35)')} 16%,
+            ${gradientColor.replace(')', ' / 0.3)')} 24%,
+            ${gradientColor.replace(')', ' / 0.25)')} 32%,
+            ${gradientColor.replace(')', ' / 0.2)')} 40%,
+            ${gradientColor.replace(')', ' / 0.15)')} 48%,
+            ${gradientColor.replace(')', ' / 0.1)')} 56%,
+            ${gradientColor.replace(')', ' / 0.05)')} 70%,
+            transparent 87.5%
+        )`;
+
+        // Helper functions use percentage-based positioning for responsive scaling
+        function createCircle(x, y, diameter, className = 'circle') {
+            const circle = document.createElement('div');
+            circle.className = className;
+            circle.style.width = (diameter / baseSize * 100) + '%';
+            circle.style.height = (diameter / baseSize * 100) + '%';
+            circle.style.left = ((x - diameter / 2) / baseSize * 100) + '%';
+            circle.style.top = ((y - diameter / 2) / baseSize * 100) + '%';
+            return circle;
+        }
+
+        function createConcentricRing(diameter) {
+            const ring = document.createElement('div');
+            ring.className = 'concentric-ring';
+            ring.style.width = (diameter / baseSize * 100) + '%';
+            ring.style.height = (diameter / baseSize * 100) + '%';
+            ring.style.left = ((centerX - diameter / 2) / baseSize * 100) + '%';
+            ring.style.top = ((centerY - diameter / 2) / baseSize * 100) + '%';
+            return ring;
+        }
+
+        // Flower of Life
+        const folCircleRadius = 50;
+        const folOffset = 50;
+
+        // Concentric rings - cycle through palette
+        const innerRadius = 100;
+        const outerRadius = 350;
+
+        // Random number of inner rings: 4-7 (total rings will be 6-9 including boundaries)
+        const innerRingCount = 4 + Math.floor(Math.random() * 4); // 4, 5, 6, or 7
+        const totalRings = innerRingCount + 2; // Add inner and outer boundary rings
+
+        // Calculate evenly spaced radii
+        const concentricRadii = [];
+        for (let i = 0; i < totalRings; i++) {
+            const radius = innerRadius + (outerRadius - innerRadius) * (i / (totalRings - 1));
+            concentricRadii.push(radius);
+        }
+
+        // Add the flower of life edge ring first
+        const folEdgeRing = createConcentricRing(innerRadius * 2);
+        folEdgeRing.style.borderColor = palette[0];
+        folEdgeRing.style.borderWidth = '2px';
+        mainRotatingContainer.appendChild(folEdgeRing);
+
+        // Add the remaining concentric rings
+        concentricRadii.forEach((radius, index) => {
+            const ring = createConcentricRing(radius * 2);
+            ring.style.borderColor = palette[index % palette.length];
+            mainRotatingContainer.appendChild(ring);
+        });
+
+        // Radial spokes - circles that radiate from center
+        // These circles extend from center outward, but only the portion between
+        // innerRadius and outerRadius is visible (clipped by the annular mask)
+
+        // Create clipping container for the spokes
+        const spokesContainer = document.createElement('div');
+        spokesContainer.style.position = 'absolute';
+        spokesContainer.style.width = '100%';
+        spokesContainer.style.height = '100%';
+        spokesContainer.style.overflow = 'hidden';
+        spokesContainer.style.borderRadius = '50%';
+        spokesContainer.style.clipPath = `circle(${outerRadius / baseSize * 100}% at 50% 50%)`;
+        mainRotatingContainer.appendChild(spokesContainer);
+
+        // Inner mask to hide the flower of life region
+        const innerMask = document.createElement('div');
+        innerMask.style.position = 'absolute';
+        innerMask.style.width = (innerRadius * 2 / baseSize * 100) + '%';
+        innerMask.style.height = (innerRadius * 2 / baseSize * 100) + '%';
+        innerMask.style.left = ((centerX - innerRadius) / baseSize * 100) + '%';
+        innerMask.style.top = ((centerY - innerRadius) / baseSize * 100) + '%';
+        innerMask.style.background = 'radial-gradient(circle, #1a1a2e 0%, #1a1a2e 100%)';
+        innerMask.style.borderRadius = '50%';
+        innerMask.style.zIndex = '5';
+        spokesContainer.appendChild(innerMask);
+
+        // Calculate circle dimensions
+        // Visible region is 250 units (100 to 350)
+        // If this is ~2/3 of the circle, full diameter should be ~372
+        const spokeCircleDiameter = 371;
+        const spokeCircleRadius = spokeCircleDiameter / 2;
+
+        // Number of radial spokes (18, 36, 54, 72, 90)
+        const spokeCount = [18, 36, 54, 72, 108][Math.floor(Math.random() * 5)];
+
+        // Update info panel
+        document.getElementById('spokeCount').textContent = spokeCount;
+
+        for (let i = 0; i < spokeCount; i++) {
+            const angle = (2 * Math.PI / spokeCount) * i - Math.PI / 2;
+
+            // Position circle center along the spoke
+            const x = centerX + spokeCircleRadius * Math.cos(angle);
+            const y = centerY + spokeCircleRadius * Math.sin(angle);
+
+            const spokeCircle = createCircle(x, y, spokeCircleDiameter, 'circle');
+            spokeCircle.style.borderColor = palette[i % palette.length];
+            spokeCircle.style.zIndex = '1';
+            spokesContainer.appendChild(spokeCircle);
+        }
+
+        // Outer ring - use last palette color
+        const outerMask = document.createElement('div');
+        outerMask.className = 'outer-ring';
+        outerMask.style.width = (outerRadius * 2 / baseSize * 100) + '%';
+        outerMask.style.height = (outerRadius * 2 / baseSize * 100) + '%';
+        outerMask.style.left = ((centerX - outerRadius) / baseSize * 100) + '%';
+        outerMask.style.top = ((centerY - outerRadius) / baseSize * 100) + '%';
+        outerMask.style.borderColor = palette[palette.length - 1];
+        mainRotatingContainer.appendChild(outerMask);
+
+        // Flower of Life - rendered on top of spokes
+        // All 7 circles use the same color
+        const folColor = palette[1] || palette[0];
+
+        // Center circle
+        const centerCircle = createCircle(centerX, centerY, folCircleRadius * 2, 'circle fol-center-circle');
+        centerCircle.style.borderColor = folColor;
+        centerCircle.style.zIndex = '10';
+        folRotatingContainer.appendChild(centerCircle);
+
+        // Six surrounding circles
+        for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI / 3) * i - Math.PI / 2;
+            const x = centerX + folOffset * Math.cos(angle);
+            const y = centerY + folOffset * Math.sin(angle);
+            const circle = createCircle(x, y, folCircleRadius * 2, 'circle fol-circle');
+            circle.style.borderColor = folColor;
+            circle.style.zIndex = '10';
+            folRotatingContainer.appendChild(circle);
+        }
+
+        // Center glow with dynamic gradient - extends out into the lotus
+        const glow = document.createElement('div');
+        glow.className = 'center-glow';
+        const glowSize = 500; // Much larger to extend into the lotus
+        glow.style.width = (glowSize / baseSize * 100) + '%';
+        glow.style.height = (glowSize / baseSize * 100) + '%';
+        glow.style.left = ((centerX - glowSize / 2) / baseSize * 100) + '%';
+        glow.style.top = ((centerY - glowSize / 2) / baseSize * 100) + '%';
+        glow.style.zIndex = '10'; // Ensure it's on top
+        const glowColor = palette[palette.length - 1]; // Use last palette color
+        glow.style.background = `radial-gradient(
+            circle,
+            ${glowColor.replace(')', ' / 0.4)')} 0%,
+            ${glowColor.replace(')', ' / 0.3)')} 15%,
+            ${glowColor.replace(')', ' / 0.2)')} 30%,
+            ${glowColor.replace(')', ' / 0.1)')} 50%,
+            ${glowColor.replace(')', ' / 0.05)')} 70%,
+            transparent 90%
+        )`;
+        mainRotatingContainer.appendChild(glow);
+
+        // Lotus petals using brace characters - 12 petals at clock positions, all same color
+        const petalCount = 12;
+        const petalColor = palette[Math.floor(palette.length / 2)]; // Use middle color from palette
+
+        for (let i = 0; i < petalCount; i++) {
+            const angle = (2 * Math.PI / petalCount) * i - Math.PI / 2;
+            const petal = document.createElement('div');
+            petal.className = 'lotus-petal';
+
+            // Closing brace - point faces outward
+            petal.innerHTML = '}';
+
+            // All petals use the same color
+            petal.style.color = petalColor;
+
+            // Position so the brace tips touch the outer ring
+            const petalDistance = outerRadius + 20;
+            const x = centerX + petalDistance * Math.cos(angle);
+            const y = centerY + petalDistance * Math.sin(angle);
+
+            petal.style.left = (x / baseSize * 100) + '%';
+            petal.style.top = (y / baseSize * 100) + '%';
+
+            // Rotate so point faces outward, plus 2 degrees clockwise
+            const rotationDeg = (360 / petalCount) * i - 90 + 2;
+            petal.style.transform = `translate(-50%, -50%) rotate(${rotationDeg}deg)`;
+
+            mainRotatingContainer.appendChild(petal);
+        }
+        } // End createMandala()
+
+        // Info panel collapse/expand handler
+        document.getElementById('infoPanel').addEventListener('click', function() {
+            this.classList.toggle('collapsed');
+        });
+
+        // Start the initialization process
+        waitForColorPalette();
+    </script>
+</body>
+</html>

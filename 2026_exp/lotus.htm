@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotus Mandala - Flower of Life</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a15 100%);
+            overflow: hidden;
+        }
+
+        .mandala-container {
+            position: relative;
+            width: 90vh;
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            /* Background gradient will be set dynamically by JavaScript */
+        }
+
+        @keyframes rotateClockwise {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes rotateCounterClockwise {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 1.5px solid;
+            background: transparent;
+            pointer-events: none;
+            /* Border color will be set dynamically by JavaScript */
+        }
+
+        .concentric-ring {
+            position: absolute;
+            border-radius: 50%;
+            border-width: 2px;
+            border-style: solid;
+            pointer-events: none;
+        }
+
+        .fol-circle {
+            width: 100px;
+            height: 100px;
+        }
+
+        .fol-center-circle {
+            width: 100px;
+            height: 100px;
+            border-width: 2px;
+            /* Border color will be set dynamically by JavaScript */
+        }
+
+        .center-glow {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            /* Width, height, and background gradient will be set dynamically by JavaScript */
+        }
+
+        .lotus-petal {
+            position: absolute;
+            font-family: 'Shippori Mincho B1', serif;
+            font-size: 25vh;
+            font-weight: 100;
+            line-height: 1;
+            pointer-events: none;
+            transform-origin: center center;
+            z-index: -1;
+            /* Color will be set dynamically by JavaScript */
+        }
+
+        .outer-ring {
+            position: absolute;
+            border-radius: 50%;
+            border-width: 2px;
+            border-style: solid;
+            border-color: #000;
+            background: transparent;
+            pointer-events: none;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="mandala-container" id="mandala">
+    </div>
+
+    <!-- Color Palette Library -->
+    <script src="../js_funct/colorpalette.js"></script>
+
+    <script>
+        // Wait for ColorPalette to load before initializing
+        function waitForColorPalette() {
+            if (typeof ColorPalette !== "undefined") {
+                console.log("ColorPalette loaded. Initializing...");
+                initialize();
+            } else {
+                console.log("Waiting for ColorPalette...");
+                setTimeout(waitForColorPalette, 100);
+            }
+        }
+
+        function initialize() {
+            // Initialize ColorPalette for random color generation
+            ColorPalette.init();
+
+            createMandala();
+        }
+
+        function createMandala() {
+        const container = document.getElementById('mandala');
+
+        // Use a base reference size of 800px for calculations, elements will scale with container
+        const baseSize = 800;
+        const centerX = baseSize / 2;
+        const centerY = baseSize / 2;
+
+        // Random rotation: direction and speed
+        const rotationDirection = Math.random() < 0.5 ? 'rotateClockwise' : 'rotateCounterClockwise';
+        const rotationSpeed = 60 + Math.random() * 120; // 60-180 seconds
+        container.style.animation = `${rotationDirection} ${rotationSpeed}s linear infinite`;
+
+        // Generate a palette of 2-4 colors
+        const paletteSize = 2 + Math.floor(Math.random() * 3); // Random between 2-4
+        const palette = [];
+        for (let i = 0; i < paletteSize; i++) {
+            palette.push(ColorPalette.generateOKLCH());
+        }
+
+        // Apply radial gradient background using palette colors
+        const gradientColor = palette[0]; // Use first palette color for gradient
+        container.style.background = `radial-gradient(
+            circle,
+            ${gradientColor.replace(')', ' / 0.5)')} 0%,
+            ${gradientColor.replace(')', ' / 0.4)')} 8%,
+            ${gradientColor.replace(')', ' / 0.35)')} 16%,
+            ${gradientColor.replace(')', ' / 0.3)')} 24%,
+            ${gradientColor.replace(')', ' / 0.25)')} 32%,
+            ${gradientColor.replace(')', ' / 0.2)')} 40%,
+            ${gradientColor.replace(')', ' / 0.15)')} 48%,
+            ${gradientColor.replace(')', ' / 0.1)')} 56%,
+            ${gradientColor.replace(')', ' / 0.05)')} 70%,
+            transparent 87.5%
+        )`;
+
+        // Helper functions use percentage-based positioning for responsive scaling
+        function createCircle(x, y, diameter, className = 'circle') {
+            const circle = document.createElement('div');
+            circle.className = className;
+            circle.style.width = (diameter / baseSize * 100) + '%';
+            circle.style.height = (diameter / baseSize * 100) + '%';
+            circle.style.left = ((x - diameter / 2) / baseSize * 100) + '%';
+            circle.style.top = ((y - diameter / 2) / baseSize * 100) + '%';
+            return circle;
+        }
+
+        function createConcentricRing(diameter) {
+            const ring = document.createElement('div');
+            ring.className = 'concentric-ring';
+            ring.style.width = (diameter / baseSize * 100) + '%';
+            ring.style.height = (diameter / baseSize * 100) + '%';
+            ring.style.left = ((centerX - diameter / 2) / baseSize * 100) + '%';
+            ring.style.top = ((centerY - diameter / 2) / baseSize * 100) + '%';
+            return ring;
+        }
+
+        // Flower of Life
+        const folCircleRadius = 50;
+        const folOffset = 50;
+
+        // Center circle - use first palette color
+        const centerCircle = createCircle(centerX, centerY, folCircleRadius * 2, 'circle fol-center-circle');
+        centerCircle.style.borderColor = palette[0];
+        container.appendChild(centerCircle);
+
+        // Six surrounding circles - use second palette color (or first if only 2 colors)
+        const folColor = palette[1] || palette[0];
+        for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI / 3) * i - Math.PI / 2;
+            const x = centerX + folOffset * Math.cos(angle);
+            const y = centerY + folOffset * Math.sin(angle);
+            const circle = createCircle(x, y, folCircleRadius * 2, 'circle fol-circle');
+            circle.style.borderColor = folColor;
+            container.appendChild(circle);
+        }
+
+        // Concentric rings - cycle through palette
+        const innerRadius = 100;
+        const outerRadius = 350;
+        const concentricRadii = [100, 150, 200, 250, 300, 350];
+
+        concentricRadii.forEach((radius, index) => {
+            const ring = createConcentricRing(radius * 2);
+            ring.style.borderColor = palette[index % palette.length];
+            container.appendChild(ring);
+        });
+
+        // Outer ring - use last palette color
+        const outerMask = document.createElement('div');
+        outerMask.className = 'outer-ring';
+        outerMask.style.width = (outerRadius * 2 / baseSize * 100) + '%';
+        outerMask.style.height = (outerRadius * 2 / baseSize * 100) + '%';
+        outerMask.style.left = ((centerX - outerRadius) / baseSize * 100) + '%';
+        outerMask.style.top = ((centerY - outerRadius) / baseSize * 100) + '%';
+        outerMask.style.borderColor = palette[palette.length - 1];
+        container.appendChild(outerMask);
+
+        // 96 toroidal circles - cycle through palette
+        const torusDiameter = outerRadius - innerRadius; // 250
+        const torusCenterRadius = (innerRadius + outerRadius) / 2; // 225
+
+        for (let i = 0; i < 108; i++) {
+            // Start at 12 o'clock and go around
+            const angle = (2 * Math.PI / 96) * i - Math.PI / 2;
+            const x = centerX + torusCenterRadius * Math.cos(angle);
+            const y = centerY + torusCenterRadius * Math.sin(angle);
+            const torusCircle = createCircle(x, y, torusDiameter, 'circle');
+            torusCircle.style.borderColor = palette[i % palette.length];
+            container.appendChild(torusCircle);
+        }
+
+        // Center glow with dynamic gradient - extends out into the lotus
+        const glow = document.createElement('div');
+        glow.className = 'center-glow';
+        const glowSize = 500; // Much larger to extend into the lotus
+        glow.style.width = (glowSize / baseSize * 100) + '%';
+        glow.style.height = (glowSize / baseSize * 100) + '%';
+        glow.style.left = ((centerX - glowSize / 2) / baseSize * 100) + '%';
+        glow.style.top = ((centerY - glowSize / 2) / baseSize * 100) + '%';
+        glow.style.zIndex = '10'; // Ensure it's on top
+        const glowColor = palette[palette.length - 1]; // Use last palette color
+        glow.style.background = `radial-gradient(
+            circle,
+            ${glowColor.replace(')', ' / 0.4)')} 0%,
+            ${glowColor.replace(')', ' / 0.3)')} 15%,
+            ${glowColor.replace(')', ' / 0.2)')} 30%,
+            ${glowColor.replace(')', ' / 0.1)')} 50%,
+            ${glowColor.replace(')', ' / 0.05)')} 70%,
+            transparent 90%
+        )`;
+        container.appendChild(glow);
+
+        // Lotus petals using brace characters - 12 petals at clock positions, all same color
+        const petalCount = 12;
+        const petalColor = palette[Math.floor(palette.length / 2)]; // Use middle color from palette
+
+        for (let i = 0; i < petalCount; i++) {
+            const angle = (2 * Math.PI / petalCount) * i - Math.PI / 2;
+            const petal = document.createElement('div');
+            petal.className = 'lotus-petal';
+
+            // Closing brace - point faces outward
+            petal.innerHTML = '}';
+
+            // All petals use the same color
+            petal.style.color = petalColor;
+
+            // Position so the brace tips touch the outer ring
+            const petalDistance = outerRadius + 20;
+            const x = centerX + petalDistance * Math.cos(angle);
+            const y = centerY + petalDistance * Math.sin(angle);
+
+            petal.style.left = (x / baseSize * 100) + '%';
+            petal.style.top = (y / baseSize * 100) + '%';
+
+            // Rotate so point faces outward, plus 2 degrees clockwise
+            const rotationDeg = (360 / petalCount) * i - 90 + 2;
+            petal.style.transform = `translate(-50%, -50%) rotate(${rotationDeg}deg)`;
+
+            container.appendChild(petal);
+        }
+        } // End createMandala()
+
+        // Start the initialization process
+        waitForColorPalette();
+    </script>
+</body>
+</html>

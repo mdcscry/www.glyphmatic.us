@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circle Packing & Tangent Graphs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            color: #e6edf3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #58a6ff, #a371f7, #f778ba);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #8b949e;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .controls {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: #8b949e;
+        }
+
+        input[type="range"] {
+            width: 120px;
+            accent-color: #58a6ff;
+        }
+
+        .value-display {
+            font-size: 0.8rem;
+            color: #58a6ff;
+            font-family: monospace;
+        }
+
+        button {
+            background: linear-gradient(135deg, #238636, #2ea043);
+            border: none;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 160, 67, 0.4);
+        }
+
+        .visualization-container {
+            position: relative;
+            width: 700px;
+            height: 500px;
+            background: #010409;
+            border-radius: 12px;
+            border: 1px solid #30363d;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        #packing-area {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .circle.interior {
+            background: radial-gradient(circle at 30% 30%, rgba(88, 166, 255, 0.3), rgba(88, 166, 255, 0.1));
+            border: 2px solid rgba(88, 166, 255, 0.8);
+            box-shadow: 0 0 20px rgba(88, 166, 255, 0.3);
+        }
+
+        .circle.boundary {
+            background: radial-gradient(circle at 30% 30%, rgba(163, 113, 247, 0.3), rgba(163, 113, 247, 0.1));
+            border: 2px solid rgba(163, 113, 247, 0.8);
+            box-shadow: 0 0 20px rgba(163, 113, 247, 0.3);
+        }
+
+        .edges-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .edge {
+            stroke: rgba(247, 120, 186, 0.6);
+            stroke-width: 1.5;
+            fill: none;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawEdge 1s ease forwards;
+        }
+
+        @keyframes drawEdge {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .triangle-fill {
+            fill: rgba(247, 120, 186, 0.08);
+            stroke: none;
+        }
+
+        .toggle-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .toggle-btn {
+            background: #21262d;
+            border: 1px solid #30363d;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .toggle-btn.active {
+            background: #388bfd33;
+            border-color: #58a6ff;
+        }
+
+        .legend {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.interior {
+            background: rgba(88, 166, 255, 0.8);
+        }
+
+        .legend-dot.boundary {
+            background: rgba(163, 113, 247, 0.8);
+        }
+
+        .legend-line {
+            width: 20px;
+            height: 2px;
+            background: rgba(247, 120, 186, 0.8);
+        }
+
+        .info {
+            max-width: 700px;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #161b22;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #8b949e;
+        }
+
+        .info strong {
+            color: #e6edf3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Koebe–Andreev–Thurston Circle Packing</h1>
+    <p class="subtitle">Every finite planar triangulation is the tangent graph of some circle packing</p>
+
+    <div class="controls">
+        <div class="control-group">
+            <label>Boundary Points</label>
+            <input type="range" id="boundary-slider" min="3" max="24" value="6">
+            <span class="value-display" id="boundary-val">6</span>
+        </div>
+        <div class="control-group">
+            <label>Interior Points</label>
+            <input type="range" id="interior-slider" min="1" max="20" value="3">
+            <span class="value-display" id="interior-val">3</span>
+        </div>
+        <div class="control-group">
+            <label>&nbsp;</label>
+            <button id="generate-btn">Generate Packing</button>
+        </div>
+    </div>
+
+    <div class="toggle-container">
+        <button class="toggle-btn active" id="toggle-circles">◯ Circles</button>
+        <button class="toggle-btn active" id="toggle-edges">△ Edges</button>
+        <button class="toggle-btn" id="toggle-triangles">▲ Triangles</button>
+    </div>
+
+    <div class="visualization-container">
+        <div id="packing-area">
+            <svg class="edges-svg" id="edges-svg"></svg>
+        </div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-dot interior"></div>
+            <span>Interior vertices</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-dot boundary"></div>
+            <span>Boundary vertices</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-line"></div>
+            <span>Tangent edges</span>
+        </div>
+    </div>
+
+    <div class="info">
+        <strong>The Theorem:</strong> For any finite planar graph that triangulates a disk 
+        (with a designated outer face), there exists a circle packing where circles correspond 
+        to vertices and two circles are tangent if and only if their vertices are adjacent. 
+        The packing is unique up to Möbius transformations.
+    </div>
+
+    <script>
+        const packingArea = document.getElementById('packing-area');
+        const edgesSvg = document.getElementById('edges-svg');
+        const boundarySlider = document.getElementById('boundary-slider');
+        const interiorSlider = document.getElementById('interior-slider');
+        const boundaryVal = document.getElementById('boundary-val');
+        const interiorVal = document.getElementById('interior-val');
+        const generateBtn = document.getElementById('generate-btn');
+
+        let showCircles = true;
+        let showEdges = true;
+        let showTriangles = false;
+
+        let circles = [];
+        let edges = [];
+        let triangles = [];
+
+        boundarySlider.oninput = () => boundaryVal.textContent = boundarySlider.value;
+        interiorSlider.oninput = () => interiorVal.textContent = interiorSlider.value;
+
+        document.getElementById('toggle-circles').onclick = function() {
+            showCircles = !showCircles;
+            this.classList.toggle('active');
+            updateVisibility();
+        };
+
+        document.getElementById('toggle-edges').onclick = function() {
+            showEdges = !showEdges;
+            this.classList.toggle('active');
+            updateVisibility();
+        };
+
+        document.getElementById('toggle-triangles').onclick = function() {
+            showTriangles = !showTriangles;
+            this.classList.toggle('active');
+            updateVisibility();
+        };
+
+        function updateVisibility() {
+            document.querySelectorAll('.circle').forEach(c => {
+                c.style.opacity = showCircles ? '1' : '0';
+            });
+            document.querySelectorAll('.edge').forEach(e => {
+                e.style.opacity = showEdges ? '1' : '0';
+            });
+            document.querySelectorAll('.triangle-fill').forEach(t => {
+                t.style.opacity = showTriangles ? '1' : '0';
+            });
+        }
+
+        function distance(p1, p2) {
+            return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+        }
+
+        function generateCirclePacking(numBoundary, numInterior) {
+            const width = 700;
+            const height = 500;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const boundaryRadius = Math.min(width, height) * 0.38;
+
+            circles = [];
+            edges = [];
+            triangles = [];
+
+            // Generate boundary circles
+            for (let i = 0; i < numBoundary; i++) {
+                const angle = (2 * Math.PI * i / numBoundary) - Math.PI / 2;
+                const x = centerX + boundaryRadius * Math.cos(angle);
+                const y = centerY + boundaryRadius * Math.sin(angle);
+                const r = 18 + Math.random() * 12;
+                circles.push({ x, y, r, type: 'boundary', id: i });
+            }
+
+            // Generate interior circles with some physics-like placement
+            for (let i = 0; i < numInterior; i++) {
+                let x, y, r;
+                let attempts = 0;
+                do {
+                    const angle = Math.random() * 2 * Math.PI;
+                    const dist = Math.random() * boundaryRadius * 0.5;
+                    x = centerX + dist * Math.cos(angle);
+                    y = centerY + dist * Math.sin(angle);
+                    r = 20 + Math.random() * 18;
+                    attempts++;
+                } while (attempts < 50 && circles.some(c => distance({x, y}, c) < r + c.r + 10));
+                
+                circles.push({ x, y, r, type: 'interior', id: numBoundary + i });
+            }
+
+            // Simple relaxation to improve packing
+            for (let iter = 0; iter < 100; iter++) {
+                for (let i = 0; i < circles.length; i++) {
+                    if (circles[i].type === 'boundary') continue;
+                    
+                    let fx = 0, fy = 0;
+                    
+                    // Attract to center
+                    fx += (centerX - circles[i].x) * 0.01;
+                    fy += (centerY - circles[i].y) * 0.01;
+                    
+                    // Repel from other circles
+                    for (let j = 0; j < circles.length; j++) {
+                        if (i === j) continue;
+                        const d = distance(circles[i], circles[j]);
+                        const minDist = circles[i].r + circles[j].r;
+                        if (d < minDist * 1.5) {
+                            const force = (minDist * 1.5 - d) / d;
+                            fx += (circles[i].x - circles[j].x) * force * 0.3;
+                            fy += (circles[i].y - circles[j].y) * force * 0.3;
+                        }
+                    }
+                    
+                    circles[i].x += fx;
+                    circles[i].y += fy;
+                    
+                    // Keep in bounds
+                    const maxDist = boundaryRadius - circles[i].r;
+                    const d = distance(circles[i], {x: centerX, y: centerY});
+                    if (d > maxDist) {
+                        const scale = maxDist / d;
+                        circles[i].x = centerX + (circles[i].x - centerX) * scale;
+                        circles[i].y = centerY + (circles[i].y - centerY) * scale;
+                    }
+                }
+            }
+
+            // Adjust radii to create tangencies
+            adjustForTangencies();
+
+            // Generate edges (Delaunay-like triangulation)
+            generateTriangulation();
+        }
+
+        function adjustForTangencies() {
+            // Simple adjustment to make nearby circles tangent
+            for (let iter = 0; iter < 50; iter++) {
+                for (let i = 0; i < circles.length; i++) {
+                    for (let j = i + 1; j < circles.length; j++) {
+                        const d = distance(circles[i], circles[j]);
+                        const sumR = circles[i].r + circles[j].r;
+                        
+                        if (d < sumR * 1.3 && d > sumR * 0.5) {
+                            // Make them tangent
+                            const targetDist = sumR;
+                            const diff = (d - targetDist) / 2;
+                            
+                            const dx = (circles[j].x - circles[i].x) / d;
+                            const dy = (circles[j].y - circles[i].y) / d;
+                            
+                            if (circles[i].type === 'interior') {
+                                circles[i].x += dx * diff * 0.5;
+                                circles[i].y += dy * diff * 0.5;
+                            }
+                            if (circles[j].type === 'interior') {
+                                circles[j].x -= dx * diff * 0.5;
+                                circles[j].y -= dy * diff * 0.5;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function generateTriangulation() {
+            edges = [];
+            triangles = [];
+            
+            // Connect boundary points
+            const boundaryCircles = circles.filter(c => c.type === 'boundary');
+            for (let i = 0; i < boundaryCircles.length; i++) {
+                const next = (i + 1) % boundaryCircles.length;
+                edges.push([boundaryCircles[i].id, boundaryCircles[next].id]);
+            }
+
+            // Connect interior to nearby circles
+            const interiorCircles = circles.filter(c => c.type === 'interior');
+            
+            for (const interior of interiorCircles) {
+                // Find closest circles and connect
+                const sorted = [...circles]
+                    .filter(c => c.id !== interior.id)
+                    .sort((a, b) => distance(interior, a) - distance(interior, b));
+                
+                const connectCount = Math.min(5 + Math.floor(Math.random() * 3), sorted.length);
+                for (let i = 0; i < connectCount; i++) {
+                    const edge = [interior.id, sorted[i].id].sort((a, b) => a - b);
+                    if (!edges.some(e => e[0] === edge[0] && e[1] === edge[1])) {
+                        edges.push(edge);
+                    }
+                }
+            }
+
+            // Find triangles from edges
+            for (let i = 0; i < edges.length; i++) {
+                for (let j = i + 1; j < edges.length; j++) {
+                    const shared = edges[i].filter(v => edges[j].includes(v));
+                    if (shared.length === 1) {
+                        const others = [...edges[i], ...edges[j]].filter(v => v !== shared[0]);
+                        const edge3 = others.sort((a, b) => a - b);
+                        if (edges.some(e => e[0] === edge3[0] && e[1] === edge3[1])) {
+                            const tri = [shared[0], ...others].sort((a, b) => a - b);
+                            if (!triangles.some(t => t[0] === tri[0] && t[1] === tri[1] && t[2] === tri[2])) {
+                                triangles.push(tri);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function render() {
+            // Clear existing
+            document.querySelectorAll('.circle').forEach(el => el.remove());
+            edgesSvg.innerHTML = '';
+
+            // Draw triangles first (behind everything)
+            for (const tri of triangles) {
+                const c1 = circles.find(c => c.id === tri[0]);
+                const c2 = circles.find(c => c.id === tri[1]);
+                const c3 = circles.find(c => c.id === tri[2]);
+                
+                const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                polygon.setAttribute('points', `${c1.x},${c1.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
+                polygon.classList.add('triangle-fill');
+                polygon.style.opacity = showTriangles ? '1' : '0';
+                edgesSvg.appendChild(polygon);
+            }
+
+            // Draw edges
+            edges.forEach((edge, idx) => {
+                const c1 = circles.find(c => c.id === edge[0]);
+                const c2 = circles.find(c => c.id === edge[1]);
+                
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', c1.x);
+                line.setAttribute('y1', c1.y);
+                line.setAttribute('x2', c2.x);
+                line.setAttribute('y2', c2.y);
+                line.classList.add('edge');
+                line.style.animationDelay = `${idx * 30}ms`;
+                line.style.opacity = showEdges ? '1' : '0';
+                edgesSvg.appendChild(line);
+            });
+
+            // Draw circles
+            circles.forEach((circle, idx) => {
+                const div = document.createElement('div');
+                div.className = `circle ${circle.type}`;
+                div.style.left = `${circle.x}px`;
+                div.style.top = `${circle.y}px`;
+                div.style.width = `${circle.r * 2}px`;
+                div.style.height = `${circle.r * 2}px`;
+                div.style.animationDelay = `${idx * 50}ms`;
+                div.style.opacity = showCircles ? '1' : '0';
+                div.textContent = '◯';
+                div.style.fontSize = `${circle.r * 0.8}px`;
+                div.style.color = circle.type === 'interior' ? 'rgba(88, 166, 255, 0.3)' : 'rgba(163, 113, 247, 0.3)';
+                packingArea.appendChild(div);
+            });
+        }
+
+        generateBtn.onclick = () => {
+            generateCirclePacking(
+                parseInt(boundarySlider.value),
+                parseInt(interiorSlider.value)
+            );
+            render();
+        };
+
+        // Initial generation
+        generateCirclePacking(6, 3);
+        render();
+    </script>
+</body>
+</html>

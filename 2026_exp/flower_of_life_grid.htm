@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower of Life Grid</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a0a15;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            color: #e6edf3;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 0;
+            right: 1rem;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 1rem;
+            border-radius: 8px 8px 0 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: none;
+            transform: translateY(calc(100% - 3rem));
+            transition: transform 0.3s ease;
+        }
+
+        .controls.expanded {
+            transform: translateY(0);
+        }
+
+        .controls-toggle {
+            background: transparent;
+            border: none;
+            color: #58a6ff;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0;
+            margin-left: 0.5rem;
+            line-height: 1;
+            display: inline;
+        }
+
+        .controls h3 {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #58a6ff;
+            display: inline;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .controls button {
+            display: block;
+            width: 100%;
+            margin: 0.3rem 0;
+            padding: 0.5rem;
+            background: rgba(88, 166, 255, 0.2);
+            border: 1px solid rgba(88, 166, 255, 0.5);
+            color: #e6edf3;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .controls button:hover {
+            background: rgba(88, 166, 255, 0.3);
+        }
+
+        .controls button.active {
+            background: rgba(88, 166, 255, 0.5);
+            border-color: #58a6ff;
+        }
+
+        #grid-container {
+            display: grid;
+            gap: 0.5rem;
+            width: 100vw;
+            height: 100vh;
+            padding: 0.5rem;
+            box-sizing: border-box;
+        }
+
+        .grid-2x2 { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
+        .grid-3x3 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
+        .grid-4x4 { grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); }
+        .grid-5x5 { grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); }
+        .grid-6x6 { grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); }
+        .grid-8x8 { grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); }
+
+        .fol-cell {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 2px;
+            overflow: visible;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fol-container {
+            position: relative;
+            width: 90%;
+            height: 90%;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .fol-container.visible {
+            opacity: 1;
+        }
+
+        .hexagon-border {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .fol-circle {
+            position: absolute;
+            border-radius: 50%;
+            border-width: 1.5px;
+            border-style: solid;
+            background: transparent;
+            pointer-events: none;
+            transition: border-color 8s ease-in-out;
+        }
+
+        @keyframes colorShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <div class="controls" id="controls-panel">
+        <div id="controls-header">
+            <h3 id="controls-title">Grid Layout</h3>
+            <button class="controls-toggle" id="controls-toggle" title="Toggle controls">▼</button>
+        </div>
+        <button class="grid-btn active" data-layout="2x2">2×2</button>
+        <button class="grid-btn" data-layout="3x3">3×3</button>
+        <button class="grid-btn" data-layout="4x4">4×4</button>
+        <button class="grid-btn" data-layout="5x5">5×5</button>
+        <button class="grid-btn" data-layout="6x6">6×6</button>
+        <button class="grid-btn" data-layout="8x8">8×8</button>
+        <button id="regenerate-btn" style="margin-top: 0.5rem; background: rgba(255, 100, 100, 0.2); border-color: rgba(255, 100, 100, 0.5);">Regenerate</button>
+    </div>
+
+    <div id="grid-container" class="grid-2x2"></div>
+
+    <script src="../js_funct/colorpalette.js"></script>
+
+    <script>
+        const gridContainer = document.getElementById('grid-container');
+        const gridButtons = document.querySelectorAll('.grid-btn');
+        const regenerateBtn = document.getElementById('regenerate-btn');
+        const controlsPanel = document.getElementById('controls-panel');
+        const controlsToggle = document.getElementById('controls-toggle');
+        const controlsTitle = document.getElementById('controls-title');
+
+        let currentLayout = '2x2';
+        let controlsExpanded = false;
+        let focusedFlower = null;
+        let closeButton = null;
+
+        const gridConfigs = {
+            '2x2': { cols: 2, rows: 2 },
+            '3x3': { cols: 3, rows: 3 },
+            '4x4': { cols: 4, rows: 4 },
+            '5x5': { cols: 5, rows: 5 },
+            '6x6': { cols: 6, rows: 6 },
+            '8x8': { cols: 8, rows: 8 }
+        };
+
+        function createFlowerOfLife(size) {
+            // Ensure size is valid and positive
+            if (!size || size <= 0) {
+                console.warn('Invalid size for flower:', size);
+                size = 100; // Default to 100px
+            }
+
+            const container = document.createElement('div');
+            container.className = 'fol-container';
+            container.style.width = `${size}px`;
+            container.style.height = `${size}px`;
+
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const circleRadius = size / 7.2; // Larger circles to fill space better
+            const offset = circleRadius;
+
+            // Generate 2-3 colors for this flower
+            const colorCount = 2 + Math.floor(Math.random() * 2); // 2 or 3
+            const colors = [];
+            for (let i = 0; i < colorCount; i++) {
+                colors.push(ColorPalette.generateOKLCH());
+            }
+
+            // Group circles by ring for synchronized color changes
+            const centerRing = [];
+            const innerRing = [];
+            const outerRing = [];
+
+            // Assign colors symmetrically by ring
+            const centerColor = colors[0];
+            const innerRingColor = colors[1 % colors.length];
+            const outerRingColor = colors[2 % colors.length];
+
+            // Center circle
+            const centerCircle = document.createElement('div');
+            centerCircle.className = 'fol-circle';
+            centerCircle.style.width = `${circleRadius * 2}px`;
+            centerCircle.style.height = `${circleRadius * 2}px`;
+            centerCircle.style.left = `${centerX - circleRadius}px`;
+            centerCircle.style.top = `${centerY - circleRadius}px`;
+            centerCircle.style.borderColor = centerColor;
+            centerCircle.style.borderWidth = '2px';
+            container.appendChild(centerCircle);
+            centerRing.push(centerCircle);
+
+            // First ring: 6 circles - all same color
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i - Math.PI / 2;
+                const x = centerX + offset * Math.cos(angle);
+                const y = centerY + offset * Math.sin(angle);
+
+                const circle = document.createElement('div');
+                circle.className = 'fol-circle';
+                circle.style.width = `${circleRadius * 2}px`;
+                circle.style.height = `${circleRadius * 2}px`;
+                circle.style.left = `${x - circleRadius}px`;
+                circle.style.top = `${y - circleRadius}px`;
+                circle.style.borderColor = innerRingColor;
+                container.appendChild(circle);
+                innerRing.push(circle);
+            }
+
+            // Second ring: 12 circles - all same color
+            for (let i = 0; i < 6; i++) {
+                // Circles at 60-degree positions (aligned with inner ring)
+                const angle1 = (Math.PI / 3) * i - Math.PI / 2;
+                const x1 = centerX + (offset * 2) * Math.cos(angle1);
+                const y1 = centerY + (offset * 2) * Math.sin(angle1);
+
+                const circle1 = document.createElement('div');
+                circle1.className = 'fol-circle';
+                circle1.style.width = `${circleRadius * 2}px`;
+                circle1.style.height = `${circleRadius * 2}px`;
+                circle1.style.left = `${x1 - circleRadius}px`;
+                circle1.style.top = `${y1 - circleRadius}px`;
+                circle1.style.borderColor = outerRingColor;
+                container.appendChild(circle1);
+                outerRing.push(circle1);
+
+                // Circles at 30-degree offsets (between the aligned positions)
+                const angle2 = (Math.PI / 3) * i + (Math.PI / 6) - Math.PI / 2;
+                const x2 = centerX + (offset * Math.sqrt(3)) * Math.cos(angle2);
+                const y2 = centerY + (offset * Math.sqrt(3)) * Math.sin(angle2);
+
+                const circle2 = document.createElement('div');
+                circle2.className = 'fol-circle';
+                circle2.style.width = `${circleRadius * 2}px`;
+                circle2.style.height = `${circleRadius * 2}px`;
+                circle2.style.left = `${x2 - circleRadius}px`;
+                circle2.style.top = `${y2 - circleRadius}px`;
+                circle2.style.borderColor = outerRingColor;
+                container.appendChild(circle2);
+                outerRing.push(circle2);
+            }
+
+            // Create rounded hexagon border
+            const hexRadius = size * 0.46; // Hexagon larger to fill more of bounding circle
+            const cornerRadius = size * 0.05; // Rounded corners
+
+            // Create SVG
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'hexagon-border');
+            svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
+
+            // Calculate hexagon points (flat top)
+            const points = [];
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i - Math.PI / 2; // Start at top
+                const x = centerX + hexRadius * Math.cos(angle);
+                const y = centerY + hexRadius * Math.sin(angle);
+                points.push({ x, y });
+            }
+
+            // Create path with rounded corners
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+
+            let pathData = '';
+            for (let i = 0; i < points.length; i++) {
+                const curr = points[i];
+                const next = points[(i + 1) % points.length];
+                const prev = points[(i - 1 + points.length) % points.length];
+
+                // Calculate vectors
+                const dx1 = curr.x - prev.x;
+                const dy1 = curr.y - prev.y;
+                const len1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+
+                const dx2 = next.x - curr.x;
+                const dy2 = next.y - curr.y;
+                const len2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+
+                // Calculate rounded corner points
+                const offset = Math.min(cornerRadius, len1 / 2, len2 / 2);
+
+                const p1x = curr.x - (dx1 / len1) * offset;
+                const p1y = curr.y - (dy1 / len1) * offset;
+
+                const p2x = curr.x + (dx2 / len2) * offset;
+                const p2y = curr.y + (dy2 / len2) * offset;
+
+                if (i === 0) {
+                    pathData += `M ${p1x} ${p1y}`;
+                }
+
+                pathData += ` Q ${curr.x} ${curr.y} ${p2x} ${p2y}`;
+
+                if (i < points.length - 1) {
+                    const nextP1x = next.x - (dx2 / len2) * offset;
+                    const nextP1y = next.y - (dy2 / len2) * offset;
+                    pathData += ` L ${nextP1x} ${nextP1y}`;
+                }
+            }
+
+            pathData += ' Z';
+
+            path.setAttribute('d', pathData);
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke', colors[0]);
+            path.setAttribute('stroke-width', '2');
+            path.setAttribute('opacity', '0.6');
+            path.style.transition = 'stroke 3s ease-in-out';
+
+            svg.appendChild(path);
+            container.appendChild(svg);
+
+            // Add single surrounding circle
+            const surroundingCircleRadius = size * 0.48; // Just outside the hexagon
+            const surroundingColor = colors[Math.floor(Math.random() * colors.length)];
+
+            const surroundingCircle = document.createElement('div');
+            surroundingCircle.className = 'fol-circle';
+            surroundingCircle.style.width = `${surroundingCircleRadius * 2}px`;
+            surroundingCircle.style.height = `${surroundingCircleRadius * 2}px`;
+            surroundingCircle.style.left = `${centerX - surroundingCircleRadius}px`;
+            surroundingCircle.style.top = `${centerY - surroundingCircleRadius}px`;
+            surroundingCircle.style.borderColor = surroundingColor;
+            surroundingCircle.style.borderWidth = '2px';
+            container.appendChild(surroundingCircle);
+
+            // Animate color changes - each ring changes as a group
+            function animateColors() {
+                // Pick random colors for each ring from the palette
+                const newCenterColor = colors[Math.floor(Math.random() * colors.length)];
+                const newInnerColor = colors[Math.floor(Math.random() * colors.length)];
+                const newOuterColor = colors[Math.floor(Math.random() * colors.length)];
+
+                // Apply to all circles in each ring
+                centerRing.forEach(circle => {
+                    circle.style.borderColor = newCenterColor;
+                });
+
+                innerRing.forEach(circle => {
+                    circle.style.borderColor = newInnerColor;
+                });
+
+                outerRing.forEach(circle => {
+                    circle.style.borderColor = newOuterColor;
+                });
+
+                // Random interval between 15-30 seconds
+                const nextInterval = 15000 + Math.random() * 15000;
+                setTimeout(animateColors, nextInterval);
+            }
+
+            // Start animation after a random delay
+            setTimeout(animateColors, 1000 + Math.random() * 2000);
+
+            // Fade in
+            setTimeout(() => {
+                container.classList.add('visible');
+            }, 100);
+
+            return container;
+        }
+
+        function generateGrid() {
+            const config = gridConfigs[currentLayout];
+            const cellCount = config.cols * config.rows;
+
+            gridContainer.innerHTML = '';
+
+            for (let i = 0; i < cellCount; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'fol-cell';
+
+                const cellWidth = Math.max(gridContainer.offsetWidth / config.cols - 8, 0);
+                const cellHeight = Math.max(gridContainer.offsetHeight / config.rows - 8, 0);
+                const folSize = Math.max(Math.min(cellWidth, cellHeight) * 0.9, 100);
+
+                const fol = createFlowerOfLife(folSize);
+
+                // Make clickable
+                fol.style.cursor = 'pointer';
+                fol.style.pointerEvents = 'auto';
+
+                // Add click event listener
+                fol.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (focusedFlower) {
+                        unfocusFlower();
+                    } else {
+                        focusFlower(fol);
+                    }
+                });
+
+                cell.appendChild(fol);
+                gridContainer.appendChild(cell);
+            }
+        }
+
+        function initializePalette() {
+            if (typeof ColorPalette === 'undefined') {
+                setTimeout(initializePalette, 100);
+                return;
+            }
+
+            ColorPalette.init();
+
+            // Random layout
+            const layoutKeys = Object.keys(gridConfigs);
+            const randomLayout = layoutKeys[Math.floor(Math.random() * layoutKeys.length)];
+            currentLayout = randomLayout;
+            gridContainer.className = `grid-${currentLayout}`;
+
+            gridButtons.forEach(btn => {
+                if (btn.dataset.layout === currentLayout) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Set body background
+            const bgColor = ColorPalette.generateOKLCH(0.15 + Math.random() * 0.2, 0.05, Math.random() * 360);
+            document.body.style.backgroundColor = bgColor;
+
+            generateGrid();
+        }
+
+        function toggleControls() {
+            controlsExpanded = !controlsExpanded;
+            if (controlsExpanded) {
+                controlsPanel.classList.add('expanded');
+                controlsToggle.textContent = '▼';
+            } else {
+                controlsPanel.classList.remove('expanded');
+                controlsToggle.textContent = '▲';
+            }
+        }
+
+        function focusFlower(flower) {
+            focusedFlower = flower;
+
+            // Hide controls
+            controlsPanel.style.display = 'none';
+
+            // Get the parent cell
+            const cell = flower.parentElement;
+
+            // Remove cell from grid and append to body
+            document.body.appendChild(cell);
+
+            // Hide the grid container completely
+            gridContainer.style.display = 'none';
+
+            // Make the cell break out of the grid and fill viewport
+            cell.style.position = 'fixed';
+            cell.style.top = '0';
+            cell.style.left = '0';
+            cell.style.width = '100vw';
+            cell.style.height = '100vh';
+            cell.style.zIndex = '1000';
+            cell.style.display = 'flex';
+            cell.style.alignItems = 'center';
+            cell.style.justifyContent = 'center';
+            cell.style.background = '#0a0a15';
+            cell.style.borderRadius = '0';
+            cell.style.overflow = 'visible';
+            cell.style.transition = 'all 1s ease';
+            cell.style.cursor = 'pointer';
+            cell.style.pointerEvents = 'auto';
+
+            // Scale the flower using transform instead of resizing
+            const currentSize = parseFloat(flower.style.width) || 100;
+            const targetSize = Math.min(window.innerWidth, window.innerHeight) * 0.95;
+            const scale = targetSize / currentSize;
+
+            flower.style.transform = `scale(${scale})`;
+            flower.style.transformOrigin = 'center center';
+            flower.style.transition = 'transform 1s ease';
+
+            // Scale down border widths to maintain thin lines
+            const allCircles = flower.querySelectorAll('.fol-circle');
+            allCircles.forEach(circle => {
+                const originalWidth = parseFloat(circle.style.borderWidth) || 1.5;
+                circle.style.borderWidth = `${originalWidth / scale}px`;
+            });
+
+            // Scale down SVG stroke width
+            const svg = flower.querySelector('.hexagon-border path');
+            if (svg) {
+                svg.setAttribute('stroke-width', `${2 / scale}`);
+            }
+
+            // Ensure animations continue by keeping the flower visible
+            flower.classList.add('visible');
+
+            // Generate palette for morphing and button
+            const morphColors = [];
+            for (let i = 0; i < 5; i++) {
+                morphColors.push(ColorPalette.generateOKLCH());
+            }
+
+            // Start color morphing for hexagon and bounding circle
+            const hexPath = svg;
+            const boundingCircle = Array.from(allCircles).find(c =>
+                parseFloat(c.style.width) > parseFloat(flower.style.width) * 0.9
+            );
+
+            if (hexPath && boundingCircle) {
+                // Separate animation for hexagon (slower)
+                let hexColorIndex = 0;
+                function animateHexagon() {
+                    if (focusedFlower !== flower) return; // Stop if unfocused
+
+                    hexColorIndex = (hexColorIndex + 1) % morphColors.length;
+                    const nextColor = morphColors[hexColorIndex];
+
+                    hexPath.setAttribute('stroke', nextColor);
+
+                    setTimeout(animateHexagon, 16000 + Math.random() * 10000); // 16-26 seconds
+                }
+                setTimeout(animateHexagon, 17000);
+
+                // Separate animation for bounding circle (current speed)
+                let circleColorIndex = 0;
+                function animateBoundingCircle() {
+                    if (focusedFlower !== flower) return; // Stop if unfocused
+
+                    circleColorIndex = (circleColorIndex + 1) % morphColors.length;
+                    const nextColor = morphColors[circleColorIndex];
+
+                    boundingCircle.style.borderColor = nextColor;
+
+                    setTimeout(animateBoundingCircle, 3000 + Math.random() * 2000); // 3-5 seconds
+                }
+                setTimeout(animateBoundingCircle, 2000);
+
+                // Refresh palette every 30-45 seconds - pop one color and add a new one
+                function refreshPalette() {
+                    if (focusedFlower !== flower) return; // Stop if unfocused
+
+                    // Remove a random color from the palette
+                    const removeIndex = Math.floor(Math.random() * morphColors.length);
+                    morphColors.splice(removeIndex, 1);
+
+                    // Add a new color
+                    morphColors.push(ColorPalette.generateOKLCH());
+
+                    // Reset color index to avoid out of bounds
+                    colorIndex = colorIndex % morphColors.length;
+
+                    // Schedule next refresh
+                    const nextRefresh = 30000 + Math.random() * 15000; // 30-45 seconds
+                    setTimeout(refreshPalette, nextRefresh);
+                }
+
+                // Start palette refreshing
+                setTimeout(refreshPalette, 30000 + Math.random() * 15000);
+            }
+
+            // Create subtle close button in upper right with palette color
+            closeButton = document.createElement('div');
+            const btnColor = morphColors[0]; // Use first color from morph palette
+            closeButton.style.position = 'fixed';
+            closeButton.style.top = '20px';
+            closeButton.style.right = '20px';
+            closeButton.style.width = '36px';
+            closeButton.style.height = '36px';
+            closeButton.style.borderRadius = '50%';
+            closeButton.style.background = btnColor.replace(')', ' / 0.25)');
+            closeButton.style.border = `2px solid ${btnColor.replace(')', ' / 0.7)')}`;
+            closeButton.style.cursor = 'pointer';
+            closeButton.style.zIndex = '99999';
+            closeButton.style.pointerEvents = 'auto';
+            closeButton.style.transition = 'all 0.3s ease';
+            closeButton.style.display = 'flex';
+            closeButton.style.alignItems = 'center';
+            closeButton.style.justifyContent = 'center';
+            closeButton.style.color = btnColor;
+            closeButton.style.fontSize = '24px';
+            closeButton.style.fontWeight = '300';
+            closeButton.style.lineHeight = '1';
+            closeButton.style.userSelect = 'none';
+            closeButton.textContent = '×';
+
+            closeButton.addEventListener('mouseenter', () => {
+                closeButton.style.background = btnColor.replace(')', ' / 0.45)');
+                closeButton.style.transform = 'scale(1.1)';
+            });
+
+            closeButton.addEventListener('mouseleave', () => {
+                closeButton.style.background = btnColor.replace(')', ' / 0.25)');
+                closeButton.style.transform = 'scale(1)';
+            });
+
+            closeButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                unfocusFlower();
+            }, true);
+
+            document.body.appendChild(closeButton);
+        }
+
+        function unfocusFlower() {
+            // Clean up focused flower cell
+            const focusedCells = document.querySelectorAll('.fol-cell[style*="position: fixed"]');
+            focusedCells.forEach(cell => cell.remove());
+
+            focusedFlower = null;
+
+            // Remove close button
+            if (closeButton) {
+                closeButton.remove();
+                closeButton = null;
+            }
+
+            // Show grid container
+            gridContainer.style.display = 'grid';
+
+            // Show controls
+            controlsPanel.style.display = 'block';
+
+            // Regenerate entire grid
+            initializePalette();
+        }
+
+        controlsToggle.addEventListener('click', toggleControls);
+        controlsTitle.addEventListener('click', toggleControls);
+
+        gridButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                gridButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentLayout = btn.dataset.layout;
+                gridContainer.className = `grid-${currentLayout}`;
+                generateGrid();
+            });
+        });
+
+        regenerateBtn.addEventListener('click', () => {
+            initializePalette();
+        });
+
+        initializePalette();
+    </script>
+</body>
+</html>

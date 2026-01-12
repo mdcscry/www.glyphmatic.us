@@ -177,10 +177,13 @@
         }
 
         // Function to populate a container with repeating characters
-        function populateContent(element, characters, colors) {
+        function populateContent(element, characters, colors, cellCount) {
             let html = '';
-            // Fill the element with about 1000 characters
-            for (let i = 0; i < 2000; i++) {
+            // Adjust character count based on number of cells
+            // Fewer cells = larger cells = need more characters to fill
+            const charCount = Math.floor(20000 / cellCount);
+
+            for (let i = 0; i < charCount; i++) {
                 const char = characters[Math.floor(Math.random() * characters.length)];
                 const color = colors[i % colors.length];
                 html += `<span class="char" style="color: ${color};">${char}</span>`;
@@ -228,7 +231,7 @@
                 cell.style.backgroundColor = cellBg;
 
                 // Populate the cell with glyphs
-                populateContent(cell, glyphData.main, characterColors);
+                populateContent(cell, glyphData.main, characterColors, cellCount);
             });
         }
 

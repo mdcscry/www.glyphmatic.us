@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotus Circle Packing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            background-color: AntiqueWhite;
+            /*background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a15 100%);*/
+            overflow: hidden;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        #packing-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .lotus-container {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            pointer-events: auto;
+            opacity: 0;
+            cursor: pointer;
+            transition: all 1s ease;
+            /* Transition set dynamically with random duration */
+        }
+
+        .lotus-container.focused {
+            z-index: 9999;
+            cursor: pointer;
+        }
+
+        .lotus-container.hidden {
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+
+        .lotus-container.visible {
+            opacity: 1;
+        }
+
+        .lotus-container.rotating-cw {
+            animation: rotateLotus-cw var(--rotation-duration, 20s) linear infinite;
+        }
+
+        .lotus-container.rotating-ccw {
+            animation: rotateLotus-ccw var(--rotation-duration, 20s) linear infinite;
+        }
+
+        .lotus-container.fading-out {
+            opacity: 0;
+            /* Transition set dynamically with random duration */
+        }
+
+        @keyframes rotateLotus-cw {
+            from {
+                transform: translate(-50%, -50%) rotate(0deg) scale(var(--lotus-scale, 1));
+            }
+            to {
+                transform: translate(-50%, -50%) rotate(360deg) scale(var(--lotus-scale, 1));
+            }
+        }
+
+        @keyframes rotateLotus-ccw {
+            from {
+                transform: translate(-50%, -50%) rotate(0deg) scale(var(--lotus-scale, 1));
+            }
+            to {
+                transform: translate(-50%, -50%) rotate(-360deg) scale(var(--lotus-scale, 1));
+            }
+        }
+
+        .lotus-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .lotus-circle {
+            position: absolute;
+            border-radius: 50%;
+            border-width: calc(1.5px * var(--border-scale, 1));
+            border-style: solid;
+            background: transparent;
+            pointer-events: none;
+        }
+
+        .lotus-concentric-ring {
+            position: absolute;
+            border-radius: 50%;
+            border-width: calc(2px * var(--border-scale, 1));
+            border-style: solid;
+            pointer-events: none;
+        }
+
+        .lotus-fol-circle {
+            position: absolute;
+            border-radius: 50%;
+            border-width: calc(1.5px * var(--border-scale, 1));
+            border-style: solid;
+            background: transparent;
+        }
+
+        .lotus-center-circle {
+            border-width: calc(2px * var(--border-scale, 1)) !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="packing-container"></div>
+
+    <!-- Load contrast tester (required by ColorPalette) -->
+    <script src="../js_funct/contrast_tester.js"></script>
+    <!-- Load ColorPalette utility -->
+    <script src="../js_funct/colorpalette.js"></script>
+
+    <script>
+        const container = document.getElementById('packing-container');
+        let circles = [];
+        let lotusElements = [];
+        let focusedLotus = null;
+
+        function distance(p1, p2) {
+            return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+        }
+
+        function generateCirclePacking() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const centerX = width / 2;
+            const centerY = height / 2;
+
+            // Use rectangle boundary - points beyond viewport edges for larger lotuses
+            const margin = 0; // Negative margin puts boundary outside viewport
+            const numBoundaryPoints = 3+ Math.random() * 18;
+
+            circles = [];
+
+            // Generate boundary points around rectangle perimeter
+            const rectWidth = width - margin * 2;
+            const rectHeight = height - margin * 2;
+            const perimeter = 2 * (rectWidth + rectHeight);
+            const segmentLength = perimeter / numBoundaryPoints;
+
+            for (let i = 0; i < numBoundaryPoints; i++) {
+                const dist = i * segmentLength;
+                let x, y;
+
+                if (dist < rectWidth) {
+                    // Top edge
+                    x = margin + dist;
+                    y = margin;
+                } else if (dist < rectWidth + rectHeight) {
+                    // Right edge
+                    x = width - margin;
+                    y = margin + (dist - rectWidth);
+                } else if (dist < 2 * rectWidth + rectHeight) {
+                    // Bottom edge
+                    x = width - margin - (dist - rectWidth - rectHeight);
+                    y = height - margin;
+                } else {
+                    // Left edge
+                    x = margin;
+                    y = height - margin - (dist - 2 * rectWidth - rectHeight);
+                }
+
+                const r = 80 + Math.random() * 60; // Larger boundary circles
+                circles.push({ x, y, r, type: 'boundary', id: i });
+            }
+
+            // Generate interior circles with random placement
+            const numInterior = Math.floor(3 + Math.random() * 8); // 3-10 circles
+
+            for (let i = 0; i < numInterior; i++) {
+                let x, y, r;
+                let attempts = 0;
+                do {
+                    x = margin + Math.random() * rectWidth;
+                    y = margin + Math.random() * rectHeight;
+                    r = 150 + Math.random() * 150; // Much larger interior circles
+                    attempts++;
+                } while (attempts < 100 && circles.some(c => distance({x, y}, c) < r + c.r + 20));
+
+                circles.push({ x, y, r, type: 'interior', id: numBoundaryPoints + i });
+            }
+
+            // Simple relaxation to improve packing
+            for (let iter = 0; iter < 150; iter++) {
+                for (let i = 0; i < circles.length; i++) {
+                    if (circles[i].type === 'boundary') continue;
+
+                    let fx = 0, fy = 0;
+
+                    // Attract to center slightly
+                    fx += (centerX - circles[i].x) * 0.005;
+                    fy += (centerY - circles[i].y) * 0.005;
+
+                    // Repel from other circles
+                    for (let j = 0; j < circles.length; j++) {
+                        if (i === j) continue;
+                        const d = distance(circles[i], circles[j]);
+                        const minDist = circles[i].r + circles[j].r;
+                        if (d < minDist * 1.8) {
+                            const force = (minDist * 1.8 - d) / d;
+                            fx += (circles[i].x - circles[j].x) * force * 0.4;
+                            fy += (circles[i].y - circles[j].y) * force * 0.4;
+                        }
+                    }
+
+                    circles[i].x += fx;
+                    circles[i].y += fy;
+
+                    // Keep in bounds
+                    circles[i].x = Math.max(margin + circles[i].r, Math.min(width - margin - circles[i].r, circles[i].x));
+                    circles[i].y = Math.max(margin + circles[i].r, Math.min(height - margin - circles[i].r, circles[i].y));
+                }
+            }
+        }
+
+        function createLotus(circle, color1, color2) {
+            const lotusDiv = document.createElement('div');
+            lotusDiv.className = 'lotus-container';
+            lotusDiv.style.left = `${circle.x}px`;
+            lotusDiv.style.top = `${circle.y}px`;
+            lotusDiv.style.width = `${circle.r * 2}px`;
+            lotusDiv.style.height = `${circle.r * 2}px`;
+
+            // Store reference to the circle data
+            lotusDiv.circleData = circle;
+
+            const inner = document.createElement('div');
+            inner.className = 'lotus-inner';
+
+            // Randomly add gradient background (50% chance)
+            if (Math.random() < 0.5) {
+                const gradientStyle = Math.random() < 0.5 ?
+                    `radial-gradient(circle at center, ${color1}22 0%, ${color2}11 50%, transparent 70%)` :
+                    `radial-gradient(circle at center, ${color2}22 0%, ${color1}11 50%, transparent 70%)`;
+                inner.style.background = gradientStyle;
+            }
+
+            lotusDiv.appendChild(inner);
+
+            // Scale factor - lotus is designed for 800px, we need to scale to circle size
+            const scale = (circle.r * 2) / 900;
+            const centerX = circle.r;
+            const centerY = circle.r;
+
+            // Flower of Life (scaled)
+            const folCircleRadius = 50 * scale;
+            const folOffset = 50 * scale;
+
+            // Center circle
+            const centerCircle = document.createElement('div');
+            centerCircle.className = 'lotus-fol-circle lotus-center-circle';
+            centerCircle.style.width = `${folCircleRadius * 2}px`;
+            centerCircle.style.height = `${folCircleRadius * 2}px`;
+            centerCircle.style.left = `${centerX - folCircleRadius}px`;
+            centerCircle.style.top = `${centerY - folCircleRadius}px`;
+            centerCircle.style.borderColor = color2;
+            inner.appendChild(centerCircle);
+
+            // Outer 6 circles
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i - Math.PI / 2;
+                const x = centerX + folOffset * Math.cos(angle);
+                const y = centerY + folOffset * Math.sin(angle);
+
+                const fol = document.createElement('div');
+                fol.className = 'lotus-fol-circle';
+                fol.style.width = `${folCircleRadius * 2}px`;
+                fol.style.height = `${folCircleRadius * 2}px`;
+                fol.style.left = `${x - folCircleRadius}px`;
+                fol.style.top = `${y - folCircleRadius}px`;
+                fol.style.borderColor = color1;
+                inner.appendChild(fol);
+            }
+
+            // Concentric rings
+            const innerRadius = 100 * scale;
+            const outerRadius = 350 * scale;
+            const concentricRadii = [100, 150, 200, 250, 300, 350].map(r => r * scale);
+
+            concentricRadii.forEach((radius, index) => {
+                const ring = document.createElement('div');
+                ring.className = 'lotus-concentric-ring';
+                ring.style.width = `${radius * 2}px`;
+                ring.style.height = `${radius * 2}px`;
+                ring.style.left = `${centerX - radius}px`;
+                ring.style.top = `${centerY - radius}px`;
+
+                // Gradient between the two colors
+                const ratio = index / (concentricRadii.length - 1);
+                ring.style.borderColor = ratio < 0.5 ? color1 : color2;
+                ring.style.opacity = 0.6 + (ratio * 0.4);
+                inner.appendChild(ring);
+            });
+
+            // Toroidal circles
+            const torusDiameter = (outerRadius - innerRadius);
+            const torusCenterRadius = (innerRadius + outerRadius) / 2;
+            // Random number of circles - multiples of 12
+            const torusOptions = [24, 36, 48, 60, 72, 84];
+            const numTorusCircles = torusOptions[Math.floor(Math.random() * torusOptions.length)];
+
+            for (let i = 0; i < numTorusCircles; i++) {
+                const angle = (2 * Math.PI / numTorusCircles) * i - Math.PI / 2;
+                const x = centerX + torusCenterRadius * Math.cos(angle);
+                const y = centerY + torusCenterRadius * Math.sin(angle);
+
+                const tc = document.createElement('div');
+                tc.className = 'lotus-circle';
+                tc.style.width = `${torusDiameter}px`;
+                tc.style.height = `${torusDiameter}px`;
+                tc.style.left = `${x - torusDiameter / 2}px`;
+                tc.style.top = `${y - torusDiameter / 2}px`;
+
+                // Alternate between the two colors
+                tc.style.borderColor = i % 2 === 0 ? color1 : color2;
+                tc.style.opacity = 0.5;
+                inner.appendChild(tc);
+            }
+
+            // Add click handler for fullscreen focus
+            lotusDiv.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (focusedLotus) {
+                    // Already in focus mode - regenerate page
+                    unfocusLotus();
+                    regeneratePage();
+                } else {
+                    // Enter focus mode
+                    focusLotus(lotusDiv);
+                }
+            });
+
+            return lotusDiv;
+        }
+
+        function generateNewLotusCircle() {
+            // 70% chance to immediately skip creation to maintain lower density
+            if (Math.random() < 0.1) {
+                console.log('Randomly skipping lotus creation for density control');
+                return null;
+            }
+
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const margin = 150;
+            const rectWidth = width - margin * 2;
+            const rectHeight = height - margin * 2;
+
+            // Generate a new random interior circle position
+            // Try for reasonable spacing
+            let x, y, r;
+            let attempts = 0;
+            const maxAttempts = 100;
+
+            do {
+                x = margin + Math.random() * rectWidth;
+                y = margin + Math.random() * rectHeight;
+                r = 100 + Math.random() * 300;
+                attempts++;
+            } while (attempts < maxAttempts && circles.some(c => c.type === 'interior' && distance({x, y}, c) < r + c.r + 100));
+
+            // If we couldn't find a good spot after maxAttempts, return null
+            if (attempts >= maxAttempts) {
+                console.log('Could not place new lotus - maintaining current density');
+                return null;
+            }
+
+            return { x, y, r, type: 'interior', id: Date.now() };
+        }
+
+        function createNewLotus() {
+            const circle = generateNewLotusCircle();
+
+            // If we couldn't generate a valid circle, don't create a lotus
+            if (!circle) {
+                console.log('Skipping lotus creation - maintaining lower density');
+                return null;
+            }
+
+            // Add the new circle to the circles array
+            circles.push(circle);
+
+            // Generate a unique palette for this lotus with contrast against body background
+            const palette = ColorPalette.generateGlyphPalette(bodyBgColor, 6, 4, 8);
+
+            // Pick 2 different colors from the palette
+            const color1 = palette[Math.floor(Math.random() * palette.length)];
+            let color2 = palette[Math.floor(Math.random() * palette.length)];
+            while (color2 === color1 && palette.length > 1) {
+                color2 = palette[Math.floor(Math.random() * palette.length)];
+            }
+
+            const lotus = createLotus(circle, color1, color2);
+            container.appendChild(lotus);
+
+            // Random fade-in duration (2-5 seconds)
+            const fadeInDuration = 2000 + Math.random() * 3000;
+            lotus.style.transition = `opacity ${fadeInDuration}ms ease`;
+
+            // Fade in after a brief delay
+            setTimeout(() => {
+                lotus.classList.add('visible');
+            }, 100);
+
+            return lotus;
+        }
+
+        function focusLotus(lotus) {
+            focusedLotus = lotus;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const centerX = vw / 2;
+            const centerY = vh / 2;
+
+            // Calculate scale to make it fill most of the viewport height
+            const currentSize = parseFloat(lotus.style.width);
+            const targetSize = vh * 0.995;
+            const scale = targetSize / currentSize;
+
+            // Hide all other lotuses
+            lotusElements.forEach(el => {
+                if (el !== lotus) {
+                    el.classList.add('hidden');
+                }
+            });
+
+            // Focus and scale the selected lotus
+            lotus.classList.add('focused');
+            lotus.style.left = `${centerX}px`;
+            lotus.style.top = `${centerY}px`;
+
+            // Set scale using CSS custom property so animation can use it
+            lotus.style.setProperty('--lotus-scale', scale);
+
+            // Compensate border width for scale to keep lines thin
+            lotus.style.setProperty('--border-scale', 1 / scale);
+
+            // Make sure it's spinning
+            if (!lotus.classList.contains('rotating-cw') && !lotus.classList.contains('rotating-ccw')) {
+                const direction = Math.random() < 0.5 ? 'cw' : 'ccw';
+                lotus.classList.add(`rotating-${direction}`);
+            }
+        }
+
+        function unfocusLotus() {
+            if (!focusedLotus) return;
+            focusedLotus.classList.remove('focused');
+            focusedLotus = null;
+        }
+
+        function regeneratePage() {
+            // Clear existing lotuses
+            lotusElements.forEach(el => el.remove());
+            lotusElements = [];
+            focusedLotus = null;
+
+            // Generate new random background color
+            bodyBgColor = ColorPalette.generateOKLCH(0.2 + Math.random() * 0.3, 0.05 + Math.random() * 0.1, Math.random() * 360);
+            document.body.style.backgroundColor = bodyBgColor;
+
+            generateCirclePacking();
+            render();
+
+            // Restart rotation animation
+            setTimeout(startRotation, 1000);
+        }
+
+        function render() {
+            // Clear existing
+            lotusElements.forEach(el => el.remove());
+            lotusElements = [];
+
+            // Only render interior circles as lotuses
+            const interiorCircles = circles.filter(c => c.type === 'interior');
+
+            interiorCircles.forEach((circle, index) => {
+                // Generate a unique palette for this lotus with contrast against body background
+                const palette = ColorPalette.generateGlyphPalette(bodyBgColor, 6, 4, 8);
+
+                // Pick 2 different colors from the palette
+                const color1 = palette[Math.floor(Math.random() * palette.length)];
+                let color2 = palette[Math.floor(Math.random() * palette.length)];
+                while (color2 === color1 && palette.length > 1) {
+                    color2 = palette[Math.floor(Math.random() * palette.length)];
+                }
+
+                const lotus = createLotus(circle, color1, color2);
+                container.appendChild(lotus);
+                lotusElements.push(lotus);
+
+                // Random fade-in duration (2-5 seconds)
+                const fadeInDuration = 2000 + Math.random() * 3000;
+                lotus.style.transition = `opacity ${fadeInDuration}ms ease`;
+
+                // Staggered fade in
+                setTimeout(() => {
+                    lotus.classList.add('visible');
+                }, 100 * index);
+            });
+        }
+
+        function startRotation() {
+            function rotateRandomLotus() {
+                if (lotusElements.length === 0) {
+                    // Try again later if no lotuses available
+                    setTimeout(rotateRandomLotus, 1000);
+                    return;
+                }
+
+                // Skip if we're in focus mode
+                if (focusedLotus) {
+                    setTimeout(rotateRandomLotus, 1000);
+                    return;
+                }
+
+                // Randomly select a lotus
+                const randomIndex = Math.floor(Math.random() * lotusElements.length);
+                const selectedLotus = lotusElements[randomIndex];
+
+                // Skip if this lotus is already rotating
+                if (selectedLotus.classList.contains('rotating-cw') || selectedLotus.classList.contains('rotating-ccw')) {
+                    // Try again soon with a different lotus
+                    setTimeout(rotateRandomLotus, 500);
+                    return;
+                }
+
+                // Calculate rotation duration based on lotus size
+                const radius = selectedLotus.circleData.r;
+                // Larger lotuses get significantly longer rotation times
+                // radius 80: 10-25 seconds, radius 160: 20-50s, radius 240: 30-75s
+                const sizeRatio = radius / 80;
+                const minTime = 10 * sizeRatio;
+                const maxTime = 25 * sizeRatio;
+                const rotationTime = minTime * 1000 + Math.random() * (maxTime - minTime) * 1000;
+
+                // Set rotation duration dynamically
+                selectedLotus.style.setProperty('--rotation-duration', `${rotationTime}ms`);
+
+                // Random rotation direction
+                const direction = Math.random() < 0.5 ? 'cw' : 'ccw';
+                selectedLotus.classList.add(`rotating-${direction}`);
+
+                // After rotation completes, fade out
+                setTimeout(() => {
+                    // Skip fade-out if we're now in focus mode
+                    if (focusedLotus) {
+                        return;
+                    }
+
+                    // Random fade-out duration (4-8 seconds), longer for larger lotuses
+                    const fadeOutDuration = 4000 + Math.random() * 4000 + (sizeRatio * 2000);
+                    selectedLotus.style.transition = `opacity ${fadeOutDuration}ms ease`;
+                    selectedLotus.classList.add('fading-out');
+
+                    // After fade-out completes, remove and create new
+                    setTimeout(() => {
+                        // Skip removal/creation if we're now in focus mode
+                        if (focusedLotus) {
+                            return;
+                        }
+
+                        // Remove circle from circles array FIRST
+                        if (selectedLotus.circleData) {
+                            const circleIndex = circles.findIndex(c => c.id === selectedLotus.circleData.id);
+                            if (circleIndex !== -1) {
+                                circles.splice(circleIndex, 1);
+                            }
+                        }
+
+                        // Then remove from DOM and lotusElements array
+                        selectedLotus.remove();
+                        const indexToRemove = lotusElements.indexOf(selectedLotus);
+                        if (indexToRemove !== -1) {
+                            lotusElements.splice(indexToRemove, 1);
+                        }
+
+                        // Create new lotus (which will add new circle to array)
+                        const newLotus = createNewLotus();
+                        if (newLotus) {
+                            lotusElements.push(newLotus);
+                        }
+                    }, fadeOutDuration);
+                }, rotationTime);
+
+                // Schedule next rotation with random delay (1-4 seconds)
+                const nextDelay = 1000 + Math.random() * 3000;
+                setTimeout(rotateRandomLotus, nextDelay);
+            }
+
+            // Start multiple concurrent rotation schedulers
+            const numConcurrent = 2 + Math.floor(Math.random() * 2); // 2-3 concurrent
+            for (let i = 0; i < numConcurrent; i++) {
+                setTimeout(rotateRandomLotus, 1000 + i * 1000);
+            }
+        }
+
+        let bodyBgColor = null;
+
+        function init() {
+            // Wait for ColorPalette to be available
+            if (typeof ColorPalette !== 'undefined') {
+                ColorPalette.init();
+
+                // Generate random background color
+                bodyBgColor = ColorPalette.generateOKLCH(0.2 + Math.random() * 0.3, 0.05 + Math.random() * 0.1, Math.random() * 360);
+                document.body.style.backgroundColor = bodyBgColor;
+
+                generateCirclePacking();
+                render();
+                // Start rotation after render
+                setTimeout(startRotation, 1000);
+            } else {
+                setTimeout(init, 100);
+            }
+        }
+
+        // Regenerate on refresh/resize
+        window.addEventListener('resize', () => {
+            // Clear existing lotuses
+            lotusElements.forEach(el => el.remove());
+            lotusElements = [];
+
+            generateCirclePacking();
+            render();
+            setTimeout(startRotation, 1000);
+        });
+
+        init();
+    </script>
+</body>
+</html>
