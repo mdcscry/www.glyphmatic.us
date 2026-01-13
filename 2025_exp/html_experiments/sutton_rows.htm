@@ -60,11 +60,11 @@
         // TEST MODE: Set this to an array of hex codes to override the full set
         // Just paste hex codes like: const TEST_GLYPHS = ['1D800', '1D801', '1D802'];
         // Set to null to use all glyphs
-        const TEST_GLYPHS = [ '1DA2A'//,
-            // '1DA67','1DA36','1DA6C','1DA2A','1DA87','1D9DE','1D9D1','1D98F',
-            //  '1D993','1D992','1D994','1D99C','1D99D','1D99E', //tall arrows
-            // '1D9A8' //curvy arrows
-        ];
+        const TEST_GLYPHS = [ //'1DA2A',
+            //'1DA67','1DA36','1DA6C','1DA2A','1DA87','1D9DE','1D9D1','1D98F'//,
+            //'1D993','1D992','1D994','1D99C','1D99D','1D99E', //tall arrows
+            //'1D9A8' //curvy arrows
+        ]; // This closing bracket was commented out
 
         // Sutton SignWriting Unicode block: U+1D800 to U+1DA8B
         const SUTTON_START = 0x1D800;
@@ -73,7 +73,7 @@
         // Generate array of all Sutton SignWriting characters
         function generateSuttonGlyphs() {
             // If test mode is active, convert hex codes to glyphs
-            if (TEST_GLYPHS) {
+            if (TEST_GLYPHS && TEST_GLYPHS.length > 0) {
                 // Handle both single string and array
                 const hexCodes = Array.isArray(TEST_GLYPHS) ? TEST_GLYPHS : [TEST_GLYPHS];
                 return hexCodes.map(hex => String.fromCodePoint(parseInt(hex, 16)));
@@ -139,7 +139,7 @@
             const suttonGlyphs = generateSuttonGlyphs();
 
             // Number of rows (random between 40-60)
-            const numRows = 35;
+            const numRows = 40;
 
             // Create rows
             for (let i = 0; i < numRows; i++) {
@@ -147,7 +147,7 @@
                 row.className = 'row';
 
                 // Number of glyphs per row (random between 40-80)
-                const glyphsPerRow = 100;
+                const glyphsPerRow = 1000;
 
                 // Each row uses a single glyph repeated
                 const rowGlyph = getRandomGlyph(suttonGlyphs);
@@ -203,7 +203,7 @@
                     glyphIndex--;
 
                     if (glyphIndex >= 0) {
-                        setTimeout(animateNextGlyph, 205); // Slower glyph-by-glyph
+                        requestAnimationFrame(animateNextGlyph); // Use requestAnimationFrame for smooth animation
                     }
                 }
 

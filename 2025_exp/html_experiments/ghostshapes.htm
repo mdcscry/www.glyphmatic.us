@@ -708,15 +708,15 @@
         name: 'Half Circles - Left & Right',
         backgroundTextPrimary: true,
         shapes: [
-          { type: 'half-circle-left', float: 'left', width: 550, height: 1100, fillGlyphs: 850 },
-          { type: 'half-circle-right', float: 'right', width: 550, height: 1100, fillGlyphs: 850 }
+          { type: 'half-circle-left', float: 'left', width: 550, height: 1100, fillGlyphs: 1050 },
+          { type: 'half-circle-right', float: 'right', width: 550, height: 1100, fillGlyphs: 1050 }
         ]
       },
       {
         name: 'Half Circles - Top & Bottom',
         shapes: [
-          { type: 'half-circle-top', float: 'left', width: '70vw', height: '35vw', fillGlyphs: 900 },
-          { type: 'half-circle-bottom', float: 'right', width: '70vw', height: '35vw', fillGlyphs: 900 }
+          { type: 'half-circle-top', float: 'left', width: '70vw', height: '35vw', fillGlyphs: 1200 },
+          { type: 'half-circle-bottom', float: 'right', width: '70vw', height: '35vw', fillGlyphs: 1700 }
         ]
       }
     ];
@@ -927,9 +927,9 @@
         const animSpeed = 0.0005 + Math.random() * 0.001;
 
         // Generate glyphs for stripe rows
-        const stripeGlyphs1 = generateGlyphText(1500);
-        const stripeGlyphs2 = generateGlyphText(1500);
-        const stripeGlyphs3 = generateGlyphText(1500);
+        const stripeGlyphs1 = generateGlyphText(400);
+        const stripeGlyphs2 = generateGlyphText(410);
+        const stripeGlyphs3 = generateGlyphText(475);
 
         // Ball style with border and float - bigger circles (120px)
         const ballStyle = `width:120px;height:120px;border-radius:50%;background:${primaryColor};border:3px solid ${textColor};shape-outside:circle(50%);shape-margin:10px;`;
@@ -1062,7 +1062,7 @@
         // Generate glyphs for each quad-panel (500 each for 16 panels)
         const panelGlyphs = [];
         for (let i = 0; i < 16; i++) {
-          panelGlyphs.push(generateGlyphText(500));
+          panelGlyphs.push(generateGlyphText(1000));
         }
 
         // Generate glyphs for 4 circles (300px diameter)
