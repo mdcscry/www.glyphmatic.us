@@ -5,7 +5,7 @@ registerCountry("laos", {
     national: ['Lao'],
     other: ['Hmong', 'Khmu', 'Tai Dam', 'Phutai', 'Vietnamese']
   },
-  scripts: ["New Tai Lue"],
+  scripts: ["New Tai Lue", "Pahawh Hmong"],
   glyphs: {
     'Lao': [
       'ກ່', 'ກັ', 'ກ', 'ກິ', 'ກຳ', 'ກ້', 'ກຸ', 'ກໍ່', 'ກົ', 'ກື', 'ກໍ', 'ກຸ່', 'ຂ່', 'ຂໍ້', 'ຂ',

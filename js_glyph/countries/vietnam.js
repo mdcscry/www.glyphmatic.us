@@ -3,9 +3,9 @@ registerCountry("vietnam", {
     colors: ['#DA251D', '#FFCD00'],
     languages: {
       national: ['Vietnamese'],
-      other: []
+      other: ['Hmong']
     },
-    scripts: ["New Tai Lue"],
+    scripts: ["New Tai Lue", "Pahawh Hmong"],
     glyphs: {
       'Basic Latin': [
         'A', 'B', 'C', 'D', 'E', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'X', 'Y',

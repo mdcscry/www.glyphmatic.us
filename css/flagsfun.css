@@ -205,7 +205,8 @@ body.hover-block-arabic-jawi .glyph.block-arabic-jawi,
 body.hover-block-mongolian .glyph.block-mongolian,
 body.hover-block-yi-syllables .glyph.block-yi-syllables,
 body.hover-block-new-tai-lue .glyph.block-new-tai-lue,
-body.hover-block-cyrillic-supplement .glyph.block-cyrillic-supplement {
+body.hover-block-cyrillic-supplement .glyph.block-cyrillic-supplement,
+body.hover-block-pahawh-hmong .glyph.block-pahawh-hmong {
   font-size: 1.2em;
   color: #ffffff !important;
   font-weight: bold;
@@ -266,7 +267,8 @@ body.flag-has-white.hover-block-arabic-jawi .glyph.block-arabic-jawi,
 body.flag-has-white.hover-block-mongolian .glyph.block-mongolian,
 body.flag-has-white.hover-block-yi-syllables .glyph.block-yi-syllables,
 body.flag-has-white.hover-block-new-tai-lue .glyph.block-new-tai-lue,
-body.flag-has-white.hover-block-cyrillic-supplement .glyph.block-cyrillic-supplement {
+body.flag-has-white.hover-block-cyrillic-supplement .glyph.block-cyrillic-supplement,
+body.flag-has-white.hover-block-pahawh-hmong .glyph.block-pahawh-hmong {
   color: #ff8c00 !important;
   text-shadow: 0 0 4px rgba(255, 140, 0, 0.8);
 }

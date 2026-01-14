@@ -56,6 +56,7 @@ registerBlock("Devanagari", [
 - `Bengali-Bangla` - Bengali for Bangladesh (same chars, different fonts: Nikosh, Siyamrupali, SolaimanLipi)
 - `Mongolian` - Traditional Mongolian script (ᠠ-ᡂ)
 - `New Tai Lue` - Tai Lü script (U+1980–U+19DF) - Used in China, Laos, Myanmar, Thailand, Vietnam
+- `Pahawh Hmong` - Pahawh Hmong script (U+16B00–U+16B8F) - Used in Laos, Vietnam
 - `Cyrillic` - Standard Cyrillic alphabet (А-я)
 - `Kangxi Radicals` - 214 traditional Chinese radicals (U+2F00–U+2FD5)
 - `CJK Strokes` - 36 basic strokes for CJK characters (U+31C0–U+31E3)
@@ -182,6 +183,7 @@ The following blocks have hover effects implemented in `flagsfun.css`.  When a n
 - `Tagalog` (`block-tagalog`)
 - `Mongolian` (`block-mongolian`)
 - `New Tai Lue` (`block-new-tai-lue`)
+- `Pahawh Hmong` (`block-pahawh-hmong`)
 - `Gurmukhi` (`block-gurmukhi`)
 - `Gujarati` (`block-gujarati`)
 - `Kannada` (`block-kannada`)
@@ -295,6 +297,6 @@ These scripts have standalone combining vowel marks (matras) that display as flo
 
 ### Font Support
 
-- [ ] **Saudi Arabia fonts** - Need Arabic-Saudi variant with Al-Awwal, Al-Naseeb, Saudi fonts for proper Saudi Arabic rendering
-- [ ] **Bangladesh/Bangla fonts** - Bangladesh and West Bengal need different Bengali font treatments
+- [x] **Saudi Arabia fonts** - Arabic-Saudi variant with Al-Awwal, Al-Naseeb, Saudi fonts implemented
+- [x] **Bangladesh/Bangla fonts** - Bangladesh and West Bengal Bengali font treatments implemented
 
