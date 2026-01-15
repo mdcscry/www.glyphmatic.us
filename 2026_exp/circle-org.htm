@@ -3,151 +3,348 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Organic Circles - Random</title>
+  <title>Circle Packing - KAT</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      min-height: 100vh;
-      overflow: hidden;
-    }
-    svg {
-      width: 100vw;
-      height: 100vh;
-      display: block;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { min-height: 100vh; overflow: hidden; }
+    svg { width: 100vw; height: 100vh; display: block; }
   </style>
 </head>
 <body>
-  <svg id="canvas" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
-  </svg>
+  <svg id="canvas" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"></svg>
 
   <script>
     const svg = document.getElementById('canvas');
+    const W = 800, H = 600;
     
     // Random helpers
     const rand = (min, max) => Math.random() * (max - min) + min;
     const randInt = (min, max) => Math.floor(rand(min, max + 1));
     const pick = arr => arr[randInt(0, arr.length - 1)];
     
-    // Generate a random warm color palette
+    // Delaunay triangulation (Bowyer-Watson)
+    function delaunay(points) {
+      const margin = Math.max(W, H) * 10;
+      const superTri = [
+        { x: -margin, y: -margin, id: -1 },
+        { x: W / 2, y: H + margin * 2, id: -2 },
+        { x: W + margin * 2, y: -margin, id: -3 }
+      ];
+      
+      let triangles = [superTri];
+      
+      for (const p of points) {
+        const badTriangles = [];
+        const polygon = [];
+        
+        for (const tri of triangles) {
+          if (inCircumcircle(p, tri)) {
+            badTriangles.push(tri);
+          }
+        }
+        
+        for (const tri of badTriangles) {
+          for (let i = 0; i < 3; i++) {
+            const edge = [tri[i], tri[(i + 1) % 3]];
+            let shared = false;
+            for (const other of badTriangles) {
+              if (other === tri) continue;
+              if (hasEdge(other, edge)) {
+                shared = true;
+                break;
+              }
+            }
+            if (!shared) {
+              polygon.push(edge);
+            }
+          }
+        }
+        
+        triangles = triangles.filter(t => !badTriangles.includes(t));
+        
+        for (const edge of polygon) {
+          triangles.push([edge[0], edge[1], p]);
+        }
+      }
+      
+      triangles = triangles.filter(tri => {
+        for (const v of tri) {
+          if (v.id < 0) return false;
+        }
+        return true;
+      });
+      
+      return triangles;
+    }
+    
+    function inCircumcircle(p, tri) {
+      const [a, b, c] = tri;
+      const ax = a.x - p.x, ay = a.y - p.y;
+      const bx = b.x - p.x, by = b.y - p.y;
+      const cx = c.x - p.x, cy = c.y - p.y;
+      
+      const det = (
+        (ax * ax + ay * ay) * (bx * cy - cx * by) -
+        (bx * bx + by * by) * (ax * cy - cx * ay) +
+        (cx * cx + cy * cy) * (ax * by - bx * ay)
+      );
+      
+      return det > 0;
+    }
+    
+    function hasEdge(tri, edge) {
+      for (let i = 0; i < 3; i++) {
+        const e = [tri[i], tri[(i + 1) % 3]];
+        if ((e[0] === edge[0] && e[1] === edge[1]) ||
+            (e[0] === edge[1] && e[1] === edge[0])) {
+          return true;
+        }
+      }
+      return false;
+    }
+    
+    // Build adjacency from triangulation
+    function buildAdjacency(points, triangles) {
+      const adj = new Map();
+      for (const p of points) {
+        adj.set(p.id, new Set());
+      }
+      
+      for (const tri of triangles) {
+        for (let i = 0; i < 3; i++) {
+          const a = tri[i];
+          const b = tri[(i + 1) % 3];
+          adj.get(a.id).add(b.id);
+          adj.get(b.id).add(a.id);
+        }
+      }
+      
+      return adj;
+    }
+    
+    // KAT-inspired iterative circle packing
+    function packCircles(points, boundaryIds, adj, tension) {
+      const radii = new Map();
+      
+      // Initialize radii
+      for (const p of points) {
+        if (boundaryIds.has(p.id)) {
+          radii.set(p.id, rand(180, 350));
+        } else {
+          radii.set(p.id, rand(50, 120));
+        }
+      }
+      
+      const pointMap = new Map(points.map(p => [p.id, p]));
+      const iterations = 200;
+      const targetAngleSum = 2 * Math.PI;
+      
+      for (let iter = 0; iter < iterations; iter++) {
+        for (const p of points) {
+          if (boundaryIds.has(p.id)) continue;
+          
+          const neighborIds = Array.from(adj.get(p.id));
+          if (neighborIds.length < 3) continue;
+          
+          // Sort neighbors angularly
+          neighborIds.sort((a, b) => {
+            const pa = pointMap.get(a);
+            const pb = pointMap.get(b);
+            return Math.atan2(pa.y - p.y, pa.x - p.x) - Math.atan2(pb.y - p.y, pb.x - p.x);
+          });
+          
+          let angleSum = 0;
+          
+          for (let j = 0; j < neighborIds.length; j++) {
+            const id1 = neighborIds[j];
+            const id2 = neighborIds[(j + 1) % neighborIds.length];
+            
+            const r0 = radii.get(p.id);
+            const r1 = radii.get(id1);
+            const r2 = radii.get(id2);
+            
+            const d01 = (r0 + r1) * tension;
+            const d02 = (r0 + r2) * tension;
+            const d12 = (r1 + r2) * tension;
+            
+            const cosAngle = (d01 * d01 + d02 * d02 - d12 * d12) / (2 * d01 * d02);
+            angleSum += Math.acos(Math.max(-1, Math.min(1, cosAngle)));
+          }
+          
+          const ratio = angleSum / targetAngleSum;
+          radii.set(p.id, radii.get(p.id) * Math.pow(ratio, 0.12));
+          radii.set(p.id, Math.max(25, Math.min(180, radii.get(p.id))));
+        }
+      }
+      
+      return radii;
+    }
+    
+    // Position circles via force-directed relaxation
+    function positionCircles(points, radii, adj, boundaryIds, tension) {
+      const positions = new Map(points.map(p => [p.id, { x: p.x, y: p.y }]));
+      
+      for (let iter = 0; iter < 120; iter++) {
+        for (const p of points) {
+          if (boundaryIds.has(p.id)) continue;
+          
+          const neighborIds = Array.from(adj.get(p.id));
+          if (neighborIds.length === 0) continue;
+          
+          let fx = 0, fy = 0;
+          const pos = positions.get(p.id);
+          
+          for (const nid of neighborIds) {
+            const npos = positions.get(nid);
+            const dx = npos.x - pos.x;
+            const dy = npos.y - pos.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const targetDist = (radii.get(p.id) + radii.get(nid)) * tension;
+            
+            if (dist > 0) {
+              const force = (dist - targetDist) * 0.08;
+              fx += (dx / dist) * force;
+              fy += (dy / dist) * force;
+            }
+          }
+          
+          positions.get(p.id).x += fx;
+          positions.get(p.id).y += fy;
+        }
+      }
+      
+      return positions;
+    }
+    
     function generatePalette() {
-      const hueBase = rand(0, 60); // reds, oranges, yellows
-      const numColors = randInt(10, 15);
+      const hueBase = rand(0, 45);
       const colors = [];
+      const numColors = randInt(3, 5);
       
       for (let i = 0; i < numColors; i++) {
         const h = (hueBase + rand(-15, 15) + 360) % 360;
-        const s = rand(70, 100);
-        const l = rand(25, 65);
+        const s = rand(75, 100);
+        const l = 20 + (i / numColors) * 45;
         colors.push(`hsl(${h}, ${s}%, ${l}%)`);
       }
       
-      // Sort by lightness for layering
-      return colors.sort((a, b) => {
-        const lA = parseFloat(a.match(/(\d+)%\)$/)[1]);
-        const lB = parseFloat(b.match(/(\d+)%\)$/)[1]);
-        return lA - lB;
-      });
+      return colors;
     }
     
-    // Create random filters
-    function createFilters(defs, count) {
-      for (let i = 0; i < count; i++) {
-        const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
-        filter.setAttribute('id', `organic-${i}`);
-        filter.setAttribute('x', '-30%');
-        filter.setAttribute('y', '-30%');
-        filter.setAttribute('width', '160%');
-        filter.setAttribute('height', '160%');
-        
-        const turbulence = document.createElementNS('http://www.w3.org/2000/svg', 'feTurbulence');
-        turbulence.setAttribute('type', 'fractalNoise');
-        turbulence.setAttribute('baseFrequency', rand(0.002, 0.008).toFixed(4));
-        turbulence.setAttribute('numOctaves', randInt(1, 2));
-        turbulence.setAttribute('seed', randInt(1, 1000));
-        turbulence.setAttribute('result', 'noise');
-        
-        const blur = document.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
-        blur.setAttribute('in', 'noise');
-        blur.setAttribute('stdDeviation', rand(6, 15).toFixed(1));
-        blur.setAttribute('result', 'smoothNoise');
-        
-        const displacement = document.createElementNS('http://www.w3.org/2000/svg', 'feDisplacementMap');
-        displacement.setAttribute('in', 'SourceGraphic');
-        displacement.setAttribute('in2', 'smoothNoise');
-        displacement.setAttribute('scale', rand(40, 90).toFixed(0));
-        displacement.setAttribute('xChannelSelector', pick(['R', 'G', 'B']));
-        displacement.setAttribute('yChannelSelector', pick(['R', 'G', 'B']));
-        
-        filter.appendChild(turbulence);
-        filter.appendChild(blur);
-        filter.appendChild(displacement);
-        defs.appendChild(filter);
-      }
+    function createFilter(defs, id) {
+      const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+      filter.setAttribute('id', id);
+      filter.setAttribute('x', '-30%');
+      filter.setAttribute('y', '-30%');
+      filter.setAttribute('width', '160%');
+      filter.setAttribute('height', '160%');
+      
+      const turbulence = document.createElementNS('http://www.w3.org/2000/svg', 'feTurbulence');
+      turbulence.setAttribute('type', 'fractalNoise');
+      turbulence.setAttribute('baseFrequency', rand(0.003, 0.006).toFixed(4));
+      turbulence.setAttribute('numOctaves', '1');
+      turbulence.setAttribute('seed', randInt(1, 1000));
+      turbulence.setAttribute('result', 'noise');
+      
+      const blur = document.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
+      blur.setAttribute('in', 'noise');
+      blur.setAttribute('stdDeviation', rand(8, 14).toFixed(1));
+      blur.setAttribute('result', 'smoothNoise');
+      
+      const displacement = document.createElementNS('http://www.w3.org/2000/svg', 'feDisplacementMap');
+      displacement.setAttribute('in', 'SourceGraphic');
+      displacement.setAttribute('in2', 'smoothNoise');
+      displacement.setAttribute('scale', rand(40, 70).toFixed(0));
+      displacement.setAttribute('xChannelSelector', pick(['R', 'G', 'B']));
+      displacement.setAttribute('yChannelSelector', pick(['R', 'G', 'B']));
+      
+      filter.appendChild(turbulence);
+      filter.appendChild(blur);
+      filter.appendChild(displacement);
+      defs.appendChild(filter);
     }
     
-    // Create a wobbly circle
-    function createCircle(cx, cy, r, fill, filterId) {
-      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      circle.setAttribute('cx', cx);
-      circle.setAttribute('cy', cy);
-      circle.setAttribute('r', r);
-      circle.setAttribute('fill', fill);
-      circle.setAttribute('filter', `url(#organic-${filterId})`);
-      return circle;
-    }
-    
-    // Main generation
     function generate() {
       svg.innerHTML = '';
       
       const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
       svg.appendChild(defs);
       
-      const palette = generatePalette();
-      const numFilters = randInt(3, 5);
-      createFilters(defs, numFilters);
+      const numFilters = randInt(2, 4);
+      for (let i = 0; i < numFilters; i++) {
+        createFilter(defs, `organic-${i}`);
+      }
       
-      // Background - darker color separate from palette
+      const tension = rand(0.88, 1.08);
+      
+      // Boundary points outside viewport
+      const points = [];
+      const boundaryIds = new Set();
+      let idCounter = 0;
+      
+      const numBoundary = randInt(6, 10);
+      const margin = 150;
+      
+      for (let i = 0; i < numBoundary; i++) {
+        const angle = (i / numBoundary) * Math.PI * 2 + rand(-0.2, 0.2);
+        const dist = Math.max(W, H) / 2 + margin + rand(-30, 30);
+        const id = idCounter++;
+        points.push({
+          id,
+          x: W / 2 + Math.cos(angle) * dist,
+          y: H / 2 + Math.sin(angle) * dist
+        });
+        boundaryIds.add(id);
+      }
+      
+      // Interior points
+      const numInterior = randInt(6, 14);
+      for (let i = 0; i < numInterior; i++) {
+        points.push({
+          id: idCounter++,
+          x: rand(80, W - 80),
+          y: rand(80, H - 80)
+        });
+      }
+      
+      const triangles = delaunay(points);
+      const adj = buildAdjacency(points, triangles);
+      const radii = packCircles(points, boundaryIds, adj, tension);
+      const positions = positionCircles(points, radii, adj, boundaryIds, tension);
+      
+      const palette = generatePalette();
+      
+      // Background
       const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       bg.setAttribute('width', '100%');
       bg.setAttribute('height', '100%');
-      // Create a dark background color that won't match the circles (lightness 8-15%)
-      const bgHue = rand(0, 60);
-      const bgColor = `hsl(${bgHue}, ${rand(20, 40)}%, ${rand(8, 15)}%)`;
-      bg.setAttribute('fill', bgColor);
+      bg.setAttribute('fill', palette[0]);
       svg.appendChild(bg);
       
-      // Create layers of circles
-      const numLayers = randInt(1, 3);
+      // Collect and sort circles
+      const circles = points.map(p => ({
+        id: p.id,
+        x: positions.get(p.id).x,
+        y: positions.get(p.id).y,
+        r: radii.get(p.id),
+        isBoundary: boundaryIds.has(p.id)
+      }));
       
-      for (let layer = 0; layer < numLayers; layer++) {
-        const numCircles = randInt(1, 3);
-        const layerColor = palette[layer % palette.length];
-        const filterId = layer % numFilters;
+      circles.sort((a, b) => b.r - a.r);
+      
+      for (const c of circles) {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', c.x);
+        circle.setAttribute('cy', c.y);
+        circle.setAttribute('r', c.r);
         
-        for (let i = 0; i < numCircles; i++) {
-          // Some circles at edges, some in middle
-          let cx, cy;
-          if (Math.random() < 0.2) {
-            // Edge circles
-            const edge = randInt(0, 10);
-            if (edge === 0) { cx = rand(-50, 100); cy = rand(0, 600); }
-            else if (edge === 1) { cx = rand(700, 850); cy = rand(0, 600); }
-            else if (edge === 2) { cx = rand(0, 800); cy = rand(-50, 100); }
-            else { cx = rand(0, 800); cy = rand(500, 650); }
-          } else {
-            cx = rand(100, 700);
-            cy = rand(100, 500);
-          }
-          
-          const r = rand(30, 180);
-          svg.appendChild(createCircle(cx, cy, r, layerColor, filterId));
-        }
+        const colorIndex = c.isBoundary 
+          ? randInt(0, Math.min(1, palette.length - 1))
+          : randInt(1, palette.length - 1);
+        circle.setAttribute('fill', palette[colorIndex]);
+        circle.setAttribute('filter', `url(#organic-${randInt(0, numFilters - 1)})`);
+        
+        svg.appendChild(circle);
       }
     }
     

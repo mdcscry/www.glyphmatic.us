@@ -5,6 +5,6 @@ registerCountry("bangladesh", {
     national: ['Bengali'],
     other: ['Chittagonian', 'Sylheti', 'Rangpuri', 'Chakma', 'Rohingya', 'Santali', 'Bishnupriya Manipuri']
   },
-  scripts: ['Bengali'],
+  scripts: ['Bengali', 'Hanifi Rohingya', 'Chakma'],
   glyphs: {}
 });

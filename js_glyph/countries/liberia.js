@@ -5,6 +5,7 @@ registerCountry("liberia", {
     national: ['English'],
     other: ['Bassa', 'Kpelle', 'Grebo', 'Kru', 'Vai', 'Gola', 'Mano']
   },
+  scripts: ["Vai"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

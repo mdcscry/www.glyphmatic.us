@@ -4,8 +4,9 @@ registerCountry("cambodia", {
   languages: {
     national: ['Khmer'],
     other: ['Cham', 'Vietnamese', 'Chinese', 'Jarai', 'Rade']
-  },
-  glyphs: {
+  }
+  scripts: ["Cham"],
+  glyphs: {  }
     'Khmer': [
       'ក', 'កា', 'ក្', 'កោះ', 'កី', 'កែ', 'ក់', 'កុ', 'កូ', 'កិ', 'កំ', 'ខួ', 'ខ្', 'ខ', 'ខែ',
       'ខា', 'ខេ', 'គ', 'គ្', 'គី', 'គួ', 'ឃា', 'ឃើ', 'ង់', 'ង្', 'ង', 'ងៃ', 'ងា', 'ច់', 'ច្',

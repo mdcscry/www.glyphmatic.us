@@ -5,7 +5,7 @@ registerCountry("thailand", {
     national: ['Thai'],
     other: ['Isan', 'Northern Thai', 'Southern Thai', 'Khmer', 'Malay', 'Karen', 'Hmong']
   },
-  scripts: ["New Tai Lue"],
+  scripts: ["New Tai Lue", "Lisu", "Tai Tham"],
   glyphs: {
     'Thai': [
       'กิ', 'ก', 'กุ', 'กั', 'กึ่', 'กำ', 'ก์', 'กี่', 'ก้', 'กี', 'ก่', 'ก็', 'ก๊', 'กู', 'กี้',

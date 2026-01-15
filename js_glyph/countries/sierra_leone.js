@@ -5,6 +5,7 @@ registerCountry("sierra_leone", {
     national: ['English'],
     other: ['Krio', 'Mende', 'Temne', 'Limba', 'Kono', 'Sherbro']
   },
+  scripts: ["Vai", "Adlam"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

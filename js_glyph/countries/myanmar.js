@@ -5,7 +5,7 @@ registerCountry("myanmar", {
     national: ['Burmese'],
     other: ['Shan', 'Karen', 'Rakhine', 'Chin', 'Kachin', 'Mon', 'Kayah']
   },
-  scripts: ["New Tai Lue"],
+  scripts: ["New Tai Lue", "Lisu", "Hanifi Rohingya"],
   glyphs: {
         'Myanmar': [
           'ကြို့', 'ကေ', 'က်', 'ကူ', 'ကျ', 'က', 'ကြ', 'ကြေ', 'ကျေ', 'ကို', 'ကြဲ', 'ကွ', 'ကု', 'ကြီ', 'ကဲ',

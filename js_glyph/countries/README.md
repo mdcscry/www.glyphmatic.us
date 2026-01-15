@@ -57,6 +57,14 @@ registerBlock("Devanagari", [
 - `Mongolian` - Traditional Mongolian script (ᠠ-ᡂ)
 - `New Tai Lue` - Tai Lü script (U+1980–U+19DF) - Used in China, Laos, Myanmar, Thailand, Vietnam
 - `Pahawh Hmong` - Pahawh Hmong script (U+16B00–U+16B8F) - Used in Laos, Vietnam
+- `Lisu` - Lisu (Fraser) script (U+A4D0–U+A4FF) - Used in China, Myanmar, Thailand, India
+- `Vai` - Vai syllabary (U+A500–U+A63F) - Used in Liberia, Sierra Leone, Guinea
+- `Tai Tham` - Tai Tham (Lanna) script (U+1A20–U+1AAF) - Used in Thailand, Laos
+- `N'Ko` - N'Ko script (U+07C0–U+07FF) - Used in Guinea, Mali, Côte d'Ivoire, Burkina Faso
+- `Adlam` - Adlam script (U+1E900–U+1E95F) - Used across West Africa for Fulani/Pular (40M speakers)
+- `Hanifi Rohingya` - Hanifi Rohingya script (U+10D00–U+10D3F) - Used in Bangladesh, Myanmar
+- `Cham` - Cham script (U+AA00–U+AA5F) - Used in Cambodia, Vietnam
+- `Chakma` - Chakma script (U+11100–U+1114F) - Used in Bangladesh, India
 - `Cyrillic` - Standard Cyrillic alphabet (А-я)
 - `Kangxi Radicals` - 214 traditional Chinese radicals (U+2F00–U+2FD5)
 - `CJK Strokes` - 36 basic strokes for CJK characters (U+31C0–U+31E3)
@@ -70,6 +78,7 @@ Each country file defines:
 - `languages` - National and other languages
 - `scripts` - (optional) Array of shared block names to include
 - `glyphs` - Country-specific glyph blocks
+- 'notes' - (optional)
 
 **Format with shared scripts:**
 ```javascript
@@ -84,6 +93,7 @@ registerCountry("india", {
   glyphs: {
     'SomeOtherGlyph': [...]  // ← country-specific, inline
   }
+  notes: {}  // ← optional
 });
 ```
 
@@ -99,7 +109,8 @@ registerCountry("germany", {
   glyphs: {
     'Basic Latin': [...],
     'Latin-1 Supplement': ['Ä', 'Ö', 'Ü', 'ß', 'ä', 'ö', 'ü']
-  }
+  },
+  notes: {
 });
 ```
 
@@ -157,7 +168,7 @@ The following blocks have hover effects implemented in `flagsfun.css`.  When a n
 - `Hangul Jamo` (`block-hangul-jamo`)
 - `Hiragana` (`block-hiragana`)
 - `Katakana` (`block-katakana`)
-- `CJK Radicals Supplement` (`block-cjk-radicals-supplement`)
+- `CJK Radicals Supplement`(`block-cjk-radicals-supplement`)
 - `Kangxi Radicals` (`block-kangxi-radicals`)
 - `CJK Strokes` (`block-cjk-strokes`)
 - `Bopomofo` (`block-bopomofo`)
@@ -184,6 +195,17 @@ The following blocks have hover effects implemented in `flagsfun.css`.  When a n
 - `Mongolian` (`block-mongolian`)
 - `New Tai Lue` (`block-new-tai-lue`)
 - `Pahawh Hmong` (`block-pahawh-hmong`)
+- `Lisu` (`block-lisu`)
+- `Vai` (`block-vai`)
+- `Tai Tham` (`block-tai-tham`)
+- `N'Ko` (`block-nko`)
+- `Adlam` (`block-adlam`)
+- `Hanifi Rohingya` (`block-hanifi-rohingya`)
+- `Cham` (`block-cham`)
+- `Chakma` (`block-chakma`)
+- `Osage` (`block-osage`)
+- `Miao` (`block-miao`)
+- `Tai Viet` (`block-tai-viet`)
 - `Gurmukhi` (`block-gurmukhi`)
 - `Gujarati` (`block-gujarati`)
 - `Kannada` (`block-kannada`)
@@ -292,11 +314,6 @@ const indicScripts = [
 
 These scripts have standalone combining vowel marks (matras) that display as floating marks. Need to extract properly formed syllables from real text:
 
-- [ ] **Javanese** - Indonesia's inline Javanese block has combining form issues
-- [ ] **Balinese** - Indonesia's inline Balinese block has combining form issues
-
 ### Font Support
 
-- [x] **Saudi Arabia fonts** - Arabic-Saudi variant with Al-Awwal, Al-Naseeb, Saudi fonts implemented
-- [x] **Bangladesh/Bangla fonts** - Bangladesh and West Bengal Bengali font treatments implemented
 

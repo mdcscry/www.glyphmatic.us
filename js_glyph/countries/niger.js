@@ -4,7 +4,9 @@ registerCountry("niger", {
   languages: {
     national: ['French'],
     other: ['Hausa', 'Zarma', 'Tuareg', 'Fulfulde', 'Kanuri', 'Arabic']
-  },
+  }
+  scripts: ["Adlam"],
+  glyphs: {  },
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

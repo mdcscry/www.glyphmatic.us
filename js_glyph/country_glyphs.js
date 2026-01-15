@@ -55,7 +55,15 @@ const BLOCK_FILES = [
   'mongolian',
   'new_tai_lue',
   'cyrillic',
-  'pahawh_hmong'
+  'pahawh_hmong',
+  'lisu',
+  'vai',
+  'tai_tham',
+  'nko',
+  'adlam',
+  'hanifi_rohingya',
+  'cham',
+  'chakma'
 ];
 
 // List of all country files to load (matches actual files in countries/ directory)

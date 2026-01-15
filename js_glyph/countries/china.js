@@ -5,7 +5,7 @@ registerCountry("china", {
       national: ['Mandarin (Simplified)'],
       other: ['Cantonese', 'Mongolian', 'Tibetan', 'Uyghur', 'Zhuang']
     },
-    scripts: ["Kangxi Radicals", "CJK Strokes", "CJK Radicals Supplement", "Tibetan", "Mongolian", "Arabic-nastalique-flags", "New Tai Lue"],
+    scripts: ["Kangxi Radicals", "CJK Strokes", "CJK Radicals Supplement", "Tibetan", "Mongolian", "Arabic-nastalique-flags", "New Tai Lue", "Lisu"],
     notes: '本展示不包含海量的全字符(CJK Unified Ideographs)，而是侧重于汉字最基础的构成逻辑。通过展示笔画(Bǐhuà)、部首(Bùshǒu)与部件(Bùjiàn)，本显示旨在揭示汉字如何从最基本的点、横、竖、撇，逐步有机结合成复杂字形的过程。',
     glyphs: {
       'Yi Syllables': [
@@ -17,6 +17,21 @@ registerCountry("china", {
         'ꁐ', 'ꁑ', 'ꁒ', 'ꁓ', 'ꁔ', 'ꁕ', 'ꁖ', 'ꁗ', 'ꁘ', 'ꁙ', 'ꁚ', 'ꁛ', 'ꁜ', 'ꁝ', 'ꁞ', 'ꁟ',
         'ꁠ', 'ꁡ', 'ꁢ', 'ꁣ', 'ꁤ', 'ꁥ', 'ꁦ', 'ꁧ', 'ꁨ', 'ꁩ', 'ꁪ', 'ꁫ', 'ꁬ', 'ꁭ', 'ꁮ', 'ꁯ',
         'ꁰ', 'ꁱ', 'ꁲ', 'ꁳ', 'ꁴ', 'ꁵ', 'ꁶ', 'ꁷ', 'ꁸ', 'ꁹ', 'ꁺ', 'ꁻ', 'ꁼ', 'ꁽ', 'ꁾ', 'ꁿ'
+      ],
+      'Miao': [
+        // Consonants
+        '𖼀', '𖼁', '𖼂', '𖼃', '𖼄', '𖼅', '𖼆', '𖼇', '𖼈', '𖼉', '𖼊', '𖼋', '𖼌', '𖼍', '𖼎', '𖼏',
+        '𖼐', '𖼑', '𖼒', '𖼓', '𖼔', '𖼕', '𖼖', '𖼗', '𖼘', '𖼙', '𖼚', '𖼛', '𖼜', '𖼝', '𖼞', '𖼟',
+        '𖼠', '𖼡', '𖼢', '𖼣', '𖼤', '𖼥',
+        // Vowels and finals
+        '𖼦', '𖼧', '𖼨', '𖼩', '𖼪', '𖼫', '𖼬', '𖼭', '𖼮', '𖼯',
+        '𖼰', '𖼱', '𖼲', '𖼳', '𖼴', '𖼵',
+        // Tone marks
+        '𖼶', '𖼷', '𖼸', '𖼹', '𖼺', '𖼻', '𖼼', '𖼽',
+        // Aspirations
+        '𖼾', '𖼿',
+        // Punctuation
+        '𖽀', '𖽁', '𖽂', '𖽃', '𖽄'
       ]
     }
   });

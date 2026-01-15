@@ -10,7 +10,7 @@ registerCountry("india", {
     "Bengali", 
     "Telugu", 
     "Gujarati", "Kannada", "Malayalam", 
-    "Oriya", "Gurmukhi"
+    "Oriya", "Gurmukhi", "Chakma"
   ],
   glyphs: {}
 });

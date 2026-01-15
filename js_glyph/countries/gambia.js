@@ -5,6 +5,7 @@ registerCountry("gambia", {
     national: ['English'],
     other: ['Mandinka', 'Wolof', 'Fula', 'Jola', 'Serahule']
   },
+  scripts: ["Adlam"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

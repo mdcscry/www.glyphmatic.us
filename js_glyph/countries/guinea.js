@@ -5,6 +5,7 @@ registerCountry("guinea", {
     national: ['French'],
     other: ['Pular', 'Maninka', 'Susu', 'Kissi', 'Kpelle']
   },
+  scripts: ["N'Ko", "Vai", "Adlam"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

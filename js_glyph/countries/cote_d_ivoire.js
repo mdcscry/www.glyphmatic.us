@@ -5,6 +5,7 @@ registerCountry("cote_d_ivoire", {
     national: ['French'],
     other: ['Baoulé', 'Dyula', 'Dan', 'Anyin', 'Bété', 'Sénoufo']
   },
+  scripts: ["N'Ko"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

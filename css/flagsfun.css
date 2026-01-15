@@ -206,7 +206,18 @@ body.hover-block-mongolian .glyph.block-mongolian,
 body.hover-block-yi-syllables .glyph.block-yi-syllables,
 body.hover-block-new-tai-lue .glyph.block-new-tai-lue,
 body.hover-block-cyrillic-supplement .glyph.block-cyrillic-supplement,
-body.hover-block-pahawh-hmong .glyph.block-pahawh-hmong {
+body.hover-block-pahawh-hmong .glyph.block-pahawh-hmong,
+body.hover-block-lisu .glyph.block-lisu,
+body.hover-block-vai .glyph.block-vai,
+body.hover-block-tai-tham .glyph.block-tai-tham,
+body.hover-block-nko .glyph.block-nko,
+body.hover-block-miao .glyph.block-miao,
+body.hover-block-tai-viet .glyph.block-tai-viet,
+body.hover-block-adlam .glyph.block-adlam,
+body.hover-block-hanifi-rohingya .glyph.block-hanifi-rohingya,
+body.hover-block-cham .glyph.block-cham,
+body.hover-block-chakma .glyph.block-chakma,
+body.hover-block-osage .glyph.block-osage {
   font-size: 1.2em;
   color: #ffffff !important;
   font-weight: bold;
@@ -268,7 +279,18 @@ body.flag-has-white.hover-block-mongolian .glyph.block-mongolian,
 body.flag-has-white.hover-block-yi-syllables .glyph.block-yi-syllables,
 body.flag-has-white.hover-block-new-tai-lue .glyph.block-new-tai-lue,
 body.flag-has-white.hover-block-cyrillic-supplement .glyph.block-cyrillic-supplement,
-body.flag-has-white.hover-block-pahawh-hmong .glyph.block-pahawh-hmong {
+body.flag-has-white.hover-block-pahawh-hmong .glyph.block-pahawh-hmong,
+body.flag-has-white.hover-block-lisu .glyph.block-lisu,
+body.flag-has-white.hover-block-vai .glyph.block-vai,
+body.flag-has-white.hover-block-tai-tham .glyph.block-tai-tham,
+body.flag-has-white.hover-block-nko .glyph.block-nko,
+body.flag-has-white.hover-block-miao .glyph.block-miao,
+body.flag-has-white.hover-block-tai-viet .glyph.block-tai-viet,
+body.flag-has-white.hover-block-adlam .glyph.block-adlam,
+body.flag-has-white.hover-block-hanifi-rohingya .glyph.block-hanifi-rohingya,
+body.flag-has-white.hover-block-cham .glyph.block-cham,
+body.flag-has-white.hover-block-chakma .glyph.block-chakma,
+body.flag-has-white.hover-block-osage .glyph.block-osage {
   color: #ff8c00 !important;
   text-shadow: 0 0 4px rgba(255, 140, 0, 0.8);
 }

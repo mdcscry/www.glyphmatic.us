@@ -5,7 +5,7 @@ registerCountry("mauritania", {
     national: ['Arabic'],
     other: ['Hassaniya Arabic', 'French', 'Pulaar', 'Soninke', 'Wolof']
   },
-  scripts: ["Arabic-reduced"],
+  scripts: ["Arabic-reduced", "Adlam"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

@@ -5,6 +5,7 @@ registerCountry("mali", {
     national: ['French'],
     other: ['Bambara', 'Fulfulde', 'Songhai', 'Dogon', 'Tamasheq', 'Soninke']
   },
+  scripts: ["N'Ko", "Adlam"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

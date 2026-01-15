@@ -5,6 +5,7 @@ registerCountry("nigeria", {
     national: ['English'],
     other: ['Hausa', 'Yoruba', 'Igbo', 'Fulfulde', 'Kanuri', 'Ibibio', 'Tiv', 'Edo']
   },
+  scripts: ["Adlam"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
