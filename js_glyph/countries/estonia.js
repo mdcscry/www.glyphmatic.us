@@ -8,7 +8,7 @@ registerCountry("estonia", {
   scripts: ["Cyrillic"],
   glyphs: {
     'Basic Latin': 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split(''),
-    'Latin-1 Supplement': 'ÄäÖöÜü'.split(''),
+    'Latin-1 Supplement': 'ÄäÖöÕõÜü'.split(''),
     'Latin Extended-A': 'ŠšŽž'.split(''),
     'Cyrillic Supplement': ['І', 'і', 'Ў', 'ў']
   }

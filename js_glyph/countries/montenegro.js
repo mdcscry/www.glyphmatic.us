@@ -13,9 +13,11 @@ window.__COUNTRY_DATA_MODULES__['montenegro'] = {
     ],
     "other": []
   },
+  "scripts": ["Cyrillic"],
   "glyphs": {
     "Basic Latin": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split(""),
     "Latin Extended-A": "ĆćČčĐđŠšŽž".split(""),
-    "Latin Extended-B": "ŚśŹź".split("")
+    "Latin Extended-B": "ŚśŹź".split(""),
+    "Cyrillic Supplement": "ЅѕЉљЊњЋћЂђ".split("")
   }
 };

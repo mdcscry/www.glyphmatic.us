@@ -12,10 +12,10 @@ window.__COUNTRY_DATA_MODULES__['italy'] = {
     "national": [
       "Italian"
     ],
-    "other": []
+    "other": ["Sardinian", "Friulian", "Occitan"]
   },
   "glyphs": {
     "Basic Latin": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split(""),
-    "Latin-1 Supplement": "àèéìòùÀÈÉÌÒÙ".split("")
+    "Latin-1 Supplement": "àáçèéíìòóùúÀÁÇÈÉÍÌÒÓÙÚ".split("")
   }
 };

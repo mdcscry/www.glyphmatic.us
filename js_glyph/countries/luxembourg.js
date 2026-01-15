@@ -18,7 +18,7 @@ window.__COUNTRY_DATA_MODULES__['luxembourg'] = {
   },
   "glyphs": {
     "Basic Latin": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split(""),
-    "Latin-1 Supplement": "ÄÖÜßäöüàâçèéêëîïôùûüÿÀÂÇÈÉÊËÎÏÔÙÛÜŸ".split(""),
+    "Latin-1 Supplement": "ÄÖÜßäöüàâæçèéêëîïôùûüÿÀÂÆÇÈÉÊËÎÏÔÙÛÜŸ".split(""),
     "Latin Extended-A": "Œœ".split("")
   }
 };

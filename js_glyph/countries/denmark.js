@@ -18,6 +18,6 @@ window.__COUNTRY_DATA_MODULES__['denmark'] = {
   },
   "glyphs": {
     "Basic Latin": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split(""),
-    "Latin-1 Supplement": "ÆæØøÅå".split("")
+    "Latin-1 Supplement": "ÆæØøÅåÐðÁáÍíÓóÚúÝý".split("")
   }
 };

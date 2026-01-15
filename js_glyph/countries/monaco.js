@@ -15,7 +15,7 @@ window.__COUNTRY_DATA_MODULES__['monaco'] = {
   },
   "glyphs": {
     "Basic Latin": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split(""),
-    "Latin-1 Supplement": "àâçèéêëîïôùûüÿÀÂÇÈÉÊËÎÏÔÙÛÜŸ".split(""),
+    "Latin-1 Supplement": "àâæçèéêëîïôùûüÿÀÂÆÇÈÉÊËÎÏÔÙÛÜŸ".split(""),
     "Latin Extended-A": "Œœ".split("")
   }
 };

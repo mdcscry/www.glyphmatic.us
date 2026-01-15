@@ -12,10 +12,11 @@ window.__COUNTRY_DATA_MODULES__['moldova'] = {
     "national": [
       "Romanian"
     ],
-    "other": []
+    "other": ["Gagauz"]
   },
   "glyphs": {
     "Basic Latin": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split(""),
-    "Latin-1 Supplement": "ĂăÂâÎîȘșȚț".split("")
+    "Latin-1 Supplement": "ĂăÂâÄäÇçÊêÎîÖöÜüȘșȚț".split(""),
+    "Latin Extended-A": "Şş".split("")
   }
 };

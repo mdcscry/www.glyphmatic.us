@@ -12,10 +12,11 @@ window.__COUNTRY_DATA_MODULES__['germany'] = {
     "national": [
       "German"
     ],
-    "other": []
+    "other": ["Upper Sorbian", "Lower Sorbian", "Northern Frisian"]
   },
   "glyphs": {
     "Basic Latin": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split(""),
-    "Latin-1 Supplement": "ÄÖÜßäöü".split("")
+    "Latin-1 Supplement": "ÄÖÜßäöü".split(""),
+    "Latin Extended-A": "ĀāČčĒēĚěĪīŁłŃńŌōŘřŪū".split("")
   }
 };

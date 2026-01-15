@@ -12,11 +12,11 @@ window.__COUNTRY_DATA_MODULES__['france'] = {
     "national": [
       "French"
     ],
-    "other": []
+    "other": ["Corsican", "Breton", "Occitan", "Basque"]
   },
   "glyphs": {
     "Basic Latin": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split(""),
-    "Latin-1 Supplement": "àâçèéêëîïôùûüÿÀÂÇÈÉÊËÎÏÔÙÛÜŸ".split(""),
+    "Latin-1 Supplement": "àâæáçèéêëíìîïñòóôùúûüÿÀÂÆÁÇÈÉÊËÍÌÎÏÑÒÓÔÙÚÛÜŸ".split(""),
     "Latin Extended-A": "Œœ".split("")
   }
 };
