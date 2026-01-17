@@ -3,7 +3,7 @@ registerCountry("french_guiana", {
     colors: ['#007A33', '#FFD100', '#EF4135'],
     languages: {
       national: ['French'],
-      other: ['Creole', 'Wayana', 'Wayampi', "Kali'na", 'Arawak']
+      other: ['Creole', 'Wayana', 'Wayampi', 'Kali'na', 'Arawak', 'Guianese Creole French']
     },
     glyphs: {
       'Basic Latin': [

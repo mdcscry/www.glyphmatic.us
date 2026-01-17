@@ -23,7 +23,9 @@ window.__COUNTRY_DATA_MODULES__['russia'] = {
       "Ossetic",
       "Kabardian",
       "Kildin Sami",
-      "Skolt Sami"
+      "Skolt Sami",
+      "Avaric",
+      "Tuvinian"
     ]
   },
   "glyphs": {

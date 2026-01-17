@@ -6,5 +6,14 @@ registerCountry("bangladesh", {
     other: ['Chittagonian', 'Sylheti', 'Rangpuri', 'Chakma', 'Rohingya', 'Santali', 'Bishnupriya Manipuri']
   },
   scripts: ['Bengali', 'Hanifi Rohingya', 'Chakma'],
-  glyphs: {}
+  glyphs: {
+    'Syloti Nagri': [
+      // Independent vowels
+      'ꠀ', 'ꠁ', 'ꠂ', 'ꠃ', 'ꠄ', 'ꠅ',
+      // Consonants
+      'ꠇ', 'ꠈ', 'ꠉ', 'ꠊ', 'ꠋ', 'ꠌ', 'ꠍ', 'ꠎ', 'ꠏ',
+      'ꠐ', 'ꠑ', 'ꠒ', 'ꠓ', 'ꠔ', 'ꠕ', 'ꠖ', 'ꠗ', 'ꠘ', 'ꠙ', 'ꠚ', 'ꠛ', 'ꠜ', 'ꠝ',
+      'ꠞ', 'ꠟ', 'ꠠ', 'ꠡ', 'ꠢ'
+    ]
+  }
 });

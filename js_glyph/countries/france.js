@@ -12,7 +12,7 @@ window.__COUNTRY_DATA_MODULES__['france'] = {
     "national": [
       "French"
     ],
-    "other": ["Corsican", "Breton", "Occitan", "Basque"]
+    "other": ["Corsican", "Breton", "Occitan", "Basque", "Catalan"]
   },
   "glyphs": {
     "Basic Latin": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split(""),

@@ -3,7 +3,7 @@ registerCountry("ecuador", {
     colors: ['#FFD100', '#0033A0', '#CE1126'],
     languages: {
       national: ['Spanish'],
-      other: ['Kichwa', 'Shuar', 'Achuar', 'Awapit', "Cha'palaa"]
+      other: ['Kichwa', 'Shuar', 'Achuar', 'Awapit', 'Cha'palaa', 'Quechua']
     },
     glyphs: {
       'Basic Latin': [

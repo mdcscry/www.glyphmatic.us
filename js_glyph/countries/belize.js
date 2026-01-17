@@ -3,7 +3,7 @@ registerCountry("belize", {
   colors: ['#003F87', '#CE1126'],
   languages: {
     national: ['English'],
-    other: ['Spanish', 'Belizean Creole', 'Q\'eqchi\'', 'Mopan Maya', 'Yucatec Maya', 'Garifuna']
+    other: ['Spanish', 'Belizean Creole', 'Q\'eqchi\', 'Mopan Maya', 'Yucatec Maya', 'Garifuna', 'Qʼeqchiʼ']
   },
   glyphs: {
     'Basic Latin': [
