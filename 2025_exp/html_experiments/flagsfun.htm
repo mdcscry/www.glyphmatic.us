@@ -210,15 +210,33 @@
       return c === '#fff' || c === '#ffffff' || c === 'white' || c === '#f4f5f8';
     }
 
+    // Check if a color is orange
+    function isOrangeColor(color) {
+      const c = color.toLowerCase().trim();
+      return c === '#ff9933' || c === '#ff9900' || c === '#ff8c00' || c === 'orange' ||
+             c === '#ffa500' || c === '#ff7f00' || c === '#ff6600';
+    }
+
+    // Check if a color is yellow
+    function isYellowColor(color) {
+      const c = color.toLowerCase().trim();
+      return c === '#ffff00' || c === 'yellow' || c === '#ffdf00' || c === '#fcdd09' ||
+             c === '#ffcc00' || c === '#ffd700' || c === '#f9cf02' || c === '#ecc81d';
+    }
+
     // Render generic flag layout with glyphs flowing around it
     function renderGenericFlag(countryId) {
       currentCountry = countryId;
       currentColors = countryColors[countryId] || ['#fff'];
       flattenedGlyphsCache = null; // Clear cache for new country
 
-      // Add class to body if flag contains white (for hover color adjustment)
+      // Add classes to body for color detection (for hover color adjustment)
       const hasWhite = currentColors.some(isWhiteColor);
+      const hasOrange = currentColors.some(isOrangeColor);
+      const hasYellow = currentColors.some(isYellowColor);
       document.body.classList.toggle('flag-has-white', hasWhite);
+      document.body.classList.toggle('flag-has-orange', hasOrange);
+      document.body.classList.toggle('flag-has-yellow', hasYellow);
 
       console.log(`Rendering ${countryId} with colors:`, currentColors);
       console.log(`Available blocks:`, Object.keys(countryGlyphs[countryId] || {}));
@@ -287,10 +305,8 @@
       // Update recipe info box
       const infoColor = result.colors[Math.floor(Math.random() * result.colors.length)] || '#333';
 
-      // Determine text color based on background brightness
-      const isLight = infoColor.toLowerCase() === '#ffffff' || infoColor.toLowerCase() === '#fff' ||
-                      infoColor === '#F4F5F8' || infoColor === '#ffdf00' || infoColor === '#FCDD09';
-      const textColor = isLight ? '#000' : '#fff';
+      // Determine text color: black if yellow, white otherwise
+      const textColor = isYellowColor(infoColor) ? '#000' : '#fff';
 
       recipeInfo.style.background = infoColor;
       recipeInfo.style.color = textColor;

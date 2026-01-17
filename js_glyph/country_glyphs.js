@@ -63,7 +63,8 @@ const BLOCK_FILES = [
   'adlam',
   'hanifi_rohingya',
   'cham',
-  'chakma'
+  'chakma',
+  'syriac'
 ];
 
 // List of all country files to load (matches actual files in countries/ directory)

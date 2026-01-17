@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Circle Packing - KAT</title>
+  <title>Circle Packing with Negative Space</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; overflow: hidden; }
@@ -17,7 +17,6 @@
     const svg = document.getElementById('canvas');
     const W = 800, H = 600;
     
-    // Random helpers
     const rand = (min, max) => Math.random() * (max - min) + min;
     const randInt = (min, max) => Math.floor(rand(min, max + 1));
     const pick = arr => arr[randInt(0, arr.length - 1)];
@@ -103,7 +102,6 @@
       return false;
     }
     
-    // Build adjacency from triangulation
     function buildAdjacency(points, triangles) {
       const adj = new Map();
       for (const p of points) {
@@ -122,11 +120,9 @@
       return adj;
     }
     
-    // KAT-inspired iterative circle packing
     function packCircles(points, boundaryIds, adj, tension) {
       const radii = new Map();
       
-      // Initialize radii
       for (const p of points) {
         if (boundaryIds.has(p.id)) {
           radii.set(p.id, rand(180, 350));
@@ -146,7 +142,6 @@
           const neighborIds = Array.from(adj.get(p.id));
           if (neighborIds.length < 3) continue;
           
-          // Sort neighbors angularly
           neighborIds.sort((a, b) => {
             const pa = pointMap.get(a);
             const pb = pointMap.get(b);
@@ -180,7 +175,6 @@
       return radii;
     }
     
-    // Position circles via force-directed relaxation
     function positionCircles(points, radii, adj, boundaryIds, tension) {
       const positions = new Map(points.map(p => [p.id, { x: p.x, y: p.y }]));
       
@@ -216,15 +210,179 @@
       return positions;
     }
     
+    // Compute negative space polygons - the gaps between three tangent circles
+    function computeNegativeSpacePolygons(triangles, positions, radii) {
+      const polygons = [];
+      
+      for (const tri of triangles) {
+        const [a, b, c] = tri;
+        
+        const pa = positions.get(a.id);
+        const pb = positions.get(b.id);
+        const pc = positions.get(c.id);
+        
+        const ra = radii.get(a.id);
+        const rb = radii.get(b.id);
+        const rc = radii.get(c.id);
+        
+        // For each edge, find the point where circles meet
+        const getEdgePoint = (p1, r1, p2, r2) => {
+          const dx = p2.x - p1.x;
+          const dy = p2.y - p1.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist === 0) return { x: p1.x, y: p1.y };
+          const t = r1 / (r1 + r2);
+          return {
+            x: p1.x + dx * t,
+            y: p1.y + dy * t
+          };
+        };
+        
+        const points = [];
+        
+        // Trace arcs along each circle edge
+        const addArcPoints = (center, radius, start, end, numPoints = 8) => {
+          const startAngle = Math.atan2(start.y - center.y, start.x - center.x);
+          let endAngle = Math.atan2(end.y - center.y, end.x - center.x);
+          
+          let diff = endAngle - startAngle;
+          if (diff > Math.PI) diff -= 2 * Math.PI;
+          if (diff < -Math.PI) diff += 2 * Math.PI;
+          
+          for (let i = 0; i <= numPoints; i++) {
+            const t = i / numPoints;
+            const angle = startAngle + diff * t;
+            points.push({
+              x: center.x + Math.cos(angle) * radius,
+              y: center.y + Math.sin(angle) * radius
+            });
+          }
+        };
+        
+        const pAB = getEdgePoint(pa, ra, pb, rb);
+        const pBC = getEdgePoint(pb, rb, pc, rc);
+        const pCA = getEdgePoint(pc, rc, pa, ra);
+        
+        addArcPoints(pa, ra, pCA, pAB, 6);
+        addArcPoints(pb, rb, pAB, pBC, 6);
+        addArcPoints(pc, rc, pBC, pCA, 6);
+        
+        if (points.length > 3) {
+          polygons.push(points);
+        }
+      }
+      
+      return polygons;
+    }
+    
+    // Compute edge regions between circles and viewport frame
+    function computeEdgePolygons(positions, radii, boundaryIds) {
+      const polygons = [];
+      
+      // For each interior circle near an edge, create a wedge shape
+      for (const [id, pos] of positions) {
+        if (boundaryIds.has(id)) continue;
+        
+        const r = radii.get(id);
+        
+        // Check each edge
+        const edges = [
+          { dist: pos.y, angle: -Math.PI/2, edgeLine: (x, y) => ({ x, y: 0 }) },           // top
+          { dist: W - pos.x, angle: 0, edgeLine: (x, y) => ({ x: W, y }) },                // right
+          { dist: H - pos.y, angle: Math.PI/2, edgeLine: (x, y) => ({ x, y: H }) },        // bottom
+          { dist: pos.x, angle: Math.PI, edgeLine: (x, y) => ({ x: 0, y }) }               // left
+        ];
+        
+        for (const edge of edges) {
+          if (edge.dist < r + 80 && edge.dist > 0) {
+            const points = [];
+            const spread = rand(0.4, 0.8);
+            
+            // Points on the circle
+            for (let i = 0; i <= 6; i++) {
+              const t = i / 6;
+              const angle = edge.angle - spread + t * spread * 2;
+              points.push({
+                x: pos.x + Math.cos(angle) * r,
+                y: pos.y + Math.sin(angle) * r
+              });
+            }
+            
+            // Points on the edge
+            const edgeStart = edge.edgeLine(
+              pos.x + Math.cos(edge.angle + spread) * (r + edge.dist),
+              pos.y + Math.sin(edge.angle + spread) * (r + edge.dist)
+            );
+            const edgeEnd = edge.edgeLine(
+              pos.x + Math.cos(edge.angle - spread) * (r + edge.dist),
+              pos.y + Math.sin(edge.angle - spread) * (r + edge.dist)
+            );
+            
+            points.push(edgeStart);
+            points.push(edgeEnd);
+            
+            polygons.push(points);
+          }
+        }
+      }
+      
+      // Corner regions
+      const corners = [
+        { x: 0, y: 0 },
+        { x: W, y: 0 },
+        { x: W, y: H },
+        { x: 0, y: H }
+      ];
+      
+      for (const corner of corners) {
+        // Find nearest circle to this corner
+        let nearest = null;
+        let nearestDist = Infinity;
+        
+        for (const [id, pos] of positions) {
+          if (boundaryIds.has(id)) continue;
+          const dx = pos.x - corner.x;
+          const dy = pos.y - corner.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < nearestDist) {
+            nearestDist = dist;
+            nearest = { id, pos, r: radii.get(id) };
+          }
+        }
+        
+        if (nearest && nearestDist < nearest.r + 200) {
+          const points = [];
+          const angleToCorner = Math.atan2(corner.y - nearest.pos.y, corner.x - nearest.pos.x);
+          
+          // Arc on circle facing corner
+          for (let i = 0; i <= 5; i++) {
+            const t = i / 5;
+            const angle = angleToCorner - 0.6 + t * 1.2;
+            points.push({
+              x: nearest.pos.x + Math.cos(angle) * nearest.r,
+              y: nearest.pos.y + Math.sin(angle) * nearest.r
+            });
+          }
+          
+          // Corner point
+          points.push(corner);
+          
+          polygons.push(points);
+        }
+      }
+      
+      return polygons;
+    }
+    
     function generatePalette() {
       const hueBase = rand(0, 45);
       const colors = [];
-      const numColors = randInt(3, 5);
+      const numColors = randInt(4, 6);
       
       for (let i = 0; i < numColors; i++) {
         const h = (hueBase + rand(-15, 15) + 360) % 360;
         const s = rand(75, 100);
-        const l = 20 + (i / numColors) * 45;
+        const l = 18 + (i / numColors) * 48;
         colors.push(`hsl(${h}, ${s}%, ${l}%)`);
       }
       
@@ -264,20 +422,29 @@
       defs.appendChild(filter);
     }
     
+    function pointsToPath(points) {
+      if (points.length < 3) return '';
+      let d = `M ${points[0].x} ${points[0].y}`;
+      for (let i = 1; i < points.length; i++) {
+        d += ` L ${points[i].x} ${points[i].y}`;
+      }
+      d += ' Z';
+      return d;
+    }
+    
     function generate() {
       svg.innerHTML = '';
       
       const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
       svg.appendChild(defs);
       
-      const numFilters = randInt(2, 4);
+      const numFilters = randInt(3, 5);
       for (let i = 0; i < numFilters; i++) {
         createFilter(defs, `organic-${i}`);
       }
       
-      const tension = rand(0.88, 1.08);
+      const tension = rand(0.85, 1.05);
       
-      // Boundary points outside viewport
       const points = [];
       const boundaryIds = new Set();
       let idCounter = 0;
@@ -297,12 +464,11 @@
         boundaryIds.add(id);
       }
       
-      // Interior points
-      const numInterior = randInt(6, 14);
+      const numInterior = randInt(5, 10);
       for (let i = 0; i < numInterior; i++) {
         points.push({
           id: idCounter++,
-          x: rand(80, W - 80),
+          x: rand(100, W - 100),
           y: rand(80, H - 80)
         });
       }
@@ -311,6 +477,9 @@
       const adj = buildAdjacency(points, triangles);
       const radii = packCircles(points, boundaryIds, adj, tension);
       const positions = positionCircles(points, radii, adj, boundaryIds, tension);
+      
+      const gapPolygons = computeNegativeSpacePolygons(triangles, positions, radii);
+      const edgePolygons = computeEdgePolygons(positions, radii, boundaryIds);
       
       const palette = generatePalette();
       
@@ -321,14 +490,25 @@
       bg.setAttribute('fill', palette[0]);
       svg.appendChild(bg);
       
-      // Collect and sort circles
-      const circles = points.map(p => ({
-        id: p.id,
-        x: positions.get(p.id).x,
-        y: positions.get(p.id).y,
-        r: radii.get(p.id),
-        isBoundary: boundaryIds.has(p.id)
-      }));
+      // Draw edge polygons (behind circles)
+      for (const poly of edgePolygons) {
+        if (Math.random() > 0.7) continue; // Random selection
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pointsToPath(poly));
+        path.setAttribute('fill', palette[randInt(0, 2)]);
+        path.setAttribute('filter', `url(#organic-${randInt(0, numFilters - 1)})`);
+        svg.appendChild(path);
+      }
+      
+      // Draw circles
+      const circles = points
+        .filter(p => !boundaryIds.has(p.id))
+        .map(p => ({
+          id: p.id,
+          x: positions.get(p.id).x,
+          y: positions.get(p.id).y,
+          r: radii.get(p.id)
+        }));
       
       circles.sort((a, b) => b.r - a.r);
       
@@ -337,14 +517,24 @@
         circle.setAttribute('cx', c.x);
         circle.setAttribute('cy', c.y);
         circle.setAttribute('r', c.r);
-        
-        const colorIndex = c.isBoundary 
-          ? randInt(0, Math.min(1, palette.length - 1))
-          : randInt(1, palette.length - 1);
-        circle.setAttribute('fill', palette[colorIndex]);
+        circle.setAttribute('fill', palette[randInt(1, palette.length - 1)]);
         circle.setAttribute('filter', `url(#organic-${randInt(0, numFilters - 1)})`);
-        
         svg.appendChild(circle);
+      }
+      
+      // Draw some gap polygons on top
+      for (const poly of gapPolygons) {
+        if (Math.random() > 0.35) continue;
+        
+        const avgX = poly.reduce((s, p) => s + p.x, 0) / poly.length;
+        const avgY = poly.reduce((s, p) => s + p.y, 0) / poly.length;
+        if (avgX < -50 || avgX > W + 50 || avgY < -50 || avgY > H + 50) continue;
+        
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pointsToPath(poly));
+        path.setAttribute('fill', palette[randInt(0, palette.length - 1)]);
+        path.setAttribute('filter', `url(#organic-${randInt(0, numFilters - 1)})`);
+        svg.appendChild(path);
       }
     }
     
