@@ -2,8 +2,8 @@ registerCountry("eswatini", {
     iso: 'SZ',
     colors: ['#3E5EB9', '#FFC72C', '#B11E29', '#000000', '#FFFFFF'],
     languages: {
-      national: ['Swazi', 'English'],
-      other: ['Zulu', 'Tsonga']
+    national: ['Swazi', 'English', 'Swati'],
+    other: ['Zulu', 'Tsonga', 'Swati']
     },
     glyphs: {
       'Basic Latin': [

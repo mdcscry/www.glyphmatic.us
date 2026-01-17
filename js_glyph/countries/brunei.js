@@ -5,7 +5,7 @@ registerCountry("brunei", {
     national: ['Malay'],
     other: ['English', 'Chinese', 'Iban', 'Dusun']
   },
-  scripts: ["Arabic-reduced"],
+  scripts: ["Arabic-reduced", "Kangxi Radicals", "CJK Strokes", "CJK Radicals Supplement"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

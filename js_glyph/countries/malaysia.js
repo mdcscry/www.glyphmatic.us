@@ -5,7 +5,7 @@ registerCountry("malaysia", {
     national: ['Malay'],
     other: ['English', 'Mandarin', 'Tamil', 'Jawi', 'Iban', 'Kadazan', 'Dusun', 'Bajau']
   },
-  scripts: ["Tamil", "Arabic-reduced"],
+  scripts: ["Tamil", "Arabic-reduced", "Kangxi Radicals", "CJK Strokes", "CJK Radicals Supplement"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

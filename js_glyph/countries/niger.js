@@ -3,10 +3,9 @@ registerCountry("niger", {
   colors: ['#E05206', '#FFFFFF', '#0DB02B'],
   languages: {
     national: ['French'],
-    other: ['Hausa', 'Zarma', 'Tuareg', 'Fulfulde', 'Kanuri', 'Arabic']
-  }
-  scripts: ["Adlam"],
-  glyphs: {  },
+    other: ['Hausa', 'Zarma', 'Tuareg', 'Fulfulde', 'Kanuri', 'Arabic', 'Fula', 'Central-Eastern Niger Fulfulde']
+  },
+  scripts: ["Adlam", "Arabic-reduced"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

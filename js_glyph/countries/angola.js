@@ -2,8 +2,8 @@ registerCountry("angola", {
     iso: 'AO',
     colors: ['#C8102E', '#000000', '#FFC90E'],
     languages: {
-      national: ['Portuguese'],
-      other: ['Umbundu', 'Kimbundu', 'Kikongo', 'Chokwe']
+    national: ['Portuguese'],
+    other: ['Umbundu', 'Kimbundu', 'Kikongo', 'Chokwe', 'Lingala']
     },
     glyphs: {
       'Basic Latin': [

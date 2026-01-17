@@ -2,8 +2,8 @@ registerCountry("chile", {
     iso: 'CL',
     colors: ['#0039A6', '#FFFFFF', '#D52B1E'],
     languages: {
-      national: ['Spanish'],
-      other: ['Mapudungun', 'Rapa Nui', 'Aymara', 'Quechua']
+    national: ['Spanish'],
+    other: ['Mapudungun', 'Rapa Nui', 'Aymara', 'Quechua', 'Mapuche']
     },
     glyphs: {
       'Basic Latin': [

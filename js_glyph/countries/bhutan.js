@@ -3,8 +3,8 @@ registerCountry("bhutan", {
   colors: ['#FF4E12', '#FFD520'],
   languages: {
     national: ['Dzongkha'],
-    other: ['Sharchop', 'Nepali', 'Kheng', 'Kurtop', 'Bumthang', 'Lhotshamkha']
+    other: ['Sharchop', 'Nepali', 'Kheng', 'Kurtop', 'Bumthang', 'Lhotshamkha', 'Lepcha', 'Tshangla']
   },
-  scripts: ['Tibetan'],
+  scripts: ['Tibetan', 'Devanagari'],
   glyphs: {}
 });

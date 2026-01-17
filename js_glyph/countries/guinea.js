@@ -3,7 +3,7 @@ registerCountry("guinea", {
   colors: ['#CE1126', '#FCD116', '#009460'],
   languages: {
     national: ['French'],
-    other: ['Pular', 'Maninka', 'Susu', 'Kissi', 'Kpelle', 'N'Ko']
+    other: ['Pular', 'Maninka', 'Susu', 'Kissi', 'Kpelle', 'Fula', 'Mandingo', 'NʼKo']
   },
   scripts: ["N'Ko", "Vai", "Adlam"],
   glyphs: {

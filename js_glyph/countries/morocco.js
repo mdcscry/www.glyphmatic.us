@@ -3,7 +3,7 @@ registerCountry("morocco", {
   colors: ['#C1272D', '#006233'],
   languages: {
     national: ['Arabic', 'Berber'],
-    other: ['French', 'Moroccan Arabic', 'Tachelhit', 'Tarifit', 'Tamazight']
+    other: ['French', 'Moroccan Arabic', 'Tachelhit', 'Tarifit', 'Tamazight', 'Central Atlas Tamazight', 'Standard Moroccan Tamazight']
   },
   scripts: ["Arabic-reduced"],
   glyphs: {

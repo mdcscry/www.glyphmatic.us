@@ -2,8 +2,8 @@ registerCountry("mozambique", {
     iso: 'MZ',
     colors: ['#009739', '#000000', '#FCD116', '#FFFFFF', '#DA121A'],
     languages: {
-      national: ['Portuguese'],
-      other: ['Makhuwa', 'Tsonga', 'Sena', 'Ndau', 'Lomwe', 'Swahili']
+    national: ['Portuguese'],
+    other: ['Makhuwa', 'Tsonga', 'Sena', 'Ndau', 'Lomwe', 'Swahili', 'Makhuwa-Meetto']
     },
     glyphs: {
       'Basic Latin': [

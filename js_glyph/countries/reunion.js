@@ -3,7 +3,7 @@ registerCountry("reunion", {
   colors: ['#002395', '#FFFFFF', '#ED2939'],
   languages: {
     national: ['French'],
-    other: ['Réunion Creole']
+    other: ['Réunion Creole', 'Réunion Creole French']
   },
   glyphs: {
     'Basic Latin': [

@@ -2,8 +2,8 @@ registerCountry("tuvalu", {
   iso: 'TV',
   colors: ['#00A1DE', '#FFFFFF', '#FFCE00', '#012169'],
   languages: {
-    national: ['Tuvaluan', 'English'],
-    other: ['Gilbertese']
+    national: ['Tuvaluan', 'English', 'Tuvalu'],
+    other: ['Gilbertese', 'Tuvalu']
   },
   glyphs: {
     'Basic Latin': [

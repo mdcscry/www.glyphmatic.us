@@ -3,7 +3,7 @@ registerCountry("senegal", {
   colors: ['#00853F', '#FDEF42', '#E31B23'],
   languages: {
     national: ['French'],
-    other: ['Wolof', 'Pulaar', 'Serer', 'Mandinka', 'Jola', 'Soninke']
+    other: ['Wolof', 'Pulaar', 'Serer', 'Mandinka', 'Jola', 'Soninke', 'Fula', 'Jola-Fonyi', 'Noon']
   }
   scripts: ["Adlam"],
   glyphs: {  },

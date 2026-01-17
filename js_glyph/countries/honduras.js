@@ -3,7 +3,7 @@ registerCountry("honduras", {
   colors: ['#0073CF', '#FFFFFF'],
   languages: {
     national: ['Spanish'],
-    other: ['Garifuna', 'Miskito', 'Ch\'orti\'', 'Pech', 'Tolupan', 'Tawahka', 'Lenca']
+    other: ['Garifuna', 'Miskito', 'Chʼortiʼ', 'Pech', 'Tolupan', 'Tawahka', 'Lenca']
   },
   glyphs: {
     'Basic Latin': [

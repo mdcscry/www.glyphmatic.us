@@ -3,7 +3,7 @@ registerCountry("united_states", {
   colors: ['#B22234', '#FFFFFF', '#3C3B6E'],
   languages: {
     national: ['English'],
-    other: ['Spanish', 'Cherokee', 'Navajo', 'Hawaiian', 'Samoan', 'Louisiana Creole']
+    other: ['Spanish', 'Cherokee', 'Navajo', 'Hawaiian', 'Samoan', 'Louisiana Creole', 'Dakota', 'Lakota']
   },
   glyphs: {
     'Basic Latin': [

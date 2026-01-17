@@ -2,8 +2,8 @@ registerCountry("zimbabwe", {
     iso: 'ZW',
     colors: ['#38972D', '#FCD116', '#DA121A', '#000000', '#FFFFFF'],
     languages: {
-      national: ['English', 'Shona', 'Ndebele', 'Chewa', 'Tonga', 'Tswana', 'Venda', 'Xhosa', 'Kalanga', 'Sotho', 'Ndau', 'Nambya', 'Shangani'],
-      other: []
+    national: ['English', 'Shona', 'Ndebele', 'Chewa', 'Tonga', 'Tswana', 'Venda', 'Xhosa', 'Kalanga', 'Sotho', 'Ndau', 'Nambya', 'Shangani', 'North Ndebele', 'Nyanja'],
+    other: ['North Ndebele', 'Nyanja']
     },
     glyphs: {
       'Basic Latin': [

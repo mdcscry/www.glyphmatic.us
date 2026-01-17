@@ -2,8 +2,8 @@ registerCountry("nauru", {
   iso: 'NR',
   colors: ['#002B7F', '#FFC61E', '#FFFFFF'],
   languages: {
-    national: ['Nauruan', 'English'],
-    other: []
+    national: ['Nauruan', 'English', 'Nauru'],
+    other: ['Nauru']
   },
   glyphs: {
     'Basic Latin': [

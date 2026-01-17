@@ -2,8 +2,8 @@ registerCountry("ecuador", {
     iso: 'EC',
     colors: ['#FFD100', '#0033A0', '#CE1126'],
     languages: {
-      national: ['Spanish'],
-      other: ['Kichwa', 'Shuar', 'Achuar', 'Awapit', 'Cha'palaa', 'Quechua']
+    national: ['Spanish', 'Quechua'],
+    other: ['Kichwa', 'Shuar', 'Achuar', 'Awapit', 'ʼChaʼpalaaʼ, ʼQuechua']
     },
     glyphs: {
       'Basic Latin': [

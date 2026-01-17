@@ -2,8 +2,8 @@ registerCountry("uruguay", {
     iso: 'UY',
     colors: ['#0038A8', '#FFFFFF', '#FCD116'],
     languages: {
-      national: ['Spanish'],
-      other: []
+    national: ['Spanish'],
+    other: ['Portuguese']
     },
     glyphs: {
       'Basic Latin': [

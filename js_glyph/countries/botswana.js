@@ -2,8 +2,8 @@ registerCountry("botswana", {
     iso: 'BW',
     colors: ['#75AADB', '#000000', '#FFFFFF'],
     languages: {
-      national: ['English', 'Tswana'],
-      other: ['Kalanga', 'Kgalagadi']
+    national: ['English', 'Tswana'],
+    other: ['Kalanga', 'Kgalagadi', 'Afrikaans']
     },
     glyphs: {
       'Basic Latin': [

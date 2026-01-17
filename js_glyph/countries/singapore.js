@@ -5,7 +5,7 @@ registerCountry("singapore", {
     national: ['English', 'Malay', 'Mandarin', 'Tamil'],
     other: ['Hokkien', 'Teochew', 'Cantonese', 'Hakka']
   },
-  scripts: ["Tamil"],
+  scripts: ["Tamil", "Kangxi Radicals", "CJK Strokes", "CJK Radicals Supplement"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

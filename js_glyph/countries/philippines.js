@@ -3,7 +3,7 @@ registerCountry("philippines", {
   colors: ['#0038A8', '#CE1126', '#FFFFFF', '#FCD116'],
   languages: {
     national: ['Filipino', 'English'],
-    other: ['Cebuano', 'Ilocano', 'Hiligaynon', 'Waray', 'Kapampangan', 'Bikol', 'Pangasinan', 'Maranao', 'Tausug']
+    other: ['Cebuano', 'Ilocano', 'Hiligaynon', 'Waray', 'Kapampangan', 'Bikol', 'Pangasinan', 'Maranao', 'Tausug', 'Iloko', 'Pampanga']
   },
   glyphs: {
     'Basic Latin': [

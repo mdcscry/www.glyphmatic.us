@@ -3,7 +3,7 @@ registerCountry("estonia", {
   colors: ['#0072CE', '#000000', '#FFFFFF'],
   languages: {
     national: ['Estonian'],
-    other: ['Russian']
+    other: ['Russian', 'Võro']
   },
   scripts: ["Cyrillic"],
   glyphs: {

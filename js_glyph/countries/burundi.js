@@ -2,8 +2,8 @@ registerCountry("burundi", {
   iso: 'BI',
   colors: ['#CE1126', '#1EB53A', '#FFFFFF'],
   languages: {
-    national: ['Kirundi', 'French'],
-    other: ['Swahili', 'English']
+    national: ['Kirundi', 'French', 'Rundi'],
+    other: ['Swahili', 'English', 'Rundi']
   },
   glyphs: {
     'Basic Latin': [

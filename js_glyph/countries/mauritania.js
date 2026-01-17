@@ -3,7 +3,7 @@ registerCountry("mauritania", {
   colors: ['#006233', '#FFD700', '#D01C1F'],
   languages: {
     national: ['Arabic'],
-    other: ['Hassaniya Arabic', 'French', 'Pulaar', 'Soninke', 'Wolof']
+    other: ['Hassaniya Arabic', 'French', 'Pulaar', 'Soninke', 'Wolof', 'Fula']
   },
   scripts: ["Arabic-reduced", "Adlam"],
   glyphs: {

@@ -3,7 +3,7 @@ registerCountry("mauritius", {
   colors: ['#EA2839', '#1A206D', '#FFD500', '#00A551'],
   languages: {
     national: ['English', 'French', 'Mauritian Creole'],
-    other: ['Bhojpuri', 'Hindi', 'Tamil', 'Urdu']
+    other: ['Bhojpuri', 'Hindi', 'Tamil', 'Urdu', 'Morisyen']
   },
   scripts: ["Devanagari", "Tamil", "Arabic-nastalique-flags"],
   glyphs: {

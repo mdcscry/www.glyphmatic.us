@@ -3,7 +3,7 @@ registerCountry("burkina_faso", {
   colors: ['#EF2B2D', '#009E49', '#FCD116'],
   languages: {
     national: ['French'],
-    other: ['Mooré', 'Dyula', 'Fulfulde', 'Gourmanché', 'Bissa']
+    other: ['Mooré', 'Dyula', 'Fulfulde', 'Gourmanché', 'Bissa', 'Fula', 'Mossi']
   },
   scripts: ["N'Ko", "Adlam"],
   glyphs: {

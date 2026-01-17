@@ -3,7 +3,7 @@ registerCountry("trinidad_and_tobago", {
   colors: ['#CE1126', '#FFFFFF', '#000000'],
   languages: {
     national: ['English'],
-    other: ['Trinidadian Creole', 'Tobagonian Creole']
+    other: ['Trinidadian Creole', 'Tobagonian Creole', 'Spanish']
   },
   glyphs: {
     'Basic Latin': [

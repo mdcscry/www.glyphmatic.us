@@ -3,7 +3,7 @@ registerCountry("mongolia", {
   colors: ['#C4272F', '#015197', '#F9CF02'],
   languages: {
     national: ['Mongolian'],
-    other: ['Kazakh', 'Tuvan', 'Buryat', 'Oirat']
+    other: ['Kazakh', 'Tuvan', 'Buryat', 'Oirat', 'Russian']
   },
   scripts: ["Cyrillic", "Mongolian"],
   glyphs: {

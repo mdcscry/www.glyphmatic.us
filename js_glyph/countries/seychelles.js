@@ -3,7 +3,7 @@ registerCountry("seychelles", {
   colors: ['#003F87', '#FCD856', '#D62828', '#FFFFFF', '#007A3D'],
   languages: {
     national: ['English', 'French', 'Seychellois Creole'],
-    other: []
+    other: ['Seselwa Creole French']
   },
   glyphs: {
     'Basic Latin': [

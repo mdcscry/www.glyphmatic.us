@@ -3,7 +3,7 @@ registerCountry("uganda", {
   colors: ['#000000', '#FCDC04', '#D90000'],
   languages: {
     national: ['English', 'Swahili'],
-    other: ['Luganda', 'Runyoro', 'Runyankole', 'Rukiga', 'Luo', 'Ateso', 'Lugbara', 'Lango']
+    other: ['Luganda', 'Runyoro', 'Runyankole', 'Rukiga', 'Luo', 'Ateso', 'Lugbara', 'Lango', 'Acoli', 'Chiga', 'Ganda', 'Nyankole', 'Soga', 'Teso']
   },
   glyphs: {
     'Basic Latin': [

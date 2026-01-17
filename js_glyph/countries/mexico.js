@@ -3,7 +3,7 @@ registerCountry("mexico", {
   colors: ['#006847', '#FFFFFF', '#CE1126'],
   languages: {
     national: ['Spanish'],
-    other: ['Nahuatl', 'Yucatec Maya', 'Tzeltal', 'Tzotzil', 'Zapotec', 'Mixtec', 'Otomí', 'Mazatec', 'Totonac', 'Ch\'ol', 'Mazahua', 'Huastec', 'Chinantec', 'Purépecha', 'Mixe', 'Tlapanec', 'Tarahumara', 'Huichol', 'Yucateco']
+    other: ['Nahuatl', 'Yucatec Maya', 'Tzeltal', 'Tzotzil', 'Zapotec', 'Mixtec', 'Otomí', 'Mazatec', 'Totonac', 'Chʼol', 'Mazahua', 'Huastec', 'Chinantec', 'Purépecha', 'Mixe', 'Tlapanec', 'Tarahumara', 'Huichol', 'Yucateco']
   },
   glyphs: {
     'Basic Latin': [

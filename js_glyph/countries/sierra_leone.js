@@ -3,7 +3,7 @@ registerCountry("sierra_leone", {
   colors: ['#1EB53A', '#FFFFFF', '#0072C6'],
   languages: {
     national: ['English'],
-    other: ['Krio', 'Mende', 'Temne', 'Limba', 'Kono', 'Sherbro']
+    other: ['Krio', 'Mende', 'Temne', 'Limba', 'Kono', 'Sherbro', 'Timne']
   },
   scripts: ["Vai", "Adlam"],
   glyphs: {

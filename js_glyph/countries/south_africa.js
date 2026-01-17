@@ -2,8 +2,8 @@ registerCountry("south_africa", {
     iso: 'ZA',
     colors: ['#E03C31', '#007749', '#001489', '#000000', '#FFFFFF', '#FFB81C'],
     languages: {
-      national: ['English', 'Afrikaans', 'isiZulu', 'isiXhosa', 'Sesotho', 'Setswana', 'Sepedi', 'Xitsonga', 'siSwati', 'isiNdebele', 'Tshivenḓa'],
-      other: []
+    national: ['English', 'Afrikaans', 'isiZulu', 'isiXhosa', 'Sesotho', 'Setswana', 'Sepedi', 'Xitsonga', 'siSwati', 'isiNdebele', 'Tshivenḓa', 'Northern Sotho', 'South Ndebele', 'Southern Sotho', 'Swati', 'Tsonga', 'Tswana', 'Venda', 'Xhosa', 'Zulu'],
+    other: ['Northern Sotho', 'South Ndebele', 'Southern Sotho', 'Swati', 'Tsonga', 'Tswana', 'Venda', 'Xhosa', 'Zulu']
     },
     glyphs: {
       'Basic Latin': [

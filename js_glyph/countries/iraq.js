@@ -2,8 +2,8 @@ registerCountry("iraq", {
   iso: 'IQ',
   colors: ['#CE1126', '#FFFFFF', '#000000', '#007A3D'],
   languages: {
-    national: ['Arabic', 'Kurdish'],
-    other: ['Iraqi Arabic', 'Sorani', 'Kurmanji', 'Turkmen', 'Assyrian Neo-Aramaic']
+    national: ['Arabic', 'Kurdish', 'Central Kurdish'],
+    other: ['Iraqi Arabic', 'Sorani', 'Kurmanji', 'Turkmen', 'Assyrian Neo-Aramaic', 'Central Kurdish', 'Syriac']
   },
   scripts: ["Arabic-reduced"],
   glyphs: {

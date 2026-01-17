@@ -3,7 +3,7 @@ registerCountry("guatemala", {
   colors: ['#4997D0', '#FFFFFF'],
   languages: {
     national: ['Spanish'],
-    other: ['K\'iche\'', 'Q\'eqchi\'', 'Kaqchikel', 'Mam', 'Tz\'utujil', 'Q\'anjob\'al', 'Achi', 'Poqomchi\'', 'Ch\'orti\'', 'Ixil', 'Awakateko', 'Popti\'', 'Garifuna']
+    other: ['Kʼicheʼ', 'Qʼeqchiʼ', 'Kaqchikel', 'Mam', 'Tzʼutujil', 'Qʼanjobʼal', 'Achi', 'Poqomchiʼ', 'Chʼortiʼ', 'Ixil', 'Awakateko', 'Poptiʼ', 'Garifuna']
   },
   glyphs: {
     'Basic Latin': [

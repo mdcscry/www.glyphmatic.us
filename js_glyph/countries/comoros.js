@@ -2,8 +2,8 @@ registerCountry("comoros", {
   iso: 'KM',
   colors: ['#FFC400', '#FFFFFF', '#CE1126', '#003A79', '#009739'],
   languages: {
-    national: ['Comorian', 'French', 'Arabic'],
-    other: []
+    national: ['Comorian', 'French', 'Arabic', 'Ndzwani Comorian', 'Ngazidja Comorian'],
+    other: ['Ndzwani Comorian', 'Ngazidja Comorian']
   },
   scripts: ["Arabic-reduced"],
   glyphs: {

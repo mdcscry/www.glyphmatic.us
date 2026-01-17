@@ -3,7 +3,7 @@ registerCountry("cambodia", {
   colors: ['#032EA1', '#E00025'],
   languages: {
     national: ['Khmer'],
-    other: ['Cham', 'Vietnamese', 'Chinese', 'Jarai', 'Rade']
+    other: ['Cham', 'Vietnamese', 'Chinese', 'Jarai', 'Rade', 'Western Cham']
   }
   scripts: ["Cham"],
   glyphs: {  }

@@ -3,7 +3,7 @@ registerCountry("nigeria", {
   colors: ['#008751', '#FFFFFF'],
   languages: {
     national: ['English'],
-    other: ['Hausa', 'Yoruba', 'Igbo', 'Fulfulde', 'Kanuri', 'Ibibio', 'Tiv', 'Edo']
+    other: ['Hausa', 'Yoruba', 'Igbo', 'Fulfulde', 'Kanuri', 'Ibibio', 'Tiv', 'Edo', 'Fula', 'Nigerian Fulfulde', 'Nigerian Pidgin']
   },
   scripts: ["Adlam"],
   glyphs: {

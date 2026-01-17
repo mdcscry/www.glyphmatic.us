@@ -5,6 +5,7 @@ registerCountry("turkey", {
     national: ['Turkish'],
     other: ['Kurdish', 'Zaza', 'Arabic', 'Laz', 'Georgian', 'Armenian', 'Greek']
   },
+  scripts: ["Arabic-reduced"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

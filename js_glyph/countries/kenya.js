@@ -3,7 +3,7 @@ registerCountry("kenya", {
   colors: ['#000000', '#BB0000', '#006600', '#FFFFFF'],
   languages: {
     national: ['English', 'Swahili'],
-    other: ['Kikuyu', 'Luhya', 'Kalenjin', 'Luo', 'Kamba', 'Meru', 'Maasai']
+    other: ['Kikuyu', 'Luhya', 'Kalenjin', 'Luo', 'Kamba', 'Meru', 'Maasai', 'Somali', 'Gusii', 'Masai']
   },
   glyphs: {
     'Basic Latin': [

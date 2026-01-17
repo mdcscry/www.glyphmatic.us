@@ -3,7 +3,7 @@ registerCountry("iran", {
   colors: ['#239F40', '#FFFFFF', '#DA0000'],
   languages: {
     national: ['Persian'],
-    other: ['Azerbaijani', 'Kurdish', 'Luri', 'Gilaki', 'Mazanderani', 'Arabic', 'Balochi', 'Turkmen']
+    other: ['Azerbaijani', 'Kurdish', 'Luri', 'Gilaki', 'Mazanderani', 'Arabic', 'Balochi', 'Turkmen', 'Baluchi', 'Northern Luri', 'Southern Kurdish', 'Southern Luri']
   },
   scripts: ["Arabic-nastalique-flags"],
   glyphs: {

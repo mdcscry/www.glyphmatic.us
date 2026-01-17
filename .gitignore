@@ -2,3 +2,5 @@ poetry.lock
 pyproject.toml
 google_font_range_coverage.js
 CLAUDE.md
+.DS_Store
+*.pyc

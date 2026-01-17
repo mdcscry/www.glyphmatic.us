@@ -3,7 +3,7 @@ registerCountry("solomon_islands", {
   colors: ['#0051BA', '#006B3F', '#FCD116'],
   languages: {
     national: ['English'],
-    other: ['Pijin', 'Kwara\'ae', 'To\'abaita', 'Roviana', 'Marovo']
+    other: ['Pijin', "Kwara'ae", "To'abaita", 'Roviana', 'Marovo']
   },
   glyphs: {
     'Basic Latin': [

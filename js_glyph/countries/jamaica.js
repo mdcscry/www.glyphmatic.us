@@ -3,7 +3,7 @@ registerCountry("jamaica", {
   colors: ['#009B3A', '#000000', '#FED100'],
   languages: {
     national: ['English'],
-    other: ['Jamaican Patois']
+    other: ['Jamaican Patois', 'Jamaican Creole English']
   },
   glyphs: {
     'Basic Latin': [

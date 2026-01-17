@@ -3,7 +3,7 @@ registerCountry("gambia", {
   colors: ['#CE1126', '#0C1C8C', '#3A7728'],
   languages: {
     national: ['English'],
-    other: ['Mandinka', 'Wolof', 'Fula', 'Jola', 'Serahule']
+    other: ['Mandinka', 'Wolof', 'Fula', 'Jola', 'Serahule', 'Mandingo']
   },
   scripts: ["Adlam"],
   glyphs: {

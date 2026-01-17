@@ -3,8 +3,9 @@ registerCountry("eritrea", {
   colors: ['#12AD2B', '#4189DD', '#EA0437', '#FFC726'],
   languages: {
     national: ['Tigrinya', 'Arabic', 'English'],
-    other: ['Tigre', 'Afar', 'Beja', 'Bilen', 'Kunama', 'Nara', 'Saho']
+    other: ['Tigre', 'Afar', 'Beja', 'Bilen', 'Kunama', 'Nara', 'Saho', 'Blin']
   },
+  scripts: ["Arabic-reduced"],
   glyphs: {
     'Ethiopic': [
       'ሀ', 'ሁ', 'ሂ', 'ሃ', 'ሄ', 'ህ', 'ሆ',

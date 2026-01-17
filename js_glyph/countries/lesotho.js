@@ -2,8 +2,8 @@ registerCountry("lesotho", {
     iso: 'LS',
     colors: ['#00209F', '#FFFFFF', '#009A44', '#000000'],
     languages: {
-      national: ['Sesotho', 'English'],
-      other: ['Zulu', 'Xhosa']
+    national: ['Sesotho', 'English', 'Southern Sotho'],
+    other: ['Zulu', 'Xhosa', 'Southern Sotho']
     },
     glyphs: {
       'Basic Latin': [

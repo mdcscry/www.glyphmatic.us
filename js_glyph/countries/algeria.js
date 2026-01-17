@@ -3,7 +3,7 @@ registerCountry("algeria", {
   colors: ['#006633', '#FFFFFF', '#D21034'],
   languages: {
     national: ['Arabic', 'Berber'],
-    other: ['French', 'Algerian Arabic', 'Kabyle', 'Chaoui', 'Tuareg']
+    other: ['French', 'Algerian Arabic', 'Kabyle', 'Chaoui', 'Tuareg', 'Tumzabt']
   },
   scripts: ["Arabic-reduced"],
   glyphs: {

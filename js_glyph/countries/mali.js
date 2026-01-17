@@ -3,7 +3,7 @@ registerCountry("mali", {
   colors: ['#14B53A', '#FCD116', '#CE1126'],
   languages: {
     national: ['French'],
-    other: ['Bambara', 'Fulfulde', 'Songhai', 'Dogon', 'Tamasheq', 'Soninke']
+    other: ['Bambara', 'Fulfulde', 'Songhai', 'Dogon', 'Tamasheq', 'Soninke', 'Fula', 'Koyra Chiini', 'Koyraboro Senni']
   },
   scripts: ["N'Ko", "Adlam"],
   glyphs: {

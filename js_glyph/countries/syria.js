@@ -3,7 +3,7 @@ registerCountry("syria", {
   colors: ['#CE1126', '#FFFFFF', '#000000', '#007A3D'],
   languages: {
     national: ['Arabic'],
-    other: ['Kurdish', 'Armenian', 'Aramaic', 'Turkmen', 'Circassian']
+    other: ['Kurdish', 'Armenian', 'Aramaic', 'Turkmen', 'Circassian', 'Syriac', 'French']
   },
   scripts: ["Arabic-reduced"],
   glyphs: {

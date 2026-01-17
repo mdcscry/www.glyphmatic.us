@@ -3,7 +3,7 @@ registerCountry("thailand", {
   colors: ['#A51931', '#F4F5F8', '#2D2A4A'],
   languages: {
     national: ['Thai'],
-    other: ['Isan', 'Northern Thai', 'Southern Thai', 'Khmer', 'Malay', 'Karen', 'Hmong']
+    other: ['Isan', 'Northern Thai', 'Southern Thai', 'Khmer', 'Malay', 'Karen', 'Hmong', 'Northeastern Thai']
   },
   scripts: ["New Tai Lue", "Lisu", "Tai Tham"],
   glyphs: {

@@ -3,7 +3,7 @@ registerCountry("ghana", {
   colors: ['#CE1126', '#FCD116', '#006B3F', '#000000'],
   languages: {
     national: ['English'],
-    other: ['Akan', 'Twi', 'Fante', 'Ewe', 'Ga', 'Dagbani', 'Hausa', 'Nzema']
+    other: ['Akan', 'Twi', 'Fante', 'Ewe', 'Ga', 'Dagbani', 'Hausa', 'Nzema', 'Fula']
   },
   glyphs: {
     'Basic Latin': [

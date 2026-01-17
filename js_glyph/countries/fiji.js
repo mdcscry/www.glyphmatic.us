@@ -3,7 +3,7 @@ registerCountry("fiji", {
   colors: ['#62B5E5', '#00247D', '#FFFFFF', '#CF142B'],
   languages: {
     national: ['Fijian', 'English', 'Fiji Hindi'],
-    other: []
+    other: ['Hindi']
   },
   scripts: ["Devanagari"],
   glyphs: {

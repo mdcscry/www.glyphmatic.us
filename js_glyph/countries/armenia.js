@@ -2,8 +2,8 @@ registerCountry("armenia", {
     iso: 'AM',
     colors: ['#D90012', '#0033A0', '#F2A800'],
     languages: {
-      national: ['Armenian'],
-      other: []
+    national: ['Armenian'],
+    other: ['Kurdish']
     },
     glyphs: {
       'Armenian': [

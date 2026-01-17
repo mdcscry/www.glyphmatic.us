@@ -3,7 +3,7 @@ registerCountry("canada", {
   colors: ['#FF0000', '#FFFFFF'],
   languages: {
     national: ['English', 'French'],
-    other: ['Cree', 'Inuktitut', 'Ojibwe', 'Inuinnaqtun', 'Dene', 'Blackfoot']
+    other: ['Cree', 'Inuktitut', 'Ojibwe', 'Inuinnaqtun', 'Dene', 'Blackfoot', 'Ojibwa', 'Mohawk']
   },
   glyphs: {
     'Basic Latin': [

@@ -2,8 +2,8 @@ registerCountry("malawi", {
     iso: 'MW',
     colors: ['#000000', '#CE1126', '#007A33'],
     languages: {
-      national: ['English', 'Chichewa'],
-      other: ['Yao', 'Tumbuka', 'Lomwe']
+    national: ['English', 'Chichewa', 'Nyanja'],
+    other: ['Yao', 'Tumbuka', 'Lomwe', 'Nyanja']
     },
     glyphs: {
       'Basic Latin': [

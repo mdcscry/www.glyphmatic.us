@@ -2,8 +2,8 @@ registerCountry("cameroon", {
     iso: 'CM',
     colors: ['#007A5E', '#CE1126', '#FCD116'],
     languages: {
-      national: ['French', 'English'],
-      other: ['Fulfulde', 'Ewondo', 'Camfranglais']
+    national: ['French', 'English'],
+    other: ['Fulfulde', 'Ewondo', 'Camfranglais', 'Arabic', 'Bamun', 'Fula', 'Basaa', 'Bulu', 'Duala', 'Ghomala', 'Yemba']
     },
     scripts: ["Adlam"],
     glyphs: {

@@ -141,7 +141,7 @@ function buildCountryData() {
   }
 
   // Merge shared blocks into countries that reference them via 'scripts' array
-  for (const [name, data] of Object.entries(countryData)) {
+  for (const data of Object.values(countryData)) {
     if (data.scripts && Array.isArray(data.scripts)) {
       if (!data.glyphs) data.glyphs = {};
       for (const scriptName of data.scripts) {
@@ -150,16 +150,6 @@ function buildCountryData() {
         }
       }
     }
-  }
-
-  // Legacy post-processing for shared glyph data (backward compatibility)
-  if (countryData.chad && countryData.chad.glyphs && countryData.chad.glyphs['Arabic-reduced']) {
-    if (countryData.comoros && !countryData.comoros.glyphs) countryData.comoros.glyphs = {};
-    if (countryData.comoros) countryData.comoros.glyphs['Arabic-reduced'] = countryData.chad.glyphs['Arabic-reduced'];
-  }
-  if (countryData.india && countryData.india.glyphs && countryData.india.glyphs.Devanagari) {
-    if (countryData.mauritius && !countryData.mauritius.glyphs) countryData.mauritius.glyphs = {};
-    if (countryData.mauritius) countryData.mauritius.glyphs.Devanagari = countryData.india.glyphs.Devanagari;
   }
 
   // Build derived structures
@@ -177,7 +167,7 @@ function buildCountryData() {
 
 // Load a single script
 function loadScript(src) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const script = document.createElement('script');
     script.src = src;
     script.onload = resolve;

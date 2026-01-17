@@ -2,8 +2,8 @@ registerCountry("togo", {
     iso: 'TG',
     colors: ['#006A4E', '#FFCE00', '#D21034', '#FFFFFF'],
     languages: {
-      national: ['French'],
-      other: ['Ewe', 'Kabye', 'Tem', 'Moba', 'Gurma']
+    national: ['French'],
+    other: ['Ewe', 'Kabye', 'Tem', 'Moba', 'Gurma', 'Fula']
     },
     glyphs: {
       'Basic Latin': [

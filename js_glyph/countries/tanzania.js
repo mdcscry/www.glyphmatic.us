@@ -3,7 +3,7 @@ registerCountry("tanzania", {
   colors: ['#1EB53A', '#FCD116', '#000000', '#00A3DD'],
   languages: {
     national: ['Swahili', 'English'],
-    other: ['Sukuma', 'Chagga', 'Haya', 'Nyamwezi', 'Hehe', 'Makonde']
+    other: ['Sukuma', 'Chagga', 'Haya', 'Nyamwezi', 'Hehe', 'Makonde', 'Arabic', 'Asu', 'Bena', 'Langi', 'Machame', 'Rombo', 'Rwa', 'Sangu', 'Vunjo']
   },
   glyphs: {
     'Basic Latin': [

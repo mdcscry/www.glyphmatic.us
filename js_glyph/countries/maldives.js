@@ -2,8 +2,8 @@ registerCountry("maldives", {
   iso: 'MV',
   colors: ['#D21034', '#007E3A', '#FFFFFF'],
   languages: {
-    national: ['Dhivehi'],
-    other: ['English']
+    national: ['Dhivehi', 'Divehi'],
+    other: ['English', 'Divehi']
   },
   glyphs: {
     'Thaana': [

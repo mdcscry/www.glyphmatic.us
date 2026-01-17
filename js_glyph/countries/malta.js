@@ -1,21 +1,12 @@
-if (typeof window.__COUNTRY_DATA_MODULES__ === 'undefined') {
-  window.__COUNTRY_DATA_MODULES__ = {};
-}
-window.__COUNTRY_DATA_MODULES__['malta'] = {
-  "iso": "MT",
-  "colors": [
-    "#FFFFFF",
-    "#C8102E"
-  ],
-  "languages": {
-    "national": [
-      "Maltese",
-      "English"
-    ],
-    "other": []
+registerCountry("malta", {
+  iso: 'MT',
+  colors: ['#FFFFFF', '#C8102E'],
+  languages: {
+    national: ['Maltese', 'English'],
+    other: ['Italian']
   },
-  "glyphs": {
-    "Basic Latin": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split(""),
-    "Latin Extended-A": "ĊċĠġĦħŻż".split("")
+  glyphs: {
+    'Basic Latin': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
+    'Latin Extended-A': ['Ċ', 'ċ', 'Ġ', 'ġ', 'Ħ', 'ħ', 'Ż', 'ż']
   }
-};
+});

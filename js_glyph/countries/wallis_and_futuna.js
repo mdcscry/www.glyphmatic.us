@@ -3,7 +3,7 @@ registerCountry("wallis_and_futuna", {
   colors: ['#ED2939', '#FFFFFF', '#002395'],
   languages: {
     national: ['French'],
-    other: ['Wallisian', 'Futunan']
+    other: ['Wallisian', 'Futunan', 'East Futuna']
   },
   glyphs: {
     'Basic Latin': [

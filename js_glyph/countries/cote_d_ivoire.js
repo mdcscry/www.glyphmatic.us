@@ -3,7 +3,7 @@ registerCountry("cote_d_ivoire", {
   colors: ['#F77F00', '#FFFFFF', '#009E60'],
   languages: {
     national: ['French'],
-    other: ['Baoulé', 'Dyula', 'Dan', 'Anyin', 'Bété', 'Sénoufo']
+    other: ['Baoulé', 'Dyula', 'Dan', 'Anyin', 'Bété', 'Sénoufo', 'Cebaara Senoufo']
   },
   scripts: ["N'Ko"],
   glyphs: {

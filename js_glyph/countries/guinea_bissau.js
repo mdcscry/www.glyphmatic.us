@@ -3,8 +3,9 @@ registerCountry("guinea_bissau", {
   colors: ['#CE1126', '#FCD116', '#009E49', '#000000'],
   languages: {
     national: ['Portuguese'],
-    other: ['Crioulo', 'Fula', 'Mandinka', 'Balanta', 'Manjaco']
+    other: ['Crioulo', 'Fula', 'Mandinka', 'Balanta', 'Manjaco', 'French']
   },
+  scripts: ["Adlam"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

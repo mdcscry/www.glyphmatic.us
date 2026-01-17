@@ -1,19 +1,15 @@
-if (typeof window.__COUNTRY_DATA_MODULES__ === 'undefined') {
-  window.__COUNTRY_DATA_MODULES__ = {};
-}
-window.__COUNTRY_DATA_MODULES__['greece'] = {
-  "iso": "GR",
-  "colors": [
-    "#0D5EAF",
-    "#FFFFFF"
-  ],
-  "languages": {
-    "national": [
-      "Greek"
-    ],
-    "other": []
+registerCountry("greece", {
+  iso: 'GR',
+  colors: ['#0D5EAF', '#FFFFFF'],
+  languages: {
+    national: ['Greek'],
+    other: ['Turkish', 'Albanian', 'Macedonian', 'Bulgarian']
   },
-  "glyphs": {
-    "Greek and Coptic": "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάέήίόύώΆΈΉΊΌΎΏ".split("")
+  scripts: ['Cyrillic'],
+  glyphs: {
+    'Greek and Coptic': ['Α', 'Β', 'Γ', 'Δ', 'Ε', 'Ζ', 'Η', 'Θ', 'Ι', 'Κ', 'Λ', 'Μ', 'Ν', 'Ξ', 'Ο', 'Π', 'Ρ', 'Σ', 'Τ', 'Υ', 'Φ', 'Χ', 'Ψ', 'Ω', 'α', 'β', 'γ', 'δ', 'ε', 'ζ', 'η', 'θ', 'ι', 'κ', 'λ', 'μ', 'ν', 'ξ', 'ο', 'π', 'ρ', 'σ', 'τ', 'υ', 'φ', 'χ', 'ψ', 'ω', 'ά', 'έ', 'ή', 'ί', 'ό', 'ύ', 'ώ', 'Ά', 'Έ', 'Ή', 'Ί', 'Ό', 'Ύ', 'Ώ'],
+    'Basic Latin': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
+    'Latin-1 Supplement': ['Ç', 'Ë', 'Ï', 'Ö', 'Ü', 'ç', 'ë', 'ï', 'ö', 'ü'],
+    'Latin Extended-A': ['Ğ', 'ğ', 'İ', 'Ş', 'ş', 'Ç', 'ç', 'Ë', 'ë']
   }
-};
+});

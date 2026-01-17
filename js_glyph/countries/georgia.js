@@ -2,8 +2,8 @@ registerCountry("georgia", {
     iso: 'GE',
     colors: ['#FF0000', '#FFFFFF'],
     languages: {
-      national: ['Georgian'],
-      other: ['Abkhaz', 'Ossetian']
+    national: ['Georgian'],
+    other: ['Abkhaz', 'Ossetian', 'Armenian', 'Mingrelian', 'Abkhazian', 'Ossetic', 'Russian']
     },
     glyphs: {
       'Georgian': [

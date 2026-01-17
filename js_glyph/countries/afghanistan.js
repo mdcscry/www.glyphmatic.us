@@ -3,7 +3,7 @@ registerCountry("afghanistan", {
   colors: ['#000000', '#CE1126', '#007A36'],
   languages: {
     national: ['Pashto', 'Dari'],
-    other: ['Uzbek', 'Turkmen', 'Balochi', 'Pashayi', 'Nuristani', 'Hazaragi']
+    other: ['Uzbek', 'Turkmen', 'Balochi', 'Pashayi', 'Nuristani', 'Hazaragi', 'Parsi-Dari', 'Uyghur']
   },
   scripts: ["Arabic-nastalique-flags"],
   glyphs: {

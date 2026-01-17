@@ -1,40 +1,17 @@
-if (typeof window.__COUNTRY_DATA_MODULES__ === 'undefined') {
-  window.__COUNTRY_DATA_MODULES__ = {};
-}
-window.__COUNTRY_DATA_MODULES__['russia'] = {
-  "iso": "RU",
-  "colors": [
-    "#FFFFFF",
-    "#0039A6",
-    "#D52B1E"
-  ],
-  "languages": {
-    "national": [
-      "Russian"
-    ],
-    "other": [
-      "Tatar",
-      "Chechen",
-      "Bashkir",
-      "Chuvash",
-      "Yakut",
-      "Buryat",
-      "Kalmyk",
-      "Ossetic",
-      "Kabardian",
-      "Kildin Sami",
-      "Skolt Sami",
-      "Avaric",
-      "Tuvinian"
-    ]
+registerCountry("russia", {
+  iso: 'RU',
+  colors: ['#FFFFFF', '#0039A6', '#D52B1E'],
+  languages: {
+    national: ['Russian'],
+    other: ['Tatar', 'Chechen', 'Bashkir', 'Chuvash', 'Yakut', 'Buryat', 'Kalmyk', 'Ossetic', 'Kabardian', 'Kildin Sami', 'Skolt Sami', 'Avaric', 'Tuvinian']
   },
-  "glyphs": {
-    "Basic Latin": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split(""),
-    "Latin-1 Supplement": "ÅåÄäÖöÕõÉéÍíÓóÚúÝý".split(""),
-    "Latin Extended-A": "ŠšŽžÁáČčĐđŊŋÂâ".split(""),
-    "Cyrillic": "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюяҊҋӅӆӍӎӉӊӇӈҎҏҌҍӬӭЈј".split(""),
-    "Cyrillic Supplement": "ӘҒҔҖҚҠҢҤӨҪҮҰҺҲІӀәғҕҗқҡңҥөҫүұһҳіӏӐÄӓӖӗӜӝӞӟӦӧӰӱӴӵӸӹ".split(""),
-    "Latin Extended-B": "ƷʒǮǯǦǧǤǥǨǩ".split(""),
-    "Combining Forms-flag": "CʼcʼDʼdʼLʼlʼNʼnʼSʼsʼZʼzʼ".split("")
+  glyphs: {
+    'Basic Latin': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
+    'Latin-1 Supplement': ['Å', 'å', 'Ä', 'ä', 'Ö', 'ö', 'Õ', 'õ', 'É', 'é', 'Í', 'í', 'Ó', 'ó', 'Ú', 'ú', 'Ý', 'ý'],
+    'Latin Extended-A': ['Š', 'š', 'Ž', 'ž', 'Á', 'á', 'Č', 'č', 'Đ', 'đ', 'Ŋ', 'ŋ', 'Â', 'â'],
+    'Cyrillic': ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я', 'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я', 'Ҋ', 'ҋ', 'Ӆ', 'ӆ', 'Ӎ', 'ӎ', 'Ӊ', 'ӊ', 'Ӈ', 'ӈ', 'Ҏ', 'ҏ', 'Ҍ', 'ҍ', 'Ӭ', 'ӭ', 'Ј', 'ј'],
+    'Cyrillic Supplement': ['Ә', 'Ғ', 'Ҕ', 'Җ', 'Қ', 'Ҡ', 'Ң', 'Ҥ', 'Ө', 'Ҫ', 'Ү', 'Ұ', 'Һ', 'Ҳ', 'І', 'Ӏ', 'ә', 'ғ', 'ҕ', 'җ', 'қ', 'ҡ', 'ң', 'ҥ', 'ө', 'ҫ', 'ү', 'ұ', 'һ', 'ҳ', 'і', 'ӏ', 'Ӑ', 'Ä', 'ӓ', 'Ӗ', 'ӗ', 'Ӝ', 'ӝ', 'Ӟ', 'ӟ', 'Ӧ', 'ӧ', 'Ӱ', 'ӱ', 'Ӵ', 'ӵ', 'Ӹ', 'ӹ'],
+    'Latin Extended-B': ['Ʒ', 'ʒ', 'Ǯ', 'ǯ', 'Ǧ', 'ǧ', 'Ǥ', 'ǥ', 'Ǩ', 'ǩ'],
+    'Combining Forms-flag': ['C', 'ʼ', 'c', 'ʼ', 'D', 'ʼ', 'd', 'ʼ', 'L', 'ʼ', 'l', 'ʼ', 'N', 'ʼ', 'n', 'ʼ', 'S', 'ʼ', 's', 'ʼ', 'Z', 'ʼ', 'z', 'ʼ']
   }
-};
+});

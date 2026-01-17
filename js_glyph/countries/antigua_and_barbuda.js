@@ -3,7 +3,7 @@ registerCountry("antigua_and_barbuda", {
   colors: ['#CE1126', '#FFFFFF', '#0072C6', '#FCD116', '#000000'],
   languages: {
     national: ['English'],
-    other: []
+    other: ['Portuguese']
   },
   glyphs: {
     'Basic Latin': [

@@ -3,7 +3,7 @@ registerCountry("cape_verde", {
   colors: ['#003893', '#FFFFFF', '#CF2027', '#FFD100'],
   languages: {
     national: ['Portuguese'],
-    other: ['Cape Verdean Creole']
+    other: ['Cape Verdean Creole', 'Kabuverdianu']
   },
   glyphs: {
     'Basic Latin': [

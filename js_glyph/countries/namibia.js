@@ -2,8 +2,8 @@ registerCountry("namibia", {
     iso: 'NA',
     colors: ['#003580', '#D21034', '#009543', '#FFFFFF', '#FFC72C'],
     languages: {
-      national: ['English'],
-      other: ['Oshiwambo', 'Khoekhoegowab', 'Afrikaans', 'Herero', 'German']
+    national: ['English'],
+    other: ['Oshiwambo', 'Khoekhoegowab', 'Afrikaans', 'Herero', 'German', 'Nama']
     },
     glyphs: {
       'Basic Latin': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],

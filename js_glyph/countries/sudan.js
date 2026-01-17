@@ -3,7 +3,7 @@ registerCountry("sudan", {
   colors: ['#D21034', '#FFFFFF', '#000000', '#007229'],
   languages: {
     national: ['Arabic', 'English'],
-    other: ['Nubian', 'Ta Bedawie', 'Fur']
+    other: ['Nubian', 'Ta Bedawie', 'Fur', 'Hausa']
   },
   scripts: ["Arabic-reduced"],
   glyphs: {

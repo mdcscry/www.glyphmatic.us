@@ -1,22 +1,13 @@
-if (typeof window.__COUNTRY_DATA_MODULES__ === 'undefined') {
-  window.__COUNTRY_DATA_MODULES__ = {};
-}
-window.__COUNTRY_DATA_MODULES__['czech republic'] = {
-  "iso": "CZ",
-  "colors": [
-    "#FFFFFF",
-    "#D7141A",
-    "#11457E"
-  ],
-  "languages": {
-    "national": [
-      "Czech"
-    ],
-    "other": []
+registerCountry("czech republic", {
+  iso: 'CZ',
+  colors: ['#FFFFFF', '#D7141A', '#11457E'],
+  languages: {
+    national: ['Czech'],
+    other: ['Slovak']
   },
-  "glyphs": {
-    "Basic Latin": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split(""),
-    "Latin Extended-A": "ČčĎďĚěŇňŘřŠšŤťŮůŽž".split(""),
-    "Latin-1 Supplement": "ÁáÉéÍíÓóÚúÝý".split("")
+  glyphs: {
+    'Basic Latin': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
+    'Latin Extended-A': ['Č', 'č', 'Ď', 'ď', 'Ě', 'ě', 'Ň', 'ň', 'Ř', 'ř', 'Š', 'š', 'Ť', 'ť', 'Ů', 'ů', 'Ž', 'ž'],
+    'Latin-1 Supplement': ['Á', 'á', 'É', 'é', 'Í', 'í', 'Ó', 'ó', 'Ú', 'ú', 'Ý', 'ý']
   }
-};
+});

@@ -3,7 +3,7 @@ registerCountry("bangladesh", {
   colors: ['#006A4E', '#F42A41'],
   languages: {
     national: ['Bengali'],
-    other: ['Chittagonian', 'Sylheti', 'Rangpuri', 'Chakma', 'Rohingya', 'Santali', 'Bishnupriya Manipuri']
+    other: ['Chittagonian', 'Sylheti', 'Rangpuri', 'Chakma', 'Rohingya', 'Santali', 'Bishnupriya Manipuri', 'Garo', 'Manipuri']
   },
   scripts: ['Bengali', 'Hanifi Rohingya', 'Chakma'],
   glyphs: {

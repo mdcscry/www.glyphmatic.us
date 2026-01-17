@@ -3,8 +3,9 @@ registerCountry("indonesia", {
   colors: ['#CE1126', '#FFFFFF'],
   languages: {
     national: ['Indonesian'],
-    other: ['Javanese', 'Sundanese', 'Madurese', 'Minangkabau', 'Balinese', 'Buginese', 'Acehnese', 'Batak', 'Banjarese']
+    other: ['Javanese', 'Sundanese', 'Madurese', 'Minangkabau', 'Balinese', 'Buginese', 'Acehnese', 'Batak', 'Banjarese', 'Malay', 'Makasar', 'Sasak']
   },
+  scripts: ["Arabic-Jawi"],
   glyphs: {
     'Basic Latin': [
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
