@@ -310,15 +310,16 @@
                 card.appendChild(createCell(colPositions[i], structureTop, colWidths[i], structureHeight, palette.frameColor, hatchChar, -1));
             }
 
-            // Draw stripes in wide columns
+            // Draw stripes in wide columns - always create all rows so they can all be animated
             let currentY = structureTop;
             for (let row = 0; row < rowHeights.length; row++) {
                 const h = rowHeights[row];
 
-                if (stripePattern[row].filled) {
-                    for (let i = 1; i < numCols; i += 2) {
-                        card.appendChild(createCell(colPositions[i], currentY, colWidths[i], h, stripePattern[row].color, hatchChar, row));
-                    }
+                // Always create stripe cells, but use background color if not initially filled
+                const color = stripePattern[row].filled ? stripePattern[row].color : palette.background;
+
+                for (let i = 1; i < numCols; i += 2) {
+                    card.appendChild(createCell(colPositions[i], currentY, colWidths[i], h, color, hatchChar, row));
                 }
 
                 currentY += h;
