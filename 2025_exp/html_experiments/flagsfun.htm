@@ -455,10 +455,34 @@
         return urlParams.get(param);
     }
 
+    // Function to format country names for display
+    function formatCountryName(countryId) {
+        // Common abbreviations that should be all caps
+        const abbreviations = new Set(['us', 'uk', 'uae', 'un', 'drc', 'png']);
+
+        // Words that should be lowercase in title case (except when first word)
+        const lowercase = new Set(['and', 'of', 'the']);
+
+        return countryId
+            .split('_')
+            .map((word, index) => {
+                const lower = word.toLowerCase();
+                if (abbreviations.has(lower)) {
+                    return word.toUpperCase();
+                }
+                // Keep lowercase words lowercase unless they're the first word
+                if (index > 0 && lowercase.has(lower)) {
+                    return lower;
+                }
+                return word.charAt(0).toUpperCase() + word.slice(1);
+            })
+            .join(' ');
+    }
+
     // Non-UN entities: territories, dependencies, and easter eggs
     const NON_UN_ENTITIES = [
       // Easter eggs
-      'pirate', 'pride', 'trans',
+      'pirate', 'pride', 'trans', 'peace', 'checkered', 'alert', 'black_flag', 'crossed_flags',
       // Sub-national flags
       'england', 'scotland', 'wales',
       // Territories and dependencies
@@ -506,7 +530,7 @@
 
         FLAG_RECIPES = filteredCountries.map(country => ({
           id: country,
-          name: country.charAt(0).toUpperCase() + country.slice(1),
+          name: formatCountryName(country),
           country: country,
           layout: 'generic-tricolor'
         }));

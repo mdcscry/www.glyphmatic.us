@@ -96,7 +96,7 @@ const COUNTRY_FILES = [
   'niue', 'norfolk_island', 'north_korea', 'north_macedonia', 'northern_mariana_islands', 'norway',
   'oman',
   'pakistan', 'palau', 'palestine', 'panama', 'papua_new_guinea', 'paraguay', 'peru', 'philippines',
-  'pitcairn_islands', 'pirate', 'poland', 'portugal', 'pride', 'puerto_rico',
+  'pitcairn_islands', 'pirate', 'poland', 'portugal', 'pride', 'puerto_rico', 'peace', 'checkered', 'alert', 'black_flag', 'crossed_flags',
   'qatar',
   'reunion', 'romania', 'russia', 'rwanda',
   'saint_barthelemy', 'saint_kitts_and_nevis', 'saint_lucia', 'saint_martin',

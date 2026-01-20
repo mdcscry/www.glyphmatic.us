@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abstract Grid Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #1a1a2e;
+            font-family: monospace;
+            padding: 20px;
+            gap: 20px;
+            position: relative;
+        }
+
+        .page-background-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+            white-space: pre;
+            font-family: monospace;
+            font-size: 8px;
+            line-height: 7px;
+            letter-spacing: 0px;
+            overflow: hidden;
+        }
+
+        .macro-grid,
+        button {
+            position: relative;
+            z-index: 1;
+        }
+
+        .macro-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            position: relative;
+            width: 320px;
+            height: 420px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 
+                0 15px 30px -8px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+        .background-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font-size: 8px;
+            line-height: 7px;
+            letter-spacing: 0px;
+            opacity: 0.4;
+            overflow: hidden;
+            pointer-events: none;
+            white-space: pre;
+            font-family: monospace;
+        }
+
+        .cell {
+            position: absolute;
+            overflow: hidden;
+        }
+
+        .cell-hatching {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font-size: 7px;
+            line-height: 5.5px;
+            letter-spacing: -0.5px;
+            white-space: pre;
+            font-family: monospace;
+            overflow: hidden;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 12px 32px;
+            font-family: inherit;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="page-background-grid" id="pageGrid"></div>
+    <div class="macro-grid" id="macroGrid"></div>
+    <button onclick="generate()">Regenerate</button>
+
+    <script>
+        const hatchChars = ['/', '\\', '|', '-', '+', 'x', 'X', '#', '=', '*', '~', '%', '@', ':', ';', 'o', 'O'];
+
+        function randomHue() {
+            return Math.floor(Math.random() * 360);
+        }
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function generatePalette() {
+            const baseHue = randomHue();
+
+            const hues = [
+                baseHue,
+                (baseHue + 60 + Math.random() * 120) % 360,
+                (baseHue + 150 + Math.random() * 60) % 360,
+                (baseHue + 240 + Math.random() * 80) % 360
+            ];
+
+            const bgLightness = 35 + Math.random() * 20;
+            const bgSaturation = 50 + Math.random() * 25;
+            const background = `hsl(${baseHue}, ${bgSaturation}%, ${bgLightness}%)`;
+
+            // Make grid color much lighter or darker than background for strong contrast
+            const gridLightness = bgLightness < 45 ? bgLightness + 25 : bgLightness - 25;
+            const gridColor = `hsl(${baseHue}, ${bgSaturation * 0.6}%, ${gridLightness}%)`;
+
+            return {
+                background: background,
+                gridColor: gridColor,
+                frameColor: `hsl(${(baseHue + 150 + Math.random() * 60) % 360}, ${30 + Math.random() * 20}%, ${35 + Math.random() * 20}%)`,
+                colors: hues.map(h => `hsl(${h}, ${40 + Math.random() * 35}%, ${35 + Math.random() * 35}%)`)
+            };
+        }
+
+        function generateHatchingText(width, height, char) {
+            const cols = Math.ceil(width / 4);
+            const rows = Math.ceil(height / 5.5);
+            let text = '';
+            for (let r = 0; r < rows; r++) {
+                text += char.repeat(cols) + '\n';
+            }
+            return text;
+        }
+
+        function generateCardGridText(width, height) {
+            const cellWidth = 2;  // characters per cell (tiny grid for cards)
+            const cellHeight = 1; // lines per cell
+            const cols = Math.ceil(width / (cellWidth * 2.5));
+            const rows = Math.ceil(height / (cellHeight * 7));
+            let text = '';
+
+            for (let r = 0; r < rows; r++) {
+                for (let line = 0; line < cellHeight; line++) {
+                    if (line === 0) {
+                        // Top line of cell - horizontal line with intersections
+                        for (let c = 0; c < cols; c++) {
+                            text += '+' + '-'.repeat(cellWidth - 1);
+                        }
+                        text += '+\n';
+                    } else {
+                        // Middle lines - vertical lines only
+                        for (let c = 0; c < cols; c++) {
+                            text += '|' + ' '.repeat(cellWidth - 1);
+                        }
+                        text += '|\n';
+                    }
+                }
+            }
+            // Final bottom border
+            for (let c = 0; c < cols; c++) {
+                text += '+' + '-'.repeat(cellWidth - 1);
+            }
+            text += '+\n';
+
+            return text;
+        }
+
+        function generatePageGridText(width, height) {
+            const cellWidth = 3;  // characters per cell (larger grid for page)
+            const cellHeight = 2; // lines per cell
+            const cols = Math.ceil(width / (cellWidth * 2.5));
+            const rows = Math.ceil(height / (cellHeight * 7));
+            let text = '';
+
+            for (let r = 0; r < rows; r++) {
+                for (let line = 0; line < cellHeight; line++) {
+                    if (line === 0) {
+                        // Top line of cell - horizontal line with intersections
+                        for (let c = 0; c < cols; c++) {
+                            text += '+' + '-'.repeat(cellWidth - 1);
+                        }
+                        text += '+\n';
+                    } else {
+                        // Middle lines - vertical lines only
+                        for (let c = 0; c < cols; c++) {
+                            text += '|' + ' '.repeat(cellWidth - 1);
+                        }
+                        text += '|\n';
+                    }
+                }
+            }
+            // Final bottom border
+            for (let c = 0; c < cols; c++) {
+                text += '+' + '-'.repeat(cellWidth - 1);
+            }
+            text += '+\n';
+
+            return text;
+        }
+
+        function createCell(x, y, w, h, color, char) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.style.left = x + 'px';
+            cell.style.top = y + 'px';
+            cell.style.width = w + 'px';
+            cell.style.height = h + 'px';
+            
+            const hatch = document.createElement('div');
+            hatch.className = 'cell-hatching';
+            hatch.style.color = color;
+            hatch.textContent = generateHatchingText(w + 20, h + 20, char);
+            cell.appendChild(hatch);
+            return cell;
+        }
+
+        function generateCard(card, palette, structure, hatchChar) {
+            card.style.backgroundColor = palette.background;
+            card.innerHTML = '';
+
+            const cardWidth = 320;
+            const cardHeight = 420;
+
+            // Background grid
+            const grid = document.createElement('div');
+            grid.className = 'background-grid';
+            grid.style.color = palette.gridColor;
+            grid.textContent = generateCardGridText(cardWidth + 50, cardHeight + 50);
+            card.appendChild(grid);
+
+            const { numCols, narrowWidth, wideWidth, rowHeights, stripePattern } = structure;
+            const numNarrow = Math.ceil(numCols / 2);
+            const numWide = Math.floor(numCols / 2);
+
+            const structureWidth = narrowWidth * numNarrow + wideWidth * numWide;
+            const structureLeft = (cardWidth - structureWidth) / 2;
+            const structureTop = 40 + Math.random() * 20;
+
+            // Calculate column x positions
+            const colPositions = [];
+            const colWidths = [];
+            let x = structureLeft;
+            for (let i = 0; i < numCols; i++) {
+                colPositions.push(x);
+                const w = (i % 2 === 0) ? narrowWidth : wideWidth;
+                colWidths.push(w);
+                x += w;
+            }
+
+            const structureHeight = rowHeights.reduce((a, b) => a + b, 0);
+
+            // Draw the frame columns
+            for (let i = 0; i < numCols; i += 2) {
+                card.appendChild(createCell(colPositions[i], structureTop, colWidths[i], structureHeight, palette.frameColor, hatchChar));
+            }
+
+            // Draw stripes in wide columns
+            let currentY = structureTop;
+            for (let row = 0; row < rowHeights.length; row++) {
+                const h = rowHeights[row];
+                
+                if (stripePattern[row].filled) {
+                    for (let i = 1; i < numCols; i += 2) {
+                        card.appendChild(createCell(colPositions[i], currentY, colWidths[i], h, stripePattern[row].color, hatchChar));
+                    }
+                }
+                
+                currentY += h;
+            }
+
+            // Legs
+            const legHeight = 50 + Math.random() * 30;
+            const legTop = structureTop + structureHeight;
+            
+            for (let i = 0; i < numCols; i += 2) {
+                card.appendChild(createCell(colPositions[i], legTop, colWidths[i], legHeight, palette.frameColor, hatchChar));
+            }
+        }
+
+        function generate() {
+            const macroGrid = document.getElementById('macroGrid');
+            macroGrid.innerHTML = '';
+
+            // Generate shared palette and structure
+            const palette = generatePalette();
+
+            // Set CSS root variable for card background color
+            document.documentElement.style.setProperty('--card-bg-color', palette.background);
+
+            // Set body background to a stripe color (different from card background)
+            const pageBackgroundColor = palette.colors[Math.floor(Math.random() * palette.colors.length)];
+            document.body.style.backgroundColor = pageBackgroundColor;
+
+            // Set tiny grid pattern on page background using gridColor
+            const pageGrid = document.getElementById('pageGrid');
+            pageGrid.style.color = palette.gridColor;
+            pageGrid.textContent = generatePageGridText(window.innerWidth + 100, window.innerHeight + 100);
+
+            const numCols = [5, 7, 9][Math.floor(Math.random() * 3)];
+            const narrowWidth = 6 + Math.random() * 6;
+            const wideWidth = 40 + Math.random() * 20;
+
+            const numRows = 6 + Math.floor(Math.random() * 5);
+            const rowHeights = [];
+            for (let i = 0; i < numRows; i++) {
+                rowHeights.push(25 + Math.random() * 35);
+            }
+
+            // Pre-determine stripe pattern (which rows are filled and with what color)
+            const stripePattern = [];
+            for (let i = 0; i < numRows; i++) {
+                if (Math.random() > 0.25) {
+                    stripePattern.push({
+                        filled: true,
+                        color: palette.colors[Math.floor(Math.random() * palette.colors.length)]
+                    });
+                } else {
+                    stripePattern.push({ filled: false });
+                }
+            }
+
+            const structure = { numCols, narrowWidth, wideWidth, rowHeights, stripePattern };
+
+            // Pick 10 different characters
+            const chars = shuffleArray(hatchChars).slice(0, 10);
+
+            // Create 10 cards (5x2)
+            for (let i = 0; i < 10; i++) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                macroGrid.appendChild(card);
+                generateCard(card, palette, structure, chars[i]);
+            }
+        }
+
+        generate();
+    </script>
+</body>
+</html>
