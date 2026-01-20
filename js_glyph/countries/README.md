@@ -184,6 +184,7 @@ The following blocks have hover effects implemented in `flagsfun.css`.  When a n
 - `Tibetan` (`block-tibetan`)
 - `Thaana` (`block-thaana`)
 - `Limbu` (`block-limbu`)
+- `Lepcha` (`block-lepcha`)
 - `Arabic Extended` (`block-arabic-extended`)
 - `Georgian` (`block-georgian`)
 - `Thai` (`block-thai`)

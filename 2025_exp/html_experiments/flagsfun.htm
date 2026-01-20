@@ -206,22 +206,33 @@
 
     // Check if a color is white (handles various formats)
     function isWhiteColor(color) {
-      const c = color.toLowerCase().trim();
-      return c === '#fff' || c === '#ffffff' || c === 'white' || c === '#f4f5f8';
+      const c = color.toUpperCase().trim();
+      return c === '#FFF' || c === '#FFFFFF' || c === 'WHITE' || c === '#F4F5F8';
     }
 
-    // Check if a color is orange
+    // Check if a color is orange (all 20 orange variants from flag analysis)
     function isOrangeColor(color) {
-      const c = color.toLowerCase().trim();
-      return c === '#ff9933' || c === '#ff9900' || c === '#ff8c00' || c === 'orange' ||
-             c === '#ffa500' || c === '#ff7f00' || c === '#ff6600';
+      const c = color.toUpperCase().trim();
+      return c === '#8B4513' || c === '#D47600' || c === '#DBA10E' || c === '#DD7500' ||
+             c === '#E05206' || c === '#EF7D00' || c === '#F2A800' || c === '#F6B40E' ||
+             c === '#F77F00' || c === '#FDB913' || c === '#FF4E12' || c === '#FF7722' ||
+             c === '#FF883E' || c === '#FF8C00' || c === '#FF9933' || c === '#FFB81C' ||
+             c === '#FFBE29' || c === '#FFC61E' || c === '#FFC726' || c === '#FFC72C' ||
+             c === 'ORANGE';
     }
 
-    // Check if a color is yellow
+    // Check if a color is yellow/gold (all 34 yellow variants from flag analysis)
     function isYellowColor(color) {
-      const c = color.toLowerCase().trim();
-      return c === '#ffff00' || c === 'yellow' || c === '#ffdf00' || c === '#fcdd09' ||
-             c === '#ffcc00' || c === '#ffd700' || c === '#f9cf02' || c === '#ecc81d';
+      const c = color.toUpperCase().trim();
+      return c === '#ECC81D' || c === '#F1BF00' || c === '#F4F100' || c === '#F7D618' ||
+             c === '#F7E017' || c === '#F9CF02' || c === '#F9E300' || c === '#FAD201' ||
+             c === '#FBDE4A' || c === '#FCD116' || c === '#FCD856' || c === '#FCDC04' ||
+             c === '#FCDD09' || c === '#FCE300' || c === '#FDCE12' || c === '#FDEF42' ||
+             c === '#FEC50C' || c === '#FECB00' || c === '#FECC00' || c === '#FED100' ||
+             c === '#FFC400' || c === '#FFC90E' || c === '#FFCC00' || c === '#FFCD00' ||
+             c === '#FFCE00' || c === '#FFD100' || c === '#FFD500' || c === '#FFD520' ||
+             c === '#FFD700' || c === '#FFDE00' || c === '#FFDF00' || c === '#FFED00' ||
+             c === '#FFEF00' || c === '#FFFF00' || c === 'YELLOW';
     }
 
     // Render generic flag layout with glyphs flowing around it
@@ -247,7 +258,15 @@
       const rightGlyphs = generateGlyphText(1200, currentColors);
 
       // Get flag emoji for this country
-      const flagEmoji = getCountryFlagEmoji(countryId);
+      const flagData = getCountryFlagEmoji(countryId);
+      let flagDisplay = '';
+      if (flagData) {
+        if (flagData.type === 'image') {
+          flagDisplay = `<img src="${flagData.src}" class="flag-image" style="width: 420px; height: auto;">`;
+        } else if (flagData.type === 'emoji') {
+          flagDisplay = `<span class="flag-emoji" style="margin-top: -.35em;">${flagData.content}</span>`;
+        }
+      }
 
       const html = `
         <div class="glyph-wrapper">
@@ -264,7 +283,7 @@
           </div>
         </div>
         <div class="flag-generic">
-          <span class="flag-emoji" style="margin-top: -.35em;"">${flagEmoji}</span>
+          ${flagDisplay}
         </div>
       `;
 
@@ -305,8 +324,8 @@
       // Update recipe info box
       const infoColor = result.colors[Math.floor(Math.random() * result.colors.length)] || '#333';
 
-      // Determine text color: black if yellow, white otherwise
-      const textColor = isYellowColor(infoColor) ? '#000' : '#fff';
+      // Determine text color: black if yellow or white, white otherwise
+      const textColor = (isYellowColor(infoColor) || isWhiteColor(infoColor)) ? '#000' : '#fff';
 
       recipeInfo.style.background = infoColor;
       recipeInfo.style.color = textColor;
@@ -453,7 +472,7 @@
       'norfolk_island', 'northern_mariana_islands', 'pitcairn_islands', 'puerto_rico',
       'reunion', 'saint_barthelemy', 'saint_martin', 'sint_maarten', 'south_georgia',
       'svalbard', 'tokelau', 'turks_and_caicos', 'us_virgin_islands', 'wallis_and_futuna',
-      'western_sahara', 'taiwan', 'palestine', 'kosovo'
+      'western_sahara', 'taiwan', 'palestine', 'kosovo', 'tibetan'
     ];
 
     let alphaMode = false;

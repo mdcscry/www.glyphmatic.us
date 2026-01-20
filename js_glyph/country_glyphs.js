@@ -104,7 +104,7 @@ const COUNTRY_FILES = [
   'scotland', 'senegal', 'serbia', 'seychelles', 'sierra_leone', 'singapore', 'sint_maarten', 'slovakia',
   'slovenia', 'solomon_islands', 'somalia', 'south_africa', 'south_georgia', 'south_sudan', 'spain',
   'sri_lanka', 'sudan', 'suriname', 'svalbard', 'sweden', 'switzerland', 'syria',
-  'taiwan', 'tajikistan', 'tanzania', 'thailand', 'timor_leste', 'togo', 'tokelau', 'tonga',
+  'taiwan', 'tajikistan', 'tanzania', 'thailand', 'tibetan', 'timor_leste', 'togo', 'tokelau', 'tonga',
   'trans', 'trinidad_and_tobago', 'tunisia', 'turkey', 'turkmenistan', 'turks_and_caicos', 'tuvalu',
   'uae', 'uganda', 'ukraine', 'united_kingdom', 'united_states', 'uruguay', 'us_virgin_islands', 'uzbekistan',
   'vanuatu', 'vatican_city', 'venezuela', 'vietnam',
@@ -121,14 +121,16 @@ let countryIsoCodes = {};
 let countryLanguages = {};
 let countries = [];
 
-// Convert ISO code to flag emoji
+// Convert ISO code to flag emoji or return image path
 function getCountryFlagEmoji(countryId) {
   const data = countryData[countryId];
-  if (!data) return '';
-  if (data.flag) return data.flag;
-  if (!data.iso) return '';
+  if (!data) return null;
+  if (data.flagImage) return { type: 'image', src: data.flagImage };
+  if (data.flag) return { type: 'emoji', content: data.flag };
+  if (!data.iso) return null;
   const base = 0x1F1E6 - 65;
-  return String.fromCodePoint(base + data.iso.charCodeAt(0), base + data.iso.charCodeAt(1));
+  const emoji = String.fromCodePoint(base + data.iso.charCodeAt(0), base + data.iso.charCodeAt(1));
+  return { type: 'emoji', content: emoji };
 }
 
 // Build derived data structures from loaded modules
