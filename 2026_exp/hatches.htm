@@ -161,19 +161,19 @@
                 (baseHue + 240 + Math.random() * 80) % 360
             ];
 
-            const bgLightness = 35 + Math.random() * 20;
+            const bgLightness = 85 + Math.random() * 10; // Very light: 85-95%
             const bgSaturation = 50 + Math.random() * 25;
             const background = `hsl(${baseHue}, ${bgSaturation}%, ${bgLightness}%)`;
 
-            // Make grid color much lighter or darker than background for strong contrast
-            const gridLightness = bgLightness < 45 ? bgLightness + 25 : bgLightness - 25;
+            // Make grid color darker than background for visibility
+            const gridLightness = bgLightness - 40;
             const gridColor = `hsl(${baseHue}, ${bgSaturation * 0.6}%, ${gridLightness}%)`;
 
             return {
                 background: background,
                 gridColor: gridColor,
-                frameColor: `hsl(${(baseHue + 150 + Math.random() * 60) % 360}, ${30 + Math.random() * 20}%, ${35 + Math.random() * 20}%)`,
-                colors: hues.map(h => `hsl(${h}, ${40 + Math.random() * 35}%, ${35 + Math.random() * 35}%)`)
+                frameColor: `hsl(${(baseHue + 150 + Math.random() * 60) % 360}, ${50 + Math.random() * 30}%, ${20 + Math.random() * 25}%)`,
+                colors: hues.map(h => `hsl(${h}, ${50 + Math.random() * 30}%, ${20 + Math.random() * 25}%)`)
             };
         }
 
@@ -290,7 +290,7 @@
 
             const structureWidth = narrowWidth * numNarrow + wideWidth * numWide;
             const structureLeft = (cardWidth - structureWidth) / 2;
-            const structureTop = 30;
+            const structureTop = 30 + (cardHeight * 0.08); // Move down 8% of card height
 
             // Calculate column x positions
             const colPositions = [];
@@ -323,17 +323,6 @@
 
                 currentY += h;
             }
-
-            // Legs - ensure they fit within the card
-            const legTop = structureTop + structureHeight;
-            const maxLegHeight = cardHeight - legTop - 20; // Leave 20px margin at bottom
-            const legHeight = Math.min(60, maxLegHeight);
-
-            if (legHeight > 10) { // Only draw legs if there's room
-                for (let i = 0; i < numCols; i += 2) {
-                    card.appendChild(createCell(colPositions[i], legTop, colWidths[i], legHeight, palette.frameColor, hatchChar, -1));
-                }
-            }
         }
 
         function generate() {
@@ -355,12 +344,22 @@
             pageGrid.style.color = palette.gridColor;
             pageGrid.textContent = generatePageGridText(window.innerWidth + 100, window.innerHeight + 100);
 
+            const cardWidth = 320;
+            const cardHeight = 420;
+
             const numCols = [5, 7, 9][Math.floor(Math.random() * 3)];
-            const narrowWidth = 6 + Math.random() * 6;
-            const wideWidth = 40 + Math.random() * 20;
+            // Column widths as percentage of card width
+            const totalWidthPercent = 0.75 + Math.random() * 0.15; // 75-90% of card width
+            const narrowWidthPercent = 0.03 + Math.random() * 0.02; // 3-5% of card width
+            const wideWidthPercent = 0.15 + Math.random() * 0.08; // 15-23% of card width
+
+            const narrowWidth = cardWidth * narrowWidthPercent;
+            const wideWidth = cardWidth * wideWidthPercent;
 
             const numRows = 6 + Math.floor(Math.random() * 5);
-            const maxStructureHeight = 280; // Leave room for top margin (30) + legs (60) + bottom margin (20) = 110px used, 310px available for structure
+            // Structure height as percentage of card height
+            const structureHeightPercent = 0.75 + Math.random() * 0.1; // 75-85% of card height
+            const maxStructureHeight = cardHeight * structureHeightPercent;
             const rowHeights = [];
             for (let i = 0; i < numRows; i++) {
                 rowHeights.push(maxStructureHeight / numRows * (0.7 + Math.random() * 0.6));
@@ -446,19 +445,38 @@
 
                 // After fade out completes, wait a brief moment (0.5s), then change and fade in
                 setTimeout(() => {
-                    hatchesInRow.forEach(hatch => {
-                        // Pick a different random character and color for each card
-                        const newChar = hatchChars[Math.floor(Math.random() * hatchChars.length)];
-                        const newColor = availableColors[Math.floor(Math.random() * availableColors.length)];
+                    // 1 in 20 chance: make the stripe super stripey with same glyph across all cards
+                    const makeStripey = Math.random() < 0.05;
 
-                        const cell = hatch.parentElement;
-                        const w = parseInt(cell.style.width);
-                        const h = parseInt(cell.style.height);
-                        hatch.textContent = generateHatchingText(w + 20, h + 20, newChar);
-                        hatch.style.color = newColor;
-                        hatch.classList.remove('fading-out');
-                        hatch.classList.add('fading-in');
-                    });
+                    if (makeStripey) {
+                        // All cards get the same glyph and same color for maximum stripeyness
+                        const stripeyChar = hatchChars[Math.floor(Math.random() * hatchChars.length)];
+                        const stripeyColor = availableColors[Math.floor(Math.random() * availableColors.length)];
+
+                        hatchesInRow.forEach(hatch => {
+                            const cell = hatch.parentElement;
+                            const w = parseInt(cell.style.width);
+                            const h = parseInt(cell.style.height);
+                            hatch.textContent = generateHatchingText(w + 20, h + 20, stripeyChar);
+                            hatch.style.color = stripeyColor;
+                            hatch.classList.remove('fading-out');
+                            hatch.classList.add('fading-in');
+                        });
+                    } else {
+                        // Normal mode: each card gets different glyph and color
+                        hatchesInRow.forEach(hatch => {
+                            const newChar = hatchChars[Math.floor(Math.random() * hatchChars.length)];
+                            const newColor = availableColors[Math.floor(Math.random() * availableColors.length)];
+
+                            const cell = hatch.parentElement;
+                            const w = parseInt(cell.style.width);
+                            const h = parseInt(cell.style.height);
+                            hatch.textContent = generateHatchingText(w + 20, h + 20, newChar);
+                            hatch.style.color = newColor;
+                            hatch.classList.remove('fading-out');
+                            hatch.classList.add('fading-in');
+                        });
+                    }
                 }, 4500); // Wait 4s for fade out + 0.5s gap
 
             }, 10000); // Every 10 seconds, pick a new stripe to animate
