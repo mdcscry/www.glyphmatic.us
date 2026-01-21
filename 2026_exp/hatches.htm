@@ -270,7 +270,7 @@
             return cell;
         }
 
-        function generateCard(card, palette, structure, hatchChar) {
+        function generateCard(card, palette, structure, hatchChars) {
             card.style.backgroundColor = palette.background;
             card.innerHTML = '';
 
@@ -289,8 +289,11 @@
             const numWide = Math.floor(numCols / 2);
 
             const structureWidth = narrowWidth * numNarrow + wideWidth * numWide;
+            const structureHeight = rowHeights.reduce((a, b) => a + b, 0);
+
+            // Center both horizontally and vertically
             const structureLeft = (cardWidth - structureWidth) / 2;
-            const structureTop = 30 + (cardHeight * 0.08); // Move down 8% of card height
+            const structureTop = (cardHeight - structureHeight) / 2;
 
             // Calculate column x positions
             const colPositions = [];
@@ -303,14 +306,13 @@
                 x += w;
             }
 
-            const structureHeight = rowHeights.reduce((a, b) => a + b, 0);
-
-            // Draw the frame columns
+            // Draw the frame columns - all use the same char (first char in array)
+            const frameChar = hatchChars.frame;
             for (let i = 0; i < numCols; i += 2) {
-                card.appendChild(createCell(colPositions[i], structureTop, colWidths[i], structureHeight, palette.frameColor, hatchChar, -1));
+                card.appendChild(createCell(colPositions[i], structureTop, colWidths[i], structureHeight, palette.frameColor, frameChar, -1));
             }
 
-            // Draw stripes in wide columns - always create all rows so they can all be animated
+            // Draw stripes in wide columns - each row uses different char from array
             let currentY = structureTop;
             for (let row = 0; row < rowHeights.length; row++) {
                 const h = rowHeights[row];
@@ -318,8 +320,11 @@
                 // Always create stripe cells, but use background color if not initially filled
                 const color = stripePattern[row].filled ? stripePattern[row].color : palette.background;
 
+                // Each stripe row gets its own char
+                const stripeChar = hatchChars.stripes[row];
+
                 for (let i = 1; i < numCols; i += 2) {
-                    card.appendChild(createCell(colPositions[i], currentY, colWidths[i], h, color, hatchChar, row));
+                    card.appendChild(createCell(colPositions[i], currentY, colWidths[i], h, color, stripeChar, row));
                 }
 
                 currentY += h;
@@ -349,10 +354,20 @@
             const cardHeight = 420;
 
             const numCols = [5, 7, 9][Math.floor(Math.random() * 3)];
-            // Column widths as percentage of card width
-            const totalWidthPercent = 0.75 + Math.random() * 0.15; // 75-90% of card width
-            const narrowWidthPercent = 0.03 + Math.random() * 0.02; // 3-5% of card width
-            const wideWidthPercent = 0.15 + Math.random() * 0.08; // 15-23% of card width
+
+            // Scale column widths based on number of columns
+            // 5 columns = wider, 9 columns = narrower
+            let narrowWidthPercent, wideWidthPercent;
+            if (numCols === 5) {
+                narrowWidthPercent = 0.05 + Math.random() * 0.02; // 5-7% of card width
+                wideWidthPercent = 0.20 + Math.random() * 0.08; // 20-28% of card width
+            } else if (numCols === 7) {
+                narrowWidthPercent = 0.04 + Math.random() * 0.02; // 4-6% of card width
+                wideWidthPercent = 0.15 + Math.random() * 0.06; // 15-21% of card width
+            } else { // numCols === 9
+                narrowWidthPercent = 0.03 + Math.random() * 0.01; // 3-4% of card width
+                wideWidthPercent = 0.10 + Math.random() * 0.05; // 10-15% of card width
+            }
 
             const narrowWidth = cardWidth * narrowWidthPercent;
             const wideWidth = cardWidth * wideWidthPercent;
@@ -381,15 +396,24 @@
 
             const structure = { numCols, narrowWidth, wideWidth, rowHeights, stripePattern };
 
-            // Pick 10 different characters
-            const chars = shuffleArray(hatchChars).slice(0, 10);
-
             // Create 10 cards (5x2)
             for (let i = 0; i < 10; i++) {
                 const card = document.createElement('div');
                 card.className = 'card';
                 macroGrid.appendChild(card);
-                generateCard(card, palette, structure, chars[i]);
+
+                // Each card gets its own character set
+                const cardChars = {
+                    frame: hatchChars[Math.floor(Math.random() * hatchChars.length)],
+                    stripes: []
+                };
+
+                // Each stripe row gets a different char
+                for (let row = 0; row < numRows; row++) {
+                    cardChars.stripes.push(hatchChars[Math.floor(Math.random() * hatchChars.length)]);
+                }
+
+                generateCard(card, palette, structure, cardChars);
             }
         }
 
@@ -482,43 +506,47 @@
 
             }, 10000); // Every 10 seconds, pick a new stripe to animate
 
-            // Frame animation - change all narrow columns together every 30-45 seconds
+            // Frame animation - change all narrow columns in one structure at a time
             const scheduleNextFrameAnimation = () => {
-                const delay = 30000 + Math.random() * 15000; // Random delay between 30-45 seconds
+                const delay = 20000 + Math.random() * 15000; // Random delay between 20-35 seconds
 
                 frameAnimationInterval = setTimeout(() => {
-                    const allFrameHatches = document.querySelectorAll('.cell-hatching[data-row-index="-1"]');
-                    if (allFrameHatches.length === 0) {
+                    const cards = document.querySelectorAll('.card');
+                    if (cards.length === 0) {
+                        scheduleNextFrameAnimation();
+                        return;
+                    }
+
+                    // Pick one random card/structure
+                    const randomCard = cards[Math.floor(Math.random() * cards.length)];
+                    const cardFrameHatches = randomCard.querySelectorAll('.cell-hatching[data-row-index="-1"]');
+
+                    if (cardFrameHatches.length === 0) {
                         scheduleNextFrameAnimation();
                         return;
                     }
 
                     const availableColors = getPaletteColors();
 
-                    // Fade out all frame columns across all cards
-                    allFrameHatches.forEach(hatch => {
+                    // Fade out all narrow columns in this structure
+                    cardFrameHatches.forEach(hatch => {
                         hatch.classList.remove('fading-in');
                         hatch.classList.add('fading-out');
                     });
 
-                    // After fade out, change and fade in - each card gets different glyph/color
+                    // After fade out, change glyph and color for all columns in this structure
                     setTimeout(() => {
-                        // Group hatches by card to give each card its own glyph/color
-                        const cards = document.querySelectorAll('.card');
-                        cards.forEach(card => {
-                            const cardFrameHatches = card.querySelectorAll('.cell-hatching[data-row-index="-1"]');
-                            const newChar = hatchChars[Math.floor(Math.random() * hatchChars.length)];
-                            const newColor = availableColors[Math.floor(Math.random() * availableColors.length)];
+                        const newChar = hatchChars[Math.floor(Math.random() * hatchChars.length)];
+                        const newColor = availableColors[Math.floor(Math.random() * availableColors.length)];
 
-                            cardFrameHatches.forEach(hatch => {
-                                const cell = hatch.parentElement;
-                                const w = parseInt(cell.style.width);
-                                const h = parseInt(cell.style.height);
-                                hatch.textContent = generateHatchingText(w + 20, h + 20, newChar);
-                                hatch.style.color = newColor;
-                                hatch.classList.remove('fading-out');
-                                hatch.classList.add('fading-in');
-                            });
+                        cardFrameHatches.forEach(hatch => {
+                            const cell = hatch.parentElement;
+                            const w = parseInt(cell.style.width);
+                            const h = parseInt(cell.style.height);
+                            hatch.textContent = generateHatchingText(w + 20, h + 20, newChar);
+                            hatch.style.color = newColor;
+                            hatch.classList.remove('fading-out');
+                            hatch.classList.add('fading-in');
                         });
                     }, 4500); // Wait 4s for fade out + 0.5s gap
 
