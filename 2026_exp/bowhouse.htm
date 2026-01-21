@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bauhaus Grid Generator</title>
+    <link rel="stylesheet" href="../css_font/glyphmatic-fonts.css">
+    <style>
+
+    
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            font-family: 'BabelStone Pseudographica','Helvetica Neue', Arial, sans-serif;
+        }
+
+        .container {
+            background: #f5f2eb;
+            border-radius: 24px;
+            padding: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(16, 80px);
+            grid-template-rows: repeat(10, 80px);
+            gap: 0;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .cell {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            line-height: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .cell span {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        button {
+            margin-top: 30px;
+            padding: 16px 48px;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: #f5f2eb;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(245,242,235,0.3);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="grid" id="grid"></div>
+    </div>
+    <button onclick="generate()">Regenerate</button>
+
+    <script>
+        const black = '#1a1a1a';
+        const white = '#f5f2eb';
+
+        // Color palettes - 3 accent colors (black and white used for backgrounds only)
+        const palettes = [
+            ['#e8a435', '#2d9cd3', '#e15a33'],  // original: gold, blue, orange-red
+            ['#c92a2a', '#1864ab', '#f59f00'],  // red, blue, yellow
+            ['#d9480f', '#2b8a3e', '#1971c2'],  // orange, green, blue
+            ['#e03131', '#fcc419', '#228be6'],  // mondrian-ish
+            ['#f76707', '#12b886', '#7950f2'],  // orange, teal, purple
+        ];
+
+        // Glyphs: [character, scale, isCircle, translateX, translateY]
+        const glyphs = [
+            // Solid quarter circle wedges - U+1FBEC through U+1FBEF
+            ['\u{1FBEC}', 2.0, false, -40, 40],    // upper right quarter
+            ['\u{1FBED}', 2.0, false, 40, -40],   // lower left quarter
+            ['\u{1FBEE}', 2.0, false, -40, -40],   // bottom right quarter
+            ['\u{1FBEF}', 2.0, false, 40, 40],  // upper left quarter
+
+            // Full circle
+            ['●', 1.0, true, 0, 4],
+        ];
+
+        function randomFrom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generate() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            // Pick a random palette
+            const palette = randomFrom(palettes);
+            
+            for (let i = 0; i < 160; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                
+                // Background is only black or white
+                const bg = Math.random() < 0.5 ? black : white;
+                cell.style.backgroundColor = bg;
+
+                // Pick foreground color (accent colors plus black and white)
+                const fgChoices = [...palette, black, white];
+                const fg = randomFrom(fgChoices);
+                
+                // Pick a glyph - weight toward quarter circles
+                const roll = Math.random();
+                let glyph, scale, isCircle, translateX, translateY;
+                if (roll < 0.85) {
+                    // Quarter circle wedges
+                    [glyph, scale, isCircle, translateX, translateY] = glyphs[Math.floor(Math.random() * 4)];
+                } else {
+                    // Full circle
+                    [glyph, scale, isCircle, translateX, translateY] = glyphs[4];
+                }
+
+                const span = document.createElement('span');
+                span.textContent = glyph;
+                span.style.color = fg;
+
+                if (isCircle) {
+                    // Circle with whitespace around it
+                    span.style.fontSize = '75px';
+                    span.style.transform = `translate(0px, 0px)`;
+                } else {
+                    span.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+                }
+                
+                cell.appendChild(span);
+                grid.appendChild(cell);
+            }
+        }
+
+        // Generate on load
+        generate();
+    </script>
+</body>
+</html>
