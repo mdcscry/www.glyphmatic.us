@@ -107,14 +107,77 @@
             ['#f76707', '#12b886', '#7950f2'],  // orange, teal, purple
         ];
 
-        // Glyphs: [character, scale, isCircle, translateX, translateY]
-        const glyphs = [
+        // Current mode: 'round', 'grating', 'triangles', 'quarters', 'diagonals', or 'circles'
+        let currentMode = 'round';
+
+        // Glyphs for round mode - quarter circles and full circle
+        const roundGlyphs = [
             // Solid quarter circle wedges - U+1FBEC through U+1FBEF
             ['\u{1FBEC}', 2.0, false, -40, 40],    // upper right quarter
             ['\u{1FBED}', 2.0, false, 40, -40],   // lower left quarter
             ['\u{1FBEE}', 2.0, false, -40, -40],   // bottom right quarter
             ['\u{1FBEF}', 2.0, false, 40, 40],  // upper left quarter
 
+            // Full circle
+            ['●', 1.0, true, 0, 4],
+        ];
+
+        // Glyphs for grating mode: [character, scale, isCircle, translateX, translateY]
+        const gratingGlyphs = [
+            ['\u{1FB9C}', 1.0, false, 0, 0],    // upper left
+            ['\u{1FB9D}', 1.0, false, 0, 0],    // upper right
+            ['\u{1FB9E}', 1.0, false, 0, 0],    // lower right
+            ['\u{1FB9F}', 1.0, false, 0, 0],    // lower left
+        ];
+
+        // Special glyphs for mode 2 (to replace circles) - triangles
+        const gratingSpecialGlyphs = [
+            ['\u{25B2}', 1.0, false, 0, 0],      // triangle pointing up
+            ['\u{25B2}', 1.0, false, 0, 0, 180], // triangle pointing down (rotated 180°)
+        ];
+
+        // Glyphs for triangles mode: [character, scale, isCircle, translateX, translateY]
+        const sidesGlyphs = [
+            ['\u{1FB6C}', 1.0, false, 0, 0],    // left triangle
+            ['\u{1FB6D}', 1.0, false, 0, 0],    // top triangle
+            ['\u{1FB6E}', 1.0, false, 0, 0],    // right triangle
+            ['\u{1FB6F}', 1.0, false, 0, 0],    // bottom triangle
+            ['\u{1FB9A}', 1.0, false, 0, 0],    // top & bottom triangles
+            ['\u{1FB9B}', 1.0, false, 0, 0],    // left & right triangles
+
+            // Full circle
+            ['●', 1.0, true, 0, 4],
+        ];
+
+        // Glyphs for quarters mode: [character, scale, isCircle, translateX, translateY]
+        const quartersGlyphs = [
+            ['\u{1FB8C}', 1.0, false, 0, 0],    // upper left
+            ['\u{1FB8D}', 1.0, false, 0, 0],    // upper right
+            ['\u{1FB8E}', 1.0, false, 0, 0],    // lower left
+            ['\u{1FB8F}', 1.0, false, 0, 0],    // lower right
+        ];
+
+        // Special glyphs for mode 4 (to replace circles)
+        const quartersSpecialGlyphs = [
+            ['\u{1FB90}', 1.0, false, 0, 0],    // full square grating
+            ['\u{1FB91}', 1.0, false, 0, 0],
+            ['\u{1FB92}', 1.0, false, 0, 0],
+            ['\u{1FB94}', 1.0, false, 0, 0],
+        ];
+
+        // Glyphs for diagonals mode: [character, scale, isCircle, translateX, translateY]
+        const diagonalsGlyphs = [
+            ['\u{1FBE8}', 1.0, false, 0, 0],    // diagonal 1
+            ['\u{1FBE9}', 1.0, false, 0, 0],    // diagonal 2
+            ['\u{1FBEA}', 1.0, false, 0, 0],    // diagonal 3
+            ['\u{1FBEB}', 1.0, false, 0, 0],    // diagonal 4
+
+            // Full circle
+            ['●', 1.0, true, 0, 4],
+        ];
+
+        // Glyphs for circles mode: only circles
+        const circlesGlyphs = [
             // Full circle
             ['●', 1.0, true, 0, 4],
         ];
@@ -126,14 +189,30 @@
         function generate() {
             const grid = document.getElementById('grid');
             grid.innerHTML = '';
-            
+
             // Pick a random palette
             const palette = randomFrom(palettes);
-            
+
+            // Choose the appropriate glyph set based on current mode
+            let glyphSet;
+            if (currentMode === 'round') {
+                glyphSet = roundGlyphs;
+            } else if (currentMode === 'grating') {
+                glyphSet = gratingGlyphs;
+            } else if (currentMode === 'triangles') {
+                glyphSet = sidesGlyphs;
+            } else if (currentMode === 'quarters') {
+                glyphSet = quartersGlyphs;
+            } else if (currentMode === 'diagonals') {
+                glyphSet = diagonalsGlyphs;
+            } else if (currentMode === 'circles') {
+                glyphSet = circlesGlyphs;
+            }
+
             for (let i = 0; i < 160; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
-                
+
                 // Background is only black or white
                 const bg = Math.random() < 0.5 ? black : white;
                 cell.style.backgroundColor = bg;
@@ -141,16 +220,52 @@
                 // Pick foreground color (accent colors plus black and white)
                 const fgChoices = [...palette, black, white];
                 const fg = randomFrom(fgChoices);
-                
-                // Pick a glyph - weight toward quarter circles
-                const roll = Math.random();
-                let glyph, scale, isCircle, translateX, translateY;
-                if (roll < 0.85) {
-                    // Quarter circle wedges
-                    [glyph, scale, isCircle, translateX, translateY] = glyphs[Math.floor(Math.random() * 4)];
+
+                let glyph, scale, isCircle, translateX, translateY, rotation;
+
+                // For circles mode, 15% empty cells, rest are circles
+                if (currentMode === 'circles') {
+                    const roll = Math.random();
+                    if (roll < 0.15) {
+                        // Empty cell - skip to next iteration
+                        grid.appendChild(cell);
+                        continue;
+                    } else {
+                        // Circle
+                        [glyph, scale, isCircle, translateX, translateY] = glyphSet[0];
+                    }
+                } else if (currentMode === 'grating') {
+                    // Mode 2: Pick pattern or triangle (no circles)
+                    const roll = Math.random();
+                    if (roll < 0.85) {
+                        // Pattern characters
+                        [glyph, scale, isCircle, translateX, translateY] = glyphSet[Math.floor(Math.random() * glyphSet.length)];
+                    } else {
+                        // One of the two triangle orientations
+                        const triangleData = randomFrom(gratingSpecialGlyphs);
+                        [glyph, scale, isCircle, translateX, translateY, rotation] = triangleData;
+                    }
+                } else if (currentMode === 'quarters') {
+                    // Mode 4: Pick pattern or special glyph (no circles)
+                    const roll = Math.random();
+                    if (roll < 0.85) {
+                        // Pattern characters
+                        [glyph, scale, isCircle, translateX, translateY] = glyphSet[Math.floor(Math.random() * glyphSet.length)];
+                    } else {
+                        // One of the three special glyphs
+                        [glyph, scale, isCircle, translateX, translateY] = randomFrom(quartersSpecialGlyphs);
+                    }
                 } else {
-                    // Full circle
-                    [glyph, scale, isCircle, translateX, translateY] = glyphs[4];
+                    // Pick a glyph - weight toward the pattern glyphs (85%) vs circle (15%)
+                    const roll = Math.random();
+                    if (roll < 0.85) {
+                        // Pattern characters (all but last glyph which is the circle)
+                        const patternCount = glyphSet.length - 1;
+                        [glyph, scale, isCircle, translateX, translateY] = glyphSet[Math.floor(Math.random() * patternCount)];
+                    } else {
+                        // Full circle (last glyph)
+                        [glyph, scale, isCircle, translateX, translateY] = glyphSet[glyphSet.length - 1];
+                    }
                 }
 
                 const span = document.createElement('span');
@@ -158,17 +273,107 @@
                 span.style.color = fg;
 
                 if (isCircle) {
-                    // Circle with whitespace around it
-                    span.style.fontSize = '75px';
-                    span.style.transform = `translate(0px, 0px)`;
+                    // Circle rendering
+                    if (currentMode === 'circles') {
+                        // Cross-hatch mode for modes 2 and 6: layer six glyphs with circles
+                        // Pick two different colors for first two glyphs
+                        let fg1 = randomFrom(fgChoices);
+                        let fg2 = randomFrom(fgChoices);
+                        // Ensure fg1 and fg2 are different
+                        while (fg1 === fg2 && fgChoices.length > 1) {
+                            fg2 = randomFrom(fgChoices);
+                        }
+
+                        // First layer: U+1FB90 (full square grating - different color)
+                        const span1 = document.createElement('span');
+                        span1.textContent = '\u{1FB90}';
+                        span1.style.color = fg1;
+                        span1.style.fontSize = '75px';
+                        span1.style.transform = `translate(0px, 0px)`;
+
+                        // Second layer: U+25CE (different color from first)
+                        const span2 = document.createElement('span');
+                        span2.textContent = '\u{25CE}';
+                        span2.style.color = fg2;
+                        span2.style.fontSize = '75px';
+                        span2.style.transform = `translate(0px, 0px)`;
+
+                        // Third layer: U+25CD at 0°
+                        const span3 = document.createElement('span');
+                        span3.textContent = '\u{25CD}';
+                        span3.style.color = fg;
+                        span3.style.fontSize = '75px';
+                        span3.style.transform = `translate(0px, 0px) rotate(0deg)`;
+
+                        // Fourth layer: U+25CD at 45°
+                        const span4 = document.createElement('span');
+                        span4.textContent = '\u{25CD}';
+                        span4.style.color = fg;
+                        span4.style.fontSize = '75px';
+                        span4.style.transform = `translate(0px, 0px) rotate(45deg)`;
+
+                        // Fifth layer: U+25CD at 90°
+                        const span5 = document.createElement('span');
+                        span5.textContent = '\u{25CD}';
+                        span5.style.color = fg;
+                        span5.style.fontSize = '75px';
+                        span5.style.transform = `translate(0px, 0px) rotate(90deg)`;
+
+                        // Sixth layer: U+25CD at -45°
+                        const span6 = document.createElement('span');
+                        span6.textContent = '\u{25CD}';
+                        span6.style.color = fg;
+                        span6.style.fontSize = '75px';
+                        span6.style.transform = `translate(0px, 0px) rotate(-45deg)`;
+
+                        cell.appendChild(span1);
+                        cell.appendChild(span2);
+                        cell.appendChild(span3);
+                        cell.appendChild(span4);
+                        cell.appendChild(span5);
+                        cell.appendChild(span6);
+                    } else {
+                        // Regular circle for other modes
+                        span.style.fontSize = '75px';
+                        span.style.transform = `translate(0px, 0px)`;
+                        cell.appendChild(span);
+                    }
                 } else {
-                    span.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+                    if (rotation !== undefined) {
+                        // Apply rotation for triangles
+                        span.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale}) rotate(${rotation}deg)`;
+                    } else {
+                        span.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+                    }
+                    cell.appendChild(span);
                 }
-                
-                cell.appendChild(span);
+
                 grid.appendChild(cell);
             }
         }
+
+        // Keyboard listener for mode switching
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '1') {
+                currentMode = 'round';
+                generate();
+            } else if (e.key === '2') {
+                currentMode = 'grating';
+                generate();
+            } else if (e.key === '3') {
+                currentMode = 'triangles';
+                generate();
+            } else if (e.key === '4') {
+                currentMode = 'quarters';
+                generate();
+            } else if (e.key === '5') {
+                currentMode = 'diagonals';
+                generate();
+            } else if (e.key === '6') {
+                currentMode = 'circles';
+                generate();
+            }
+        });
 
         // Generate on load
         generate();
