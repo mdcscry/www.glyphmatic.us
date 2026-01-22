@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morphing Dreams</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 1.5s ease;
+        }
+
+        .container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .shape {
+            position: absolute;
+            will-change: transform, border-radius, opacity;
+            transition: opacity 2.5s ease-in-out;
+        }
+
+        .shape.birthing {
+            opacity: 0 !important;
+        }
+
+        .shape.dying {
+            opacity: 0 !important;
+            transition: opacity 3.5s ease-out;
+        }
+
+        .rerender-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .rerender-btn:hover {
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .rerender-btn:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        .entropy-monitor {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            z-index: 1001;
+            min-width: 240px;
+            transition: all 0.3s ease;
+        }
+
+        .entropy-monitor.collapsed {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .entropy-monitor.collapsed .entropy-details {
+            display: none;
+        }
+
+        .entropy-monitor.collapsed .entropy-header {
+            margin: 0;
+        }
+
+        .entropy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .entropy-title {
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .entropy-toggle {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        .entropy-details {
+            line-height: 1.6;
+        }
+
+        .entropy-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 3px 0;
+        }
+
+        .entropy-label {
+            opacity: 0.7;
+        }
+
+        .entropy-value {
+            font-weight: bold;
+            text-align: right;
+            margin-left: 12px;
+        }
+
+        .entropy-warning {
+            color: #ff6b00;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .entropy-critical {
+            color: #ff0000;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container"></div>
+    <button class="rerender-btn" id="rerenderBtn">✨ New Universe ✨</button>
+    <div class="entropy-monitor collapsed" id="entropyMonitor" style="display: none;">
+        <div class="entropy-header">
+            <span class="entropy-title">🔥 Entropy Mode</span>
+            <span class="entropy-toggle">▼</span>
+        </div>
+        <div class="entropy-details">
+            <div class="entropy-row">
+                <span class="entropy-label">Uptime:</span>
+                <span class="entropy-value" id="uptime">0s</span>
+            </div>
+            <div class="entropy-row">
+                <span class="entropy-label">Animations Created:</span>
+                <span class="entropy-value" id="animTotal">0</span>
+            </div>
+            <div class="entropy-row">
+                <span class="entropy-label">Animations Active:</span>
+                <span class="entropy-value" id="animActive">0</span>
+            </div>
+            <div class="entropy-row">
+                <span class="entropy-label">Dead Animations:</span>
+                <span class="entropy-value" id="animDead">0</span>
+            </div>
+            <div class="entropy-row">
+                <span class="entropy-label">Living Shapes:</span>
+                <span class="entropy-value" id="shapeCount">0</span>
+            </div>
+            <div class="entropy-row">
+                <span class="entropy-label">Living Accents:</span>
+                <span class="entropy-value" id="accentCount">0</span>
+            </div>
+            <div class="entropy-row">
+                <span class="entropy-label">Stylesheet Size:</span>
+                <span class="entropy-value" id="styleSize">0 KB</span>
+            </div>
+            <div class="entropy-row">
+                <span class="entropy-label">Est. Memory:</span>
+                <span class="entropy-value" id="memEstimate">0 MB</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check for entropic mode
+        const urlParams = new URLSearchParams(window.location.search);
+        const ENTROPIC_MODE = urlParams.get('entropic') === 'true';
+        const startTime = Date.now();
+
+        const palettes = {
+            neonDream: () => ({
+                bg: `linear-gradient(${rand(0,360)}deg, #0a0a0a, #1a0a2e, #0a1a2e)`,
+                colors: ['#ff006e', '#8338ec', '#3a86ff', '#06ffa5', '#ffbe0b', '#ff595e'],
+                btnBg: 'rgba(255,255,255,0.1)',
+                btnColor: '#fff',
+                shadows: true,
+                glows: true
+            }),
+            pastelDream: () => ({
+                bg: `linear-gradient(${rand(0,360)}deg, #ffecd2, #fcb69f, #ee9ca7)`,
+                colors: ['#a8e6cf', '#dcedc1', '#ffd3a5', '#ffaaa5', '#ff8b94', '#b5ead7'],
+                btnBg: 'rgba(255,255,255,0.7)',
+                btnColor: '#555',
+                shadows: false,
+                glows: false
+            }),
+            monochrome: () => {
+                const base = rand(0, 1) > 0.5;
+                return {
+                    bg: base ? '#0a0a0a' : '#f5f5f5',
+                    colors: base 
+                        ? ['#fff', '#ccc', '#999', '#666', '#333', '#111']
+                        : ['#000', '#222', '#444', '#666', '#888', '#aaa'],
+                    btnBg: base ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+                    btnColor: base ? '#fff' : '#000',
+                    shadows: true,
+                    glows: false
+                };
+            },
+            sunset: () => ({
+                bg: `linear-gradient(${rand(160,200)}deg, #0f0c29, #302b63, #24243e)`,
+                colors: ['#ff7e5f', '#feb47b', '#ff6a88', '#ff99ac', '#fcb045', '#fd1d1d'],
+                btnBg: 'rgba(255,126,95,0.3)',
+                btnColor: '#fff',
+                shadows: true,
+                glows: true
+            }),
+            ocean: () => ({
+                bg: `linear-gradient(${rand(0,360)}deg, #0f2027, #203a43, #2c5364)`,
+                colors: ['#00d9ff', '#00ff95', '#0077b6', '#00b4d8', '#90e0ef', '#caf0f8'],
+                btnBg: 'rgba(0,217,255,0.2)',
+                btnColor: '#caf0f8',
+                shadows: true,
+                glows: true
+            }),
+            forest: () => ({
+                bg: `linear-gradient(${rand(0,360)}deg, #1a1a0e, #2d3a1a, #1a2f1a)`,
+                colors: ['#606c38', '#283618', '#fefae0', '#dda15e', '#bc6c25', '#99aa38'],
+                btnBg: 'rgba(254,250,224,0.2)',
+                btnColor: '#fefae0',
+                shadows: true,
+                glows: false
+            }),
+            candy: () => ({
+                bg: `linear-gradient(${rand(0,360)}deg, #fff0f5, #ffe4ec, #ffd6e7)`,
+                colors: ['#ff69b4', '#ff1493', '#da70d6', '#ba55d3', '#9370db', '#ff6eb4'],
+                btnBg: 'rgba(255,105,180,0.3)',
+                btnColor: '#ff1493',
+                shadows: false,
+                glows: true
+            }),
+            retroWave: () => ({
+                bg: `linear-gradient(180deg, #000428, #004e92, #000428)`,
+                colors: ['#ff00ff', '#00ffff', '#ff6600', '#ffff00', '#ff0066', '#6600ff'],
+                btnBg: 'rgba(255,0,255,0.3)',
+                btnColor: '#00ffff',
+                shadows: true,
+                glows: true
+            }),
+            earthTones: () => ({
+                bg: `linear-gradient(${rand(0,360)}deg, #3d2914, #5c4033, #4a3728)`,
+                colors: ['#d4a574', '#c4956a', '#a67c52', '#8b5a2b', '#deb887', '#f5deb3'],
+                btnBg: 'rgba(212,165,116,0.3)',
+                btnColor: '#f5deb3',
+                shadows: true,
+                glows: false
+            }),
+            aurora: () => ({
+                bg: `linear-gradient(${rand(0,360)}deg, #000000, #0a0a0a, #050510)`,
+                colors: ['#00ff87', '#60efff', '#ff00ff', '#ffff00', '#00ffff', '#ff6b6b'],
+                btnBg: 'rgba(0,255,135,0.2)',
+                btnColor: '#60efff',
+                shadows: true,
+                glows: true
+            }),
+            vintage: () => ({
+                bg: `linear-gradient(${rand(0,360)}deg, #f4e9d8, #e8d5b7, #dcc1a7)`,
+                colors: ['#a55c55', '#7c5e4a', '#5c4a3d', '#8b7355', '#b8860b', '#6b4423'],
+                btnBg: 'rgba(165,92,85,0.3)',
+                btnColor: '#5c4a3d',
+                shadows: false,
+                glows: false
+            }),
+            cosmic: () => ({
+                bg: `radial-gradient(ellipse at ${rand(0,100)}% ${rand(0,100)}%, #1a0033, #000011, #0a0020)`,
+                colors: ['#9d00ff', '#ff00d4', '#00d4ff', '#ff6b35', '#f7c59f', '#efefef'],
+                btnBg: 'rgba(157,0,255,0.3)',
+                btnColor: '#ff00d4',
+                shadows: true,
+                glows: true
+            }),
+            minimal: () => {
+                const hue = rand(0, 360);
+                return {
+                    bg: `hsl(${hue}, 5%, 95%)`,
+                    colors: [`hsl(${hue}, 70%, 50%)`, `hsl(${hue}, 60%, 60%)`, `hsl(${hue}, 50%, 70%)`],
+                    btnBg: `hsla(${hue}, 70%, 50%, 0.2)`,
+                    btnColor: `hsl(${hue}, 70%, 30%)`,
+                    shadows: false,
+                    glows: false
+                };
+            },
+            highContrast: () => ({
+                bg: '#000000',
+                colors: ['#ffffff', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'],
+                btnBg: 'rgba(255,255,255,0.2)',
+                btnColor: '#ffffff',
+                shadows: false,
+                glows: true
+            }),
+            muted: () => {
+                const hue = rand(0, 360);
+                return {
+                    bg: `hsl(${hue}, 15%, 85%)`,
+                    colors: [
+                        `hsl(${hue}, 20%, 50%)`,
+                        `hsl(${(hue + 30) % 360}, 20%, 55%)`,
+                        `hsl(${(hue + 60) % 360}, 20%, 60%)`,
+                        `hsl(${(hue + 90) % 360}, 20%, 45%)`
+                    ],
+                    btnBg: `hsla(${hue}, 20%, 40%, 0.3)`,
+                    btnColor: `hsl(${hue}, 20%, 30%)`,
+                    shadows: false,
+                    glows: false
+                };
+            }
+        };
+
+        function rand(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function randInt(min, max) {
+            return Math.floor(rand(min, max + 1));
+        }
+
+        function pick(arr) {
+            return arr[randInt(0, arr.length - 1)];
+        }
+
+        function generateSmoothBorderRadii(steps) {
+            const radii = [];
+            let values = Array(8).fill(0).map(() => rand(25, 75));
+            let velocities = Array(8).fill(0).map(() => rand(-2, 2));
+            
+            for (let i = 0; i < steps; i++) {
+                radii.push([...values]);
+                values = values.map((v, idx) => {
+                    velocities[idx] += rand(-1, 1);
+                    velocities[idx] *= 0.9;
+                    velocities[idx] = Math.max(-4, Math.min(4, velocities[idx]));
+                    const newVal = v + velocities[idx];
+                    return Math.max(15, Math.min(85, newVal));
+                });
+            }
+            const closeSteps = 5;
+            for (let i = 1; i <= closeSteps; i++) {
+                const t = i / closeSteps;
+                const interpolated = values.map((v, idx) => 
+                    v + (radii[0][idx] - v) * t
+                );
+                radii.push(interpolated);
+            }
+            return radii;
+        }
+
+        function generateSmoothDrift(steps, maxDrift) {
+            const positions = [];
+            let x = 0, y = 0, rotation = 0, scale = 1;
+            let vx = rand(-1, 1), vy = rand(-1, 1), vr = rand(-2, 2), vs = 0;
+            
+            for (let i = 0; i < steps; i++) {
+                positions.push({ x, y, rotation, scale });
+                vx += rand(-0.5, 0.5);
+                vy += rand(-0.5, 0.5);
+                vr += rand(-1, 1);
+                vs += rand(-0.01, 0.01);
+                vx *= 0.92;
+                vy *= 0.92;
+                vr *= 0.9;
+                vs *= 0.85;
+                vx = Math.max(-3, Math.min(3, vx));
+                vy = Math.max(-3, Math.min(3, vy));
+                vr = Math.max(-5, Math.min(5, vr));
+                vs = Math.max(-0.02, Math.min(0.02, vs));
+                x += vx;
+                y += vy;
+                rotation += vr;
+                scale += vs;
+                if (Math.abs(x) > maxDrift) vx *= -0.5;
+                if (Math.abs(y) > maxDrift) vy *= -0.5;
+                scale = Math.max(0.85, Math.min(1.15, scale));
+            }
+            const closeSteps = 8;
+            for (let i = 1; i <= closeSteps; i++) {
+                const t = i / closeSteps;
+                const eased = t * t * (3 - 2 * t);
+                positions.push({
+                    x: x + (positions[0].x - x) * eased,
+                    y: y + (positions[0].y - y) * eased,
+                    rotation: rotation + (positions[0].rotation - rotation) * eased,
+                    scale: scale + (positions[0].scale - scale) * eased
+                });
+            }
+            return positions;
+        }
+
+        function generateSmoothPolygon(steps, numPoints) {
+            const polygons = [];
+            let points = [];
+            for (let i = 0; i < numPoints; i++) {
+                const angle = (i / numPoints) * Math.PI * 2 - Math.PI / 2;
+                const baseR = rand(35, 48);
+                points.push({
+                    x: 50 + baseR * Math.cos(angle),
+                    y: 50 + baseR * Math.sin(angle),
+                    baseAngle: angle,
+                    r: baseR,
+                    vr: rand(-0.5, 0.5),
+                    va: rand(-0.02, 0.02)
+                });
+            }
+            
+            for (let s = 0; s < steps; s++) {
+                const poly = points.map(p => `${p.x.toFixed(2)}% ${p.y.toFixed(2)}%`).join(', ');
+                polygons.push(`polygon(${poly})`);
+                points = points.map(p => {
+                    p.vr += rand(-0.3, 0.3);
+                    p.va += rand(-0.008, 0.008);
+                    p.vr *= 0.9;
+                    p.va *= 0.9;
+                    p.vr = Math.max(-2, Math.min(2, p.vr));
+                    p.va = Math.max(-0.05, Math.min(0.05, p.va));
+                    p.r += p.vr;
+                    p.r = Math.max(25, Math.min(48, p.r));
+                    const newAngle = p.baseAngle + p.va * 10;
+                    return {
+                        ...p,
+                        x: 50 + p.r * Math.cos(newAngle),
+                        y: 50 + p.r * Math.sin(newAngle)
+                    };
+                });
+            }
+            const closeSteps = 6;
+            const startPoints = polygons[0].match(/[\d.]+/g).map(Number);
+            const endPoints = polygons[polygons.length - 1].match(/[\d.]+/g).map(Number);
+            for (let i = 1; i <= closeSteps; i++) {
+                const t = i / closeSteps;
+                const eased = t * t * (3 - 2 * t);
+                const interpolated = [];
+                for (let j = 0; j < startPoints.length; j += 2) {
+                    const x = endPoints[j] + (startPoints[j] - endPoints[j]) * eased;
+                    const y = endPoints[j + 1] + (startPoints[j + 1] - endPoints[j + 1]) * eased;
+                    interpolated.push(`${x.toFixed(2)}% ${y.toFixed(2)}%`);
+                }
+                polygons.push(`polygon(${interpolated.join(', ')})`);
+            }
+            return polygons;
+        }
+
+        let styleSheet = null;
+        let animationCounter = 0;
+        let currentPalette = null;
+        let shapes = [];
+        let accents = [];
+        let lifecycleTimeout = null;
+        let densityTimeout = null;
+        let currentTargetDensity = 12;
+
+        // Animation cleanup tracking
+        const animationRegistry = new Map(); // name -> CSS text
+        const activeAnimations = new Set(); // names currently in use
+
+        function registerAnimation(name, css) {
+            animationRegistry.set(name, css);
+            activeAnimations.add(name);
+            // Append to stylesheet immediately
+            styleSheet.textContent += css + '\n';
+        }
+
+        function releaseAnimations(names) {
+            names.forEach(name => activeAnimations.delete(name));
+            // Rebuild stylesheet if we have too many dead animations (unless in entropic mode)
+            if (!ENTROPIC_MODE) {
+                const deadCount = animationRegistry.size - activeAnimations.size;
+                if (deadCount > 50) {
+                    rebuildStylesheet();
+                }
+            }
+        }
+
+        function rebuildStylesheet() {
+            let newContent = '';
+            animationRegistry.forEach((css, name) => {
+                if (activeAnimations.has(name)) {
+                    newContent += css + '\n';
+                } else {
+                    animationRegistry.delete(name); // Clean up dead animations
+                }
+            });
+            styleSheet.textContent = newContent;
+        }
+
+        function getShapePositions() {
+            return shapes.filter(s => !s.dying).map(s => ({
+                x: parseFloat(s.element.style.left),
+                y: parseFloat(s.element.style.top),
+                size: parseFloat(s.element.style.width)
+            }));
+        }
+
+        function findSparseArea() {
+            const gridSize = 5;
+            const cellWidth = 100 / gridSize;
+            const cellHeight = 100 / gridSize;
+            const density = Array(gridSize * gridSize).fill(0);
+
+            const positions = getShapePositions();
+            positions.forEach(p => {
+                const cellX = Math.floor(Math.max(0, Math.min(p.x, 99)) / cellWidth);
+                const cellY = Math.floor(Math.max(0, Math.min(p.y, 99)) / cellHeight);
+                const idx = cellY * gridSize + cellX;
+                if (idx >= 0 && idx < density.length) {
+                    density[idx] += 1 + (p.size / 150);
+                }
+            });
+
+            // Weight towards emptier cells but allow some randomness
+            const weights = density.map(d => 1 / (d + 0.5));
+            const totalWeight = weights.reduce((a, b) => a + b, 0);
+            let r = Math.random() * totalWeight;
+            let chosenIdx = 0;
+
+            for (let i = 0; i < weights.length; i++) {
+                r -= weights[i];
+                if (r <= 0) {
+                    chosenIdx = i;
+                    break;
+                }
+            }
+
+            const cellX = chosenIdx % gridSize;
+            const cellY = Math.floor(chosenIdx / gridSize);
+
+            // Bias towards center of cells, stay away from extreme edges
+            const padding = 3;
+            return {
+                x: cellX * cellWidth + rand(padding, cellWidth - padding),
+                y: cellY * cellHeight + rand(padding, cellHeight - padding)
+            };
+        }
+
+        function createShape(palette, position = null) {
+            const shape = document.createElement('div');
+            shape.className = 'shape birthing';
+
+            const size = rand(50, 280);
+            const color = pick(palette.colors);
+            const color2 = pick(palette.colors);
+            const useClipPath = Math.random() > 0.5;
+
+            shape.style.width = `${size}px`;
+            shape.style.height = `${size}px`;
+
+            const pos = position || findSparseArea();
+
+            // Adjust position to keep shape on screen
+            // Calculate how much of the viewport width/height the shape takes
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const sizePercent = { x: (size / vw) * 100, y: (size / vh) * 100 };
+
+            // Add some drift allowance (max drift is 50px in each direction)
+            const driftMargin = { x: (50 / vw) * 100, y: (50 / vh) * 100 };
+
+            // Constrain position so shape + drift stays mostly visible
+            const minPos = { x: 2, y: 2 };  // Small margin from edges
+            const maxPos = {
+                x: Math.max(5, 98 - sizePercent.x - driftMargin.x),
+                y: Math.max(5, 98 - sizePercent.y - driftMargin.y)
+            };
+
+            const constrainedPos = {
+                x: Math.max(minPos.x, Math.min(maxPos.x, pos.x)),
+                y: Math.max(minPos.y, Math.min(maxPos.y, pos.y))
+            };
+
+            shape.style.left = `${constrainedPos.x}%`;
+            shape.style.top = `${constrainedPos.y}%`;
+            
+            if (Math.random() > 0.3) {
+                shape.style.background = `linear-gradient(${rand(0,360)}deg, ${color}, ${color2})`;
+            } else {
+                shape.style.background = color;
+            }
+
+            const animationNames = [];
+            const durations = [];
+            const targetOpacity = rand(0.35, 1);
+
+            if (useClipPath) {
+                const numPoints = randInt(5, 8);
+                const steps = randInt(30, 50);
+                const polygons = generateSmoothPolygon(steps, numPoints);
+                const animName = `poly_${animationCounter++}`;
+                let css = `@keyframes ${animName} {\n`;
+                polygons.forEach((poly, i) => {
+                    const percent = ((i / (polygons.length - 1)) * 100).toFixed(3);
+                    css += `  ${percent}% { clip-path: ${poly}; }\n`;
+                });
+                css += '}';
+                registerAnimation(animName, css);
+                shape.style.clipPath = polygons[0];
+                animationNames.push(animName);
+                durations.push(`${rand(18, 35)}s`);
+            } else {
+                const steps = randInt(30, 50);
+                const radii = generateSmoothBorderRadii(steps);
+                const animName = `morph_${animationCounter++}`;
+                let css = `@keyframes ${animName} {\n`;
+                radii.forEach((r, i) => {
+                    const percent = ((i / (radii.length - 1)) * 100).toFixed(3);
+                    const br = `${r[0].toFixed(2)}% ${r[1].toFixed(2)}% ${r[2].toFixed(2)}% ${r[3].toFixed(2)}% / ${r[4].toFixed(2)}% ${r[5].toFixed(2)}% ${r[6].toFixed(2)}% ${r[7].toFixed(2)}%`;
+                    css += `  ${percent}% { border-radius: ${br}; }\n`;
+                });
+                css += '}';
+                registerAnimation(animName, css);
+                const initBr = radii[0];
+                shape.style.borderRadius = `${initBr[0]}% ${initBr[1]}% ${initBr[2]}% ${initBr[3]}% / ${initBr[4]}% ${initBr[5]}% ${initBr[6]}% ${initBr[7]}%`;
+                animationNames.push(animName);
+                durations.push(`${rand(15, 30)}s`);
+            }
+
+            const driftSteps = randInt(40, 60);
+            const maxDrift = rand(20, 50);
+            const drifts = generateSmoothDrift(driftSteps, maxDrift);
+            const driftName = `drift_${animationCounter++}`;
+            let driftCss = `@keyframes ${driftName} {\n`;
+            drifts.forEach((d, i) => {
+                const percent = ((i / (drifts.length - 1)) * 100).toFixed(3);
+                driftCss += `  ${percent}% { transform: translate(${d.x.toFixed(2)}px, ${d.y.toFixed(2)}px) rotate(${d.rotation.toFixed(2)}deg) scale(${d.scale.toFixed(4)}); }\n`;
+            });
+            driftCss += '}';
+            registerAnimation(driftName, driftCss);
+            animationNames.push(driftName);
+            durations.push(`${rand(20, 45)}s`);
+
+            if (palette.shadows) {
+                const shadowColor = palette.glows ? color : 'rgba(0,0,0,0.3)';
+                const blur = palette.glows ? rand(20, 50) : rand(10, 25);
+                shape.style.boxShadow = `0 0 ${blur}px ${shadowColor}`;
+            }
+
+            shape.style.animation = animationNames.map((name, i) => 
+                `${name} ${durations[i]} linear infinite`
+            ).join(', ');
+            shape.style.animationDelay = `${rand(-20, 0)}s`;
+            shape.style.zIndex = randInt(1, 10);
+
+            if (Math.random() > 0.6) {
+                shape.style.mixBlendMode = pick(['multiply', 'screen', 'overlay', 'soft-light', 'hard-light', 'color-dodge', 'difference', 'exclusion']);
+            }
+
+            const container = document.getElementById('container');
+            container.appendChild(shape);
+            
+            // Fade in after a tiny delay
+            setTimeout(() => {
+                shape.classList.remove('birthing');
+                shape.style.opacity = targetOpacity;
+            }, 50);
+
+            return {
+                element: shape,
+                birthTime: Date.now(),
+                lifespan: rand(20000, 80000),
+                targetOpacity,
+                dying: false,
+                animationNames: animationNames
+            };
+        }
+
+        function killShape(shapeData) {
+            if (shapeData.dying) return;
+            shapeData.dying = true;
+
+            const shape = shapeData.element;
+            shape.classList.add('dying');
+
+            setTimeout(() => {
+                if (shape.parentNode) {
+                    shape.parentNode.removeChild(shape);
+                }
+                shapes = shapes.filter(s => s !== shapeData);
+                // Release animations for cleanup
+                releaseAnimations(shapeData.animationNames);
+            }, 3500);
+        }
+
+        function createAccent(palette) {
+            const accent = document.createElement('div');
+            accent.className = 'shape birthing';
+            const size = rand(3, 14);
+            accent.style.width = `${size}px`;
+            accent.style.height = `${size}px`;
+            // Keep accents visible - small margin from edges
+            accent.style.left = `${rand(1, 99)}%`;
+            accent.style.top = `${rand(1, 99)}%`;
+            accent.style.background = pick(palette.colors);
+            accent.style.borderRadius = '50%';
+            const targetOpacity = rand(0.15, 0.6);
+            
+            const floatName = `float_${animationCounter++}`;
+            const steps = 20;
+            let floatCss = `@keyframes ${floatName} {\n`;
+            let y = 0, vy = rand(-0.5, 0.5);
+            let s = 1, vs = rand(-0.005, 0.005);
+            const positions = [];
+            for (let j = 0; j < steps; j++) {
+                positions.push({ y, s });
+                vy += rand(-0.3, 0.3);
+                vy *= 0.9;
+                vs += rand(-0.003, 0.003);
+                vs *= 0.9;
+                y += vy;
+                s += vs;
+                y = Math.max(-15, Math.min(15, y));
+                s = Math.max(0.9, Math.min(1.1, s));
+            }
+            for (let j = 1; j <= 5; j++) {
+                const t = j / 5;
+                positions.push({
+                    y: y + (positions[0].y - y) * t,
+                    s: s + (positions[0].s - s) * t
+                });
+            }
+            positions.forEach((p, j) => {
+                const percent = ((j / (positions.length - 1)) * 100).toFixed(2);
+                floatCss += `  ${percent}% { transform: translateY(${p.y.toFixed(2)}px) scale(${p.s.toFixed(4)}); }\n`;
+            });
+            floatCss += '}';
+            registerAnimation(floatName, floatCss);
+            accent.style.animation = `${floatName} ${rand(8, 18)}s linear infinite`;
+            accent.style.animationDelay = `${rand(-10, 0)}s`;
+            
+            if (palette.glows) {
+                accent.style.boxShadow = `0 0 ${rand(5, 12)}px ${pick(palette.colors)}`;
+            }
+            
+            const container = document.getElementById('container');
+            container.appendChild(accent);
+            
+            setTimeout(() => {
+                accent.classList.remove('birthing');
+                accent.style.opacity = targetOpacity;
+            }, 50);
+
+            return {
+                element: accent,
+                birthTime: Date.now(),
+                lifespan: rand(12000, 50000),
+                targetOpacity,
+                dying: false,
+                animationNames: [floatName]
+            };
+        }
+
+        function killAccent(accentData) {
+            if (accentData.dying) return;
+            accentData.dying = true;
+
+            const accent = accentData.element;
+            accent.classList.add('dying');
+
+            setTimeout(() => {
+                if (accent.parentNode) {
+                    accent.parentNode.removeChild(accent);
+                }
+                accents = accents.filter(a => a !== accentData);
+                // Release animations for cleanup
+                releaseAnimations(accentData.animationNames);
+            }, 3500);
+        }
+
+        function lifecycleTick() {
+            const now = Date.now();
+            const livingShapes = shapes.filter(s => !s.dying);
+            const livingAccents = accents.filter(a => !a.dying);
+            
+            // Check for shapes that should die
+            livingShapes.forEach(s => {
+                if (now - s.birthTime > s.lifespan) {
+                    // If we're sparse, maybe extend life instead
+                    if (livingShapes.length <= currentTargetDensity - 2 && Math.random() > 0.4) {
+                        s.lifespan += rand(15000, 40000);
+                    } else if (Math.random() > 0.3) {
+                        // Random chance to die even if time is up
+                        killShape(s);
+                    } else {
+                        s.lifespan += rand(5000, 15000); // Brief extension
+                    }
+                }
+            });
+            
+            // Check accents
+            livingAccents.forEach(a => {
+                if (now - a.birthTime > a.lifespan) {
+                    if (Math.random() > 0.5) {
+                        killAccent(a);
+                    } else {
+                        a.lifespan += rand(5000, 20000);
+                    }
+                }
+            });
+            
+            // Spawning logic
+            const shapeDiff = currentTargetDensity - livingShapes.length;
+            
+            if (shapeDiff > 3) {
+                // Very sparse - spawn a burst
+                if (Math.random() < 0.6) {
+                    const burst = randInt(2, 4);
+                    for (let i = 0; i < burst; i++) {
+                        shapes.push(createShape(currentPalette));
+                    }
+                }
+            } else if (shapeDiff > 0) {
+                // Somewhat sparse - maybe spawn one
+                if (Math.random() < 0.35) {
+                    shapes.push(createShape(currentPalette));
+                }
+            } else if (shapeDiff < -3) {
+                // Too dense - maybe kill one early
+                if (Math.random() < 0.25) {
+                    const oldestAlive = livingShapes.reduce((oldest, s) => 
+                        s.birthTime < oldest.birthTime ? s : oldest
+                    , livingShapes[0]);
+                    if (oldestAlive) killShape(oldestAlive);
+                }
+            } else {
+                // Near target - occasional spawn for freshness
+                if (Math.random() < 0.08) {
+                    shapes.push(createShape(currentPalette));
+                }
+            }
+            
+            // Accent management
+            const targetAccents = currentTargetDensity * 2 + randInt(-5, 10);
+            if (livingAccents.length < targetAccents - 5 && Math.random() < 0.4) {
+                const burst = randInt(1, 4);
+                for (let i = 0; i < burst; i++) {
+                    accents.push(createAccent(currentPalette));
+                }
+            } else if (livingAccents.length < targetAccents && Math.random() < 0.2) {
+                accents.push(createAccent(currentPalette));
+            }
+            
+            // Schedule next tick with variable timing
+            const nextTick = rand(800, 2500);
+            lifecycleTimeout = setTimeout(lifecycleTick, nextTick);
+        }
+
+        function densityShift() {
+            // Shift target density over time - creates ebbs and flows
+            const mood = Math.random();
+            const prevTarget = currentTargetDensity;
+            
+            if (mood < 0.15) {
+                // Sparse mood - let it breathe
+                currentTargetDensity = randInt(4, 7);
+            } else if (mood < 0.35) {
+                // Dense mood - fill it up
+                currentTargetDensity = randInt(16, 24);
+            } else if (mood < 0.5) {
+                // Slight shift from current
+                currentTargetDensity = Math.max(5, Math.min(22, prevTarget + randInt(-4, 4)));
+            } else {
+                // Normal range
+                currentTargetDensity = randInt(9, 15);
+            }
+            
+            // Next shift at unpredictable interval
+            const nextShift = rand(12000, 35000);
+            densityTimeout = setTimeout(densityShift, nextShift);
+        }
+
+        function render() {
+            const container = document.getElementById('container');
+            const btn = document.getElementById('rerenderBtn');
+            
+            // Stop lifecycle
+            if (lifecycleTimeout) clearTimeout(lifecycleTimeout);
+            if (densityTimeout) clearTimeout(densityTimeout);
+            
+            // Clear
+            container.innerHTML = '';
+            shapes = [];
+            accents = [];
+
+            if (styleSheet) styleSheet.remove();
+            styleSheet = document.createElement('style');
+            document.head.appendChild(styleSheet);
+            animationCounter = 0;
+
+            // Clear animation tracking
+            animationRegistry.clear();
+            activeAnimations.clear();
+            
+            // New palette
+            const paletteNames = Object.keys(palettes);
+            const paletteName = pick(paletteNames);
+            currentPalette = palettes[paletteName]();
+            
+            document.body.style.background = currentPalette.bg;
+            btn.style.background = currentPalette.btnBg;
+            btn.style.color = currentPalette.btnColor;
+            btn.style.boxShadow = currentPalette.glows 
+                ? `0 5px 30px ${currentPalette.btnBg}` 
+                : '0 5px 20px rgba(0,0,0,0.2)';
+
+            // Initial population
+            currentTargetDensity = randInt(10, 16);
+            const initialShapes = randInt(7, 13);
+            for (let i = 0; i < initialShapes; i++) {
+                shapes.push(createShape(currentPalette));
+            }
+
+            // Initial accents
+            if (Math.random() > 0.25) {
+                const numAccents = randInt(12, 30);
+                for (let i = 0; i < numAccents; i++) {
+                    accents.push(createAccent(currentPalette));
+                }
+            }
+
+            // Start lifecycle
+            lifecycleTimeout = setTimeout(lifecycleTick, rand(1500, 3000));
+            densityTimeout = setTimeout(densityShift, rand(8000, 18000));
+
+            console.log(`🎨 ${paletteName} universe born`);
+        }
+
+        function updateEntropyMonitor() {
+            if (!ENTROPIC_MODE || !styleSheet) return;
+
+            const uptime = Math.floor((Date.now() - startTime) / 1000);
+            const hours = Math.floor(uptime / 3600);
+            const minutes = Math.floor((uptime % 3600) / 60);
+            const seconds = uptime % 60;
+            const uptimeStr = hours > 0
+                ? `${hours}h ${minutes}m ${seconds}s`
+                : minutes > 0
+                    ? `${minutes}m ${seconds}s`
+                    : `${seconds}s`;
+
+            const totalAnims = animationRegistry.size;
+            const activeAnims = activeAnimations.size;
+            const deadAnims = totalAnims - activeAnims;
+            const livingShapes = shapes.filter(s => !s.dying).length;
+            const livingAccents = accents.filter(a => !a.dying).length;
+            const styleSheetSize = (styleSheet.textContent.length / 1024).toFixed(2);
+
+            // Rough memory estimate: ~2KB per animation, plus DOM overhead
+            const estimatedMB = ((totalAnims * 2 + livingShapes * 1 + livingAccents * 0.1) / 1024).toFixed(2);
+
+            document.getElementById('uptime').textContent = uptimeStr;
+            document.getElementById('animTotal').textContent = totalAnims;
+            document.getElementById('animActive').textContent = activeAnims;
+
+            const deadEl = document.getElementById('animDead');
+            deadEl.textContent = deadAnims;
+            deadEl.className = 'entropy-value';
+            if (deadAnims > 500) deadEl.className += ' entropy-critical';
+            else if (deadAnims > 200) deadEl.className += ' entropy-warning';
+
+            document.getElementById('shapeCount').textContent = livingShapes;
+            document.getElementById('accentCount').textContent = livingAccents;
+            document.getElementById('styleSize').textContent = `${styleSheetSize} KB`;
+
+            const memEl = document.getElementById('memEstimate');
+            memEl.textContent = `${estimatedMB} MB`;
+            memEl.className = 'entropy-value';
+            if (estimatedMB > 10) memEl.className += ' entropy-critical';
+            else if (estimatedMB > 5) memEl.className += ' entropy-warning';
+        }
+
+        if (ENTROPIC_MODE) {
+            const monitor = document.getElementById('entropyMonitor');
+            monitor.style.display = 'block';
+
+            // Toggle collapse on header click
+            monitor.querySelector('.entropy-header').addEventListener('click', () => {
+                monitor.classList.toggle('collapsed');
+                const toggle = monitor.querySelector('.entropy-toggle');
+                toggle.textContent = monitor.classList.contains('collapsed') ? '▲' : '▼';
+            });
+
+            // Update every second
+            setInterval(updateEntropyMonitor, 1000);
+            updateEntropyMonitor();
+        }
+
+        render();
+        document.getElementById('rerenderBtn').addEventListener('click', render);
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                render();
+            }
+        });
+    </script>
+</body>
+</html>
