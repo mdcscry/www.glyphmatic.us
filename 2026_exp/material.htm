@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Material Symbols Grid</title>
+  <!-- Fonts loaded dynamically based on variant parameter -->
+  <style id="dynamic-fonts"></style>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(50, 1fr);
+      gap: 0;
+      width: 100vw;
+      font-size: 50px;
+      line-height: 1;
+    }
+
+    .grid.variant-outlined {
+      font-family: 'Material Symbols Outlined';
+    }
+
+    .grid.variant-rounded {
+      font-family: 'Material Symbols Rounded';
+    }
+
+    .grid.variant-sharp {
+      font-family: 'Material Symbols Sharp';
+    }
+
+    .grid.variant-legacy {
+      font-family: 'Material Icons';
+    }
+
+    #instructions-panel.variant-outlined .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined', 'Material Icons Legacy Subset';
+    }
+
+    #instructions-panel.variant-rounded .material-symbols-outlined {
+      font-family: 'Material Symbols Rounded', 'Material Icons Legacy Subset';
+    }
+
+    #instructions-panel.variant-sharp .material-symbols-outlined {
+      font-family: 'Material Symbols Sharp', 'Material Icons Legacy Subset';
+    }
+
+    #instructions-panel.variant-legacy .material-symbols-outlined {
+      font-family: 'Material Icons';
+    }
+
+    .cell {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-variation-settings:
+        'FILL' var(--fill, 0),
+        'wght' var(--wght, 400),
+        'GRAD' var(--grad, 0),
+        'opsz' var(--opsz, 24);
+      position: relative;
+      cursor: pointer;
+      transition: color var(--color-transition, 5s) ease-in-out; /* Slow color crossfade */
+    }
+
+    .cell::after {
+      content: attr(data-unicode);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 1000;
+    }
+
+    .cell:hover::after {
+      opacity: 1;
+    }
+
+    .cell.selected {
+      outline: 3px solid #00ff00;
+      outline-offset: -3px;
+    }
+
+    #selection-panel {
+      position: fixed;
+      bottom: 0;
+      right: 20px;
+      width: 400px;
+      background: rgba(0, 0, 0, 0.95);
+      border: 2px solid #333;
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      color: #fff;
+      font-family: monospace;
+      z-index: 2000;
+      transition: transform 0.3s ease;
+      display: none; /* Hidden by default, shown only in tester mode */
+    }
+
+    #selection-panel.tester-mode {
+      display: block;
+    }
+
+    #selection-panel.collapsed {
+      transform: translateY(calc(100% - 40px));
+    }
+
+    #panel-header {
+      padding: 10px 15px;
+      background: #222;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 6px 6px 0 0;
+    }
+
+    #panel-header:hover {
+      background: #333;
+    }
+
+    #panel-content {
+      padding: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    #selected-count {
+      color: #00ff00;
+      font-weight: bold;
+    }
+
+    #hex-output {
+      background: #1a1a1a;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      line-height: 1.6;
+      word-break: break-all;
+      margin-bottom: 10px;
+      min-height: 60px;
+    }
+
+    .panel-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .panel-btn {
+      flex: 1;
+      padding: 8px;
+      background: #444;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    .panel-btn:hover {
+      background: #555;
+    }
+
+    .panel-btn.copy {
+      background: #007acc;
+    }
+
+    .panel-btn.copy:hover {
+      background: #0098ff;
+    }
+
+    .panel-btn.clear {
+      background: #c44;
+    }
+
+    .panel-btn.clear:hover {
+      background: #e55;
+    }
+
+    /* Instructions Panel */
+    #instructions-panel {
+      position: fixed;
+      bottom: 20px;
+      right: 440px; /* To the right of selection panel */
+      color: #fff;
+      font-family: monospace;
+      z-index: 2000;
+      transition: all 0.3s ease;
+    }
+
+    #instructions-panel:not(.tester-visible) {
+      right: 20px; /* Move to right edge when tester panel not visible */
+    }
+
+    #instructions-header {
+      width: 60px;
+      height: 60px;
+      background: transparent;
+      border: none;
+      border-radius: 50%; /* Perfect circle */
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    #instructions-header:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.15);
+    }
+
+    #instructions-panel:not(.collapsed) #instructions-header {
+      border-radius: 8px 8px 0 0;
+      width: 450px;
+      height: auto;
+      padding: 10px 15px;
+      background: rgba(0, 0, 0, 0.95);
+      border: 2px solid #333;
+      border-bottom: none;
+      justify-content: space-between;
+    }
+
+    #instructions-panel:not(.collapsed) #instructions-header::after {
+      content: '▼';
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    #instructions-panel:not(.collapsed) #instructions-content {
+      width: 450px;
+      background: rgba(0, 0, 0, 0.95);
+      border: 2px solid #333;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+    }
+
+    #info-icon {
+      font-size: 36px;
+      line-height: 1;
+      font-variation-settings:
+        'FILL' var(--fill, 0),
+        'wght' var(--wght, 400),
+        'GRAD' var(--grad, 0),
+        'opsz' var(--opsz, 24);
+      filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.8));
+      transition: transform 0.3s ease;
+    }
+
+    #instructions-panel.collapsed #info-icon {
+      transform: rotate(0deg);
+    }
+
+    #instructions-panel:not(.collapsed) #info-icon {
+      display: none; /* Hide icon when expanded to show text instead */
+    }
+
+    #instructions-panel:not(.collapsed) #instructions-title {
+      display: block !important;
+    }
+
+    #instructions-content {
+      padding: 15px;
+      max-height: 400px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    #instructions-panel:not(.collapsed) #instructions-content {
+      display: block;
+    }
+
+    #instructions-content p {
+      margin: 8px 0;
+    }
+
+    /* Register CSS custom properties as animatable */
+    @property --fill {
+      syntax: '<number>';
+      initial-value: 0;
+      inherits: false;
+    }
+
+    @property --wght {
+      syntax: '<number>';
+      initial-value: 400;
+      inherits: false;
+    }
+
+    @property --grad {
+      syntax: '<number>';
+      initial-value: 0;
+      inherits: false;
+    }
+
+    @property --opsz {
+      syntax: '<number>';
+      initial-value: 24;
+      inherits: false;
+    }
+
+    /* Variable font animations - will be dynamically generated per cell */
+  </style>
+</head>
+<body>
+  <div class="grid" id="grid"></div>
+
+  <div id="selection-panel" class="collapsed">
+    <div id="panel-header">
+      <span>Selected Icons: <span id="selected-count">0</span></span>
+      <span id="toggle-icon">▲</span>
+    </div>
+    <div id="panel-content">
+      <div id="hex-output"></div>
+      <div class="panel-buttons">
+        <button class="panel-btn copy" id="copy-btn">Copy Array</button>
+        <button class="panel-btn clear" id="clear-btn">Clear All</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="instructions-panel" class="collapsed">
+    <div id="instructions-header">
+      <span class="material-symbols-outlined" id="info-icon">info</span>
+      <span id="instructions-title" style="display: none; font-size: 14px; font-weight: bold;">URL Parameters</span>
+    </div>
+    <div id="instructions-content">
+      <h3 style="margin: 0 0 10px 0; font-size: 14px;">URL Parameters</h3>
+      <div style="font-size: 11px; line-height: 1.6;">
+        <p><strong>?tester=true</strong> - Show selection panel for building hex arrays</p>
+        <p><strong>?glyph_picker=true</strong> - Show selection panel with comma-separated output</p>
+        <p><strong>?mode=blacklist</strong> - Show ONLY blacklisted glyphs for testing</p>
+        <p><strong>?fixed=true</strong> - Use fixed font settings instead of random variations</p>
+        <p><strong>?hex=E000</strong> - Show specific hex codepoint(s)<br>
+        <span style="margin-left: 12px; font-size: 10px; color: #aaa;">Supports comma-separated: ?hex=E000,E88E,F000 (all mixed randomly)</span></p>
+        <p><strong>?icon_name=home</strong> - Render by icon name<br>
+        <span style="margin-left: 12px; font-size: 10px; color: #aaa;">Supports comma-separated: ?icon_name=home,info,settings (all mixed randomly)</span></p>
+        <p><strong>?variant=outlined|rounded|sharp|legacy</strong> - Choose font variant (default: random)</p>
+        <hr style="margin: 10px 0; border: none; border-top: 1px solid #444;">
+        <p style="margin-bottom: 5px;"><strong>Examples:</strong></p>
+        <p style="margin: 3px 0;">material.htm?tester=true</p>
+        <p style="margin: 3px 0;">material.htm?glyph_picker=true</p>
+        <p style="margin: 3px 0;">material.htm?mode=blacklist&tester=true</p>
+        <p style="margin: 3px 0;">material.htm?hex=E88E&variant=sharp</p>
+        <p style="margin: 3px 0;">material.htm?hex=E000,E88E,F000&fixed=true</p>
+        <p style="margin: 3px 0;">material.htm?icon_name=home,info,star</p>
+        <p style="margin: 3px 0;">material.htm?variant=rounded&fixed=true</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== ANIMATION CONFIG ==========
+    // Adjust these values to control animation behavior
+    const ANIMATION_CONFIG = {
+      // Morphing animations (font variation changes)
+      morph: {
+        minCells: 50,           // Minimum cells to morph at once
+        maxCells: 100,           // Maximum cells to morph at once
+        minInterval: 500,      // Minimum ms between morph triggers
+        maxInterval: 2000,     // Maximum ms between morph triggers
+        minDuration: 2,        // Minimum seconds per morph cycle
+        maxDuration: 6,        // Maximum seconds per morph cycle
+        minIterations: 1,      // Minimum morph cycles per animation
+        maxIterations: 10,      // Maximum morph cycles per animation
+        keyframeVariants: 100   // Number of unique keyframe sets to generate (lower = less memory)
+      },
+
+      // Color crossfade animations
+      color: {
+        minCells: 50,           // Minimum cells to recolor at once
+        maxCells: 100,          // Maximum cells to recolor at once
+        minInterval: 3000,     // Minimum ms between color changes
+        maxInterval: 7000,     // Maximum ms between color changes
+        transitionDuration: 5  // CSS transition duration in seconds
+      }
+    };
+    // ======================================
+
+    // URL Parameters:
+    // ?tester=true - Show selection panel for building hex arrays (format: [0xE000, 0xE88E])
+    // ?glyph_picker=true - Show selection panel with comma-separated output (format: E000,E88E)
+    // ?mode=blacklist - Show ONLY blacklisted glyphs for testing
+    // ?fixed=true - Use fixed font settings instead of random variations (N/A for legacy)
+    // ?hex=E000 - Show specific hex codepoint(s) - comma-separated values are all displayed randomly mixed
+    // ?icon_name=home - Render by icon name - comma-separated names are all displayed randomly mixed
+    // ?variant=outlined|rounded|sharp|legacy - Switch between font variants (default: random)
+    //   - legacy uses the old Material Icons static font (no variable font support)
+    // Examples:
+    //   material.htm?tester=true (show array builder panel)
+    //   material.htm?glyph_picker=true (show comma-separated picker)
+    //   material.htm?mode=blacklist&tester=true
+    //   material.htm?hex=E000&fixed=true&variant=rounded
+    //   material.htm?hex=E000,E88E,F000 (all three mixed randomly in grid)
+    //   material.htm?icon_name=home,info,star&variant=sharp (all three mixed randomly)
+    //   material.htm?hex=EA0D&variant=legacy (test if ghost icons exist in legacy font)
+    //   material.htm?mode=blacklist&variant=legacy (test all ghost icons in legacy font)
+
+    // Material Icons Codepoints - 2189 icons compressed into 259 ranges
+    const ICON_RANGES = [
+      [0xE000, 5],
+      [0xE00A, 4],
+      [0xE00F, 3],
+      [0xE014, 2],
+      [0xE019, 1],
+      [0xE01B, 7],
+      [0xE023, 2],
+      [0xE028, 5],
+      [0xE02E, 4],
+      [0xE033, 7],
+      [0xE03B, 25],
+      [0xE055, 34],
+      [0xE089, 1],
+      [0xE0AF, 14],
+      [0xE0BE, 2],
+      [0xE0C3, 2],
+      [0xE0C6, 43],
+      [0xE138, 1],
+      [0xE13E, 1],
+      [0xE145, 53],
+      [0xE190, 6],
+      [0xE199, 1],
+      [0xE19C, 1],
+      [0xE19E, 1],
+      [0xE1A0, 39],
+      [0xE1C8, 1],
+      [0xE1CA, 10],
+      [0xE1D5, 1],
+      [0xE1D8, 4],
+      [0xE1E0, 3],
+      [0xE1EB, 1],
+      [0xE1FE, 5],
+      [0xE226, 71],
+      [0xE286, 1],
+      [0xE2BC, 9],
+      [0xE2C6, 4],
+      [0xE2CC, 1],
+      [0xE2DB, 1],
+      [0xE2E6, 2],
+      [0xE2EA, 3],
+      [0xE307, 2],
+      [0xE30A, 15],
+      [0xE31A, 33],
+      [0xE399, 1],
+      [0xE39D, 68],
+      [0xE3E2, 13],
+      [0xE3F1, 35],
+      [0xE415, 26],
+      [0xE430, 17],
+      [0xE4CA, 1],
+      [0xE4D9, 1],
+      [0xE4EB, 1],
+      [0xE4F3, 17],
+      [0xE508, 14],
+      [0xE518, 1],
+      [0xE51C, 6],
+      [0xE524, 2],
+      [0xE52D, 10],
+      [0xE539, 69],
+      [0xE583, 15],
+      [0xE595, 1],
+      [0xE598, 3],
+      [0xE5C3, 31],
+      [0xE5FA, 1],
+      [0xE609, 1],
+      [0xE60E, 19],
+      [0xE623, 39],
+      [0xE65C, 1],
+      [0xE65F, 3],
+      [0xE663, 4],
+      [0xE66B, 1],
+      [0xE675, 1],
+      [0xE6B1, 1],
+      [0xE6B3, 1],
+      [0xE6B8, 1],
+      [0xE6C4, 2],
+      [0xE6DA, 1],
+      [0xE6DD, 1],
+      [0xE6DF, 1],
+      [0xE6E1, 1],
+      [0xE71C, 1],
+      [0xE729, 1],
+      [0xE73A, 1],
+      [0xE73C, 1],
+      [0xE742, 8],
+      [0xE760, 5],
+      [0xE766, 2],
+      [0xE769, 1],
+      [0xE76D, 4],
+      [0xE798, 5],
+      [0xE7A2, 2],
+      [0xE7AD, 1],
+      [0xE7AF, 2],
+      [0xE7C8, 9],
+      [0xE7D3, 1],
+      [0xE7E1, 2],
+      [0xE7E4, 3],
+      [0xE7E9, 1],
+      [0xE7EE, 20],
+      [0xE80B, 16],
+      [0xE82B, 1],
+      [0xE834, 8],
+      [0xE842, 1],
+      [0xE84D, 5],
+      [0xE853, 33],
+      [0xE875, 66],
+      [0xE8B8, 23],
+      [0xE8D0, 49],
+      [0xE902, 5],
+      [0xE908, 8],
+      [0xE911, 51],
+      [0xE945, 1],
+      [0xE947, 55],
+      [0xE97F, 1],
+      [0xE982, 1],
+      [0xE988, 2],
+      [0xE98B, 1],
+      [0xE98F, 1],
+      [0xE992, 1],
+      [0xE994, 1],
+      [0xE996, 1],
+      [0xE998, 1],
+      [0xE99A, 2],
+      [0xE99D, 1],
+      [0xE9A1, 3],
+      [0xE9A5, 1],
+      [0xE9A7, 2],
+      [0xE9AA, 1],
+      [0xE9AD, 1],
+      [0xE9B0, 3],
+      [0xE9B4, 1],
+      [0xE9B6, 2],
+      [0xE9BA, 4],
+      [0xE9C0, 4],
+      [0xE9C5, 1],
+      [0xE9C8, 8],
+      [0xE9D1, 4],
+      [0xE9D6, 4],
+      [0xE9DD, 1],
+      [0xE9E0, 2],
+      [0xE9E4, 1],
+      [0xE9E6, 1],
+      [0xE9E9, 1],
+      [0xE9EC, 2],
+      [0xE9EF, 1],
+      [0xE9F2, 5],
+      [0xE9F9, 1],
+      [0xE9FC, 1],
+      [0xE9FE, 1],
+      [0xEA00, 3],
+      [0xEA09, 97],
+      [0xEA6B, 4],
+      [0xEA70, 10],
+      [0xEA7E, 1],
+      [0xEA80, 2],
+      [0xEA87, 1],
+      [0xEA8D, 2],
+      [0xEA96, 1],
+      [0xEA98, 4],
+      [0xEA9D, 1],
+      [0xEA9F, 2],
+      [0xEAA2, 2],
+      [0xEAA6, 14],
+      [0xEAC2, 2],
+      [0xEAC6, 5],
+      [0xEACC, 2],
+      [0xEACF, 13],
+      [0xEADD, 4],
+      [0xEAE2, 3],
+      [0xEAE6, 7],
+      [0xEAEE, 14],
+      [0xEB1B, 5],
+      [0xEB28, 2],
+      [0xEB2C, 33],
+      [0xEB4E, 7],
+      [0xEB56, 5],
+      [0xEB5F, 4],
+      [0xEB64, 8],
+      [0xEB6F, 9],
+      [0xEB7A, 15],
+      [0xEB8A, 35],
+      [0xEBB6, 1],
+      [0xEBB8, 7],
+      [0xEBC4, 3],
+      [0xEBC8, 45],
+      [0xEBF6, 2],
+      [0xEBFC, 3],
+      [0xEC08, 25],
+      [0xEC31, 1],
+      [0xEF38, 65],
+      [0xEFA7, 1],
+      [0xEFCD, 10],
+      [0xEFD8, 48],
+      [0xF009, 29],
+      [0xF028, 30],
+      [0xF047, 49],
+      [0xF07A, 16],
+      [0xF08C, 7],
+      [0xF097, 1],
+      [0xF099, 3],
+      [0xF0A8, 1],
+      [0xF0AC, 1],
+      [0xF0B0, 1],
+      [0xF0C5, 1],
+      [0xF0CF, 1],
+      [0xF0D1, 2],
+      [0xF0DC, 1],
+      [0xF0E2, 1],
+      [0xF0EB, 2],
+      [0xF0F5, 1],
+      [0xF0FA, 9],
+      [0xF104, 1],
+      [0xF106, 10],
+      [0xF111, 2],
+      [0xF114, 1],
+      [0xF116, 1],
+      [0xF11B, 1],
+      [0xF17D, 2],
+      [0xF181, 2],
+      [0xF184, 1],
+      [0xF187, 1],
+      [0xF189, 4],
+      [0xF19B, 31],
+      [0xF1BB, 1],
+      [0xF1BE, 13],
+      [0xF1CC, 7],
+      [0xF1D4, 3],
+      [0xF1D8, 1],
+      [0xF1DB, 2],
+      [0xF1DF, 8],
+      [0xF1E8, 3],
+      [0xF1EF, 1],
+      [0xF1F1, 8],
+      [0xF1FC, 1],
+      [0xF200, 7],
+      [0xF20C, 1],
+      [0xF217, 2],
+      [0xF21A, 10],
+      [0xF227, 3],
+      [0xF22B, 2],
+      [0xF22E, 1],
+      [0xF230, 1],
+      [0xF232, 6],
+      [0xF23A, 2],
+      [0xF840, 1],
+      [0xF846, 1],
+      [0xF848, 2],
+      [0xF85C, 1],
+      [0xF867, 5],
+      [0xF86E, 1],
+      [0xF879, 1],
+      [0xF886, 1],
+      [0xF88C, 2],
+      [0xF8A0, 1],
+      [0xF8CE, 6],
+      [0xF8D5, 20],
+      [0xF8EA, 16],
+      [0xF8FD, 3],
+      [0x10FFFD, 1]
+    ];
+
+    const ICON_COUNT = 2189;
+
+    const glyph_lists1 = [0xE3E2,0xE40C,0xE427,0xE8E0,0xEBE9,0xF025];
+    const glyph_lists2 = [0xE229,0xE22D,0xE234,0xE8EE];
+    const glyph_lists3 = [0xE5C3,0xE0BC,0xE5D4,0xE80F,0xE3EA,0xE3A5,0xE9A7,0xE6DD,0xE3A2,0xE22A,0xE3F2,0xE9F6,0xE886,0xE4CA];
+    const glyph_lists4 = [0xF088,0xE9B0,0xE3EC,0xE8F0,0xEB73,0xE8F1,0xE233,0xF101,0xE660,0xE8E9,0xE871];
+
+    // Blacklist of non-rendering glyphs (can be modified for testing)
+    const BLACKLIST = new Set([
+      0xEA0D, 0xEA6E, 0xEA7E, 0xEA8D, 0xEA96, 0xEA9D, 0xEA9F, 0xEAA0,
+      0xEAE0, 0xEF46, 0xEF65, 0xEF67, 0xF066, 0xF8F1, 0xEA6D, 0xEF61,
+      0xEAA3, 0x10FFFD,0xEA6B, 0xEA81, 0xF1A4, 0xF229, 0xF234,0xE524, 0xE82B, 
+      0xE88F, 0xEA6C, 0xEA80, 0xEA98, 0xEADF, 0xEF62, 0xF086,0xEF60,
+       0xF10C, 0xF228,0xE862, 0xE269, 0xE7C8, 0xE648, 0xE748,0xE590, 0xE7D3,
+       0xE9CA, 0xE508, 0xF21B, 0xEA02, 0xE8C9,0xEBC9
+    ]);
+
+    // Track selected codepoints
+    const selectedCodepoints = new Set();
+
+    // Parse URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode'); // 'blacklist' to show only blacklisted glyphs
+    const fixedFont = urlParams.get('fixed') === 'true'; // 'true' to use fixed font settings
+    const testerMode = urlParams.get('tester') === 'true'; // Show selection panel (array format)
+    const glyphPickerMode = urlParams.get('glyph_picker') === 'true'; // Show selection panel (comma format)
+
+    // Support comma-separated hex values (all values mixed in grid)
+    const hexParam = urlParams.get('hex'); // e.g. 'E000' or 'E000,E001,E002'
+    const hexCodes = hexParam ? hexParam.split(',').map(h => h.trim()) : null;
+
+    // Support comma-separated icon names (all names mixed in grid)
+    const iconNameParam = urlParams.get('icon_name'); // e.g. 'home' or 'home,info,settings'
+    const iconNames = iconNameParam ? iconNameParam.split(',').map(n => n.trim()) : null;
+
+    // Random variant if not specified: 'outlined', 'rounded', 'sharp', or 'legacy'
+    const variantOptions = ['outlined', 'rounded', 'sharp'];
+    const variant = urlParams.get('variant') || variantOptions[Math.floor(Math.random() * variantOptions.length)];
+
+    // Dynamic font loading: Load one variable font + legacy subset for blacklisted glyphs
+    (function loadFonts() {
+      // Generate unicode-range from BLACKLIST (only include specific glyphs)
+      const unicodeRanges = Array.from(BLACKLIST)
+        .map(code => `U+${code.toString(16).toUpperCase()}`)
+        .join(', ');
+
+      let fontCSS = '';
+
+      if (variant === 'legacy') {
+        // Just load the full legacy font
+        fontCSS = `
+          @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+          .grid.variant-legacy {
+            font-family: 'Material Icons' !important;
+          }
+        `;
+      } else {
+        // Map variant to Google Fonts URL param and CSS font-family name
+        const variantFontNames = {
+          'outlined': 'Material+Symbols+Outlined',
+          'rounded': 'Material+Symbols+Rounded',
+          'sharp': 'Material+Symbols+Sharp'
+        };
+
+        const variantDisplayNames = {
+          'outlined': 'Material Symbols Outlined',
+          'rounded': 'Material Symbols Rounded',
+          'sharp': 'Material Symbols Sharp'
+        };
+
+        const variantFont = variantFontNames[variant];
+        const displayName = variantDisplayNames[variant];
+
+        fontCSS = `
+          /* Load the variable font (~3-4MB) */
+          @import url('https://fonts.googleapis.com/css2?family=${variantFont}:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+          /* Load legacy font ONLY for blacklisted glyphs (~50KB subset) */
+          @font-face {
+            font-family: 'Material Icons Legacy Subset';
+            src: url('https://fonts.gstatic.com/s/materialicons/v140/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+            unicode-range: ${unicodeRanges};
+          }
+
+          /* Font stack: try variable font first, fall back to legacy for blacklisted glyphs */
+          .grid.variant-${variant} {
+            font-family: '${displayName}', 'Material Icons Legacy Subset' !important;
+          }
+        `;
+      }
+
+      document.getElementById('dynamic-fonts').textContent = fontCSS;
+    })();
+
+    // Hydrate once on load
+    function hydrateCodepoints() {
+      if (hexCodes) {
+        // Show specific hex codes (all of them mixed randomly)
+        const codes = hexCodes.map(hex => {
+          const h = hex.startsWith('0x') ? hex : '0x' + hex;
+          return parseInt(h, 16);
+        });
+        return new Uint32Array(codes);
+      }
+
+      if (mode === 'blacklist') {
+        // Show ONLY blacklisted glyphs
+        return new Uint32Array(Array.from(BLACKLIST).sort((a, b) => a - b));
+      }
+
+      // Normal mode: show all except blacklisted
+      const allCodes = [];
+      for (const [start, len] of ICON_RANGES) {
+        for (let i = 0; i < len; i++) {
+          const code = start + i;
+          if (!BLACKLIST.has(code)) {
+            allCodes.push(code);
+          }
+        }
+      }
+      return new Uint32Array(allCodes);
+    }
+
+    // Palettes
+    const PALETTES = [
+      ['#0ff', '#f0f', '#ff0', '#0f0', '#f00', '#00f'],
+      ['#8B4513', '#D2691E', '#DEB887', '#F4A460', '#228B22', '#2E8B57'],
+      ['#001f3f', '#0074D9', '#7FDBFF', '#39CCCC', '#3D9970', '#2ECC40'],
+      ['#FF6B6B', '#FFA07A', '#FFD93D', '#6BCB77', '#4D96FF', '#845EC2'],
+      ['#111', '#333', '#555', '#777', '#999', '#ff3366'],
+      ['#FFB3BA', '#BAFFC9', '#BAE1FF', '#FFFFBA', '#FFDFBA', '#E0BBE4'],
+      ['#000', '#fff', '#ff0000', '#0000ff', '#ffff00', '#00ff00'],
+      ['#ff71ce', '#01cdfe', '#05ffa1', '#b967ff', '#fffb96', '#ff71ce'],
+      ['#1a472a', '#2d5a27', '#4a7c23', '#6b8e23', '#8fbc8f', '#98fb98'],
+      ['#800000', '#b22222', '#dc143c', '#ff4500', '#ff6347', '#ffa07a'],
+      ['#1a1a2e', '#16213e', '#0f3460', '#e94560', '#f1f1f1', '#00adb5'],
+      ['#2d132c', '#801336', '#c72c41', '#ee4540', '#f0ece3', '#dfd3c3'],
+      ['#004d4d', '#006666', '#008080', '#00b3b3', '#00cccc', '#00e6e6'],
+      ['#ff6b35', '#ff8c42', '#ffa94d', '#ffc14e', '#ffb400', '#e91e63'],
+      ['#0a0e27', '#7d4cdb', '#00d9ff', '#ff006e', '#fb5607', '#ffbe0b'],
+      ['#8b4000', '#a0522d', '#cd853f', '#daa520', '#f4a460', '#ffd700'],
+      ['#9d4edd', '#c77dff', '#e0aaff', '#f0d9ff', '#fae0e4', '#ff99c8'],
+      ['#00ff7f', '#00fa9a', '#7fffd4', '#40e0d0', '#48d1cc', '#00ced1'],
+      ['#002147', '#003d82', '#005faf', '#0080ff', '#4da6ff', '#b3d9ff'],
+      ['#ff4500', '#ff6347', '#ff7f50', '#ffa500', '#ffb347', '#ffd700'],
+      ['#f4978e', '#f8ad9d', '#fbc4ab', '#ffdab9', '#d4f1f4', '#75e6da'],
+      ['#0b0c10', '#1f2833', '#4b0082', '#8a2be2', '#9370db', '#00ffff'],
+    ];
+
+    function toggleSelection(cell, codepoint) {
+      if (selectedCodepoints.has(codepoint)) {
+        selectedCodepoints.delete(codepoint);
+        cell.classList.remove('selected');
+      } else {
+        selectedCodepoints.add(codepoint);
+        cell.classList.add('selected');
+      }
+      updatePanel();
+    }
+
+    function updatePanel() {
+      const count = selectedCodepoints.size;
+      document.getElementById('selected-count').textContent = count;
+
+      if (count === 0) {
+        document.getElementById('hex-output').textContent = 'Click icons to select them';
+        return;
+      }
+
+      // Convert to sorted array and format as hex
+      const sortedCodes = Array.from(selectedCodepoints).sort((a, b) => a - b);
+
+      let formatted;
+      if (glyphPickerMode) {
+        // Comma-separated format for URL pasting: E000,E88E,F000
+        formatted = sortedCodes.map(code => code.toString(16).toUpperCase()).join(',');
+      } else {
+        // Array format for code: [0xE000, 0xE88E, 0xF000]
+        const hexArray = sortedCodes.map(code => '0x' + code.toString(16).toUpperCase());
+        formatted = '[\n  ' + hexArray.join(',\n  ') + '\n]';
+      }
+
+      document.getElementById('hex-output').textContent = formatted;
+    }
+
+    function copyToClipboard() {
+      const sortedCodes = Array.from(selectedCodepoints).sort((a, b) => a - b);
+
+      let textToCopy;
+      if (glyphPickerMode) {
+        // Comma-separated format: E000,E88E,F000
+        textToCopy = sortedCodes.map(code => code.toString(16).toUpperCase()).join(',');
+      } else {
+        // Array format: [0xE000, 0xE88E, 0xF000]
+        const hexArray = sortedCodes.map(code => '0x' + code.toString(16).toUpperCase());
+        textToCopy = '[' + hexArray.join(', ') + ']';
+      }
+
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const btn = document.getElementById('copy-btn');
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => {
+          btn.textContent = original;
+        }, 1500);
+      });
+    }
+
+    function clearSelection() {
+      selectedCodepoints.clear();
+      document.querySelectorAll('.cell.selected').forEach(cell => {
+        cell.classList.remove('selected');
+      });
+      updatePanel();
+    }
+
+    function init() {
+      const codes = iconNames ? new Uint32Array([0]) : hydrateCodepoints();
+      const iconCount = codes.length;
+      const palette = PALETTES[Math.floor(Math.random() * PALETTES.length)];
+      const bgIndex = Math.random() > 0.5 ? 0 : palette.length - 1;
+      document.body.style.setProperty('--bg', palette[bgIndex]);
+      document.body.style.setProperty('--color-transition', ANIMATION_CONFIG.color.transitionDuration + 's');
+
+      const grid = document.getElementById('grid');
+      grid.classList.add(`variant-${variant}`);
+      const cols = 50;
+      const rows = 30;
+      const fragment = document.createDocumentFragment();
+      const colorChoices = palette.filter((_, idx) => idx !== bgIndex);
+
+      // Generate a fixed pool of keyframe variants to reduce memory usage
+      // Instead of 1500 unique keyframe sets, we create e.g. 50 variants and reuse them
+      const keyframeVariants = [];
+      let dynamicKeyframes = '';
+
+      if (variant !== 'legacy' && !fixedFont) {
+        for (let v = 0; v < ANIMATION_CONFIG.morph.keyframeVariants; v++) {
+          const initialFill = Math.random() > 0.5 ? 1 : 0;
+          const initialWght = 100 + Math.floor(Math.random() * 7) * 100;
+          const initialGrad = -50 + Math.floor(Math.random() * 251);
+          const initialOpsz = 20 + Math.floor(Math.random() * 29);
+
+          const targetFill = initialFill === 0 ? 1 : 0;
+          const targetWght = initialWght === 100 ? 700 : 100;
+          const targetGrad = initialGrad < 0 ? 200 : -50;
+          const targetOpsz = initialOpsz < 34 ? 48 : 20;
+
+          keyframeVariants.push({
+            initialFill, initialWght, initialGrad, initialOpsz,
+            targetFill, targetWght, targetGrad, targetOpsz
+          });
+
+          // Generate keyframes for this variant
+          dynamicKeyframes += `
+            @keyframes variant-${v}-fill {
+              0% { --fill: ${initialFill}; }
+              50% { --fill: ${targetFill}; }
+              100% { --fill: ${initialFill}; }
+            }
+            @keyframes variant-${v}-wght {
+              0% { --wght: ${initialWght}; }
+              50% { --wght: ${targetWght}; }
+              100% { --wght: ${initialWght}; }
+            }
+            @keyframes variant-${v}-grad {
+              0% { --grad: ${initialGrad}; }
+              50% { --grad: ${targetGrad}; }
+              100% { --grad: ${initialGrad}; }
+            }
+            @keyframes variant-${v}-opsz {
+              0% { --opsz: ${initialOpsz}; }
+              50% { --opsz: ${targetOpsz}; }
+              100% { --opsz: ${initialOpsz}; }
+            }
+          `;
+        }
+      }
+
+      for (let i = 0; i < cols * rows; i++) {
+        const cell = document.createElement('span');
+        cell.className = 'cell';
+        cell.id = `cell-${i}`;
+
+        let codepointForToggle;
+
+        if (iconNames) {
+          // Render by icon name(s) - randomly select from array
+          const iconName = iconNames[Math.floor(Math.random() * iconNames.length)];
+          cell.textContent = iconName;
+          cell.setAttribute('data-unicode', 'name: ' + iconName);
+          codepointForToggle = 0;
+        } else {
+          // Random codepoint from hydrated array
+          const codepoint = codes[Math.floor(Math.random() * iconCount)];
+          cell.textContent = String.fromCodePoint(codepoint);
+
+          // Add unicode codepoint as data attribute for hover tooltip
+          const hexCode = '0x' + codepoint.toString(16).toUpperCase();
+          cell.setAttribute('data-unicode', 'U+' + codepoint.toString(16).toUpperCase().padStart(4, '0'));
+          cell.setAttribute('data-codepoint', codepoint);
+          codepointForToggle = codepoint;
+        }
+
+        // Store codepoint for click handler (will use event delegation)
+        cell.setAttribute('data-codepoint-toggle', codepointForToggle);
+
+        // Random color
+        cell.style.color = colorChoices[Math.floor(Math.random() * colorChoices.length)];
+
+        // Variable font settings - ALL cells get random initial values (skip for legacy font)
+        if (variant !== 'legacy') {
+          if (fixedFont) {
+            // Fixed settings for testing
+            cell.style.setProperty('--fill', 0);
+            cell.style.setProperty('--wght', 400);
+            cell.style.setProperty('--grad', 0);
+            cell.style.setProperty('--opsz', 24);
+          } else {
+            // Assign this cell to a random keyframe variant (reuse instead of generating unique)
+            const variantIndex = Math.floor(Math.random() * keyframeVariants.length);
+            const variant = keyframeVariants[variantIndex];
+
+            // Set initial values from the variant
+            cell.style.setProperty('--fill', variant.initialFill);
+            cell.style.setProperty('--wght', variant.initialWght);
+            cell.style.setProperty('--grad', variant.initialGrad);
+            cell.style.setProperty('--opsz', variant.initialOpsz);
+
+            // Store variant index for animation
+            cell.setAttribute('data-variant', variantIndex);
+
+            // Set animation durations from config
+            const durationRange = ANIMATION_CONFIG.morph.maxDuration - ANIMATION_CONFIG.morph.minDuration;
+            cell.style.setProperty('--anim-duration-fill', (ANIMATION_CONFIG.morph.minDuration + Math.random() * durationRange).toFixed(2) + 's');
+            cell.style.setProperty('--anim-duration-wght', (ANIMATION_CONFIG.morph.minDuration + Math.random() * durationRange).toFixed(2) + 's');
+            cell.style.setProperty('--anim-duration-grad', (ANIMATION_CONFIG.morph.minDuration + Math.random() * durationRange).toFixed(2) + 's');
+            cell.style.setProperty('--anim-duration-opsz', (ANIMATION_CONFIG.morph.minDuration + Math.random() * durationRange).toFixed(2) + 's');
+
+            // Random iteration count from config
+            const iterationRange = ANIMATION_CONFIG.morph.maxIterations - ANIMATION_CONFIG.morph.minIterations + 1;
+            cell.style.setProperty('--anim-iterations', Math.floor(ANIMATION_CONFIG.morph.minIterations + Math.random() * iterationRange));
+          }
+        }
+
+        fragment.appendChild(cell);
+      }
+
+      grid.appendChild(fragment);
+
+      // Event delegation for cell clicks (only needed in tester/glyph_picker mode)
+      if (testerMode || glyphPickerMode) {
+        grid.addEventListener('click', (e) => {
+          const cell = e.target.closest('.cell');
+          if (cell) {
+            const codepointForToggle = parseInt(cell.getAttribute('data-codepoint-toggle'));
+            toggleSelection(cell, codepointForToggle);
+          }
+        });
+      }
+
+      // Inject all dynamic keyframes into a style element
+      if (dynamicKeyframes && variant !== 'legacy' && !fixedFont) {
+        // Add animation rules for each variant
+        for (let v = 0; v < ANIMATION_CONFIG.morph.keyframeVariants; v++) {
+          dynamicKeyframes += `
+            .cell[data-variant="${v}"].animating {
+              animation:
+                variant-${v}-fill var(--anim-duration-fill, 3s) ease-in-out var(--anim-iterations, 2),
+                variant-${v}-wght var(--anim-duration-wght, 3s) ease-in-out var(--anim-iterations, 2),
+                variant-${v}-grad var(--anim-duration-grad, 3s) ease-in-out var(--anim-iterations, 2),
+                variant-${v}-opsz var(--anim-duration-opsz, 3s) ease-in-out var(--anim-iterations, 2);
+            }
+          `;
+        }
+
+        const styleEl = document.createElement('style');
+        styleEl.textContent = dynamicKeyframes;
+        document.head.appendChild(styleEl);
+      }
+
+      // Panel controls
+      const panel = document.getElementById('selection-panel');
+      const toggleIcon = document.getElementById('toggle-icon');
+
+      // Only show panel in tester or glyph_picker mode
+      if (testerMode || glyphPickerMode) {
+        panel.classList.add('tester-mode');
+      }
+
+      // Update button text based on mode
+      if (glyphPickerMode) {
+        document.getElementById('copy-btn').textContent = 'Copy Hex String';
+      }
+
+      document.getElementById('panel-header').addEventListener('click', () => {
+        panel.classList.toggle('collapsed');
+        toggleIcon.textContent = panel.classList.contains('collapsed') ? '▲' : '▼';
+      });
+
+      document.getElementById('copy-btn').addEventListener('click', copyToClipboard);
+      document.getElementById('clear-btn').addEventListener('click', clearSelection);
+
+      // Show mode indicator if in special mode (insert after header, before content)
+      const variantText = variant !== 'outlined' ? ` [${variant.toUpperCase()}]` : '';
+      const panelContent = document.getElementById('panel-content');
+
+      if (glyphPickerMode && !hexCodes && !iconNames && mode !== 'blacklist') {
+        const modeIndicator = document.createElement('div');
+        modeIndicator.style.cssText = 'background: #0af; padding: 8px; text-align: center; font-weight: bold; margin-bottom: 10px;';
+        modeIndicator.textContent = `GLYPH PICKER MODE${variantText}${fixedFont ? ' - Fixed Font' : ''}`;
+        panelContent.insertBefore(modeIndicator, panelContent.firstChild);
+      } else if (hexCodes) {
+        const modeIndicator = document.createElement('div');
+        modeIndicator.style.cssText = 'background: #f80; padding: 8px; text-align: center; font-weight: bold;';
+        const hexList = hexCodes.length === 1 ? hexCodes[0].toUpperCase() : `${hexCodes.length} codes`;
+        modeIndicator.textContent = `HEX MODE: ${hexList}${variantText}${fixedFont ? ' - Fixed Font' : ''}`;
+        panelContent.insertBefore(modeIndicator, panelContent.firstChild);
+      } else if (iconNames) {
+        const modeIndicator = document.createElement('div');
+        modeIndicator.style.cssText = 'background: #0a0; padding: 8px; text-align: center; font-weight: bold;';
+        const nameList = iconNames.length === 1 ? `"${iconNames[0]}"` : `${iconNames.length} icons`;
+        modeIndicator.textContent = `ICON NAME MODE: ${nameList}${variantText}${fixedFont ? ' - Fixed Font' : ''}`;
+        panelContent.insertBefore(modeIndicator, panelContent.firstChild);
+      } else if (mode === 'blacklist') {
+        const modeIndicator = document.createElement('div');
+        modeIndicator.style.cssText = 'background: #f44; padding: 8px; text-align: center; font-weight: bold;';
+        modeIndicator.textContent = `BLACKLIST MODE (${iconCount} glyphs)${variantText}${fixedFont ? ' - Fixed Font' : ''}`;
+        panelContent.insertBefore(modeIndicator, panelContent.firstChild);
+      } else if (fixedFont || variant !== 'outlined') {
+        const modeIndicator = document.createElement('div');
+        modeIndicator.style.cssText = 'background: #47f; padding: 8px; text-align: center; font-weight: bold; margin-bottom: 10px;';
+        const modes = [];
+        if (variant !== 'outlined') modes.push(variant.toUpperCase());
+        if (fixedFont) modes.push('FIXED FONT');
+        modeIndicator.textContent = modes.join(' - ');
+        panelContent.insertBefore(modeIndicator, panelContent.firstChild);
+      }
+
+      // Initialize panel
+      updatePanel();
+
+      // Instructions panel controls
+      const instructionsPanel = document.getElementById('instructions-panel');
+      const infoIcon = document.getElementById('info-icon');
+
+      // Apply variant class to instructions panel (for font)
+      instructionsPanel.classList.add(`variant-${variant}`);
+
+      // Color the info icon with a random palette color
+      infoIcon.style.color = colorChoices[Math.floor(Math.random() * colorChoices.length)];
+
+      // Random variable font settings for the info icon (skip for legacy)
+      if (variant !== 'legacy') {
+        infoIcon.style.setProperty('--fill', Math.random() > 0.5 ? 1 : 0);
+        infoIcon.style.setProperty('--wght', 100 + Math.floor(Math.random() * 7) * 100);
+        infoIcon.style.setProperty('--grad', -50 + Math.floor(Math.random() * 251));
+        infoIcon.style.setProperty('--opsz', 20 + Math.floor(Math.random() * 29));
+      }
+
+      // Position based on whether tester/picker panel is visible
+      if (testerMode || glyphPickerMode) {
+        instructionsPanel.classList.add('tester-visible');
+      }
+
+      document.getElementById('instructions-header').addEventListener('click', () => {
+        instructionsPanel.classList.toggle('collapsed');
+      });
+
+      // Set up random animation triggering (skip for legacy and fixed font modes)
+      if (variant !== 'legacy' && !fixedFont) {
+        const allCells = Array.from(document.querySelectorAll('.cell'));
+
+        // Function to trigger animation on a random cell
+        function triggerRandomAnimation() {
+          // Pick random cells to animate based on config
+          const cellRange = ANIMATION_CONFIG.morph.maxCells - ANIMATION_CONFIG.morph.minCells + 1;
+          const numCells = Math.floor(ANIMATION_CONFIG.morph.minCells + Math.random() * cellRange);
+          const cellsToAnimate = [];
+
+          for (let i = 0; i < numCells; i++) {
+            const randomCell = allCells[Math.floor(Math.random() * allCells.length)];
+            if (!cellsToAnimate.includes(randomCell)) {
+              cellsToAnimate.push(randomCell);
+            }
+          }
+
+          cellsToAnimate.forEach(cell => {
+            // Add animating class to start animation
+            cell.classList.add('animating');
+
+            // Calculate total animation duration (duration × iterations)
+            const maxDuration = Math.max(
+              parseFloat(cell.style.getPropertyValue('--anim-duration-fill') || 3),
+              parseFloat(cell.style.getPropertyValue('--anim-duration-wght') || 3),
+              parseFloat(cell.style.getPropertyValue('--anim-duration-grad') || 3),
+              parseFloat(cell.style.getPropertyValue('--anim-duration-opsz') || 3)
+            );
+            const iterations = parseInt(cell.style.getPropertyValue('--anim-iterations') || 2);
+            const totalDuration = maxDuration * iterations * 1000; // Convert to ms
+
+            // Remove animating class after animation completes
+            setTimeout(() => {
+              cell.classList.remove('animating');
+            }, totalDuration);
+          });
+
+          // Schedule next morph with variable interval from config
+          const intervalRange = ANIMATION_CONFIG.morph.maxInterval - ANIMATION_CONFIG.morph.minInterval;
+          setTimeout(triggerRandomAnimation, ANIMATION_CONFIG.morph.minInterval + Math.random() * intervalRange);
+        }
+
+        // Start morphing animations
+        setTimeout(triggerRandomAnimation, ANIMATION_CONFIG.morph.minInterval);
+      }
+
+      // Set up slow color crossfade animations (works for all variants)
+      const allCells = Array.from(document.querySelectorAll('.cell'));
+
+      function triggerColorCrossfade() {
+        // Pick random cells to recolor based on config
+        const cellRange = ANIMATION_CONFIG.color.maxCells - ANIMATION_CONFIG.color.minCells + 1;
+        const numCells = Math.floor(ANIMATION_CONFIG.color.minCells + Math.random() * cellRange);
+        const cellsToRecolor = [];
+
+        for (let i = 0; i < numCells; i++) {
+          const randomCell = allCells[Math.floor(Math.random() * allCells.length)];
+          if (!cellsToRecolor.includes(randomCell)) {
+            cellsToRecolor.push(randomCell);
+          }
+        }
+
+        cellsToRecolor.forEach(cell => {
+          // Get current color
+          const currentColor = cell.style.color;
+
+          // Pick a different color from the palette
+          let newColor;
+          let attempts = 0;
+          do {
+            newColor = colorChoices[Math.floor(Math.random() * colorChoices.length)];
+            attempts++;
+          } while (newColor === currentColor && attempts < 10);
+
+          cell.style.color = newColor;
+        });
+
+        // Schedule next color change with variable interval from config
+        const intervalRange = ANIMATION_CONFIG.color.maxInterval - ANIMATION_CONFIG.color.minInterval;
+        setTimeout(triggerColorCrossfade, ANIMATION_CONFIG.color.minInterval + Math.random() * intervalRange);
+      }
+
+      // Start color crossfades
+      setTimeout(triggerColorCrossfade, 1000);
+    }
+
+    init();
+  </script>
+</body>
+</html>

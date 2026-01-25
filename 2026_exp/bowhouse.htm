@@ -86,13 +86,29 @@
         button:active {
             transform: scale(0.98);
         }
+
+        .cell span {
+            transition: opacity 5s ease-in-out;
+        }
+
+        .cell span.fading-out {
+            opacity: 0;
+        }
+
+        .cell span.fading-in {
+            opacity: 0;
+        }
+
+        .cell span.visible {
+            opacity: 0.95;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="grid" id="grid"></div>
     </div>
-    <button onclick="generate()">Regenerate</button>
+    <button onclick="generate(); startAnimations();">Regenerate</button>
 
     <script>
         const black = '#1a1a1a';
@@ -109,6 +125,10 @@
 
         // Current mode: 'round', 'grating', 'triangles', 'quarters', 'diagonals', or 'circles'
         let currentMode = 'round';
+
+        // Store current palette and animation timer
+        let currentPalette = null;
+        let animationTimer = null;
 
         // Glyphs for round mode - quarter circles and full circle
         const roundGlyphs = [
@@ -190,8 +210,8 @@
             const grid = document.getElementById('grid');
             grid.innerHTML = '';
 
-            // Pick a random palette
-            const palette = randomFrom(palettes);
+            // Pick a random palette and store it
+            currentPalette = randomFrom(palettes);
 
             // Choose the appropriate glyph set based on current mode
             let glyphSet;
@@ -218,7 +238,7 @@
                 cell.style.backgroundColor = bg;
 
                 // Pick foreground color (accent colors plus black and white)
-                const fgChoices = [...palette, black, white];
+                const fgChoices = [...currentPalette, black, white];
                 const fg = randomFrom(fgChoices);
 
                 let glyph, scale, isCircle, translateX, translateY, rotation;
@@ -271,6 +291,7 @@
                 const span = document.createElement('span');
                 span.textContent = glyph;
                 span.style.color = fg;
+                span.className = 'visible';
 
                 if (isCircle) {
                     // Circle rendering
@@ -290,6 +311,7 @@
                         span1.style.color = fg1;
                         span1.style.fontSize = '75px';
                         span1.style.transform = `translate(0px, 0px)`;
+                        span1.className = 'visible';
 
                         // Second layer: U+25CE (different color from first)
                         const span2 = document.createElement('span');
@@ -297,6 +319,7 @@
                         span2.style.color = fg2;
                         span2.style.fontSize = '75px';
                         span2.style.transform = `translate(0px, 0px)`;
+                        span2.className = 'visible';
 
                         // Third layer: U+25CD at 0°
                         const span3 = document.createElement('span');
@@ -304,6 +327,7 @@
                         span3.style.color = fg;
                         span3.style.fontSize = '75px';
                         span3.style.transform = `translate(0px, 0px) rotate(0deg)`;
+                        span3.className = 'visible';
 
                         // Fourth layer: U+25CD at 45°
                         const span4 = document.createElement('span');
@@ -311,6 +335,7 @@
                         span4.style.color = fg;
                         span4.style.fontSize = '75px';
                         span4.style.transform = `translate(0px, 0px) rotate(45deg)`;
+                        span4.className = 'visible';
 
                         // Fifth layer: U+25CD at 90°
                         const span5 = document.createElement('span');
@@ -318,6 +343,7 @@
                         span5.style.color = fg;
                         span5.style.fontSize = '75px';
                         span5.style.transform = `translate(0px, 0px) rotate(90deg)`;
+                        span5.className = 'visible';
 
                         // Sixth layer: U+25CD at -45°
                         const span6 = document.createElement('span');
@@ -325,6 +351,7 @@
                         span6.style.color = fg;
                         span6.style.fontSize = '75px';
                         span6.style.transform = `translate(0px, 0px) rotate(-45deg)`;
+                        span6.className = 'visible';
 
                         cell.appendChild(span1);
                         cell.appendChild(span2);
@@ -352,31 +379,167 @@
             }
         }
 
+        function generateCellContent() {
+            // Choose the appropriate glyph set based on current mode
+            let glyphSet;
+            if (currentMode === 'round') {
+                glyphSet = roundGlyphs;
+            } else if (currentMode === 'grating') {
+                glyphSet = gratingGlyphs;
+            } else if (currentMode === 'triangles') {
+                glyphSet = sidesGlyphs;
+            } else if (currentMode === 'quarters') {
+                glyphSet = quartersGlyphs;
+            } else if (currentMode === 'diagonals') {
+                glyphSet = diagonalsGlyphs;
+            }
+
+            const fgChoices = [...currentPalette, black, white];
+            const fg = randomFrom(fgChoices);
+
+            let glyph, scale, isCircle, translateX, translateY, rotation;
+
+            if (currentMode === 'grating') {
+                const roll = Math.random();
+                if (roll < 0.85) {
+                    [glyph, scale, isCircle, translateX, translateY] = glyphSet[Math.floor(Math.random() * glyphSet.length)];
+                } else {
+                    const triangleData = randomFrom(gratingSpecialGlyphs);
+                    [glyph, scale, isCircle, translateX, translateY, rotation] = triangleData;
+                }
+            } else if (currentMode === 'quarters') {
+                const roll = Math.random();
+                if (roll < 0.85) {
+                    [glyph, scale, isCircle, translateX, translateY] = glyphSet[Math.floor(Math.random() * glyphSet.length)];
+                } else {
+                    [glyph, scale, isCircle, translateX, translateY] = randomFrom(quartersSpecialGlyphs);
+                }
+            } else {
+                const roll = Math.random();
+                if (roll < 0.85) {
+                    const patternCount = glyphSet.length - 1;
+                    [glyph, scale, isCircle, translateX, translateY] = glyphSet[Math.floor(Math.random() * patternCount)];
+                } else {
+                    [glyph, scale, isCircle, translateX, translateY] = glyphSet[glyphSet.length - 1];
+                }
+            }
+
+            const span = document.createElement('span');
+            span.textContent = glyph;
+            span.style.color = fg;
+            span.className = 'fading-in';
+
+            if (isCircle) {
+                span.style.fontSize = '75px';
+                span.style.transform = `translate(0px, 0px)`;
+            } else {
+                if (rotation !== undefined) {
+                    span.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale}) rotate(${rotation}deg)`;
+                } else {
+                    span.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+                }
+            }
+
+            return span;
+        }
+
+        function animateCell(cellIndex) {
+            const grid = document.getElementById('grid');
+            const cell = grid.children[cellIndex];
+
+            if (!cell || cell.children.length === 0) return;
+
+            // Create new glyph
+            const newSpan = generateCellContent();
+            cell.appendChild(newSpan);
+
+            // Start fade in for new glyph after a tiny delay
+            setTimeout(() => {
+                newSpan.className = 'visible';
+            }, 50);
+
+            // Wait for fade in to be halfway (2s of the 4s transition) before starting fade out
+            const oldSpans = Array.from(cell.children).slice(0, -1);
+            setTimeout(() => {
+                oldSpans.forEach(span => {
+                    span.className = 'fading-out';
+                });
+            }, 2000);
+
+            // Remove old glyphs after both transitions complete (2s + 4s + 100ms buffer)
+            setTimeout(() => {
+                oldSpans.forEach(span => {
+                    if (span.parentNode === cell) {
+                        cell.removeChild(span);
+                    }
+                });
+            }, 6100);
+        }
+
+        function startAnimations() {
+            // Clear any existing timer
+            if (animationTimer) {
+                clearInterval(animationTimer);
+            }
+
+            // Only animate modes 1-5, not mode 6 (circles)
+            if (currentMode === 'circles') {
+                return;
+            }
+
+            // Animate 1-2 cells every 3-5 seconds
+            animationTimer = setInterval(() => {
+                const numCells = Math.random() < 0.5 ? 1 : 2;
+
+                // Prefer center cells (indices 60-100 in a 160-cell grid)
+                // But occasionally pick from anywhere
+                for (let i = 0; i < numCells; i++) {
+                    let cellIndex;
+                    if (Math.random() < 0.7) {
+                        // Center region
+                        cellIndex = Math.floor(Math.random() * 40) + 60;
+                    } else {
+                        // Anywhere
+                        cellIndex = Math.floor(Math.random() * 160);
+                    }
+
+                    animateCell(cellIndex);
+                }
+            }, Math.random() * 2000 + 3000); // 3-5 seconds
+        }
+
         // Keyboard listener for mode switching
         document.addEventListener('keydown', (e) => {
             if (e.key === '1') {
                 currentMode = 'round';
                 generate();
+                startAnimations();
             } else if (e.key === '2') {
                 currentMode = 'grating';
                 generate();
+                startAnimations();
             } else if (e.key === '3') {
                 currentMode = 'triangles';
                 generate();
+                startAnimations();
             } else if (e.key === '4') {
                 currentMode = 'quarters';
                 generate();
+                startAnimations();
             } else if (e.key === '5') {
                 currentMode = 'diagonals';
                 generate();
+                startAnimations();
             } else if (e.key === '6') {
                 currentMode = 'circles';
                 generate();
+                startAnimations();
             }
         });
 
         // Generate on load
         generate();
+        startAnimations();
     </script>
 </body>
 </html>
