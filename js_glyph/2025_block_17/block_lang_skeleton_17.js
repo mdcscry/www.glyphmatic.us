@@ -581,17 +581,17 @@ lang_font['oldpersian'] = [ "Noto Sans Old Persian" ,'Code2001-local-fonts']
 lang_font['oldsoutharabian'] = [ "Noto Sans Old South Arabian" ]	
 lang_font['kharoshthi'] = [ "Noto Sans Kharoshthi" ]	
 lang_font['ugaritic'] = [ "Noto Sans Ugaritic",'Code2001-local-fonts' ]
-lang_font['runic'] = ['Noto Sans Runic','Junicode-local-fonts',"Junicode Two Regular-local-fonts"]
+lang_font['runic'] = ['Noto Sans Runic','Junicode-local-fonts',"Junicode Two Beta-local-fonts"]
 lang_font['gothic-runic'] = [
   "Noto Sans Gothic, Noto Sans Runic",
   "Noto Sans Gothic, Junicode-local-fonts",
-  "Noto Sans Gothic, Junicode Two Regular-local-fonts",
+  "Noto Sans Gothic, Junicode Two Beta-local-fonts",
   "Sadagolthina-local-fonts, Noto Sans Runic",
   "Sadagolthina-local-fonts, Junicode-local-fonts",
-  "Sadagolthina-local-fonts, Junicode Two Regular-local-fonts",
+  "Sadagolthina-local-fonts, Junicode Two Beta-local-fonts",
   "Code2001-local-fonts, Noto Sans Runic",
   "Code2001-local-fonts, Junicode-local-fonts",
-  "Code2001-local-fonts, Junicode Two Regular-local-fonts"
+  "Code2001-local-fonts, Junicode Two Beta-local-fonts"
 ]
 lang_font['imperialaramaic'] = [ "Noto Sans Imperial Aramaic" ]
 lang_font['inscriptionalparthian'] = [ "Noto Sans Inscriptional Parthian" ]

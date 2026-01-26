@@ -31,22 +31,6 @@ var_lang_font['mathematical-operators-BLED_SCAN'] = [
   "Workbench"
 ];
 
-var_lang_font['basic-latin-BLED_SCAN_XELA_YELA'] = [
-  "Sixtyfour Convergence"
-];
-
-var_lang_font['geometric-shapes-BLED_SCAN_XELA_YELA'] = [
-  "Sixtyfour Convergence"
-];
-
-var_lang_font['latin-extended-a-BLED_SCAN_XELA_YELA'] = [
-  "Sixtyfour Convergence"
-];
-
-var_lang_font['mathematical-operators-BLED_SCAN_XELA_YELA'] = [
-  "Sixtyfour Convergence"
-];
-
 var_lang_font['basic-latin-BNCE_INFM_SPAC_wght'] = [
   "Shantell Sans"
 ];
@@ -161,26 +145,6 @@ var_lang_font['latin-extended-a-CTRS_slnt_wdth_wght'] = [
 
 var_lang_font['latin-extended-b-CTRS_slnt_wdth_wght'] = [
   "Science Gothic"
-];
-
-var_lang_font['basic-latin-EDPT_EHLT'] = [
-  "Nabla"
-];
-
-var_lang_font['cyrillic-extended-b-EDPT_EHLT'] = [
-  "Nabla"
-];
-
-var_lang_font['latin-extended-a-EDPT_EHLT'] = [
-  "Nabla"
-];
-
-var_lang_font['latin-extended-b-EDPT_EHLT'] = [
-  "Nabla"
-];
-
-var_lang_font['mathematical-operators-EDPT_EHLT'] = [
-  "Nabla"
 ];
 
 var_lang_font['arabic-ELGR_ELSH_wght'] = [
@@ -488,26 +452,6 @@ var_lang_font['latin-extended-a-MORF'] = [
 var_lang_font['latin-extended-b-MORF'] = [
   "Agu Display",
   "Kablammo"
-];
-
-var_lang_font['basic-latin-MORF_SHLN'] = [
-  "Honk"
-];
-
-var_lang_font['geometric-shapes-MORF_SHLN'] = [
-  "Honk"
-];
-
-var_lang_font['latin-extended-a-MORF_SHLN'] = [
-  "Honk"
-];
-
-var_lang_font['latin-extended-b-MORF_SHLN'] = [
-  "Honk"
-];
-
-var_lang_font['mathematical-operators-MORF_SHLN'] = [
-  "Honk"
 ];
 
 var_lang_font['basic-latin-ROND_YELA_wght'] = [
@@ -2470,6 +2414,114 @@ var_lang_font['thai-wght'] = [
 
 var_lang_font['tibetan-wght'] = [
   "Noto Serif Tibetan"
+];
+
+var_lang_font['adlam-wght'] = [
+  "Noto Sans Adlam"
+];
+
+var_lang_font['bassa-vah-wght'] = [
+  "Noto Sans Bassa Vah"
+];
+
+var_lang_font['cham-wght'] = [
+  "Noto Sans Cham"
+];
+
+var_lang_font['gunjala-gondi-wght'] = [
+  "Noto Sans Gunjala Gondi"
+];
+
+var_lang_font['hanifi-rohingya-wght'] = [
+  "Noto Sans Hanifi Rohingya"
+];
+
+var_lang_font['hentaigana-wght'] = [
+  "Noto Serif Hentaigana"
+];
+
+var_lang_font['kawi-wght'] = [
+  "Noto Sans Kawi"
+];
+
+var_lang_font['kayah-li-wght'] = [
+  "Noto Sans Kayah Li"
+];
+
+var_lang_font['khojki-wght'] = [
+  "Noto Serif Khojki"
+];
+
+var_lang_font['lisu-wght'] = [
+  "Noto Sans Lisu"
+];
+
+var_lang_font['medefaidrin-wght'] = [
+  "Noto Sans Medefaidrin"
+];
+
+var_lang_font['meetei-mayek-wght'] = [
+  "Noto Sans Meetei Mayek"
+];
+
+var_lang_font['np-hmong-wght'] = [
+  "Noto Serif NP Hmong"
+];
+
+var_lang_font['nag-mundari-wght'] = [
+  "Noto Sans Nag Mundari"
+];
+
+var_lang_font['new-tai-lue-wght'] = [
+  "Noto Sans New Tai Lue"
+];
+
+var_lang_font['nko-wght'] = [
+  "Noto Sans NKo Unjoined"
+];
+
+var_lang_font['nushu-wght'] = [
+  "Noto Traditional Nushu"
+];
+
+var_lang_font['ol-chiki-wght'] = [
+  "Noto Sans Ol Chiki"
+];
+
+var_lang_font['sora-sompeng-wght'] = [
+  "Noto Sans Sora Sompeng"
+];
+
+var_lang_font['sundanese-wght'] = [
+  "Noto Sans Sundanese"
+];
+
+var_lang_font['symbols-wght'] = [
+  "Noto Sans Symbols"
+];
+
+var_lang_font['tai-tham-wght'] = [
+  "Noto Sans Tai Tham"
+];
+
+var_lang_font['tangsa-wght'] = [
+  "Noto Sans Tangsa"
+];
+
+var_lang_font['toto-wght'] = [
+  "Noto Serif Toto"
+];
+
+var_lang_font['unified-canadian-aboriginal-syllabics-wght'] = [
+  "Noto Sans Canadian Aboriginal"
+];
+
+var_lang_font['vithkuqi-wght'] = [
+  "Noto Sans Vithkuqi"
+];
+
+var_lang_font['yezidi-wght'] = [
+  "Noto Serif Yezidi"
 ];
 
 console.log('var_lang_font loaded');

@@ -13,13 +13,6 @@ var_blocks['BLED_SCAN'] = [
   "Mathematical Operators"
 ];
 
-var_blocks['BLED_SCAN_XELA_YELA'] = [
-  "Basic Latin",
-  "Geometric Shapes",
-  "Latin Extended-A",
-  "Mathematical Operators"
-];
-
 var_blocks['BNCE_INFM_SPAC_wght'] = [
   "Basic Latin",
   "Cyrillic",
@@ -60,14 +53,6 @@ var_blocks['CTRS_slnt_wdth_wght'] = [
   "Cyrillic Extended-B",
   "Latin Extended-A",
   "Latin Extended-B"
-];
-
-var_blocks['EDPT_EHLT'] = [
-  "Basic Latin",
-  "Cyrillic Extended-B",
-  "Latin Extended-A",
-  "Latin Extended-B",
-  "Mathematical Operators"
 ];
 
 var_blocks['ELGR_ELSH_wght'] = [
@@ -177,14 +162,6 @@ var_blocks['MORF'] = [
   "Cyrillic Extended-B",
   "Latin Extended-A",
   "Latin Extended-B"
-];
-
-var_blocks['MORF_SHLN'] = [
-  "Basic Latin",
-  "Geometric Shapes",
-  "Latin Extended-A",
-  "Latin Extended-B",
-  "Mathematical Operators"
 ];
 
 var_blocks['ROND_YELA_wght'] = [
@@ -309,10 +286,13 @@ var_blocks['wdth_wght'] = [
 ];
 
 var_blocks['wght'] = [
+  "Adlam",
   "Arabic",
   "Basic Latin",
+  "Bassa Vah",
   "Bengali",
   "CJK Unified Ideographs",
+  "Cham",
   "Cherokee",
   "Cyrillic",
   "Cyrillic Extended-B",
@@ -322,23 +302,47 @@ var_blocks['wght'] = [
   "Greek Extended",
   "Greek and Coptic",
   "Gujarati",
+  "Gunjala Gondi",
   "Gurmukhi",
   "Hangul Syllables",
+  "Hanifi Rohingya",
   "Hebrew",
+  "Hentaigana",
   "Hiragana",
   "Kannada",
+  "Kawi",
+  "Kayah Li",
   "Khmer",
+  "Khojki",
   "Latin Extended-A",
   "Latin Extended-B",
+  "Lisu",
   "Malayalam",
   "Mathematical Operators",
+  "Medefaidrin",
+  "Meetei Mayek",
+  "NP Hmong",
+  "Nag Mundari",
+  "New Tai Lue",
+  "NKo",
+  "Nushu",
+  "Ol Chiki",
   "Oriya",
   "Sinhala",
+  "Sora Sompeng",
+  "Sundanese",
+  "Symbols",
   "Syriac",
+  "Tai Tham",
   "Tamil",
+  "Tangsa",
   "Telugu",
   "Thai",
-  "Tibetan"
+  "Tibetan",
+  "Toto",
+  "Unified Canadian Aboriginal Syllabics",
+  "Vithkuqi",
+  "Yezidi"
 ];
 
 console.log('var_blocks loaded');
