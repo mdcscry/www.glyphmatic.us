@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polar Scatter Distributions</title>
+    <title>Random Box Plots</title>
     <script src="https://cdn.plot.ly/plotly-3.3.1.min.js" charset="utf-8"></script>
     <style>
         * {
@@ -35,58 +35,48 @@
     <div class="grid" id="grid"></div>
 
     <script>
-        function generatePolarData(N, palette) {
-            const x = [];
-            const y = [];
-            const colors = [];
+        function generateBoxData(palette) {
+            const numBoxes = Math.floor(Math.random() * 9) + 7;
+            const traces = [];
 
-            // Random ellipse parameters
-            const scaleX = Math.random() * 0.5 + 0.5;  // 0.5 to 1.0
-            const scaleY = Math.random() * 0.5 + 0.5;  // 0.5 to 1.0
-            const rotation = Math.random() * Math.PI;
+            for (let i = 0; i < numBoxes; i++) {
+                const y = [];
+                const numPoints = 5;//Math.floor(Math.random() * 100) + 80;
+                const mean = Math.random() * 100;
+                const spread = Math.random() * 1 +30;
 
-            for (let i = 0; i < N; i++) {
-                const r = Math.random();
-                const theta = Math.random() * 2 * Math.PI;
+                for (let j = 0; j < numPoints; j++) {
+                    y.push(mean + (Math.random() - 0.5) * spread);
+                }
 
-                // Create ellipse
-                let px = r * Math.cos(theta) * scaleX;
-                let py = r * Math.sin(theta) * scaleY;
+                // Random border width and color
+                const borderWidth = Math.floor(Math.random() * 5) + 1; // 1-5px
+                const borderColor = palette[Math.floor(Math.random() * palette.length)];
 
-                // Rotate
-                const rotatedX = px * Math.cos(rotation) - py * Math.sin(rotation);
-                const rotatedY = px * Math.sin(rotation) + py * Math.cos(rotation);
-
-                x.push(rotatedX);
-                y.push(rotatedY);
-
-                // Color based on distance from center or angle
-                const colorIndex = Math.floor(Math.random() * palette.length);
-                colors.push(palette[colorIndex]);
+                traces.push({
+                    y: y,
+                    type: 'box',
+                    marker: {
+                        color: palette[i % palette.length]
+                    },
+                    fillcolor: palette[i % palette.length],
+                    line: {
+                        color: borderColor,
+                        width: borderWidth
+                    },
+                    boxmean: false,
+                    boxpoints: false,
+                    hoverinfo: 'none',
+                    whiskerwidth: 0.1,
+                    showlegend: false
+                });
             }
 
-            return { x, y, colors };
+            return traces;
         }
 
         function createChart(containerId, palette) {
-            const N = Math.floor(Math.random() * 20000) + 10000;
-            const data = generatePolarData(N, palette);
-
-            const trace = {
-                x: data.x,
-                y: data.y,
-                mode: 'markers',
-                type: 'scattergl',
-                marker: {
-                    size: Math.random() * 2 + 1,
-                    color: data.colors,
-                    opacity: Math.random() * 0.4 + 0.4,
-                    line: {
-                        width: 0
-                    }
-                },
-                hoverinfo: 'none'
-            };
+            const traces = generateBoxData(palette);
 
             const layout = {
                 paper_bgcolor: 'rgba(0,0,0,0)',
@@ -97,16 +87,13 @@
                     visible: false,
                     showgrid: false,
                     zeroline: false,
-                    showticklabels: false,
-                    range: [-1.1, 1.1]
+                    showticklabels: false
                 },
                 yaxis: {
                     visible: false,
                     showgrid: false,
                     zeroline: false,
-                    showticklabels: false,
-                    range: [-1.1, 1.1],
-                    scaleanchor: 'x'
+                    showticklabels: false
                 }
             };
 
@@ -115,7 +102,7 @@
                 responsive: true
             };
 
-            Plotly.newPlot(containerId, [trace], layout, config);
+            Plotly.newPlot(containerId, traces, layout, config);
         }
 
         // Get all palettes
@@ -142,15 +129,24 @@
             ['#f2709c', '#ff9472', '#f9a825', '#ffb75e', '#ed8f03']
         ];
 
-        // Random grid configurations (limited to 8 charts max for WebGL)
+        // Random grid configurations
         const gridConfigs = [
             { cols: 1, rows: 2 },
             { cols: 2, rows: 1 },
             { cols: 2, rows: 2 },
             { cols: 3, rows: 2 },
             { cols: 2, rows: 3 },
-            { cols: 4, rows: 2 },
-            { cols: 2, rows: 4 }
+            { cols: 3, rows: 3 },
+            { cols: 4, rows: 3 },
+            { cols: 3, rows: 4 },
+            { cols: 4, rows: 4 },
+            { cols: 5, rows: 3 },
+            { cols: 3, rows: 5 },
+            { cols: 5, rows: 4 },
+            { cols: 4, rows: 5 },
+            { cols: 5, rows: 5 },
+            { cols: 6, rows: 4 },
+            { cols: 4, rows: 6 }
         ];
 
         // Pick random grid config
