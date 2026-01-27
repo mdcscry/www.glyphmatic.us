@@ -200,6 +200,20 @@ const INSERT_CONFIG = {
             },
             description: 'Animated Bezier Curves: A grid-based SVG visualization featuring randomly generated cubic Bezier curves that draw and undraw in continuous cycles with configurable pause phases.<br><br>Each visualization displays 4-200 curves per cell alongside 1-5 pulsing Unicode glyphs from an extended symbol set including ancient scripts (Egyptian hieroglyphs, Phags-Pa, Tai Tham) and geometric forms. Nine distinct animation presets control curve behavior—from static drawings to morphing shapes that transform into entirely new curves during pause phases, with timing ranges from fast (1-8 seconds) to meditative (8-50 seconds).<br><br>The Shape Shifter and Slow Shifter presets feature dynamic curve morphing where paths regenerate at each cycle, creating an ever-evolving composition. Keyboard controls (0-9) allow direct preset selection or random mode, while an expandable info panel displays the active preset name, grid layout, curve/glyph counts, selected symbol, and HSL color palette with matching border accents. Grid layouts vary from minimal (1×1) to complex (5×6), with each regeneration selecting a new random configuration.'
         },
+        27: {
+            controls: {
+                style: false,
+                html: false,
+                resize: false,
+                moveUpDown: false
+            },
+            watermarks: {
+                count: 1,
+                zIndex: 10000,
+                positioning: 'top-left'
+            },
+            description: 'Ghost Shapes: A multi-recipe CSS visualization system featuring 7 distinct layouts that combine Unicode glyphs with geometric composition using AutoFont and CSS shape-outside/clip-path techniques.<br><br>Press 0-6 to switch between recipes: (0) Two-panel grid with quarter-circle cutouts and center circle overlay, (1) Dual centered circles with 8-panel grid background, (2) Lissajous Stripes - animated parametric curves alternating with glyph stripes featuring floating circles, (3) Infinity sign with color-cycling gradient glow and two-panel background, (4) Quad circles layout with 16 mini-panels and 4 positioned circles, (5) Half circles positioned left & right wrapping primary-colored text, (6) Half circles positioned top & bottom.<br><br>Each recipe randomly selects colors and inverted/normal modes on load. Layouts feature complex CSS Grid/Flexbox arrangements with floating shapes that use shape-outside for text wrapping. Lissajous recipe animates parametric curves with coprime ratios for perfect standing patterns. Infinity recipe features continuous HSL hue cycling. All recipes generate thousands of Unicode glyphs using AutoFont with proper font stack fallbacks across diverse scripts.'
+        },
     }
 };
 
