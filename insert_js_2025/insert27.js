@@ -1207,16 +1207,22 @@ function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, rec
 
     let statsHtml = '';
     if (recipeStats.inside.totalGlyphs > 0) {
-        // Has shapes
+        // Has shapes - calculate unique totals (union of both sets)
+        const totalGlyphs = recipeStats.inside.totalGlyphs + recipeStats.outside.totalGlyphs;
+        const uniqueBlocks = new Set([...recipeStats.inside.blocks, ...recipeStats.outside.blocks]);
+        const uniqueFonts = new Set([...recipeStats.inside.fonts, ...recipeStats.outside.fonts]);
+
         statsHtml = `
             <strong>Inside shapes:</strong><br>
             ${recipeStats.inside.totalGlyphs.toLocaleString()} glyphs,
-            ${recipeStats.inside.blocks.size} blocks,
             ${recipeStats.inside.fonts.size} fonts<br>
             <strong>Outside shapes:</strong><br>
             ${recipeStats.outside.totalGlyphs.toLocaleString()} glyphs,
-            ${recipeStats.outside.blocks.size} blocks,
-            ${recipeStats.outside.fonts.size} fonts
+            ${recipeStats.outside.fonts.size} fonts<br>
+            <strong>Total unique:</strong><br>
+            ${totalGlyphs.toLocaleString()} glyphs,
+            ${uniqueBlocks.size} blocks,
+            ${uniqueFonts.size} fonts
         `;
     } else {
         // No shapes
