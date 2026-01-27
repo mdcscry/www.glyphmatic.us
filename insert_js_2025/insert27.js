@@ -28,7 +28,7 @@ function changeHtmlDisplayInline() {
 // ===== RECIPE DEFINITIONS =====
 const RECIPES = [
     {
-        name: '0 Two Panel Test',
+        name: 'Two Panels',
         layout: 'grid',
         panels: [
             { position: 'left', glyphs: 2000 },
@@ -37,7 +37,7 @@ const RECIPES = [
         centerCircle: { glyphs: 1000 }
     },
     {
-        name: '1 Centered Circles',
+        name: 'Dueling Circles',
         layout: 'dual-circles',
         circles: [
             { position: 'left', size: 400 },
@@ -45,11 +45,11 @@ const RECIPES = [
         ]
     },
     {
-        name: '2 Lissajous Stripes',
+        name: 'Glyphajous',
         layout: 'lissajous-stripes'
     },
     {
-        name: '3 Infinity Sign',
+        name: 'Infinite Glyph',
         layout: 'infinity',
         panels: [
             { position: 'left', glyphs: 2000 },
@@ -58,11 +58,11 @@ const RECIPES = [
         infinityLobes: { glyphs: 800 }
     },
     {
-        name: '4 Centered Circles',
+        name: 'The Quad',
         layout: 'quad-circles'
     },
     {
-        name: '5 Half Circles - Left & Right',
+        name: 'Hemi Demi Semi - Left & Right',
         backgroundTextPrimary: true,
         shapes: [
             { type: 'half-circle-left', float: 'left', width: 550, height: 1100, fillGlyphs: 1050 },
@@ -70,7 +70,7 @@ const RECIPES = [
         ]
     },
     {
-        name: '6 Half Circles - Top & Bottom',
+        name: 'Hemi Demi Semi - Up & Down',
         shapes: [
             { type: 'half-circle-top', float: 'left', width: '70vw', height: '35vw', fillGlyphs: 1200 },
             { type: 'half-circle-bottom', float: 'right', width: '70vw', height: '35vw', fillGlyphs: 1700 }
@@ -81,10 +81,95 @@ const RECIPES = [
 let currentRecipeIndex = -1;
 let dataLoaded = false;
 let currentAnimationId = null;
+let colorAnimationId = null;
+let recipeStats = {
+    outside: {
+        totalGlyphs: 0,
+        blocks: new Set(),
+        fonts: new Set()
+    },
+    inside: {
+        totalGlyphs: 0,
+        blocks: new Set(),
+        fonts: new Set()
+    }
+};
+
+// ===== COLOR UTILITIES =====
+function hexToRgb(hex) {
+    // Handle both 3-digit (#fff) and 6-digit (#ffffff) hex colors
+    let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (result) {
+        return {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        };
+    }
+
+    // Try 3-digit format
+    result = /^#?([a-f\d])([a-f\d])([a-f\d])$/i.exec(hex);
+    if (result) {
+        return {
+            r: parseInt(result[1] + result[1], 16),
+            g: parseInt(result[2] + result[2], 16),
+            b: parseInt(result[3] + result[3], 16)
+        };
+    }
+
+    return null;
+}
+
+function rgbToHsl(r, g, b) {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) {
+        h = s = 0;
+    } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+        switch (max) {
+            case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+            case g: h = ((b - r) / d + 2) / 6; break;
+            case b: h = ((r - g) / d + 4) / 6; break;
+        }
+    }
+
+    return { h: h * 360, s: s * 100, l: l * 100 };
+}
+
+function hexToHsl(hex) {
+    const rgb = hexToRgb(hex);
+    return rgb ? rgbToHsl(rgb.r, rgb.g, rgb.b) : null;
+}
+
+function interpolateHsl(hsl1, hsl2, t) {
+    // Smooth easing function
+    const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+    return {
+        h: hsl1.h + (hsl2.h - hsl1.h) * ease,
+        s: hsl1.s + (hsl2.s - hsl1.s) * ease,
+        l: hsl1.l + (hsl2.l - hsl1.l) * ease
+    };
+}
+
+function hslToString(hsl) {
+    return `hsl(${hsl.h.toFixed(1)}, ${hsl.s.toFixed(1)}%, ${hsl.l.toFixed(1)}%)`;
+}
 
 // ===== GLYPH GENERATION =====
-function generateGlyphText(length) {
+function generateGlyphText(length, isInsideShape = false) {
     let html = '';
+    const stats = isInsideShape ? recipeStats.inside : recipeStats.outside;
+
     for (let i = 0; i < length; i++) {
         try {
             const glyphData = AutoFont.generateGlyph(
@@ -98,6 +183,13 @@ function generateGlyphText(length) {
             );
             const fontStack = glyphData.fontStack + ", 'Noto Emoji', 'Noto Sans Full'";
             html += `<span style="font-family: ${fontStack};">&#x${glyphData.glyph};</span>`;
+
+            // Track stats - extract first font from fontStack
+            stats.totalGlyphs++;
+            stats.blocks.add(glyphData.block);
+            // Parse fontStack to get the primary font (first in the stack)
+            const primaryFont = glyphData.fontStack.split(',')[0].trim().replace(/['"]/g, '');
+            stats.fonts.add(primaryFont);
         } catch (error) {
             // Skip failed glyphs
         }
@@ -105,8 +197,10 @@ function generateGlyphText(length) {
     return html;
 }
 
-function generateGlyphRows(glyphsPerRow, numRows) {
+function generateGlyphRows(glyphsPerRow, numRows, isInsideShape = false) {
     let html = '';
+    const stats = isInsideShape ? recipeStats.inside : recipeStats.outside;
+
     for (let row = 0; row < numRows; row++) {
         html += '<div style="white-space: nowrap;">';
         for (let i = 0; i < glyphsPerRow; i++) {
@@ -122,6 +216,13 @@ function generateGlyphRows(glyphsPerRow, numRows) {
                 );
                 const fontStack = glyphData.fontStack + ", 'Noto Emoji', 'Noto Sans Full'";
                 html += `<span style="font-family: ${fontStack};">&#x${glyphData.glyph};</span>`;
+
+                // Track stats - extract first font from fontStack
+                stats.totalGlyphs++;
+                stats.blocks.add(glyphData.block);
+                // Parse fontStack to get the primary font (first in the stack)
+                const primaryFont = glyphData.fontStack.split(',')[0].trim().replace(/['"]/g, '');
+                stats.fonts.add(primaryFont);
             } catch (error) {
                 html += ' ';
             }
@@ -139,8 +240,6 @@ function injectStyles() {
             margin: 0 !important;
             padding: 0 !important;
             overflow: hidden !important;
-            background: #fff;
-            color: #000;
             font-family: 'Noto Sans', 'Arial Unicode MS', 'Segoe UI Symbol', sans-serif;
             line-height: 1.6;
             font-size: 22px;
@@ -245,8 +344,8 @@ function injectStyles() {
             bottom: 20px;
             right: 20px;
             background: transparent;
-            border: 2px solid #cc0000;
-            color: #cc0000;
+            border: 2px solid var(--primary-color, #cc0000);
+            color: var(--primary-color, #cc0000);
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -268,7 +367,7 @@ function injectStyles() {
             padding: 10px 15px;
             border-radius: 20px;
             background: var(--primary-color, #cc0000);
-            color: var(--circle-text-color, #fff);
+            color: var(--info-text-color, #fff);
         }
 
         .recipe-info .label {
@@ -276,7 +375,22 @@ function injectStyles() {
         }
 
         .recipe-info.expanded .label {
-            display: inline;
+            display: block;
+        }
+
+        .recipe-info .recipe-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .recipe-info .recipe-stats {
+            font-size: 9px;
+            line-height: 1.3;
+            opacity: 0.9;
+        }
+
+        .recipe-info .recipe-stats strong {
+            font-size: 10px;
         }
 
         .recipe-info .icon {
@@ -532,7 +646,7 @@ function injectStyles() {
             overflow: hidden;
             background: #cc0000;
             color: #fff;
-            font-size: 14px;
+            font-size: 18px;
             line-height: 1.2;
             text-align: center;
             transform: translate(-50%, -50%);
@@ -696,7 +810,10 @@ function createDOM() {
     recipeInfo.id = 'recipeInfo';
     recipeInfo.innerHTML = `
         <span class="icon">i</span>
-        <span class="label"></span>
+        <div class="label">
+            <div class="recipe-name"></div>
+            <div class="recipe-stats"></div>
+        </div>
     `;
 
     // Add click handler for recipe info
@@ -720,10 +837,14 @@ function renderRecipe(recipeIndex) {
     const gridContainer = document.getElementById('gridContainer');
     const recipeInfo = document.getElementById('recipeInfo');
 
-    // Cancel animation
+    // Cancel animations
     if (currentAnimationId) {
         cancelAnimationFrame(currentAnimationId);
         currentAnimationId = null;
+    }
+    if (colorAnimationId) {
+        cancelAnimationFrame(colorAnimationId);
+        colorAnimationId = null;
     }
 
     // Clear content
@@ -738,6 +859,18 @@ function renderRecipe(recipeIndex) {
 }
 
 function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, recipeInfo, recipeIndex) {
+    // Reset stats
+    recipeStats.outside = {
+        totalGlyphs: 0,
+        blocks: new Set(),
+        fonts: new Set()
+    };
+    recipeStats.inside = {
+        totalGlyphs: 0,
+        blocks: new Set(),
+        fonts: new Set()
+    };
+
     // Random colors
     const primaryColors = ['#cc0000', '#0066cc', '#009933', '#ff6600', '#9933cc', '#b56b8c', '#006666', '#daa520'];
     const primaryColor = primaryColors[Math.floor(Math.random() * primaryColors.length)];
@@ -746,7 +879,7 @@ function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, rec
     const textColor = inverted ? '#fff' : '#000';
     const circleTextColor = inverted ? '#000' : '#fff';
 
-    document.body.style.background = '#fff';
+    document.body.style.background = bgColor;
 
     if (recipe.layout === 'grid') {
         textContainer.style.display = 'none';
@@ -755,7 +888,7 @@ function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, rec
         let html = `<div class="grid-wrapper" style="background: ${bgColor};">`;
 
         recipe.panels.forEach(panel => {
-            const panelGlyphs = generateGlyphText(panel.glyphs);
+            const panelGlyphs = generateGlyphText(panel.glyphs, false); // false = outside shapes
             html += `
                 <div class="panel panel-${panel.position}" style="color: ${textColor};">
                     <div class="quarter-top"></div>
@@ -767,22 +900,27 @@ function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, rec
         html += '</div>';
 
         if (recipe.centerCircle) {
-            const centerGlyphs = generateGlyphRows(50, 30);
+            const centerGlyphs = generateGlyphRows(50, 30, true); // true = inside shape
             html += `<div class="center-circle" style="background: ${primaryColor}; color: ${circleTextColor}; border: 3px solid ${textColor};">${centerGlyphs}</div>`;
         }
 
         gridContainer.innerHTML = html;
+
+        // Start text color animation
+        setTimeout(() => {
+            startColorAnimation(textColor, primaryColor, ['.panel .text span']);
+        }, 100);
     } else if (recipe.layout === 'dual-circles') {
         textContainer.style.display = 'none';
         gridContainer.style.display = 'block';
 
         const panelGlyphs = [];
         for (let i = 0; i < 8; i++) {
-            panelGlyphs.push(generateGlyphText(500));
+            panelGlyphs.push(generateGlyphText(500, false)); // false = outside shapes
         }
 
-        const circleGlyphs = generateGlyphRows(50, 30);
-        const circleGlyphs2 = generateGlyphRows(50, 30);
+        const circleGlyphs = generateGlyphRows(50, 30, true); // true = inside shape
+        const circleGlyphs2 = generateGlyphRows(50, 30, true); // true = inside shape
 
         let html = `<div class="dual-grid-wrapper" style="background: ${bgColor};">`;
 
@@ -806,6 +944,11 @@ function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, rec
         html += `<div class="circle-right" style="background: ${primaryColor}; color: ${circleTextColor}; border: 3px solid ${textColor};">${circleGlyphs2}</div>`;
 
         gridContainer.innerHTML = html;
+
+        // Start text color animation (delay to ensure DOM is ready)
+        setTimeout(() => {
+            startColorAnimation(textColor, primaryColor, ['.mini-panel .text span']);
+        }, 100);
     } else if (recipe.layout === 'lissajous-stripes') {
         textContainer.style.display = 'none';
         gridContainer.style.display = 'block';
@@ -838,15 +981,15 @@ function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, rec
         const ratio = lissajousPool[Math.floor(Math.random() * lissajousPool.length)];
         const animSpeed = 0.0005 + Math.random() * 0.001;
 
-        const stripeGlyphs1 = generateGlyphText(400);
-        const stripeGlyphs2 = generateGlyphText(410);
-        const stripeGlyphs3 = generateGlyphText(475);
+        const stripeGlyphs1 = generateGlyphText(400, false); // false = outside shapes
+        const stripeGlyphs2 = generateGlyphText(410, false); // false = outside shapes
+        const stripeGlyphs3 = generateGlyphText(475, false); // false = outside shapes
 
         const ballStyle = `width:120px;height:120px;border-radius:50%;background:${primaryColor};border:3px solid ${textColor};shape-outside:circle(50%);shape-margin:10px;`;
 
         let html = '<div style="display:flex;flex-direction:column;width:100vw;height:100vh;">';
 
-        html += `<div style="height:24vh;overflow:hidden;color:${textColor};word-break:break-all;padding:5px 10px;">`;
+        html += `<div class="stripe-text" style="height:24vh;overflow:hidden;color:${textColor};word-break:break-all;padding:5px 10px;">`;
         html += `<div style="${ballStyle}float:left;margin-right:15px;"></div>`;
         html += `<div style="${ballStyle}float:right;margin-left:15px;"></div>`;
         html += stripeGlyphs1;
@@ -862,7 +1005,7 @@ function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, rec
         }
         html += '</div>';
 
-        html += `<div style="height:24vh;overflow:hidden;color:${textColor};word-break:break-all;padding:5px 10px;">`;
+        html += `<div class="stripe-text" style="height:24vh;overflow:hidden;color:${textColor};word-break:break-all;padding:5px 10px;">`;
         html += `<div style="${ballStyle}float:left;margin-right:15px;"></div>`;
         html += `<div style="${ballStyle}float:right;margin-left:15px;"></div>`;
         html += stripeGlyphs2;
@@ -878,7 +1021,7 @@ function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, rec
         }
         html += '</div>';
 
-        html += `<div style="height:24vh;overflow:hidden;color:${textColor};word-break:break-all;padding:5px 10px;">`;
+        html += `<div class="stripe-text" style="height:24vh;overflow:hidden;color:${textColor};word-break:break-all;padding:5px 10px;">`;
         html += `<div style="${ballStyle}float:left;margin-right:15px;"></div>`;
         html += `<div style="${ballStyle}float:right;margin-left:15px;"></div>`;
         html += stripeGlyphs3;
@@ -887,6 +1030,11 @@ function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, rec
         html += '</div>';
 
         gridContainer.innerHTML = html;
+
+        // Start text color animation
+        setTimeout(() => {
+            startColorAnimation(textColor, primaryColor, ['.stripe-text span']);
+        }, 100);
 
         // Animate
         let time = 0;
@@ -923,7 +1071,7 @@ function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, rec
         let html = `<div class="infinity-grid-wrapper" style="background: ${infinityBgColor};">`;
 
         recipe.panels.forEach(panel => {
-            const panelGlyphs = generateGlyphText(panel.glyphs);
+            const panelGlyphs = generateGlyphText(panel.glyphs, false); // false = outside shapes
             html += `
                 <div class="infinity-panel infinity-panel-${panel.position}" style="color: ${infinityTextColor};">
                     <div class="infinity-quarter-top"></div>
@@ -942,6 +1090,11 @@ function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, rec
         const glowEl = document.getElementById('infinityGlow');
         let hue = Math.random() * 360;
 
+        // Start text color animation (white to infinity color)
+        setTimeout(() => {
+            startColorAnimation(infinityTextColor, '#ff0000', ['.infinity-panel .text span']);
+        }, 100);
+
         function animateInfinityColor() {
             hue = (hue + 0.02) % 360;
             infinityEl.style.setProperty('--infinity-color', `hsl(${hue}, 70%, 50%)`);
@@ -958,13 +1111,13 @@ function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, rec
 
         const panelGlyphs = [];
         for (let i = 0; i < 16; i++) {
-            panelGlyphs.push(generateGlyphText(500));
+            panelGlyphs.push(generateGlyphText(700, false)); // false = outside shapes
         }
 
-        const circleGlyphs1 = generateGlyphRows(35, 22);
-        const circleGlyphs2 = generateGlyphRows(35, 22);
-        const circleGlyphs3 = generateGlyphRows(35, 22);
-        const circleGlyphs4 = generateGlyphRows(35, 22);
+        const circleGlyphs1 = generateGlyphRows(25, 22, true); // true = inside shape
+        const circleGlyphs2 = generateGlyphRows(25, 22, true); // true = inside shape
+        const circleGlyphs3 = generateGlyphRows(25, 22, true); // true = inside shape
+        const circleGlyphs4 = generateGlyphRows(25, 22, true); // true = inside shape
 
         let html = `<div class="quad-grid-wrapper" style="background: ${bgColor}; border-color: ${primaryColor};">`;
 
@@ -1004,6 +1157,11 @@ function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, rec
         html += `<div class="circle-quad-br" style="background: ${primaryColor}; color: ${circleTextColor}; border-color: ${textColor};">${circleGlyphs4}</div>`;
 
         gridContainer.innerHTML = html;
+
+        // Start text color animation
+        setTimeout(() => {
+            startColorAnimation(textColor, primaryColor, ['.quad-panel .text span']);
+        }, 100);
     } else {
         textContainer.style.display = 'block';
         gridContainer.style.display = 'none';
@@ -1017,7 +1175,7 @@ function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, rec
         let html = '';
         if (recipe.shapes) {
             recipe.shapes.forEach((shape) => {
-                const fillGlyphs = generateGlyphText(shape.fillGlyphs);
+                const fillGlyphs = generateGlyphText(shape.fillGlyphs, true); // true = inside shape
                 const width = typeof shape.width === 'number' ? `${shape.width}px` : shape.width;
                 const height = typeof shape.height === 'number' ? `${shape.height}px` : shape.height;
 
@@ -1034,15 +1192,83 @@ function renderRecipeContent(recipe, textContainer, gridContainer, textSpan, rec
             });
         }
 
-        html += generateGlyphText(4000);
+        html += generateGlyphText(4000, false); // false = outside shapes
         textSpan.innerHTML = html;
+
+        // Start text color animation (morph between default color and shape color)
+        // Target individual glyph spans, excluding ghost shapes (they have inline styles)
+        setTimeout(() => {
+            startColorAnimation(textColor, primaryColor, ['#text > span:not(.ghost)']);
+        }, 100);
     }
 
-    recipeInfo.querySelector('.label').textContent = `Recipe ${recipeIndex}/${RECIPES.length - 1}: ${recipe.name}`;
-    recipeInfo.style.borderColor = primaryColor;
-    recipeInfo.style.color = primaryColor;
+    // Update info box with 1-based indexing and stats
+    recipeInfo.querySelector('.recipe-name').textContent = `Recipe ${recipeIndex + 1}/${RECIPES.length}: ${recipe.name}`;
+
+    let statsHtml = '';
+    if (recipeStats.inside.totalGlyphs > 0) {
+        // Has shapes
+        statsHtml = `
+            <strong>Inside shapes:</strong><br>
+            ${recipeStats.inside.totalGlyphs.toLocaleString()} glyphs,
+            ${recipeStats.inside.blocks.size} blocks,
+            ${recipeStats.inside.fonts.size} fonts<br>
+            <strong>Outside shapes:</strong><br>
+            ${recipeStats.outside.totalGlyphs.toLocaleString()} glyphs,
+            ${recipeStats.outside.blocks.size} blocks,
+            ${recipeStats.outside.fonts.size} fonts
+        `;
+    } else {
+        // No shapes
+        statsHtml = `
+            ${recipeStats.outside.totalGlyphs.toLocaleString()} glyphs<br>
+            ${recipeStats.outside.blocks.size} blocks<br>
+            ${recipeStats.outside.fonts.size} fonts
+        `;
+    }
+
+    recipeInfo.querySelector('.recipe-stats').innerHTML = statsHtml;
     recipeInfo.style.setProperty('--primary-color', primaryColor);
-    recipeInfo.style.setProperty('--circle-text-color', circleTextColor);
+    recipeInfo.style.setProperty('--info-text-color', textColor);
+}
+
+// ===== COLOR ANIMATION =====
+function startColorAnimation(textColor, shapeColor, selectors) {
+    const hsl1 = hexToHsl(textColor);
+    const hsl2 = hexToHsl(shapeColor);
+
+    if (!hsl1 || !hsl2) {
+        console.log('Aborting: hsl conversion failed');
+        return;
+    }
+
+    // Collect all elements and assign each a random speed
+    const glyphData = [];
+    selectors.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(el => {
+            glyphData.push({
+                element: el,
+                time: -Math.PI / 2,  // All start at base color (sin(-π/2) = -1, giving t=0)
+                speed: 0.005 + Math.random() * 0.04  // Random speed between 0.005 and 0.045 (9x range)
+            });
+        });
+    });
+
+    function animateColors() {
+        // Each glyph has its own time counter that advances at its own speed
+        glyphData.forEach((data) => {
+            data.time += data.speed;
+            const t = (Math.sin(data.time) + 1) / 2; // Oscillate between 0 and 1
+            const currentHsl = interpolateHsl(hsl1, hsl2, t);
+            const colorString = hslToString(currentHsl);
+            data.element.style.color = colorString;
+        });
+
+        colorAnimationId = requestAnimationFrame(animateColors);
+    }
+
+    animateColors();
 }
 
 // ===== KEYBOARD =====
