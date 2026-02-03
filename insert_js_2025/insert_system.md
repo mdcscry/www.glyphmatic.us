@@ -15,6 +15,31 @@ Comprehensive guide for creating modular JavaScript visualizations for glyphmati
 
 ---
 
+## Git Workflow & Commit Strategy
+
+**IMPORTANT:** For roborev integration and better code review:
+
+- **Commit after each completed step** of any coding task
+- Create small, focused commits rather than batching multiple changes
+- Use descriptive commit messages that explain what was done
+- Each commit should represent a single logical change
+
+**Why frequent commits?**
+- Smaller, more focused code reviews via roborev
+- Easier to identify and isolate issues
+- Better git history and rollback granularity
+- Clearer progress tracking
+
+**Workflow:**
+1. Complete a step (implement a feature, fix a bug, refactor a function)
+2. Stage the relevant files
+3. Commit with a clear message
+4. Move to the next step
+
+This applies to all coding work unless explicitly instructed otherwise.
+
+---
+
 ## Basic Insert Template
 
 ```javascript
