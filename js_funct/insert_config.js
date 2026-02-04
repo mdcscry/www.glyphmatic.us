@@ -214,6 +214,34 @@ const INSERT_CONFIG = {
             },
             description: 'Ghost Shapes: A multi-recipe CSS visualization system featuring 7 distinct layouts that combine Unicode glyphs with geometric composition using AutoFont and CSS shape-outside/clip-path techniques.<br><br>Press 0-6 to switch between recipes: (0) Two-panel grid with quarter-circle cutouts and center circle overlay, (1) Dual centered circles with 8-panel grid background, (2) Lissajous Stripes - animated parametric curves alternating with glyph stripes featuring floating circles, (3) Infinity sign with color-cycling gradient glow and two-panel background, (4) Quad circles layout with 16 mini-panels and 4 positioned circles, (5) Half circles positioned left & right wrapping primary-colored text, (6) Half circles positioned top & bottom.<br><br>Each recipe randomly selects colors and inverted/normal modes on load. Layouts feature complex CSS Grid/Flexbox arrangements with floating shapes that use shape-outside for text wrapping. Lissajous recipe animates parametric curves with coprime ratios for perfect standing patterns. Infinity recipe features continuous HSL hue cycling. All recipes generate thousands of Unicode glyphs using AutoFont with proper font stack fallbacks across diverse scripts.'
         },
+        28: {
+            controls: {
+                style: false,
+                html: false,
+                resize: false,
+                moveUpDown: false
+            },
+            watermarks: {
+                count: 1,
+                zIndex: 10,
+                positioning: 'top-left'
+            },
+            description: 'DeGenerator 1 Complete - All 9 variants of the original DeGenerator1 with box mix, color mix, and splat variations'
+        },
+        31: {
+            controls: {
+                style: false,
+                html: false,
+                resize: false,
+                moveUpDown: false
+            },
+            watermarks: {
+                count: 1,
+                zIndex: 10,
+                positioning: 'top-left'
+            },
+            description: 'Fibonacci Spirals - Concentric Fibonacci grid with two character set variants. Press 1 for basic Latin (A-Z, a-z), press 2 for IPA Extensions + Extended Latin (dense, exotic characters). Each key press triggers a full re-render of the grid and character layer.'
+        },
     }
 };
 
