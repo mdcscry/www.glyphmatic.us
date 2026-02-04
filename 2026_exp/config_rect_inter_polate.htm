@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rectangle Field - Configurable</title>
+  <style>
+    @property --c1 {
+      syntax: '<color>';
+      inherits: false;
+      initial-value: #000;
+    }
+    
+    @property --c2 {
+      syntax: '<color>';
+      inherits: false;
+      initial-value: #000;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #0a0a0f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(40, 1fr);
+      grid-template-rows: repeat(20, 1fr);
+      gap: 2px;
+      width: 100vw;
+      height: 100vh;
+      padding: 1rem;
+    }
+
+    .shape {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(var(--angle), var(--c1), var(--c2));
+      transition: --c1 8s ease, --c2 8s ease;
+    }
+
+    /* Controls panel */
+    .controls {
+      position: fixed;
+      top: 2rem;
+      left: 2rem;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      max-width: 240px;
+    }
+
+    .controls h3 {
+      color: rgba(255, 255, 255, 0.6);
+      font-family: system-ui, sans-serif;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+    }
+
+    .toggle input {
+      display: none;
+    }
+
+    .toggle .checkbox {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .toggle input:checked + .checkbox {
+      background: #8338ec;
+      border-color: #8338ec;
+    }
+
+    .toggle input:checked + .checkbox::after {
+      content: '✓';
+      color: white;
+      font-size: 12px;
+    }
+
+    .toggle span {
+      color: rgba(255, 255, 255, 0.7);
+      font-family: system-ui, sans-serif;
+      font-size: 0.8rem;
+    }
+
+    .toggle:hover span {
+      color: #fff;
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 1rem 0;
+    }
+
+    .regenerate-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.7);
+      padding: 0.75rem 1.5rem;
+      border-radius: 2rem;
+      font-family: system-ui, sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+
+    .regenerate-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .palette-name {
+      position: fixed;
+      bottom: 2rem;
+      left: 2rem;
+      color: rgba(255, 255, 255, 0.4);
+      font-family: system-ui, sans-serif;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <h3>Rectangle Morphs</h3>
+    
+    <label class="toggle">
+      <input type="checkbox" id="toggle-breathe" checked>
+      <div class="checkbox"></div>
+      <span>Breathe (uniform)</span>
+    </label>
+    
+    <label class="toggle">
+      <input type="checkbox" id="toggle-squeeze-h" checked>
+      <div class="checkbox"></div>
+      <span>Squeeze horizontal</span>
+    </label>
+    
+    <label class="toggle">
+      <input type="checkbox" id="toggle-squeeze-v" checked>
+      <div class="checkbox"></div>
+      <span>Squeeze vertical</span>
+    </label>
+    
+    <label class="toggle">
+      <input type="checkbox" id="toggle-asymmetric">
+      <div class="checkbox"></div>
+      <span>Asymmetric</span>
+    </label>
+
+    <div class="divider"></div>
+    <h3>Corner Radius</h3>
+    
+    <label class="toggle">
+      <input type="checkbox" id="toggle-sharp-sharp" checked>
+      <div class="checkbox"></div>
+      <span>Sharp ↔ Sharp</span>
+    </label>
+    
+    <label class="toggle">
+      <input type="checkbox" id="toggle-sharp-round">
+      <div class="checkbox"></div>
+      <span>Sharp ↔ Rounded</span>
+    </label>
+    
+    <label class="toggle">
+      <input type="checkbox" id="toggle-round-round">
+      <div class="checkbox"></div>
+      <span>Rounded ↔ Rounded</span>
+    </label>
+    
+    <label class="toggle">
+      <input type="checkbox" id="toggle-to-pill">
+      <div class="checkbox"></div>
+      <span>To pill</span>
+    </label>
+    
+    <label class="toggle">
+      <input type="checkbox" id="toggle-to-circle">
+      <div class="checkbox"></div>
+      <span>To circle</span>
+    </label>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <button class="regenerate-btn" id="regenerate">Regenerate</button>
+  <div class="palette-name" id="palette-name"></div>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const regenerateBtn = document.getElementById('regenerate');
+    const paletteNameEl = document.getElementById('palette-name');
+    
+    // Shape type toggles
+    const morphToggles = {
+      breathe: document.getElementById('toggle-breathe'),
+      squeezeH: document.getElementById('toggle-squeeze-h'),
+      squeezeV: document.getElementById('toggle-squeeze-v'),
+      asymmetric: document.getElementById('toggle-asymmetric'),
+    };
+
+    const cornerToggles = {
+      sharpSharp: document.getElementById('toggle-sharp-sharp'),
+      sharpRound: document.getElementById('toggle-sharp-round'),
+      roundRound: document.getElementById('toggle-round-round'),
+      toPill: document.getElementById('toggle-to-pill'),
+      toCircle: document.getElementById('toggle-to-circle'),
+    };
+
+    // Multiple palettes
+    const palettes = {
+      'Ocean Sunset': [
+        { h: 220, s: 80, l: 45 },
+        { h: 200, s: 70, l: 50 },
+        { h: 180, s: 60, l: 45 },
+        { h: 280, s: 60, l: 50 },
+        { h: 320, s: 70, l: 55 },
+        { h: 350, s: 75, l: 55 },
+      ],
+      'Forest': [
+        { h: 90, s: 50, l: 30 },
+        { h: 120, s: 60, l: 35 },
+        { h: 150, s: 50, l: 40 },
+        { h: 80, s: 70, l: 45 },
+        { h: 45, s: 60, l: 50 },
+        { h: 30, s: 50, l: 40 },
+      ],
+      'Neon Night': [
+        { h: 280, s: 100, l: 60 },
+        { h: 320, s: 100, l: 55 },
+        { h: 180, s: 100, l: 50 },
+        { h: 60, s: 100, l: 50 },
+        { h: 300, s: 90, l: 65 },
+        { h: 200, s: 100, l: 55 },
+      ],
+      'Ember': [
+        { h: 0, s: 80, l: 40 },
+        { h: 15, s: 90, l: 50 },
+        { h: 30, s: 100, l: 55 },
+        { h: 45, s: 100, l: 60 },
+        { h: 350, s: 70, l: 35 },
+        { h: 20, s: 85, l: 45 },
+      ],
+      'Arctic': [
+        { h: 200, s: 30, l: 70 },
+        { h: 210, s: 40, l: 80 },
+        { h: 190, s: 50, l: 75 },
+        { h: 220, s: 35, l: 85 },
+        { h: 180, s: 25, l: 90 },
+        { h: 230, s: 30, l: 65 },
+      ],
+      'Toxic': [
+        { h: 120, s: 100, l: 45 },
+        { h: 80, s: 100, l: 50 },
+        { h: 150, s: 80, l: 40 },
+        { h: 60, s: 90, l: 55 },
+        { h: 100, s: 100, l: 35 },
+        { h: 140, s: 70, l: 50 },
+      ],
+      'Dusk': [
+        { h: 270, s: 40, l: 30 },
+        { h: 290, s: 50, l: 40 },
+        { h: 310, s: 45, l: 45 },
+        { h: 330, s: 55, l: 50 },
+        { h: 20, s: 60, l: 55 },
+        { h: 40, s: 70, l: 60 },
+      ],
+      'Monochrome': [
+        { h: 0, s: 0, l: 20 },
+        { h: 0, s: 0, l: 35 },
+        { h: 0, s: 0, l: 50 },
+        { h: 0, s: 0, l: 65 },
+        { h: 0, s: 0, l: 80 },
+        { h: 0, s: 0, l: 90 },
+      ],
+    };
+
+    const paletteNames = Object.keys(palettes);
+    let currentPaletteIndex = 0;
+    let palette = palettes[paletteNames[0]];
+    let styleSheets = [];
+
+    function getColor(index, total) {
+      const x = index % 40;
+      const y = Math.floor(index / 40);
+      const xRatio = x / 40;
+      const yRatio = y / 20;
+      
+      const paletteIndex = Math.floor((xRatio * 0.6 + yRatio * 0.4 + Math.random() * 0.2) * palette.length);
+      const base = palette[Math.min(paletteIndex, palette.length - 1)];
+      
+      const h = base.h + (Math.random() - 0.5) * 20;
+      const s = base.s + (Math.random() - 0.5) * 15;
+      const l = base.l + (Math.random() - 0.5) * 15;
+      
+      return `hsl(${h}, ${s}%, ${l}%)`;
+    }
+
+    function getSecondColor(index, total) {
+      const x = index % 40;
+      const y = Math.floor(index / 40);
+      const xRatio = x / 40;
+      const yRatio = y / 20;
+      
+      const paletteIndex = Math.floor((xRatio * 0.6 + yRatio * 0.4 + Math.random() * 0.2) * palette.length);
+      const nextIndex = Math.min(paletteIndex + 1, palette.length - 1);
+      const base = palette[nextIndex];
+      
+      const h = base.h + (Math.random() - 0.5) * 20;
+      const s = base.s + (Math.random() - 0.5) * 15;
+      const l = base.l + (Math.random() - 0.5) * 15;
+      
+      return `hsl(${h}, ${s}%, ${l}%)`;
+    }
+
+    function getActiveMorphTypes() {
+      const active = [];
+      if (morphToggles.breathe.checked) active.push('breathe');
+      if (morphToggles.squeezeH.checked) active.push('squeezeH');
+      if (morphToggles.squeezeV.checked) active.push('squeezeV');
+      if (morphToggles.asymmetric.checked) active.push('asymmetric');
+      return active.length > 0 ? active : ['breathe'];
+    }
+
+    function getActiveCornerTypes() {
+      const active = [];
+      if (cornerToggles.sharpSharp.checked) active.push('sharpSharp');
+      if (cornerToggles.sharpRound.checked) active.push('sharpRound');
+      if (cornerToggles.roundRound.checked) active.push('roundRound');
+      if (cornerToggles.toPill.checked) active.push('toPill');
+      if (cornerToggles.toCircle.checked) active.push('toCircle');
+      return active.length > 0 ? active : ['sharpSharp'];
+    }
+
+    function createKeyframes(id, morphType, cornerType) {
+      const style = document.createElement('style');
+      const duration = 2 + Math.random() * 3;
+      
+      // Randomize inset values
+      const r = () => Math.floor(5 + Math.random() * 15);
+      const rBig = () => Math.floor(20 + Math.random() * 20);
+      
+      // Start and end inset values based on morph type
+      let startInset, endInset;
+      
+      if (morphType === 'breathe') {
+        const s = r();
+        const e = rBig();
+        startInset = `${s}% ${s}% ${s}% ${s}%`;
+        endInset = `${e}% ${e}% ${e}% ${e}%`;
+      } else if (morphType === 'squeezeH') {
+        const v = r();
+        startInset = `${v}% ${r()}% ${v}% ${r()}%`;
+        endInset = `${v}% ${rBig()}% ${v}% ${rBig()}%`;
+      } else if (morphType === 'squeezeV') {
+        const h = r();
+        startInset = `${r()}% ${h}% ${r()}% ${h}%`;
+        endInset = `${rBig()}% ${h}% ${rBig()}% ${h}%`;
+      } else if (morphType === 'asymmetric') {
+        startInset = `${r()}% ${r()}% ${r()}% ${r()}%`;
+        endInset = `${rBig()}% ${r()}% ${r()}% ${rBig()}%`;
+      }
+      
+      // Start and end radius based on corner type
+      let startRadius, endRadius;
+      
+      if (cornerType === 'sharpSharp') {
+        startRadius = '0px';
+        endRadius = '0px';
+      } else if (cornerType === 'sharpRound') {
+        startRadius = '0px';
+        endRadius = `${15 + Math.floor(Math.random() * 20)}px`;
+      } else if (cornerType === 'roundRound') {
+        startRadius = `${5 + Math.floor(Math.random() * 10)}px`;
+        endRadius = `${20 + Math.floor(Math.random() * 20)}px`;
+      } else if (cornerType === 'toPill') {
+        startRadius = `${Math.floor(Math.random() * 10)}px`;
+        endRadius = '50px';
+      } else if (cornerType === 'toCircle') {
+        startRadius = '0px';
+        endRadius = '50%';
+      }
+
+      const keyframeContent = `
+        @keyframes morph-${id} {
+          0%, 100% { clip-path: inset(${startInset} round ${startRadius}); }
+          50% { clip-path: inset(${endInset} round ${endRadius}); }
+        }
+      `;
+
+      style.textContent = keyframeContent;
+      document.head.appendChild(style);
+      styleSheets.push(style);
+      
+      return duration;
+    }
+
+    function generate() {
+      // Clear existing
+      grid.innerHTML = '';
+      styleSheets.forEach(s => s.remove());
+      styleSheets = [];
+
+      // Update palette
+      const paletteName = paletteNames[currentPaletteIndex];
+      palette = palettes[paletteName];
+      paletteNameEl.textContent = paletteName;
+
+      const activeMorphs = getActiveMorphTypes();
+      const activeCorners = getActiveCornerTypes();
+      
+      for (let i = 0; i < 800; i++) {
+        const shape = document.createElement('div');
+        shape.className = 'shape';
+        
+        // Set colors via custom properties
+        const color1 = getColor(i, 800);
+        const color2 = getSecondColor(i, 800);
+        const angle = Math.floor(Math.random() * 360);
+        
+        shape.style.setProperty('--c1', color1);
+        shape.style.setProperty('--c2', color2);
+        shape.style.setProperty('--angle', `${angle}deg`);
+        
+        // Pick random morph and corner type
+        const morphType = activeMorphs[Math.floor(Math.random() * activeMorphs.length)];
+        const cornerType = activeCorners[Math.floor(Math.random() * activeCorners.length)];
+        const duration = createKeyframes(i, morphType, cornerType);
+        
+        const delay = Math.random() * 4;
+        
+        shape.style.animation = `morph-${i} ${duration}s ease-in-out infinite`;
+        shape.style.animationDelay = `-${delay}s`;
+        shape.style.clipPath = 'inset(10% round 0px)';
+        
+        grid.appendChild(shape);
+      }
+
+      // Move to next palette for next regeneration
+      currentPaletteIndex = (currentPaletteIndex + 1) % paletteNames.length;
+    }
+
+    regenerateBtn.addEventListener('click', generate);
+
+    // Auto-transition every 20 seconds
+    let autoTransitionInterval;
+    
+    function transitionColors() {
+      const paletteName = paletteNames[currentPaletteIndex];
+      palette = palettes[paletteName];
+      paletteNameEl.textContent = paletteName;
+      currentPaletteIndex = (currentPaletteIndex + 1) % paletteNames.length;
+
+      const shapes = grid.querySelectorAll('.shape');
+      shapes.forEach((shape, i) => {
+        const color1 = getColor(i, 800);
+        const color2 = getSecondColor(i, 800);
+        
+        shape.style.setProperty('--c1', color1);
+        shape.style.setProperty('--c2', color2);
+      });
+    }
+    
+    function startAutoTransition() {
+      autoTransitionInterval = setInterval(transitionColors, 20000);
+    }
+
+    // Initial generation
+    generate();
+    startAutoTransition();
+
+    // Reset timer when manually regenerating
+    regenerateBtn.addEventListener('click', () => {
+      clearInterval(autoTransitionInterval);
+      startAutoTransition();
+    });
+
+    // Regenerate when toggles change
+    [...Object.values(morphToggles), ...Object.values(cornerToggles)].forEach(toggle => {
+      toggle.addEventListener('change', generate);
+    });
+  </script>
+</body>
+</html>

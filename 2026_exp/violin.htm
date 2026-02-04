@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16 Random Violin Plots</title>
+    <script src="https://cdn.plot.ly/plotly-3.3.1.min.js" charset="utf-8"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0a0a0a;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+        .grid {
+            display: grid;
+            gap: 0;
+            height: 100vh;
+            width: 100vw;
+        }
+        .chart {
+            background: #111;
+            border-radius: 0px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid" id="grid"></div>
+
+    <script>
+        function generateRandomData() {
+            const numPoints = Math.floor(Math.random() * 100) + 50;
+            const data = [];
+
+            // Generate random distribution
+            const mean = Math.random() * 10;
+            const spread = Math.random() * 5 + 1;
+
+            for (let i = 0; i < numPoints; i++) {
+                // Generate data with some randomness
+                const value = mean + (Math.random() - 0.5) * spread * 2;
+                data.push(value);
+            }
+
+            return data;
+        }
+
+        function createChart(containerId, color) {
+            const numViolins = Math.floor(Math.random() * 4) + 2;
+            const traces = [];
+
+            for (let i = 0; i < numViolins; i++) {
+                traces.push({
+                    type: 'violin',
+                    y: generateRandomData(),
+                    name: `V${i}`,
+                    box: {
+                        visible: false
+                    },
+                    meanline: {
+                        visible: false
+                    },
+                    points: false,
+                    marker: {
+                        color: color[i % color.length]
+                    },
+                    fillcolor: color[i % color.length],
+                    opacity: 0.8,
+                    hoverinfo: 'none'
+                });
+            }
+
+            const layout = {
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                margin: { l: 0, r: 0, t: 0, b: 0 },
+                showlegend: false,
+                xaxis: {
+                    visible: false,
+                    showgrid: false,
+                    zeroline: false,
+                    showticklabels: false
+                },
+                yaxis: {
+                    visible: false,
+                    showgrid: false,
+                    zeroline: false,
+                    showticklabels: false
+                }
+            };
+
+            const config = {
+                displayModeBar: false,
+                responsive: true
+            };
+
+            Plotly.newPlot(containerId, traces, layout, config);
+        }
+
+        // Get all palettes
+        const allPalettes = [
+            ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff'],
+            ['#00d2d3', '#ff9f43', '#ee5a24', '#9c88ff', '#badc58'],
+            ['#e056fd', '#686de0', '#30336b', '#f8a5c2', '#63cdda'],
+            ['#25CCF7', '#FD7272', '#54a0ff', '#00d2d3', '#1B9CFC'],
+            ['#F8EFBA', '#f6e58d', '#ffbe76', '#ff7979', '#badc58'],
+            ['#4834d4', '#be2edd', '#22a6b3', '#6ab04c', '#eb4d4b'],
+            ['#7bed9f', '#70a1ff', '#5352ed', '#ff4757', '#ffa502'],
+            ['#2ed573', '#1e90ff', '#3742fa', '#ff6348', '#eccc68'],
+            ['#f093fb', '#f5576c', '#4facfe', '#00f2fe', '#43e97b'],
+            ['#fa709a', '#fee140', '#30cfd0', '#330867', '#a8edea'],
+            ['#ff9a56', '#ff6a88', '#fcb69f', '#ffecd2', '#ff8177'],
+            ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe'],
+            ['#fbc2eb', '#a6c1ee', '#fdcbf1', '#e6dee9', '#c3cfe2'],
+            ['#08aeea', '#2af598', '#00c9ff', '#92fe9d', '#fa8bff'],
+            ['#ff0844', '#ffb199', '#ff6348', '#ff9ff3', '#feca57'],
+            ['#11998e', '#38ef7d', '#0ba360', '#3cba92', '#56ab2f'],
+            ['#ee0979', '#ff6a00', '#f79d00', '#64f38c', '#ffd89b'],
+            ['#c471f5', '#fa71cd', '#a770ef', '#fda085', '#f093fb'],
+            ['#43cea2', '#185a9d', '#667eea', '#764ba2', '#f093fb'],
+            ['#f2709c', '#ff9472', '#f9a825', '#ffb75e', '#ed8f03']
+        ];
+
+        // Random grid configurations
+        const gridConfigs = [
+            { cols: 1, rows: 2 },
+            { cols: 2, rows: 1 },
+            { cols: 2, rows: 2 },
+            { cols: 3, rows: 2 },
+            { cols: 2, rows: 3 },
+            { cols: 3, rows: 3 },
+            { cols: 4, rows: 3 },
+            { cols: 3, rows: 4 },
+            { cols: 4, rows: 4 },
+            { cols: 5, rows: 3 },
+            { cols: 3, rows: 5 },
+            { cols: 5, rows: 4 },
+            { cols: 4, rows: 5 },
+            { cols: 5, rows: 5 },
+            { cols: 6, rows: 4 },
+            { cols: 4, rows: 6 }
+        ];
+
+        // Pick random grid config
+        const config = gridConfigs[Math.floor(Math.random() * gridConfigs.length)];
+        const totalCharts = config.cols * config.rows;
+
+        // Apply grid layout
+        const grid = document.getElementById('grid');
+        grid.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
+        grid.style.gridTemplateRows = `repeat(${config.rows}, 1fr)`;
+
+        // Shuffle palettes and cycle through them
+        const shuffled = allPalettes.sort(() => Math.random() - 0.5);
+        const selectedPalettes = [];
+        for (let i = 0; i < totalCharts; i++) {
+            selectedPalettes.push(shuffled[i % shuffled.length]);
+        }
+
+        // Create grid
+        for (let i = 0; i < totalCharts; i++) {
+            const div = document.createElement('div');
+            div.className = 'chart';
+            div.id = `chart${i}`;
+            grid.appendChild(div);
+        }
+
+        // Create charts with palettes
+        for (let i = 0; i < totalCharts; i++) {
+            createChart(`chart${i}`, selectedPalettes[i]);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ellipse Field</title>
+  <style>
+    /* Houdini: register custom properties as animatable colors */
+    @property --c1 {
+      syntax: '<color>';
+      inherits: false;
+      initial-value: #000;
+    }
+    
+    @property --c2 {
+      syntax: '<color>';
+      inherits: false;
+      initial-value: #000;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #0a0a0f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(40, 1fr);
+      grid-template-rows: repeat(20, 1fr);
+      gap: 2px;
+      width: 100vw;
+      height: 100vh;
+      padding: 1rem;
+    }
+
+    .shape {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(var(--angle), var(--c1), var(--c2));
+      transition: --c1 8s ease, --c2 8s ease;
+    }
+
+    .regenerate-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.7);
+      padding: 0.75rem 1.5rem;
+      border-radius: 2rem;
+      font-family: system-ui, sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+
+    .regenerate-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .palette-name {
+      position: fixed;
+      bottom: 2rem;
+      left: 2rem;
+      color: rgba(255, 255, 255, 0.4);
+      font-family: system-ui, sans-serif;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid" id="grid"></div>
+  <button class="regenerate-btn" id="regenerate">Regenerate</button>
+  <div class="palette-name" id="palette-name"></div>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const regenerateBtn = document.getElementById('regenerate');
+    const paletteNameEl = document.getElementById('palette-name');
+    
+    // Multiple palettes
+    const palettes = {
+      'Ocean Sunset': [
+        { h: 220, s: 80, l: 45 },
+        { h: 200, s: 70, l: 50 },
+        { h: 180, s: 60, l: 45 },
+        { h: 280, s: 60, l: 50 },
+        { h: 320, s: 70, l: 55 },
+        { h: 350, s: 75, l: 55 },
+      ],
+      'Forest': [
+        { h: 90, s: 50, l: 30 },
+        { h: 120, s: 60, l: 35 },
+        { h: 150, s: 50, l: 40 },
+        { h: 80, s: 70, l: 45 },
+        { h: 45, s: 60, l: 50 },
+        { h: 30, s: 50, l: 40 },
+      ],
+      'Neon Night': [
+        { h: 280, s: 100, l: 60 },
+        { h: 320, s: 100, l: 55 },
+        { h: 180, s: 100, l: 50 },
+        { h: 60, s: 100, l: 50 },
+        { h: 300, s: 90, l: 65 },
+        { h: 200, s: 100, l: 55 },
+      ],
+      'Ember': [
+        { h: 0, s: 80, l: 40 },
+        { h: 15, s: 90, l: 50 },
+        { h: 30, s: 100, l: 55 },
+        { h: 45, s: 100, l: 60 },
+        { h: 350, s: 70, l: 35 },
+        { h: 20, s: 85, l: 45 },
+      ],
+      'Arctic': [
+        { h: 200, s: 30, l: 70 },
+        { h: 210, s: 40, l: 80 },
+        { h: 190, s: 50, l: 75 },
+        { h: 220, s: 35, l: 85 },
+        { h: 180, s: 25, l: 90 },
+        { h: 230, s: 30, l: 65 },
+      ],
+      'Toxic': [
+        { h: 120, s: 100, l: 45 },
+        { h: 80, s: 100, l: 50 },
+        { h: 150, s: 80, l: 40 },
+        { h: 60, s: 90, l: 55 },
+        { h: 100, s: 100, l: 35 },
+        { h: 140, s: 70, l: 50 },
+      ],
+      'Dusk': [
+        { h: 270, s: 40, l: 30 },
+        { h: 290, s: 50, l: 40 },
+        { h: 310, s: 45, l: 45 },
+        { h: 330, s: 55, l: 50 },
+        { h: 20, s: 60, l: 55 },
+        { h: 40, s: 70, l: 60 },
+      ],
+      'Monochrome': [
+        { h: 0, s: 0, l: 20 },
+        { h: 0, s: 0, l: 35 },
+        { h: 0, s: 0, l: 50 },
+        { h: 0, s: 0, l: 65 },
+        { h: 0, s: 0, l: 80 },
+        { h: 0, s: 0, l: 90 },
+      ],
+    };
+
+    const paletteNames = Object.keys(palettes);
+    let currentPaletteIndex = 0;
+    let palette = palettes[paletteNames[0]];
+    let styleSheets = [];
+
+    function getColor(index, total) {
+      const x = index % 40;
+      const y = Math.floor(index / 40);
+      const xRatio = x / 40;
+      const yRatio = y / 20;
+      
+      const paletteIndex = Math.floor((xRatio * 0.6 + yRatio * 0.4 + Math.random() * 0.2) * palette.length);
+      const base = palette[Math.min(paletteIndex, palette.length - 1)];
+      
+      const h = base.h + (Math.random() - 0.5) * 20;
+      const s = base.s + (Math.random() - 0.5) * 15;
+      const l = base.l + (Math.random() - 0.5) * 15;
+      
+      return `hsl(${h}, ${s}%, ${l}%)`;
+    }
+
+    function getSecondColor(index, total) {
+      const x = index % 40;
+      const y = Math.floor(index / 40);
+      const xRatio = x / 40;
+      const yRatio = y / 20;
+      
+      const paletteIndex = Math.floor((xRatio * 0.6 + yRatio * 0.4 + Math.random() * 0.2) * palette.length);
+      const nextIndex = Math.min(paletteIndex + 1, palette.length - 1);
+      const base = palette[nextIndex];
+      
+      const h = base.h + (Math.random() - 0.5) * 20;
+      const s = base.s + (Math.random() - 0.5) * 15;
+      const l = base.l + (Math.random() - 0.5) * 15;
+      
+      return `hsl(${h}, ${s}%, ${l}%)`;
+    }
+
+    function createKeyframes(id, direction) {
+      const style = document.createElement('style');
+      
+      const startX = 45 + Math.random() * 10;
+      const startY = 45 + Math.random() * 10;
+      
+      let midX, midY, endX, endY;
+      
+      if (direction === 'horizontal') {
+        midX = 25 + Math.random() * 15;
+        midY = 50 + Math.random() * 10;
+      } else if (direction === 'vertical') {
+        midX = 50 + Math.random() * 10;
+        midY = 25 + Math.random() * 15;
+      } else {
+        midX = 25 + Math.random() * 15;
+        midY = 50 + Math.random() * 10;
+      }
+
+      style.textContent = `
+        @keyframes morph-${id} {
+          0%, 100% {
+            clip-path: ellipse(${startX}% ${startY}% at center);
+          }
+          50% {
+            clip-path: ellipse(${midX}% ${midY}% at center);
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      styleSheets.push(style);
+    }
+
+    function generate() {
+      // Clear existing
+      grid.innerHTML = '';
+      styleSheets.forEach(s => s.remove());
+      styleSheets = [];
+
+      // Update palette
+      const paletteName = paletteNames[currentPaletteIndex];
+      palette = palettes[paletteName];
+      paletteNameEl.textContent = paletteName;
+
+      const directions = ['horizontal', 'vertical', 'both'];
+      
+      for (let i = 0; i < 800; i++) {
+        const shape = document.createElement('div');
+        shape.className = 'shape';
+        
+        // Set colors via custom properties
+        const color1 = getColor(i, 800);
+        const color2 = getSecondColor(i, 800);
+        const angle = Math.floor(Math.random() * 360);
+        
+        shape.style.setProperty('--c1', color1);
+        shape.style.setProperty('--c2', color2);
+        shape.style.setProperty('--angle', `${angle}deg`);
+        
+        const direction = directions[Math.floor(Math.random() * 3)];
+        createKeyframes(i, direction);
+        
+        const duration = 2 + Math.random() * 3;
+        const delay = Math.random() * 4;
+        
+        shape.style.animation = `morph-${i} ${duration}s ease-in-out infinite`;
+        shape.style.animationDelay = `-${delay}s`;
+        shape.style.clipPath = 'ellipse(50% 50% at center)';
+        
+        grid.appendChild(shape);
+      }
+
+      // Move to next palette for next regeneration
+      currentPaletteIndex = (currentPaletteIndex + 1) % paletteNames.length;
+    }
+
+    regenerateBtn.addEventListener('click', generate);
+
+    // Auto-transition every 20 seconds - Houdini animates the colors
+    let autoTransitionInterval;
+    
+    function transitionColors() {
+      // Update palette
+      const paletteName = paletteNames[currentPaletteIndex];
+      palette = palettes[paletteName];
+      paletteNameEl.textContent = paletteName;
+      currentPaletteIndex = (currentPaletteIndex + 1) % paletteNames.length;
+
+      // Just update the custom properties - Houdini handles the transition
+      const shapes = grid.querySelectorAll('.shape');
+      shapes.forEach((shape, i) => {
+        const color1 = getColor(i, 800);
+        const color2 = getSecondColor(i, 800);
+        
+        shape.style.setProperty('--c1', color1);
+        shape.style.setProperty('--c2', color2);
+      });
+    }
+    
+    function startAutoTransition() {
+      autoTransitionInterval = setInterval(transitionColors, 20000);
+    }
+
+    // Initial generation
+    generate();
+    startAutoTransition();
+
+    // Reset timer when manually regenerating
+    regenerateBtn.addEventListener('click', () => {
+      clearInterval(autoTransitionInterval);
+      startAutoTransition();
+    });
+  </script>
+</body>
+</html>
