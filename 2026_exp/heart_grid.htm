@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💕</title>
+  <style>
+    @property --c1 {
+      syntax: '<color>';
+      inherits: false;
+      initial-value: #000;
+    }
+    
+    @property --c2 {
+      syntax: '<color>';
+      inherits: false;
+      initial-value: #000;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #1a0a10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(20, 1fr);
+      grid-template-rows: repeat(10, 1fr);
+      gap: 4px;
+      width: 100vw;
+      height: 100vh;
+      padding: 1rem;
+    }
+
+    .shape {
+      width: 100%;
+      aspect-ratio: 1;
+      background: linear-gradient(135deg, var(--c1), var(--c2));
+      transition: --c1 8s ease, --c2 8s ease;
+      /* Base heart shape */
+      clip-path: shape(
+        from 50% 91%,
+        line to 90% 50%,
+        arc to 50% 9% of 1%,
+        arc to 10% 50% of 1%
+      );
+    }
+
+    .regenerate-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.7);
+      padding: 0.75rem 1.5rem;
+      border-radius: 2rem;
+      font-family: system-ui, sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+
+    .regenerate-btn:hover {
+      background: rgba(255, 100, 150, 0.3);
+      border-color: rgba(255, 100, 150, 0.5);
+      color: #fff;
+    }
+
+    .palette-name {
+      position: fixed;
+      bottom: 2rem;
+      left: 2rem;
+      color: rgba(255, 255, 255, 0.4);
+      font-family: system-ui, sans-serif;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid" id="grid"></div>
+  <button class="regenerate-btn" id="regenerate">💕 Regenerate</button>
+  <div class="palette-name" id="palette-name"></div>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const regenerateBtn = document.getElementById('regenerate');
+    const paletteNameEl = document.getElementById('palette-name');
+
+    const COLS = 20;
+    const ROWS = 10;
+    
+    // Valentine palettes - ordered from intense (TL) to soft (BR)
+    const palettes = {
+      'Classic Romance': [
+        { h: 0, s: 100, l: 40 },    // deep red (TL)
+        { h: 350, s: 100, l: 50 },
+        { h: 345, s: 90, l: 60 },
+        { h: 340, s: 80, l: 70 },
+        { h: 350, s: 60, l: 85 },
+        { h: 0, s: 40, l: 95 },     // near white (BR)
+      ],
+      'Soft Blush': [
+        { h: 0, s: 100, l: 50 },    // red
+        { h: 350, s: 80, l: 65 },
+        { h: 340, s: 70, l: 75 },
+        { h: 330, s: 50, l: 85 },
+        { h: 350, s: 40, l: 92 },
+        { h: 0, s: 0, l: 100 },     // white
+      ],
+      'Deep Passion': [
+        { h: 350, s: 100, l: 30 },  // dark wine
+        { h: 0, s: 100, l: 35 },
+        { h: 345, s: 90, l: 40 },
+        { h: 340, s: 80, l: 50 },
+        { h: 350, s: 70, l: 60 },
+        { h: 0, s: 60, l: 75 },     // soft rose
+      ],
+      'Cotton Candy': [
+        { h: 340, s: 100, l: 60 },  // hot pink
+        { h: 330, s: 90, l: 70 },
+        { h: 350, s: 80, l: 80 },
+        { h: 340, s: 60, l: 88 },
+        { h: 0, s: 40, l: 95 },
+        { h: 0, s: 0, l: 100 },     // white
+      ],
+    };
+
+    const paletteNames = Object.keys(palettes);
+    let currentPaletteIndex = 0;
+    let palette = palettes[paletteNames[0]];
+    let styleSheets = [];
+
+    function getColor(index, total) {
+      const x = index % COLS;
+      const y = Math.floor(index / COLS);
+      const xRatio = x / COLS;
+      const yRatio = y / ROWS;
+      
+      // Diagonal: top-left (0,0) = index 0, bottom-right = last index
+      const diagonal = (xRatio + yRatio) / 2;
+      const paletteIndex = Math.floor(diagonal * (palette.length - 1) + Math.random() * 0.5);
+      const base = palette[Math.min(paletteIndex, palette.length - 1)];
+      
+      const h = base.h + (Math.random() - 0.5) * 8;
+      const s = Math.min(100, Math.max(0, base.s + (Math.random() - 0.5) * 10));
+      const l = Math.min(100, Math.max(20, base.l + (Math.random() - 0.5) * 8));
+      
+      return `hsl(${h}, ${s}%, ${l}%)`;
+    }
+
+    function getSecondColor(index, total) {
+      const x = index % COLS;
+      const y = Math.floor(index / COLS);
+      const xRatio = x / COLS;
+      const yRatio = y / ROWS;
+      
+      const diagonal = (xRatio + yRatio) / 2;
+      const paletteIndex = Math.min(Math.floor(diagonal * (palette.length - 1) + 0.5 + Math.random() * 0.5), palette.length - 1);
+      const base = palette[paletteIndex];
+      
+      const h = base.h + (Math.random() - 0.5) * 8;
+      const s = Math.min(100, Math.max(0, base.s + (Math.random() - 0.5) * 10));
+      const l = Math.min(100, Math.max(20, base.l + (Math.random() - 0.5) * 8));
+      
+      return `hsl(${h}, ${s}%, ${l}%)`;
+    }
+
+    // Generate heart shape() with slight variations
+    function generateHeartShape(variation = 0) {
+      const v = () => (Math.random() - 0.5) * variation;
+      
+      // Bottom point, right side up, top dip, left side up, back to bottom
+      const bottom = `${50 + v()}% ${91 + v()}%`;
+      const rightMid = `${90 + v()}% ${50 + v()}%`;
+      const topDip = `${50 + v()}% ${9 + v()}%`;
+      const leftMid = `${10 + v()}% ${50 + v()}%`;
+      const arcSize = `${1 + v() * 0.5}%`;
+      
+      return `shape(from ${bottom}, line to ${rightMid}, arc to ${topDip} of ${arcSize}, arc to ${leftMid} of ${arcSize})`;
+    }
+
+    function createKeyframes(id) {
+      const style = document.createElement('style');
+      const duration = 3 + Math.random() * 2;
+      
+      const heart1 = generateHeartShape(4);
+      const heart2 = generateHeartShape(4);
+      
+      const keyframeContent = `
+        @keyframes morph-${id} {
+          0%, 100% { 
+            clip-path: ${heart1};
+          }
+          50% { 
+            clip-path: ${heart2};
+          }
+        }
+      `;
+
+      style.textContent = keyframeContent;
+      document.head.appendChild(style);
+      styleSheets.push(style);
+      
+      return duration;
+    }
+
+    function generate() {
+      grid.innerHTML = '';
+      styleSheets.forEach(s => s.remove());
+      styleSheets = [];
+
+      const paletteName = paletteNames[currentPaletteIndex];
+      palette = palettes[paletteName];
+      paletteNameEl.textContent = paletteName;
+      
+      const totalCells = COLS * ROWS;
+      
+      for (let i = 0; i < totalCells; i++) {
+        const shape = document.createElement('div');
+        shape.className = 'shape';
+        
+        const color1 = getColor(i, totalCells);
+        const color2 = getSecondColor(i, totalCells);
+        
+        shape.style.setProperty('--c1', color1);
+        shape.style.setProperty('--c2', color2);
+        
+        const duration = createKeyframes(i);
+        const delay = Math.random() * 5;
+        
+        shape.style.animation = `morph-${i} ${duration}s ease-in-out infinite`;
+        shape.style.animationDelay = `-${delay}s`;
+        
+        grid.appendChild(shape);
+      }
+
+      currentPaletteIndex = (currentPaletteIndex + 1) % paletteNames.length;
+    }
+
+    function transitionColors() {
+      const paletteName = paletteNames[currentPaletteIndex];
+      palette = palettes[paletteName];
+      paletteNameEl.textContent = paletteName;
+      currentPaletteIndex = (currentPaletteIndex + 1) % paletteNames.length;
+
+      const shapes = grid.querySelectorAll('.shape');
+      shapes.forEach((shape, i) => {
+        shape.style.setProperty('--c1', getColor(i, COLS * ROWS));
+        shape.style.setProperty('--c2', getSecondColor(i, COLS * ROWS));
+      });
+    }
+
+    regenerateBtn.addEventListener('click', generate);
+    
+    generate();
+    setInterval(transitionColors, 20000);
+  </script>
+</body>
+</html>

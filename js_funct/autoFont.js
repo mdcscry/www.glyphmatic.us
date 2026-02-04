@@ -214,7 +214,21 @@
 
             const glyphDesc = blockHexDesc[block][glyphVal].replace(/ /g, '_');
             const fontDuJour = this.selectFont(block, blockLang, langFont);
-            const fontStack = this.loadFont(fontDuJour);
+
+            // Special case: Gothic-Runic needs combined font stack
+            let fontStack;
+            if (block === 'Gothic-Runic') {
+                const gothicFont = this.randomFrom(langFont['gothic'] || ['Noto Sans Gothic-local']);
+                const runicFont = this.randomFrom(langFont['runic'] || ['Noto Sans Runic-local']);
+                const gothicName = gothicFont.split('-')[0];
+                const runicName = runicFont.split('-')[0];
+                this.loadFont(gothicFont); // Load Gothic font
+                this.loadFont(runicFont);  // Load Runic font
+                fontStack = `'${gothicName}','${runicName}','Noto Sans Full',sans-serif`;
+            } else {
+                fontStack = this.loadFont(fontDuJour);
+            }
+
             console.log('Generated fontStack:', fontStack);
             return {
                 glyph: glyph,

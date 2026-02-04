@@ -12,7 +12,7 @@ blocks = ['Aegean Numbers','Adlam','Ahom','Ancient Greek Numbers','Arabic','Bali
     'Ottoman Siyaq Numbers','Pahawh Hmong','Palmyrene','Phoenician','Psalter Pahlavi','Rumi Numeral Symbols',
     'Saurashtra','Sharada','Sinhala','Sogdian','Sora Sompeng','Sundanese','Sunuwar','Superscripts and Subscripts',
     'Symbols for Legacy Computing','Tai Tham','Takri','Tamil','Tangsa','Telugu','Thai','Tibetan','Tirhuta',
-    'Gothic','Runic','Vai','Wancho','Warang Citi'
+    'Vai','Wancho','Warang Citi'
  ];
 block_hex = {
 'Aegean Numbers' : {
@@ -101,8 +101,7 @@ block_hex = {
     'Digits': ['1369','136A','136B','136C','136D','136E','136F','1370','1371'],
     'Numbers': ['1372','1373','1374','1375','1376','1377','1378','1379','137A','137B','137C']
 },
-'Gothic' : ['10341','1034A','16EE','16EF','16F0'],
-'Runic' : ['10341','1034A','16EE','16EF','16F0'],
+'Gothic-Runic' : ['10341','1034A','16EE','16EF','16F0'],
 'Gujarati' : ['0AE6','0AE7','0AE8','0AE9','0AEA','0AEB','0AEC','0AED','0AEE','0AEF'],
 'Gunjala Gondi' : ['11DA0','11DA1','11DA2','11DA3','11DA4','11DA5','11DA6','11DA7','11DA8','11DA9'],
 'Gurmukhi' : ['0A66','0A67','0A68','0A69','0A6A','0A6B','0A6C','0A6D','0A6E','0A6F'],
