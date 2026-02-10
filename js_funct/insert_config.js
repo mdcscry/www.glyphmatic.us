@@ -228,6 +228,34 @@ const INSERT_CONFIG = {
             },
             description: 'DeGenerator 1 Complete - All 9 variants of the original DeGenerator1 with box mix, color mix, and splat variations'
         },
+        29: {
+            controls: {
+                style: false,
+                html: false,
+                resize: false,
+                moveUpDown: false
+            },
+            watermarks: {
+                count: 1,
+                zIndex: 10,
+                positioning: 'top-left'
+            },
+            description: 'Lotus Mandala - Multi-Flavor Edition: Consolidates 6 lotus experiment variants with keyboard-selectable flavors. Press 0-5 to switch between: (0) Basic mandala with toroidal circles and 12 petals, (1) Enhanced with opposing rotation and random radial spokes, (2) Circle packing algorithm, (3) Circle packing with grid layout, (4) Non-overlapping circle packing, (5) Grid-based multi-mandala layout. Each flavor generates random OKLCH color palettes with rotating animations and geometric flower-of-life patterns.<br><br>URL parameter support: ?i=29&flavor=N to load specific flavor directly.'
+        },
+        30: {
+            controls: {
+                style: false,
+                html: false,
+                resize: false,
+                moveUpDown: false
+            },
+            watermarks: {
+                count: 1,
+                zIndex: 10,
+                positioning: 'top-left'
+            },
+            description: 'Plotly Charts - Multi-Flavor Edition: Four Plotly.js data visualization styles selectable via keys 0-3. (0) Stacked bar charts: random grid of normalized 100% stacked bars with shuffled color palettes. (1) Violin plots: grid of violin distributions with random spreads and palette-colored fills. (2) Polar scatter: WebGL-accelerated elliptical point clouds with random rotations and 10k-30k data points per cell. (3) Animated 3D scatter: 4x4 grid of rotating 3D point clouds cycling through 5 geometric patterns (cloud, spiral, sphere, clusters, wave) with 60-frame bounce animation.'
+        },
         31: {
             controls: {
                 style: false,
