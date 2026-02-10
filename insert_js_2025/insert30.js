@@ -78,7 +78,7 @@
         }
     `;
 
-    const FLAVOR_NAMES = ['bar', 'violin', 'polar', '3d-scatter'];
+    const FLAVOR_NAMES = ['bar', 'violin', 'polar', '3d-scatter', 'area'];
 
     // ── Grid Configs ─────────────────────────────────────────────────────────
     const GRID_CONFIGS_FULL = [
@@ -440,6 +440,57 @@
         updateLabel(3);
     }
 
+    // ── Flavor 4: Stacked Area Charts ────────────────────────────────────────
+    function generateAreaData(palette) {
+        const numPoints = Math.floor(Math.random() * 30) + 20;
+        const numStacks = Math.floor(Math.random() * 3) + 3;
+        const x = [];
+        for (let i = 0; i < numPoints; i++) x.push(i);
+
+        const rawData = [];
+        for (let i = 0; i < numStacks; i++) {
+            const values = [];
+            for (let j = 0; j < numPoints; j++) values.push(Math.random() * 100 + 20);
+            rawData.push(values);
+        }
+
+        const traces = [];
+        for (let i = 0; i < numStacks; i++) {
+            const normalizedValues = [];
+            for (let j = 0; j < numPoints; j++) {
+                let total = 0;
+                for (let k = 0; k < numStacks; k++) total += rawData[k][j];
+                normalizedValues.push((rawData[i][j] / total) * 100);
+            }
+            traces.push({
+                x: x, y: normalizedValues,
+                type: 'scatter', mode: 'none', fill: 'tonexty',
+                fillcolor: palette[i % palette.length],
+                line: { width: 0, shape: 'spline', smoothing: 1.3 },
+                stackgroup: 'one', hoverinfo: 'none'
+            });
+        }
+        return traces;
+    }
+
+    function createAreaChart(containerId, palette) {
+        const traces = generateAreaData(palette);
+        const layout = {
+            paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+            margin: { l: 0, r: 0, t: 0, b: 0 }, showlegend: false,
+            xaxis: { visible: false, showgrid: false, zeroline: false, showticklabels: false },
+            yaxis: { visible: false, showgrid: false, zeroline: false, showticklabels: false, range: [0, 100], fixedrange: true }
+        };
+        Plotly.newPlot(containerId, traces, layout, { displayModeBar: false, responsive: true });
+    }
+
+    function startFlavor4() {
+        const { total } = buildGrid(GRID_CONFIGS_FULL);
+        const palettes = shuffledPalettes(total);
+        for (let i = 0; i < total; i++) createAreaChart(`i30-cell-${i}`, palettes[i]);
+        updateLabel(4);
+    }
+
     // ── Plotly Loader ────────────────────────────────────────────────────────
     function loadPlotly(callback) {
         if (plotlyLoaded) { callback(); return; }
@@ -480,6 +531,7 @@
                 case 1: startFlavor1(); break;
                 case 2: startFlavor2(); break;
                 case 3: startFlavor3(); break;
+                case 4: startFlavor4(); break;
                 default: startFlavor0();
             }
         });
@@ -488,7 +540,7 @@
     // ── Keyboard Handler ─────────────────────────────────────────────────────
     function handleKeydown(e) {
         const key = parseInt(e.key);
-        if (!isNaN(key) && key >= 0 && key <= 3) {
+        if (!isNaN(key) && key >= 0 && key <= 4) {
             startVisualization(key);
         }
     }

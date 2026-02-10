@@ -254,7 +254,7 @@ const INSERT_CONFIG = {
                 zIndex: 10,
                 positioning: 'top-left'
             },
-            description: 'Plotly Charts - Multi-Flavor Edition: Four Plotly.js data visualization styles selectable via keys 0-3. (0) Stacked bar charts: random grid of normalized 100% stacked bars with shuffled color palettes. (1) Violin plots: grid of violin distributions with random spreads and palette-colored fills. (2) Polar scatter: WebGL-accelerated elliptical point clouds with random rotations and 10k-30k data points per cell. (3) Animated 3D scatter: 4x4 grid of rotating 3D point clouds cycling through 5 geometric patterns (cloud, spiral, sphere, clusters, wave) with 60-frame bounce animation.'
+            description: 'Plotly Charts - Multi-Flavor Edition: Five Plotly.js data visualization styles selectable via keys 0-4. (0) Stacked bar charts: random grid of normalized 100% stacked bars with shuffled color palettes. (1) Violin plots: grid of violin distributions with random spreads and palette-colored fills. (2) Polar scatter: WebGL-accelerated elliptical point clouds with random rotations and 10k-30k data points per cell. (3) Animated 3D scatter: 4x4 grid of rotating 3D point clouds cycling through 5 geometric patterns (cloud, spiral, sphere, clusters, wave) with 60-frame bounce animation. (4) Stacked area charts: spline-smoothed 100% stacked areas with random grid layouts and palette fills.'
         },
         31: {
             controls: {
