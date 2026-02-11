@@ -1172,14 +1172,162 @@ function createFlavor2(container, palette) {
 }
 
 function createFlavor3(container, palette) {
-    // Flavor 3: Lotus of Life CirclePack Grid - Grid with circle packing in each cell
+    // Flavor 3: Lotus CirclePack NoOverlap - Scattered lotus circles with no overlap
     container.style.background = '#0a0a15';
     container.style.position = 'relative';
     container.style.width = '100vw';
     container.style.height = '100vh';
     container.style.overflow = 'hidden';
 
-    // Random grid configs (matching source)
+    const circles = [];
+
+    function distance(p1, p2) {
+        return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+    }
+
+    function generateCirclePacking() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const minRadius = 80;
+        const maxRadius = 270;
+
+        // Boundary circles on viewport edge
+        const numBoundaryPoints = 6 + Math.floor(Math.random() * 5);
+        for (let i = 0; i < numBoundaryPoints; i++) {
+            const angle = (2 * Math.PI / numBoundaryPoints) * i;
+            const r = minRadius + Math.random() * (maxRadius - minRadius);
+            let x, y;
+            const side = i % 4;
+            if (side === 0) { x = r + Math.random() * (width - 2 * r); y = r; }
+            else if (side === 1) { x = width - r; y = r + Math.random() * (height - 2 * r); }
+            else if (side === 2) { x = r + Math.random() * (width - 2 * r); y = height - r; }
+            else { x = r; y = r + Math.random() * (height - 2 * r); }
+            circles.push({ x, y, r, type: 'boundary', id: i });
+        }
+
+        // Interior circles with no overlap
+        const targetInterior = 5 + Math.floor(Math.random() * 10);
+        let currentMinRadius = 80;
+        for (let i = 0; i < targetInterior; i++) {
+            if (i > 5) currentMinRadius = 40;
+            let placed = false;
+            let attempts = 0;
+            while (attempts < 500 && !placed) {
+                const x = currentMinRadius + Math.random() * (width - 2 * currentMinRadius);
+                const y = currentMinRadius + Math.random() * (height - 2 * currentMinRadius);
+                const r = currentMinRadius + Math.random() * (maxRadius - currentMinRadius);
+                if (r > maxRadius) r = maxRadius;
+                let overlap = false;
+                for (let c of circles) {
+                    if (distance({x, y}, c) < r + c.r + 3) { overlap = true; break; }
+                }
+                if (!overlap) { circles.push({ x, y, r, type: 'interior', id: circles.length }); placed = true; }
+                attempts++;
+            }
+        }
+
+        // Relaxation
+        for (let iter = 0; iter < 50; iter++) {
+            for (let i = 0; i < circles.length; i++) {
+                if (circles[i].type === 'boundary') continue;
+                let fx = 0, fy = 0;
+                for (let j = 0; j < circles.length; j++) {
+                    if (i === j) continue;
+                    const d = distance(circles[i], circles[j]);
+                    const minDist = circles[i].r + circles[j].r + 3;
+                    if (d < minDist) {
+                        const force = (minDist - d) / d;
+                        fx += (circles[i].x - circles[j].x) * force * 0.5;
+                        fy += (circles[i].y - circles[j].y) * force * 0.5;
+                    }
+                }
+                circles[i].x += fx;
+                circles[i].y += fy;
+            }
+        }
+    }
+
+    generateCirclePacking();
+
+    // Create lotus for each interior circle
+    circles.filter(c => c.type === 'interior').forEach((circle, idx) => {
+        const lotusDiv = document.createElement('div');
+        lotusDiv.style.position = 'absolute';
+        lotusDiv.style.left = circle.x + 'px';
+        lotusDiv.style.top = circle.y + 'px';
+        lotusDiv.style.width = (circle.r * 2) + 'px';
+        lotusDiv.style.height = (circle.r * 2) + 'px';
+        lotusDiv.style.transform = 'translate(-50%, -50%)';
+        lotusDiv.style.opacity = '0';
+        lotusDiv.style.transition = 'opacity 1s ease';
+
+        const scale = (circle.r * 2) / 400;
+        const cx = circle.r;
+        const cy = circle.r;
+
+        const inner = document.createElement('div');
+        inner.style.position = 'relative';
+        inner.style.width = '100%';
+        inner.style.height = '100%';
+
+        // Center circle
+        const ccirc = document.createElement('div');
+        ccirc.style.position = 'absolute';
+        ccirc.style.width = (50 * scale) + 'px';
+        ccirc.style.height = (50 * scale) + 'px';
+        ccirc.style.left = (cx - 25 * scale) + 'px';
+        ccirc.style.top = (cy - 25 * scale) + 'px';
+        ccirc.style.borderRadius = '50%';
+        ccirc.style.border = '2px solid ' + palette[(idx + 1) % palette.length];
+        ccirc.style.opacity = '0.5';
+        inner.appendChild(ccirc);
+
+        // 6 FOL circles
+        for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI / 3) * i - Math.PI / 2;
+            const x = cx + 50 * scale * Math.cos(angle);
+            const y = cy + 50 * scale * Math.sin(angle);
+            const fol = document.createElement('div');
+            fol.style.position = 'absolute';
+            fol.style.width = (50 * scale) + 'px';
+            fol.style.height = (50 * scale) + 'px';
+            fol.style.left = (x - 25 * scale) + 'px';
+            fol.style.top = (y - 25 * scale) + 'px';
+            fol.style.borderRadius = '50%';
+            fol.style.border = '1.5px solid ' + palette[idx % palette.length];
+            inner.appendChild(fol);
+        }
+
+        // Concentric rings
+        [100, 150, 200, 250, 300, 350].forEach((baseR, ri) => {
+            const r = baseR * scale;
+            const ring = document.createElement('div');
+            ring.style.position = 'absolute';
+            ring.style.width = (r * 2) + 'px';
+            ring.style.height = (r * 2) + 'px';
+            ring.style.left = (cx - r) + 'px';
+            ring.style.top = (cy - r) + 'px';
+            ring.style.borderRadius = '50%';
+            ring.style.border = '1.5px solid ' + palette[ri % palette.length];
+            ring.style.opacity = 0.3 + (ri * 0.1);
+            inner.appendChild(ring);
+        });
+
+        lotusDiv.appendChild(inner);
+        container.appendChild(lotusDiv);
+        setTimeout(() => { lotusDiv.style.opacity = '1'; }, 100 + Math.random() * 500);
+    });
+}
+
+function createFlavor4(container, palette) {
+    // Flavor 4: Lotus Grid - Simple lotus flowers in grid
+    container.style.background = '#0a0a15';
+    container.style.position = 'relative';
+    container.style.width = '100vw';
+    container.style.height = '100vh';
+    container.style.overflow = 'hidden';
+
+    // Random grid config
     const gridConfigs = [
         { cols: 2, rows: 2 },
         { cols: 3, rows: 3 },
@@ -1205,352 +1353,170 @@ function createFlavor3(container, palette) {
     gridContainer.style.height = '100%';
     gridContainer.style.boxSizing = 'border-box';
 
-    const packWidth = 400;
-    const packHeight = 400;
+    // Calculate cell size
+    const gapSize = 8;
+    const totalGapWidth = gapSize * (config.cols - 1);
+    const totalGapHeight = gapSize * (config.rows - 1);
+    const availableWidth = window.innerWidth - 16 - totalGapWidth;
+    const availableHeight = window.innerHeight - 16 - totalGapHeight;
+    const cellWidth = availableWidth / config.cols;
+    const cellHeight = availableHeight / config.rows;
+    const size = Math.min(cellWidth, cellHeight);
 
-    function distance(p1, p2) {
-        return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
-    }
+    function createSimpleLotus(idx) {
+        const lotusDiv = document.createElement('div');
+        lotusDiv.style.width = size + 'px';
+        lotusDiv.style.height = size + 'px';
+        lotusDiv.style.position = 'relative';
 
-    function generateCirclePackingForCell(cellCount) {
-        const centerX = packWidth / 2;
-        const centerY = packHeight / 2;
-        const boundaryRadius = Math.min(packWidth, packHeight) * 0.45;
-        const circles = [];
+        // Random rotation direction
+        const direction = Math.random() < 0.5 ? 'cw' : 'ccw';
+        const duration = 15 + Math.random() * 20;
+        lotusDiv.style.animation = `rotateLotus-${direction} ${duration}s linear infinite`;
 
-        // Boundary circles
-        const numBoundaryPoints = 6 + Math.floor(Math.random() * 12);
-        for (let i = 0; i < numBoundaryPoints; i++) {
-            const angle = (2 * Math.PI / numBoundaryPoints) * i - Math.PI / 2;
-            const x = centerX + boundaryRadius * Math.cos(angle);
-            const y = centerY + boundaryRadius * Math.sin(angle);
-            const r = boundaryRadius * (0.08 + Math.random() * 0.12);
-            circles.push({ x, y, r, type: 'boundary', id: circles.length });
-        }
+        const inner = document.createElement('div');
+        inner.style.position = 'relative';
+        inner.style.width = '100%';
+        inner.style.height = '100%';
 
-        // Interior circles
-        const range = cellCount <= 4 ? { min: 6, max: 10 } : { min: 3, max: 5 };
-        const numInterior = range.min + Math.floor(Math.random() * (range.max - range.min + 1));
-        for (let i = 0; i < numInterior; i++) {
-            const angle = Math.random() * 2 * Math.PI;
-            const dist = Math.random() * boundaryRadius * 0.6;
-            const x = centerX + dist * Math.cos(angle);
-            const y = centerY + dist * Math.sin(angle);
-            const r = boundaryRadius * (0.14 + Math.random() * 0.21);
-            circles.push({ x, y, r, type: 'interior', id: circles.length });
-        }
+        // Center circle
+        const ccirc = document.createElement('div');
+        ccirc.style.position = 'absolute';
+        ccirc.style.width = '12%';
+        ccirc.style.height = '12%';
+        ccirc.style.left = '44%';
+        ccirc.style.top = '44%';
+        ccirc.style.borderRadius = '50%';
+        ccirc.style.border = '2px solid ' + palette[(idx + 1) % palette.length];
+        ccirc.style.opacity = '0.6';
+        inner.appendChild(ccirc);
 
-        // Relaxation
-        for (let iter = 0; iter < 100; iter++) {
-            for (let i = 0; i < circles.length; i++) {
-                if (circles[i].type === 'boundary') continue;
-
-                let fx = 0, fy = 0;
-                fx += (centerX - circles[i].x) * 0.05;
-                fy += (centerY - circles[i].y) * 0.05;
-
-                for (let j = 0; j < circles.length; j++) {
-                    if (i === j) continue;
-                    const d = distance(circles[i], circles[j]);
-                    const minDist = circles[i].r + circles[j].r;
-                    if (d < minDist * 2.2) {
-                        const force = (minDist * 2.2 - d) / d;
-                        fx += (circles[i].x - circles[j].x) * force * 0.3;
-                        fy += (circles[i].y - circles[j].y) * force * 0.3;
-                    }
-                }
-
-                circles[i].x += fx;
-                circles[i].y += fy;
-
-                const maxDist = boundaryRadius - circles[i].r;
-                const d = distance(circles[i], {x: centerX, y: centerY});
-                if (d > maxDist) {
-                    const scale = maxDist / d;
-                    circles[i].x = centerX + (circles[i].x - centerX) * scale;
-                    circles[i].y = centerY + (circles[i].y - centerY) * scale;
-                }
-            }
-        }
-
-        return circles;
-    }
-
-    // Create 4 cells
-    for (let cellIdx = 0; cellIdx < cellCount; cellIdx++) {
-        const cellDiv = document.createElement('div');
-        cellDiv.style.position = 'relative';
-        cellDiv.style.background = 'rgba(0, 0, 0, 0.3)';
-        cellDiv.style.borderRadius = '2px';
-        cellDiv.style.overflow = 'hidden';
-
-        // Calculate cell dimensions
-        const gapSize = 8;
-        const totalGapWidth = gapSize * (config.cols - 1);
-        const totalGapHeight = gapSize * (config.rows - 1);
-        const availableWidth = window.innerWidth - 16 - totalGapWidth;
-        const availableHeight = window.innerHeight - 16 - totalGapHeight;
-        const cellWidth = availableWidth / config.cols;
-        const cellHeight = availableHeight / config.rows;
-
-        // Generate packing for this cell
-        const packCircles = generateCirclePackingForCell(cellCount);
-        const coordScale = Math.min(cellWidth / packWidth, cellHeight / packHeight);
-
-        // Per-cell palette generation (matching source's generateGlyphPalette approach)
-        const cellPalette = [];
+        // 6 FOL circles
         for (let i = 0; i < 6; i++) {
-            cellPalette.push(ColorPalette.generateOKLCH(0.15 + Math.random() * 0.15, 0.08 + Math.random() * 0.15, Math.random() * 360));
+            const angle = (Math.PI / 3) * i - Math.PI / 2;
+            const x = 50 + 12 * Math.cos(angle);
+            const y = 50 + 12 * Math.sin(angle);
+            const fol = document.createElement('div');
+            fol.style.position = 'absolute';
+            fol.style.width = '12%';
+            fol.style.height = '12%';
+            fol.style.left = x + '%';
+            fol.style.top = y + '%';
+            fol.style.borderRadius = '50%';
+            fol.style.border = '1.5px solid ' + palette[idx % palette.length];
+            inner.appendChild(fol);
         }
 
-        // Render only interior circles as lotuses
-        packCircles.filter(c => c.type === 'interior').forEach((circle, idx) => {
-            const color1 = cellPalette[idx % cellPalette.length];
-            const color2 = cellPalette[(idx + 1) % cellPalette.length];
-
-            const lotusDiv = document.createElement('div');
-            lotusDiv.style.position = 'absolute';
-            lotusDiv.style.left = (circle.x * coordScale) + 'px';
-            lotusDiv.style.top = (circle.y * coordScale) + 'px';
-            lotusDiv.style.width = (circle.r * 2 * coordScale) + 'px';
-            lotusDiv.style.height = (circle.r * 2 * coordScale) + 'px';
-            lotusDiv.style.transform = 'translate(-50%, -50%)';
-            lotusDiv.style.opacity = '0';
-            lotusDiv.style.transition = 'opacity 0.8s ease';
-
-            const inner = document.createElement('div');
-            inner.style.position = 'relative';
-            inner.style.width = '100%';
-            inner.style.height = '100%';
-
-            // 50% chance of gradient background (matching source)
-            if (Math.random() < 0.5) {
-                inner.style.background = `radial-gradient(circle at center, ${color1}44 0%, ${color2}22 50%, transparent 70%)`;
-            }
-
-            const scale = (circle.r * 2 * coordScale) / 100;
-            const cx = circle.r * coordScale;
-            const cy = circle.r * coordScale;
-
-            // FOL
-            const folR = 12.5 * scale;
-            const folOff = 12.5 * scale;
-
-            const ccirc = document.createElement('div');
-            ccirc.style.position = 'absolute';
-            ccirc.style.width = (folR * 2) + 'px';
-            ccirc.style.height = (folR * 2) + 'px';
-            ccirc.style.left = (cx - folR) + 'px';
-            ccirc.style.top = (cy - folR) + 'px';
-            ccirc.style.borderRadius = '50%';
-            ccirc.style.border = '2px solid ' + color2;
-            inner.appendChild(ccirc);
-
-            for (let i = 0; i < 6; i++) {
-                const angle = (Math.PI / 3) * i - Math.PI / 2;
-                const x = cx + folOff * Math.cos(angle);
-                const y = cy + folOff * Math.sin(angle);
-
-                const fol = document.createElement('div');
-                fol.style.position = 'absolute';
-                fol.style.width = (folR * 2) + 'px';
-                fol.style.height = (folR * 2) + 'px';
-                fol.style.left = (x - folR) + 'px';
-                fol.style.top = (y - folR) + 'px';
-                fol.style.borderRadius = '50%';
-                fol.style.border = '1.5px solid ' + color1;
-                inner.appendChild(fol);
-            }
-
-            // Concentric rings
-            const iR = 25 * scale;
-            const oR = 43.75 * scale;
-            const radii = [25, 31.25, 37.5, 43.75].map(r => r * scale);
-
-            radii.forEach((radius, idx) => {
-                const ring = document.createElement('div');
-                ring.style.position = 'absolute';
-                ring.style.width = (radius * 2) + 'px';
-                ring.style.height = (radius * 2) + 'px';
-                ring.style.left = (cx - radius) + 'px';
-                ring.style.top = (cy - radius) + 'px';
-                ring.style.borderRadius = '50%';
-                ring.style.border = '2px solid ' + cellPalette[idx % cellPalette.length];
-                ring.style.opacity = '0.6';
-                inner.appendChild(ring);
-            });
-
-            // Toroidal circles
-            const tD = (oR - iR);
-            const tR = (iR + oR) / 2;
-            const torusOpts = [12, 24, 36];
-            const numTorus = torusOpts[Math.floor(Math.random() * torusOpts.length)];
-
-            for (let i = 0; i < numTorus; i++) {
-                const angle = (2 * Math.PI / numTorus) * i - Math.PI / 2;
-                const x = cx + tR * Math.cos(angle);
-                const y = cy + tR * Math.sin(angle);
-
-                const tc = document.createElement('div');
-                tc.style.position = 'absolute';
-                tc.style.width = tD + 'px';
-                tc.style.height = tD + 'px';
-                tc.style.left = (x - tD / 2) + 'px';
-                tc.style.top = (y - tD / 2) + 'px';
-                tc.style.borderRadius = '50%';
-                tc.style.border = '1.5px solid ' + cellPalette[i % cellPalette.length];
-                tc.style.opacity = '0.5';
-                inner.appendChild(tc);
-            }
-
-            lotusDiv.appendChild(inner);
-            cellDiv.appendChild(lotusDiv);
-
-            setTimeout(() => {
-                lotusDiv.style.opacity = '1';
-            }, 100 + Math.random() * 400);
+        // Concentric rings
+        [25, 37, 50, 62, 75, 87].forEach((baseR, ri) => {
+            const ring = document.createElement('div');
+            ring.style.position = 'absolute';
+            ring.style.width = baseR + '%';
+            ring.style.height = baseR + '%';
+            ring.style.left = ((100 - baseR) / 2) + '%';
+            ring.style.top = ((100 - baseR) / 2) + '%';
+            ring.style.borderRadius = '50%';
+            ring.style.border = '1.5px solid ' + palette[ri % palette.length];
+            ring.style.opacity = 0.3 + (ri * 0.1);
+            inner.appendChild(ring);
         });
 
-        gridContainer.appendChild(cellDiv);
+        lotusDiv.appendChild(inner);
+        return lotusDiv;
+    }
+
+    for (let i = 0; i < cellCount; i++) {
+        const cell = document.createElement('div');
+        cell.style.background = 'rgba(0, 0, 0, 0.3)';
+        cell.style.borderRadius = '2px';
+        cell.style.overflow = 'hidden';
+        cell.style.display = 'flex';
+        cell.style.alignItems = 'center';
+        cell.style.justifyContent = 'center';
+        cell.appendChild(createSimpleLotus(i));
+        gridContainer.appendChild(cell);
     }
 
     container.appendChild(gridContainer);
 }
 
-function createFlavor4(container, palette) {
-    // Flavor 4: Lotus of Life CirclePack NoOverlap - Strict no-overlap circle packing
-    container.style.background = 'radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a15 100%)';
+function createFlavor5(container, palette) {
+    // Flavor 5: Lotus CirclePack - Circle packing with lotus mandalas
+    container.style.background = '#0a0a15';
     container.style.position = 'relative';
     container.style.width = '100vw';
     container.style.height = '100vh';
     container.style.overflow = 'hidden';
 
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const centerX = width / 2;
-    const centerY = height / 2;
+    const circles = [];
 
     function distance(p1, p2) {
         return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
     }
 
-    let circles = [];
+    function generateCirclePacking() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const minRadius = 60;
+        const maxRadius = 220;
 
-    // Boundary points on viewport edge
-    const numBoundaryPoints = 6 + Math.random() * 5;
-    const minRadius = 80;
-    const maxRadius = 270;
-
-    for (let i = 0; i < numBoundaryPoints; i++) {
-        const angle = (2 * Math.PI / numBoundaryPoints) * i;
-        const r = minRadius + Math.random() * (maxRadius - minRadius);
-
-        let x, y;
-        const side = i % 4;
-
-        if (side === 0) {
-            x = r + Math.random() * (width - 2 * r);
-            y = r;
-        } else if (side === 1) {
-            x = width - r;
-            y = r + Math.random() * (height - 2 * r);
-        } else if (side === 2) {
-            x = r + Math.random() * (width - 2 * r);
-            y = height - r;
-        } else {
-            x = r;
-            y = r + Math.random() * (height - 2 * r);
+        // Boundary circles
+        const numBoundaryPoints = 8 + Math.floor(Math.random() * 12);
+        for (let i = 0; i < numBoundaryPoints; i++) {
+            const angle = (2 * Math.PI / numBoundaryPoints) * i - Math.PI / 2;
+            const x = centerX + (Math.min(width, height) * 0.35) * Math.cos(angle);
+            const y = centerY + (Math.min(width, height) * 0.35) * Math.sin(angle);
+            const r = minRadius + Math.random() * (maxRadius - minRadius);
+            circles.push({ x, y, r, type: 'boundary', id: i });
         }
 
-        circles.push({ x, y, r, type: 'boundary', id: i });
-    }
-
-    // Interior circles with strict no-overlap
-    const targetInterior = Math.floor(5 + Math.random() * 10);
-    let interiorPlaced = 0;
-
-    for (let i = 0; i < targetInterior; i++) {
-        let x, y, r;
-        let attempts = 0;
-        let placed = false;
-        let currentMaxRadius = maxRadius;
-        let currentMinRadius = minRadius;
-
-        if (i > 6) {
-            currentMinRadius = 40;
-        }
-
-        while (attempts < 2000 && !placed && currentMaxRadius > 30) {
-            r = currentMinRadius + Math.random() * (currentMaxRadius - currentMinRadius);
-
-            if (width < 2 * r || height < 2 * r) {
-                currentMaxRadius *= 0.9;
+        // Interior circles
+        const numInterior = 3 + Math.floor(Math.random() * 6);
+        for (let i = 0; i < numInterior; i++) {
+            let x, y, r;
+            let attempts = 0;
+            while (attempts < 200) {
+                x = centerX + (Math.random() - 0.5) * Math.min(width, height) * 0.5;
+                y = centerY + (Math.random() - 0.5) * Math.min(width, height) * 0.5;
+                r = minRadius + Math.random() * (maxRadius - minRadius);
+                let overlap = false;
+                for (let c of circles) {
+                    if (distance({x, y}, c) < r + c.r + 15) { overlap = true; break; }
+                }
+                if (!overlap) { circles.push({ x, y, r, type: 'interior', id: numBoundaryPoints + i }); break; }
                 attempts++;
-                continue;
-            }
-
-            x = r + Math.random() * (width - 2 * r);
-            y = r + Math.random() * (height - 2 * r);
-
-            let overlaps = false;
-            let minGap = 3;
-            for (let c of circles) {
-                const d = distance({x, y}, c);
-                if (d < r + c.r + minGap) {
-                    overlaps = true;
-                    break;
-                }
-            }
-
-            if (!overlaps) {
-                placed = true;
-                circles.push({ x, y, r, type: 'interior', id: numBoundaryPoints + interiorPlaced });
-                interiorPlaced++;
-            }
-
-            attempts++;
-
-            if (attempts % 100 === 0) {
-                currentMaxRadius *= 0.9;
             }
         }
 
-        if (!placed) break;
-    }
-
-    // Relaxation
-    for (let iter = 0; iter < 100; iter++) {
-        for (let i = 0; i < circles.length; i++) {
-            if (circles[i].type === 'boundary') continue;
-
-            let fx = 0, fy = 0;
-            fx += (centerX - circles[i].x) * 0.002;
-            fy += (centerY - circles[i].y) * 0.002;
-
-            for (let j = 0; j < circles.length; j++) {
-                if (i === j) continue;
-                const d = distance(circles[i], circles[j]);
-                const minDist = circles[i].r + circles[j].r + 3;
-
-                if (d < minDist) {
-                    const force = (minDist - d) / Math.max(d, 1);
-                    fx += (circles[i].x - circles[j].x) * force * 0.5;
-                    fy += (circles[i].y - circles[j].y) * force * 0.5;
+        // Relaxation
+        for (let iter = 0; iter < 80; iter++) {
+            for (let i = 0; i < circles.length; i++) {
+                if (circles[i].type === 'boundary') continue;
+                let fx = 0, fy = 0;
+                fx += (centerX - circles[i].x) * 0.02;
+                fy += (centerY - circles[i].y) * 0.02;
+                for (let j = 0; j < circles.length; j++) {
+                    if (i === j) continue;
+                    const d = distance(circles[i], circles[j]);
+                    const minDist = circles[i].r + circles[j].r + 15;
+                    if (d < minDist * 1.8) {
+                        const force = (minDist * 1.8 - d) / d;
+                        fx += (circles[i].x - circles[j].x) * force * 0.4;
+                        fy += (circles[i].y - circles[j].y) * force * 0.4;
+                    }
                 }
+                circles[i].x += fx;
+                circles[i].y += fy;
             }
-
-            circles[i].x += fx;
-            circles[i].y += fy;
-
-            const r = circles[i].r;
-            circles[i].x = Math.max(r, Math.min(width - r, circles[i].x));
-            circles[i].y = Math.max(r, Math.min(height - r, circles[i].y));
         }
     }
 
-    // Render interior circles as lotuses
-    const interiorCircles = circles.filter(c => c.type === 'interior');
-    interiorCircles.forEach((circle, index) => {
+    generateCirclePacking();
+
+    // Create lotus for each circle
+    circles.forEach((circle, idx) => {
         const lotusDiv = document.createElement('div');
         lotusDiv.style.position = 'absolute';
         lotusDiv.style.left = circle.x + 'px';
@@ -1559,238 +1525,68 @@ function createFlavor4(container, palette) {
         lotusDiv.style.height = (circle.r * 2) + 'px';
         lotusDiv.style.transform = 'translate(-50%, -50%)';
         lotusDiv.style.opacity = '0';
-        lotusDiv.style.transition = 'opacity 1s ease';
+        lotusDiv.style.transition = 'opacity 0.8s ease';
 
-        const inner = document.createElement('div');
-        inner.style.position = 'relative';
-        inner.style.width = '100%';
-        inner.style.height = '100%';
-
-        const scale = (circle.r * 2) / 800;
+        const scale = (circle.r * 2) / 400;
         const cx = circle.r;
         const cy = circle.r;
 
-        // FOL
-        const folR = 50 * scale;
-        const folOff = 50 * scale;
-
-        const ccirc = document.createElement('div');
-        ccirc.style.position = 'absolute';
-        ccirc.style.width = (folR * 2) + 'px';
-        ccirc.style.height = (folR * 2) + 'px';
-        ccirc.style.left = (cx - folR) + 'px';
-        ccirc.style.top = (cy - folR) + 'px';
-        ccirc.style.borderRadius = '50%';
-        ccirc.style.border = '2px solid ' + palette[1 % palette.length];
-        inner.appendChild(ccirc);
-
-        for (let i = 0; i < 6; i++) {
-            const angle = (Math.PI / 3) * i - Math.PI / 2;
-            const x = cx + folOff * Math.cos(angle);
-            const y = cy + folOff * Math.sin(angle);
-
-            const fol = document.createElement('div');
-            fol.style.position = 'absolute';
-            fol.style.width = (folR * 2) + 'px';
-            fol.style.height = (folR * 2) + 'px';
-            fol.style.left = (x - folR) + 'px';
-            fol.style.top = (y - folR) + 'px';
-            fol.style.borderRadius = '50%';
-            fol.style.border = '1.5px solid ' + palette[0 % palette.length];
-            inner.appendChild(fol);
-        }
-
-        // Concentric rings
-        const iR = 100 * scale;
-        const oR = 350 * scale;
-        const radii = [100, 150, 200, 250, 300, 350].map(r => r * scale);
-
-        radii.forEach((radius, idx) => {
-            const ring = document.createElement('div');
-            ring.style.position = 'absolute';
-            ring.style.width = (radius * 2) + 'px';
-            ring.style.height = (radius * 2) + 'px';
-            ring.style.left = (cx - radius) + 'px';
-            ring.style.top = (cy - radius) + 'px';
-            ring.style.borderRadius = '50%';
-            ring.style.border = '2px solid ' + palette[idx % palette.length];
-            ring.style.opacity = '0.6';
-            inner.appendChild(ring);
-        });
-
-        // Toroidal circles
-        const tD = (oR - iR);
-        const tR = (iR + oR) / 2;
-        const torusOpts = [24, 36, 48, 60, 72, 84];
-        const numTorus = torusOpts[Math.floor(Math.random() * torusOpts.length)];
-
-        for (let i = 0; i < numTorus; i++) {
-            const angle = (2 * Math.PI / numTorus) * i - Math.PI / 2;
-            const x = cx + tR * Math.cos(angle);
-            const y = cy + tR * Math.sin(angle);
-
-            const tc = document.createElement('div');
-            tc.style.position = 'absolute';
-            tc.style.width = tD + 'px';
-            tc.style.height = tD + 'px';
-            tc.style.left = (x - tD / 2) + 'px';
-            tc.style.top = (y - tD / 2) + 'px';
-            tc.style.borderRadius = '50%';
-            tc.style.border = '1.5px solid ' + palette[i % palette.length];
-            tc.style.opacity = '0.5';
-            inner.appendChild(tc);
-        }
-
-        lotusDiv.appendChild(inner);
-        container.appendChild(lotusDiv);
-
-        // Fade in
-        setTimeout(() => {
-            lotusDiv.style.opacity = '1';
-        }, 100 * index);
-    });
-}
-
-function createFlavor5(container, palette) {
-    // Flavor 5: Lotus of Life Grid - Grid-based mini-mandala layout
-    container.style.background = '#0a0a15';
-    container.style.position = 'relative';
-    container.style.width = '100vw';
-    container.style.height = '100vh';
-    container.style.overflow = 'hidden';
-
-    const gridContainer = document.createElement('div');
-    gridContainer.style.display = 'grid';
-    gridContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
-    gridContainer.style.gridTemplateRows = 'repeat(2, 1fr)';
-    gridContainer.style.gap = '0.5rem';
-    gridContainer.style.padding = '0.5rem';
-    gridContainer.style.width = '100%';
-    gridContainer.style.height = '100%';
-    gridContainer.style.boxSizing = 'border-box';
-
-    const gridSize = 4; // 2x2 grid
-
-    for (let cellIndex = 0; cellIndex < gridSize; cellIndex++) {
-        const cellDiv = document.createElement('div');
-        cellDiv.style.position = 'relative';
-        cellDiv.style.background = 'rgba(0, 0, 0, 0.3)';
-        cellDiv.style.borderRadius = '2px';
-        cellDiv.style.overflow = 'hidden';
-        cellDiv.style.display = 'flex';
-        cellDiv.style.alignItems = 'center';
-        cellDiv.style.justifyContent = 'center';
-
-        const containerDiv = document.createElement('div');
-        containerDiv.style.position = 'relative';
-        containerDiv.style.width = '90%';
-        containerDiv.style.height = '90%';
-        containerDiv.style.maxWidth = '90vh';
-        containerDiv.style.maxHeight = '90vh';
-        containerDiv.style.opacity = '0';
-        containerDiv.style.transition = 'opacity 1s ease';
-
         const inner = document.createElement('div');
         inner.style.position = 'relative';
         inner.style.width = '100%';
         inner.style.height = '100%';
 
-        // Calculate size using reference dimensions
-        // Grid is 2x2, each cell is 50% of viewport (minus padding/gaps)
-        // Use a standard lotus size of 200px as reference
-        const referenceSize = 200;
-        const scale = referenceSize / 400;
-        const centerX = referenceSize / 2;
-        const centerY = referenceSize / 2;
+        // Random rotation
+        const direction = Math.random() < 0.5 ? 'cw' : 'ccw';
+        const duration = 12 + Math.random() * 15;
+        inner.style.animation = `rotateLotus-${direction} ${duration}s linear infinite`;
 
-        // Lotus of Life pattern - center circle
-        const folCircleRadius = 25 * scale;
-        const folOffset = 25 * scale;
+        // Center circle
+        const ccirc = document.createElement('div');
+        ccirc.style.position = 'absolute';
+        ccirc.style.width = (50 * scale) + 'px';
+        ccirc.style.height = (50 * scale) + 'px';
+        ccirc.style.left = (cx - 25 * scale) + 'px';
+        ccirc.style.top = (cy - 25 * scale) + 'px';
+        ccirc.style.borderRadius = '50%';
+        ccirc.style.border = '2px solid ' + palette[(idx + 1) % palette.length];
+        inner.appendChild(ccirc);
 
-        const centerCircle = document.createElement('div');
-        centerCircle.style.position = 'absolute';
-        centerCircle.style.width = (folCircleRadius * 2) + 'px';
-        centerCircle.style.height = (folCircleRadius * 2) + 'px';
-        centerCircle.style.left = (centerX - folCircleRadius) + 'px';
-        centerCircle.style.top = (centerY - folCircleRadius) + 'px';
-        centerCircle.style.borderRadius = '50%';
-        centerCircle.style.border = '2px solid ' + palette[1 % palette.length];
-        inner.appendChild(centerCircle);
-
-        // Lotus of Life pattern - outer 6 circles
+        // 6 FOL circles
         for (let i = 0; i < 6; i++) {
             const angle = (Math.PI / 3) * i - Math.PI / 2;
-            const x = centerX + folOffset * Math.cos(angle);
-            const y = centerY + folOffset * Math.sin(angle);
-
+            const x = cx + 50 * scale * Math.cos(angle);
+            const y = cy + 50 * scale * Math.sin(angle);
             const fol = document.createElement('div');
             fol.style.position = 'absolute';
-            fol.style.width = (folCircleRadius * 2) + 'px';
-            fol.style.height = (folCircleRadius * 2) + 'px';
-            fol.style.left = (x - folCircleRadius) + 'px';
-            fol.style.top = (y - folCircleRadius) + 'px';
+            fol.style.width = (50 * scale) + 'px';
+            fol.style.height = (50 * scale) + 'px';
+            fol.style.left = (x - 25 * scale) + 'px';
+            fol.style.top = (y - 25 * scale) + 'px';
             fol.style.borderRadius = '50%';
-            fol.style.border = '1.5px solid ' + palette[0 % palette.length];
+            fol.style.border = '1.5px solid ' + palette[idx % palette.length];
             inner.appendChild(fol);
         }
 
         // Concentric rings
-        const innerRadius = 50 * scale;
-        const outerRadius = 175 * scale;
-        const concentricRadii = [50, 75, 100, 125, 150, 175].map(r => r * scale);
-
-        concentricRadii.forEach((radius, index) => {
+        [100, 150, 200, 250, 300, 350].forEach((baseR, ri) => {
+            const r = baseR * scale;
             const ring = document.createElement('div');
             ring.style.position = 'absolute';
-            ring.style.width = (radius * 2) + 'px';
-            ring.style.height = (radius * 2) + 'px';
-            ring.style.left = (centerX - radius) + 'px';
-            ring.style.top = (centerY - radius) + 'px';
+            ring.style.width = (r * 2) + 'px';
+            ring.style.height = (r * 2) + 'px';
+            ring.style.left = (cx - r) + 'px';
+            ring.style.top = (cy - r) + 'px';
             ring.style.borderRadius = '50%';
-            ring.style.border = '2px solid ' + palette[index % palette.length];
-            ring.style.opacity = '0.6';
+            ring.style.border = '1.5px solid ' + palette[ri % palette.length];
+            ring.style.opacity = 0.3 + (ri * 0.1);
             inner.appendChild(ring);
         });
 
-        // Toroidal circles
-        const torusDiameter = (outerRadius - innerRadius);
-        const torusCenterRadius = (innerRadius + outerRadius) / 2;
-        const torusOptions = [24, 36, 48, 60, 72, 84];
-        const numTorusCircles = torusOptions[Math.floor(Math.random() * torusOptions.length)];
-
-        for (let i = 0; i < numTorusCircles; i++) {
-            const angle = (2 * Math.PI / numTorusCircles) * i - Math.PI / 2;
-            const x = centerX + torusCenterRadius * Math.cos(angle);
-            const y = centerY + torusCenterRadius * Math.sin(angle);
-
-            const tc = document.createElement('div');
-            tc.style.position = 'absolute';
-            tc.style.width = torusDiameter + 'px';
-            tc.style.height = torusDiameter + 'px';
-            tc.style.left = (x - torusDiameter / 2) + 'px';
-            tc.style.top = (y - torusDiameter / 2) + 'px';
-            tc.style.borderRadius = '50%';
-            tc.style.border = '1.5px solid ' + palette[i % palette.length];
-            tc.style.opacity = '0.5';
-            inner.appendChild(tc);
-        }
-
-        // Add rotation
-        const direction = Math.random() < 0.5 ? 'cw' : 'ccw';
-        const duration = 15 + Math.random() * 25;
-        containerDiv.style.animation = `rotateLotus-${direction} ${duration}s linear infinite`;
-
-        containerDiv.appendChild(inner);
-        cellDiv.appendChild(containerDiv);
-        gridContainer.appendChild(cellDiv);
-
-        // Fade in
-        setTimeout(() => {
-            containerDiv.style.opacity = '1';
-        }, 100);
-    }
-
-    container.appendChild(gridContainer);
+        lotusDiv.appendChild(inner);
+        container.appendChild(lotusDiv);
+        setTimeout(() => { lotusDiv.style.opacity = '0.7'; }, 100 + Math.random() * 400);
+    });
 }
 
 // ============================================
