@@ -106,7 +106,7 @@ const CSS = `
         padding:4px; box-sizing:border-box;
     }
     .mp-mid {
-        flex:10; overflow:hidden;
+        flex:10; min-width:2em; overflow:hidden;
         word-break:break-all; font-size:1.2em; line-height:1.2;
         text-align:center;
         border-left:1px solid rgba(128,128,128,0.25);
