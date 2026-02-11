@@ -65,6 +65,7 @@
         .i30-chart {
             background: #111;
             overflow: hidden;
+            border: 1px solid #222;
         }
         #insert30-label {
             position: fixed;
@@ -216,7 +217,7 @@
         for (let i = 0; i < numViolins; i++) {
             traces.push({
                 type: 'violin', y: generateViolinData(), name: `V${i}`,
-                box: { visible: false }, meanline: { visible: false }, points: false,
+                box: { visible: true }, meanline: { visible: true }, points: false,
                 marker: { color: palette[i % palette.length] },
                 fillcolor: palette[i % palette.length],
                 opacity: 0.8, hoverinfo: 'none'
@@ -544,9 +545,10 @@
 
         for (let i = 0; i < total; i++) {
             let type = Math.floor(Math.random() * 5); // 0-4
-            // If WebGL budget exhausted, remap polar(2) and 3d(3) to non-WebGL types
+            // If WebGL budget exhausted, remap polar(2) and 3d(3) to non-WebGL types (bar, violin, area)
             if ((type === 2 || type === 3) && webglCount >= MAX_WEBGL) {
-                type = Math.floor(Math.random() * 2) === 0 ? 0 : 4; // bar or area
+                const nonWebGL = [0, 1, 4]; // bar, violin, area
+                type = nonWebGL[Math.floor(Math.random() * nonWebGL.length)];
             }
             if (type === 2 || type === 3) webglCount++;
             createMixedCell(`i30-cell-${i}`, type, palettes[i]);
