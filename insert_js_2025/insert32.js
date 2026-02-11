@@ -1,12 +1,12 @@
 /**
- * insert31.js - Mad Punctuation (Multi-Flavor)
+ * insert32.js - Mad Punctuation (Multi-Flavor)
  * 
  * Flavor 0: mad_punct.htm - Animated color cycling
  * Flavor 1: mad_punct_grids.htm - Static grids with keyboard looks
  */
 
 const INSERT32_CSS = `
-    #insert31-container {
+    #insert32-container {
         position: fixed;
         top: 0;
         left: 0;
@@ -15,7 +15,7 @@ const INSERT32_CSS = `
         background: #000;
         z-index: 9999;
     }
-    #insert31-label {
+    #insert32-label {
         position: fixed;
         bottom: 12px;
         right: 12px;
@@ -44,10 +44,10 @@ const INSERT32_CHARS = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
 // ── Flavor 0: Mad Punct Animation ───────────────────────────────────────────
 function startFlavor0() {
     const container = document.createElement('div');
-    container.id = 'insert31-container';
+    container.id = 'insert32-container';
     
     const label = document.createElement('div');
-    label.id = 'insert31-label';
+    label.id = 'insert32-label';
     container.appendChild(label);
     
     document.body.appendChild(container);
@@ -62,7 +62,7 @@ function startFlavor0() {
     }
     
     function createGrid(palette) {
-        const grid = document.getElementById('insert31-grid');
+        const grid = document.getElementById('insert32-grid');
         if (!grid) return;
         
         grid.innerHTML = '';
@@ -104,7 +104,7 @@ function startFlavor0() {
     }
     
     function animate() {
-        const grid = document.getElementById('insert31-grid');
+        const grid = document.getElementById('insert32-grid');
         if (!grid) return;
         
         const cells = grid.querySelectorAll('div');
@@ -123,12 +123,12 @@ function startFlavor0() {
     // Initialize
     currentPalette = randomPalette();
     const grid = document.createElement('div');
-    grid.id = 'insert31-grid';
+    grid.id = 'insert32-grid';
     container.appendChild(grid);
     createGrid(currentPalette);
     animate();
     
-    document.getElementById('insert31-label').textContent = 'mad_punct · animated [0]';
+    document.getElementById('insert32-label').textContent = 'mad_punct · animated [0]';
     
     // R to regenerate
     document.addEventListener('keydown', function onKey(e) {
@@ -149,10 +149,10 @@ function startFlavor0() {
 // ── Flavor 1: Mad Punct Grids (Static) ───────────────────────────────────────
 function startFlavor1() {
     const container = document.createElement('div');
-    container.id = 'insert31-container';
+    container.id = 'insert32-container';
     
     const label = document.createElement('div');
-    label.id = 'insert31-label';
+    label.id = 'insert32-label';
     container.appendChild(label);
     
     document.body.appendChild(container);
@@ -170,7 +170,7 @@ function startFlavor1() {
     }
     
     function displayLook(lookNum) {
-        const grid = document.getElementById('insert31-grid');
+        const grid = document.getElementById('insert32-grid');
         if (!grid) return;
         
         grid.innerHTML = '';
@@ -202,11 +202,11 @@ function startFlavor1() {
             grid.appendChild(cell);
         }
         
-        document.getElementById('insert31-label').textContent = `mad_punct · grids [1]`;
+        document.getElementById('insert32-label').textContent = `mad_punct · grids [1]`;
     }
     
     const grid = document.createElement('div');
-    grid.id = 'insert31-grid';
+    grid.id = 'insert32-grid';
     grid.style.display = 'grid';
     grid.style.gap = '2px';
     grid.style.padding = '2px';
@@ -232,7 +232,7 @@ let currentFlavor = null;
 let currentContainer = null;
 
 function teardown() {
-    const existing = document.getElementById('insert31-container');
+    const existing = document.getElementById('insert32-container');
     if (existing) {
         if (existing._cleanup) existing._cleanup();
         existing.remove();
