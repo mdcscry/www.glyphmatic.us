@@ -78,7 +78,7 @@
         }
     `;
 
-    const FLAVOR_NAMES = ['bar', 'violin', 'polar', '3d-scatter', 'area'];
+    const FLAVOR_NAMES = ['bar', 'violin', 'polar', '3d-scatter', 'area', 'mixed'];
 
     // ── Grid Configs ─────────────────────────────────────────────────────────
     const GRID_CONFIGS_FULL = [
@@ -491,6 +491,71 @@
         updateLabel(4);
     }
 
+    // ── Flavor 5: Mixed Random Grid ──────────────────────────────────────────
+    // Smaller grid configs to stay within WebGL context limits when mixing
+    // polar (scattergl) and 3d-scatter cells
+    const GRID_CONFIGS_MIXED = [
+        { cols: 2, rows: 2 }, { cols: 3, rows: 2 }, { cols: 2, rows: 3 },
+        { cols: 3, rows: 3 }, { cols: 4, rows: 3 }, { cols: 3, rows: 4 },
+        { cols: 4, rows: 4 }
+    ];
+
+    function createMixedCell(cellId, type, palette) {
+        switch (type) {
+            case 0: createBarChart(cellId, palette); break;
+            case 1: createViolinChart(cellId, palette); break;
+            case 2: createPolarChart(cellId, palette); break;
+            case 3: createScatter3dPlot(cellId); break;
+            case 4: createAreaChart(cellId, palette); break;
+        }
+    }
+
+    function startFlavor5() {
+        const cfg = GRID_CONFIGS_MIXED[Math.floor(Math.random() * GRID_CONFIGS_MIXED.length)];
+        const total = cfg.cols * cfg.rows;
+
+        const container = document.createElement('div');
+        container.id = 'insert30-container';
+
+        const grid = document.createElement('div');
+        grid.id = 'insert30-grid';
+        grid.style.gridTemplateColumns = `repeat(${cfg.cols}, 1fr)`;
+        grid.style.gridTemplateRows = `repeat(${cfg.rows}, 1fr)`;
+        container.appendChild(grid);
+
+        const label = document.createElement('div');
+        label.id = 'insert30-label';
+        container.appendChild(label);
+
+        document.body.appendChild(container);
+
+        for (let i = 0; i < total; i++) {
+            const div = document.createElement('div');
+            div.className = 'i30-chart';
+            div.id = `i30-cell-${i}`;
+            grid.appendChild(div);
+        }
+
+        const palettes = shuffledPalettes(total);
+
+        // Track WebGL budget: polar + 3d each cost 1 context; cap at 8 total
+        let webglCount = 0;
+        const MAX_WEBGL = 8;
+
+        for (let i = 0; i < total; i++) {
+            let type = Math.floor(Math.random() * 5); // 0-4
+            // If WebGL budget exhausted, remap polar(2) and 3d(3) to non-WebGL types
+            if ((type === 2 || type === 3) && webglCount >= MAX_WEBGL) {
+                type = Math.floor(Math.random() * 2) === 0 ? 0 : 4; // bar or area
+            }
+            if (type === 2 || type === 3) webglCount++;
+            createMixedCell(`i30-cell-${i}`, type, palettes[i]);
+        }
+
+        const label2 = document.getElementById('insert30-label');
+        if (label2) label2.textContent = `plotly · mixed [5]`;
+    }
+
     // ── Plotly Loader ────────────────────────────────────────────────────────
     function loadPlotly(callback) {
         if (plotlyLoaded) { callback(); return; }
@@ -532,6 +597,7 @@
                 case 2: startFlavor2(); break;
                 case 3: startFlavor3(); break;
                 case 4: startFlavor4(); break;
+                case 5: startFlavor5(); break;
                 default: startFlavor0();
             }
         });
@@ -540,7 +606,7 @@
     // ── Keyboard Handler ─────────────────────────────────────────────────────
     function handleKeydown(e) {
         const key = parseInt(e.key);
-        if (!isNaN(key) && key >= 0 && key <= 4) {
+        if (!isNaN(key) && key >= 0 && key <= 5) {
             startVisualization(key);
         }
     }
