@@ -492,7 +492,82 @@
         updateLabel(4);
     }
 
-    // ── Flavor 5: Mixed Random Grid ──────────────────────────────────────────
+    // ── Flavor 5: Box Plots (boxes.htm) ───────────────────────────────────────
+    function createBoxChart(containerId, palette) {
+        const numBoxes = Math.floor(Math.random() * 9) + 7;
+        const traces = [];
+
+        for (let i = 0; i < numBoxes; i++) {
+            const y = [];
+            const numPoints = 5;
+            const mean = Math.random() * 100;
+            const spread = Math.random() * 1 + 30;
+
+            for (let j = 0; j < numPoints; j++) {
+                y.push(mean + (Math.random() - 0.5) * spread);
+            }
+
+            const borderWidth = Math.floor(Math.random() * 5) + 1;
+            const borderColor = palette[Math.floor(Math.random() * palette.length)];
+
+            traces.push({
+                y: y,
+                type: 'box',
+                marker: { color: palette[i % palette.length] },
+                fillcolor: palette[i % palette.length],
+                line: { color: borderColor, width: borderWidth },
+                boxmean: false,
+                boxpoints: false,
+                whiskerwidth: 0.1,
+                hoverinfo: 'none',
+                showlegend: false
+            });
+        }
+
+        const layout = {
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            margin: { l: 0, r: 0, t: 0, b: 0 },
+            xaxis: { visible: false, showgrid: false, zeroline: false, showticklabels: false },
+            yaxis: { visible: false, showgrid: false, zeroline: false, showticklabels: false }
+        };
+
+        const config = { displayModeBar: false, responsive: true };
+        Plotly.newPlot(containerId, traces, layout, config);
+    }
+
+    function startFlavor5() {
+        const cfg = GRID_CONFIGS[Math.floor(Math.random() * GRID_CONFIGS.length)];
+        const total = cfg.cols * cfg.rows;
+
+        const container = document.createElement('div');
+        container.id = 'insert30-container';
+
+        const grid = document.createElement('div');
+        grid.id = 'insert30-grid';
+        grid.style.gridTemplateColumns = `repeat(${cfg.cols}, 1fr)`;
+        grid.style.gridTemplateRows = `repeat(${cfg.rows}, 1fr)`;
+        container.appendChild(grid);
+
+        const label = document.createElement('div');
+        label.id = 'insert30-label';
+        label.textContent = 'plotly · boxes [5]';
+        container.appendChild(label);
+
+        document.body.appendChild(container);
+
+        const palettes = shuffledPalettes(total);
+
+        for (let i = 0; i < total; i++) {
+            const div = document.createElement('div');
+            div.className = 'i30-chart';
+            div.id = `i30-cell-${i}`;
+            grid.appendChild(div);
+            createBoxChart(`i30-cell-${i}`, palettes[i]);
+        }
+    }
+
+    // ── Flavor 6: Mixed Random Grid ───────────────────────────────────────────
     // Smaller grid configs to stay within WebGL context limits when mixing
     // polar (scattergl) and 3d-scatter cells
     const GRID_CONFIGS_MIXED = [
@@ -511,7 +586,7 @@
         }
     }
 
-    function startFlavor5() {
+    function startFlavor6() {
         const cfg = GRID_CONFIGS_MIXED[Math.floor(Math.random() * GRID_CONFIGS_MIXED.length)];
         const total = cfg.cols * cfg.rows;
 
@@ -555,7 +630,7 @@
         }
 
         const label2 = document.getElementById('insert30-label');
-        if (label2) label2.textContent = `plotly · mixed [5]`;
+        if (label2) label2.textContent = `plotly · mixed [6]`;
     }
 
     // ── Plotly Loader ────────────────────────────────────────────────────────
@@ -600,6 +675,7 @@
                 case 3: startFlavor3(); break;
                 case 4: startFlavor4(); break;
                 case 5: startFlavor5(); break;
+                case 6: startFlavor6(); break;
                 default: startFlavor0();
             }
         });
