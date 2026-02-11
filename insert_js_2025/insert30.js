@@ -616,6 +616,6 @@
 
     // ── Init ─────────────────────────────────────────────────────────────────
     document.addEventListener('keydown', handleKeydown);
-    startVisualization(0);
+    startVisualization(Math.floor(Math.random() * 6));
 
 })();
