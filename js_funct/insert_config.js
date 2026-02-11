@@ -270,6 +270,20 @@ const INSERT_CONFIG = {
             },
             description: 'Fibonacci Spirals - Concentric Fibonacci grid with two character set variants. Press 1 for basic Latin (A-Z, a-z), press 2 for IPA Extensions + Extended Latin (dense, exotic characters). Each key press triggers a full re-render of the grid and character layer.'
         },
+        32: {
+            controls: {
+                style: false,
+                html: false,
+                resize: false,
+                moveUpDown: false
+            },
+            watermarks: {
+                count: 1,
+                zIndex: 10,
+                positioning: 'top-left'
+            },
+            description: 'Mad Punctuation - Multi-Flavor: Two punctuation visualizations. (0) Animated: Color-cycling punctuation grid with 5x3 layout, press R to regenerate. (1) Static Grids: Random grid layouts with keys 1-5 for different looks.'
+        },
     }
 };
 
