@@ -583,6 +583,7 @@
             case 2: createPolarChart(cellId, palette); break;
             case 3: createScatter3dPlot(cellId); break;
             case 4: createAreaChart(cellId, palette); break;
+            case 5: createBoxChart(cellId, palette); break;
         }
     }
 
@@ -619,10 +620,10 @@
         const MAX_WEBGL = 8;
 
         for (let i = 0; i < total; i++) {
-            let type = Math.floor(Math.random() * 5); // 0-4
-            // If WebGL budget exhausted, remap polar(2) and 3d(3) to non-WebGL types (bar, violin, area)
+            let type = Math.floor(Math.random() * 6); // 0-5
+            // If WebGL budget exhausted, remap polar(2) and 3d(3) to non-WebGL types
             if ((type === 2 || type === 3) && webglCount >= MAX_WEBGL) {
-                const nonWebGL = [0, 1, 4]; // bar, violin, area
+                const nonWebGL = [0, 1, 4, 5]; // bar, violin, area, boxes
                 type = nonWebGL[Math.floor(Math.random() * nonWebGL.length)];
             }
             if (type === 2 || type === 3) webglCount++;
