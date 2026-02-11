@@ -1179,12 +1179,28 @@ function createFlavor3(container, palette) {
     container.style.height = '100vh';
     container.style.overflow = 'hidden';
 
+    // Random grid configs (matching source)
+    const gridConfigs = [
+        { cols: 2, rows: 2 },
+        { cols: 3, rows: 3 },
+        { cols: 4, rows: 4 },
+        { cols: 5, rows: 5 },
+        { cols: 6, rows: 6 },
+        { cols: 8, rows: 8 },
+        { cols: 10, rows: 10 },
+        { cols: 5, rows: 4 },
+        { cols: 6, rows: 4 },
+        { cols: 8, rows: 4 }
+    ];
+    const config = gridConfigs[Math.floor(Math.random() * gridConfigs.length)];
+    const cellCount = config.cols * config.rows;
+
     const gridContainer = document.createElement('div');
     gridContainer.style.display = 'grid';
-    gridContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
-    gridContainer.style.gridTemplateRows = 'repeat(2, 1fr)';
-    gridContainer.style.gap = '0.5rem';
-    gridContainer.style.padding = '0.5rem';
+    gridContainer.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
+    gridContainer.style.gridTemplateRows = `repeat(${config.rows}, 1fr)`;
+    gridContainer.style.gap = '8px';
+    gridContainer.style.padding = '8px';
     gridContainer.style.width = '100%';
     gridContainer.style.height = '100%';
     gridContainer.style.boxSizing = 'border-box';
@@ -1261,21 +1277,37 @@ function createFlavor3(container, palette) {
     }
 
     // Create 4 cells
-    for (let cellIdx = 0; cellIdx < 4; cellIdx++) {
+    for (let cellIdx = 0; cellIdx < cellCount; cellIdx++) {
         const cellDiv = document.createElement('div');
         cellDiv.style.position = 'relative';
         cellDiv.style.background = 'rgba(0, 0, 0, 0.3)';
         cellDiv.style.borderRadius = '2px';
         cellDiv.style.overflow = 'hidden';
 
+        // Calculate cell dimensions
+        const gapSize = 8;
+        const totalGapWidth = gapSize * (config.cols - 1);
+        const totalGapHeight = gapSize * (config.rows - 1);
+        const availableWidth = window.innerWidth - 16 - totalGapWidth;
+        const availableHeight = window.innerHeight - 16 - totalGapHeight;
+        const cellWidth = availableWidth / config.cols;
+        const cellHeight = availableHeight / config.rows;
+
         // Generate packing for this cell
-        const packCircles = generateCirclePackingForCell(4);
-        const cellWidth = (window.innerWidth - 16) / 2 - 4; // Account for padding and gaps
-        const cellHeight = (window.innerHeight - 16) / 2 - 4;
-        const coordScale = Math.min(cellWidth, cellHeight) / Math.max(packWidth, packHeight);
+        const packCircles = generateCirclePackingForCell(cellCount);
+        const coordScale = Math.min(cellWidth / packWidth, cellHeight / packHeight);
+
+        // Per-cell palette generation (matching source's generateGlyphPalette approach)
+        const cellPalette = [];
+        for (let i = 0; i < 6; i++) {
+            cellPalette.push(ColorPalette.generateOKLCH(0.15 + Math.random() * 0.15, 0.08 + Math.random() * 0.15, Math.random() * 360));
+        }
 
         // Render only interior circles as lotuses
-        packCircles.filter(c => c.type === 'interior').forEach(circle => {
+        packCircles.filter(c => c.type === 'interior').forEach((circle, idx) => {
+            const color1 = cellPalette[idx % cellPalette.length];
+            const color2 = cellPalette[(idx + 1) % cellPalette.length];
+
             const lotusDiv = document.createElement('div');
             lotusDiv.style.position = 'absolute';
             lotusDiv.style.left = (circle.x * coordScale) + 'px';
@@ -1290,6 +1322,11 @@ function createFlavor3(container, palette) {
             inner.style.position = 'relative';
             inner.style.width = '100%';
             inner.style.height = '100%';
+
+            // 50% chance of gradient background (matching source)
+            if (Math.random() < 0.5) {
+                inner.style.background = `radial-gradient(circle at center, ${color1}44 0%, ${color2}22 50%, transparent 70%)`;
+            }
 
             const scale = (circle.r * 2 * coordScale) / 100;
             const cx = circle.r * coordScale;
@@ -1306,7 +1343,7 @@ function createFlavor3(container, palette) {
             ccirc.style.left = (cx - folR) + 'px';
             ccirc.style.top = (cy - folR) + 'px';
             ccirc.style.borderRadius = '50%';
-            ccirc.style.border = '2px solid ' + palette[1 % palette.length];
+            ccirc.style.border = '2px solid ' + color2;
             inner.appendChild(ccirc);
 
             for (let i = 0; i < 6; i++) {
@@ -1321,7 +1358,7 @@ function createFlavor3(container, palette) {
                 fol.style.left = (x - folR) + 'px';
                 fol.style.top = (y - folR) + 'px';
                 fol.style.borderRadius = '50%';
-                fol.style.border = '1.5px solid ' + palette[0 % palette.length];
+                fol.style.border = '1.5px solid ' + color1;
                 inner.appendChild(fol);
             }
 
@@ -1338,7 +1375,7 @@ function createFlavor3(container, palette) {
                 ring.style.left = (cx - radius) + 'px';
                 ring.style.top = (cy - radius) + 'px';
                 ring.style.borderRadius = '50%';
-                ring.style.border = '2px solid ' + palette[idx % palette.length];
+                ring.style.border = '2px solid ' + cellPalette[idx % cellPalette.length];
                 ring.style.opacity = '0.6';
                 inner.appendChild(ring);
             });
@@ -1361,7 +1398,7 @@ function createFlavor3(container, palette) {
                 tc.style.left = (x - tD / 2) + 'px';
                 tc.style.top = (y - tD / 2) + 'px';
                 tc.style.borderRadius = '50%';
-                tc.style.border = '1.5px solid ' + palette[i % palette.length];
+                tc.style.border = '1.5px solid ' + cellPalette[i % cellPalette.length];
                 tc.style.opacity = '0.5';
                 inner.appendChild(tc);
             }
@@ -1371,7 +1408,7 @@ function createFlavor3(container, palette) {
 
             setTimeout(() => {
                 lotusDiv.style.opacity = '1';
-            }, 100);
+            }, 100 + Math.random() * 400);
         });
 
         gridContainer.appendChild(cellDiv);
