@@ -245,7 +245,7 @@ function startVisualization(flavor) {
     teardown();
     currentFlavor = flavor !== undefined ? flavor : Math.floor(Math.random() * 2);
     
-    if (!document.getElementById('insert31-styles')) {
+    if (!document.getElementById('insert32-styles')) {
         const style = document.createElement('style');
         style.id = 'insert31-styles';
         style.textContent = INSERT32_CSS;
@@ -265,3 +265,6 @@ document.addEventListener('keydown', function(e) {
         startVisualization(parseInt(e.key));
     }
 });
+
+// Auto-start with random flavor
+startVisualization(Math.floor(Math.random() * 2));
