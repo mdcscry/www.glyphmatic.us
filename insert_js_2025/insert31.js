@@ -254,6 +254,12 @@
       }
     });
     
+    // DEBUG: Count horizontal lines for variant 4
+    if (variant === 4) {
+      const hLines = container.querySelectorAll('.line-h');
+      console.log(`[insert31] v4: ${hLines.length} horizontal lines drawn, height=${height}, maxVal=${maxVal}`);
+    }
+    
     // 45° diagonals (red) - from left edge
     fibs.forEach(f => {
       const pos = (f / maxVal) * height;
