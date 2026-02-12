@@ -16,18 +16,19 @@
   const _urlVariant = parseInt(new URLSearchParams(window.location.search).get('variant'));
   let variant = (_urlVariant >= 1 && _urlVariant <= 3) ? _urlVariant : Math.floor(Math.random() * 3) + 1;
 
-  // Palettes for variant 3: [glyphColor1, glyphColor2, lineColor1, lineColor2]
-  const PALETTES_V3 = [
-    ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3'],
-    ['#00d2d3', '#ff9f43', '#a29bfe', '#55efc4'],
-    ['#e056fd', '#badc58', '#fdcb6e', '#00cec9'],
-    ['#6c5ce7', '#fd79a8', '#00b894', '#fdcb6e'],
-    ['#2ed573', '#1e90ff', '#ff4757', '#eccc68'],
-    ['#a29bfe', '#fd79a8', '#55efc4', '#ff7675'],
-    ['#ffeaa7', '#dfe6e9', '#74b9ff', '#fd79a8'],
-    ['#00cec9', '#e17055', '#0984e3', '#6c5ce7'],
-  ];
-  let currentPalette = PALETTES_V3[Math.floor(Math.random() * PALETTES_V3.length)];
+  // Generate 4 OKLCH complementary colors: [glyphColor1, glyphColor2, lineColor1, lineColor2]
+  function generatePalette() {
+    const h = Math.random() * 360;
+    const l = 0.55 + Math.random() * 0.2; // 0.55–0.75 lightness (vivid on black)
+    const c = 0.18 + Math.random() * 0.12; // 0.18–0.30 chroma
+    return [
+      `oklch(${l.toFixed(2)} ${c.toFixed(2)} ${h.toFixed(1)})`,           // glyph 1
+      `oklch(${l.toFixed(2)} ${c.toFixed(2)} ${((h+90)%360).toFixed(1)})`, // glyph 2 (+90°)
+      `oklch(${l.toFixed(2)} ${c.toFixed(2)} ${((h+180)%360).toFixed(1)})`,// line 1 (+180°)
+      `oklch(${l.toFixed(2)} ${c.toFixed(2)} ${((h+270)%360).toFixed(1)})` // line 2 (+270°)
+    ];
+  }
+  let currentPalette = generatePalette();
 
   // Block arrays for each variant
   const variantBlocks = {
@@ -76,6 +77,7 @@
   async function loadDependencies() {
     try {
       // Load core libraries
+      await loadScript('../js_funct/colorpalette.js');
       await loadScript('../js_funct/autoFont.js');
       
       // Load data files
@@ -570,8 +572,10 @@
     const fontWeight = variant === 1 ? 'normal' : '900';
     const minBoxSize = variant === 1 ? 20 : 10;
     
+    if (variant === 3) console.log('[insert31] v3 palette:', currentPalette, '| boxes:', allBoxes.length);
+    let _drawn = 0, _skippedCoord = 0, _skippedSize = 0;
     allBoxes.forEach(sq => {
-      if (!sq.x1 || !sq.x2 || !sq.y1 || !sq.y2) return;
+      if (!sq.x1 || !sq.x2 || !sq.y1 || !sq.y2) { _skippedCoord++; return; }
       const sqWidth = sq.x2 - sq.x1;
       const sqHeight = sq.y2 - sq.y1;
       
@@ -626,10 +630,13 @@
             container.appendChild(char);
           }
         }
+        _drawn++;
+      } else {
+        _skippedSize++;
       }
     });
 
-    console.log(`[insert31] Variant ${variant} rendered with ${allBoxes.length} boxes`);
+    console.log(`[insert31] v${variant} rendered: ${allBoxes.length} boxes, ${_drawn} drawn, ${_skippedCoord} bad-coords, ${_skippedSize} too-small`);
   }
 
   function init() {
@@ -668,8 +675,8 @@
         render();
       } else if (e.key === '3') {
         variant = 3;
-        currentPalette = PALETTES_V3[Math.floor(Math.random() * PALETTES_V3.length)];
-        console.log('[insert31] Switched to variant 3 (palette colors)');
+        currentPalette = generatePalette();
+        console.log('[insert31] Switched to variant 3, palette:', currentPalette);
         updateBackground();
         render();
       }
