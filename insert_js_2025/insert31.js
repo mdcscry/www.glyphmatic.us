@@ -652,6 +652,7 @@
 
             const char = document.createElement('div');
             const _ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            const MONO = "'Noto Sans Mono', 'Courier New', monospace";
             
             // Fallback if variant 1, error occurred, or no glyph data
             if (variant === 1 || glyphError || !glyphData || !glyphData.glyph) {
@@ -678,7 +679,6 @@
             // Font strategy per variant:
             // v1: pure mono (override autoFont entirely)
             // v2/v3: prepend mono so standard chars get mono, extended chars fall back to autoFont
-            const MONO = "'Noto Sans Mono', 'Courier New', monospace";
             if (variant === 1) {
               char.style.fontFamily = MONO;
             } else {
