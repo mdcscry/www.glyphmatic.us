@@ -631,25 +631,44 @@
         
         for (let row = 0; row < rows; row++) {
           for (let col = 0; col < cols; col++) {
-            // Use AutoFont to generate glyph with proper font
-            const glyphData = AutoFont.generateGlyph(
-              block_hex,
-              block_hex_desc,
-              block_lang,
-              lang_font,
-              true, // testMode enabled
-              { blocks: variantBlocks[variant], glyph: null },
-              null // no exclusions
-            );
+            let glyphData = null;
+            let glyphError = null;
+            
+            // Wrap generateGlyph in try-catch to catch any autoFont errors
+            try {
+              glyphData = AutoFont.generateGlyph(
+                block_hex,
+                block_hex_desc,
+                block_lang,
+                lang_font,
+                true, // testMode enabled
+                { blocks: variantBlocks[variant], glyph: null },
+                null // no exclusions
+              );
+            } catch (err) {
+              glyphError = err;
+              console.error('[insert31] generateGlyph error:', err.message);
+            }
 
             const char = document.createElement('div');
             const _ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-            if (variant === 1 || !glyphData || !glyphData.glyph) {
-              // v1: always use letters; v2/v3 fallback when AutoFont can't verify glyph
+            
+            // Fallback if variant 1, error occurred, or no glyph data
+            if (variant === 1 || glyphError || !glyphData || !glyphData.glyph) {
               char.textContent = _ALPHA[Math.floor(Math.random() * _ALPHA.length)];
-            } else {
-              char.textContent = String.fromCodePoint(parseInt(glyphData.glyph, 16));
+              char.style.fontFamily = MONO;
+              char.style.fontSize = `${fontSize}px`;
+              char.style.fontWeight = fontWeight;
+              char.style.color = sq.color;
+              char.style.position = 'absolute';
+              char.style.left = `${sq.x1 + 6 + col * 12}px`;
+              char.style.top = `${sq.y1 + 4 + row * 14}px`;
+              char.style.zIndex = '50';
+              container.appendChild(char);
+              continue;
             }
+            
+            char.textContent = String.fromCodePoint(parseInt(glyphData.glyph, 16));
             char.style.position = 'absolute';
             char.style.left = `${sq.x1 + 6 + col * 12}px`;
             char.style.top = `${sq.y1 + 4 + row * 14}px`;
@@ -663,8 +682,10 @@
             if (variant === 1) {
               char.style.fontFamily = MONO;
             } else {
+              // Safely handle fontStack - may be undefined in some error cases
+              const rawStack = glyphData.fontStack || 'monospace';
               // Strip emoji/symbol fonts from autoFont stack — Latin+IPA only
-              const cleanStack = (glyphData.fontStack || 'monospace')
+              const cleanStack = (typeof rawStack === 'string' ? rawStack : 'monospace')
                 .replace(/'Noto Emoji',?\s*/g, '')
                 .replace(/'Symbola',?\s*/g, '')
                 .replace(/'Noto Sans Symbols[^']*',?\s*/g, '')
