@@ -587,20 +587,19 @@
               block_hex_desc,
               block_lang,
               lang_font,
-              false, // testMode off — don't skip glyphs due to font load state
+              true, // testMode enabled
               { blocks: variantBlocks[variant], glyph: null },
               null // no exclusions
             );
 
-            // Skip if AutoFont returned nothing valid
-            if (variant !== 1 && (!glyphData || !glyphData.glyph)) continue;
-
             const char = document.createElement('div');
-            // Variant 1: pure A-Z a-z only — no punctuation, digits, or symbols
             const _ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-            char.textContent = variant === 1
-              ? _ALPHA[Math.floor(Math.random() * _ALPHA.length)]
-              : String.fromCodePoint(parseInt(glyphData.glyph, 16));
+            if (variant === 1 || !glyphData || !glyphData.glyph) {
+              // v1: always use letters; v2/v3 fallback when AutoFont can't verify glyph
+              char.textContent = _ALPHA[Math.floor(Math.random() * _ALPHA.length)];
+            } else {
+              char.textContent = String.fromCodePoint(parseInt(glyphData.glyph, 16));
+            }
             char.style.position = 'absolute';
             char.style.left = `${sq.x1 + 6 + col * 12}px`;
             char.style.top = `${sq.y1 + 4 + row * 14}px`;
