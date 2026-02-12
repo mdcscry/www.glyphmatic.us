@@ -593,7 +593,11 @@
             );
 
             const char = document.createElement('div');
-            char.textContent = String.fromCodePoint(parseInt(glyphData.glyph, 16));
+            // Variant 1: pure A-Z a-z only — no punctuation, digits, or symbols
+            const _ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            char.textContent = variant === 1
+              ? _ALPHA[Math.floor(Math.random() * _ALPHA.length)]
+              : String.fromCodePoint(parseInt(glyphData.glyph, 16));
             char.style.position = 'absolute';
             char.style.left = `${sq.x1 + 6 + col * 12}px`;
             char.style.top = `${sq.y1 + 4 + row * 14}px`;
