@@ -610,9 +610,18 @@
             // v1: pure mono (override autoFont entirely)
             // v2/v3: prepend mono so standard chars get mono, extended chars fall back to autoFont
             const MONO = "'Noto Sans Mono', 'Courier New', monospace";
-            char.style.fontFamily = variant === 1
-              ? MONO
-              : MONO + ', ' + (glyphData.fontStack || 'monospace');
+            if (variant === 1) {
+              char.style.fontFamily = MONO;
+            } else {
+              // Strip emoji/symbol fonts from autoFont stack — Latin+IPA only
+              const cleanStack = (glyphData.fontStack || 'monospace')
+                .replace(/'Noto Emoji',?\s*/g, '')
+                .replace(/'Symbola',?\s*/g, '')
+                .replace(/'Noto Sans Symbols[^']*',?\s*/g, '')
+                .replace(/'Noto Sans Math',?\s*/g, '')
+                .replace(/,\s*,/g, ',').replace(/,\s*$/, '').trim();
+              char.style.fontFamily = MONO + ', ' + (cleanStack || 'monospace');
+            }
             char.style.zIndex = '50';
             container.appendChild(char);
           }
