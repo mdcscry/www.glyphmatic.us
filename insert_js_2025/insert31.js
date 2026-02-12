@@ -12,7 +12,9 @@
   'use strict';
 
   let container = null;
-  let variant = Math.floor(Math.random() * 3) + 1; // Random choice on load (1, 2, or 3)
+  // URL param: ?variant=1|2|3 overrides random pick
+  const _urlVariant = parseInt(new URLSearchParams(window.location.search).get('variant'));
+  let variant = (_urlVariant >= 1 && _urlVariant <= 3) ? _urlVariant : Math.floor(Math.random() * 3) + 1;
 
   // Palettes for variant 3: [glyphColor1, glyphColor2, lineColor1, lineColor2]
   const PALETTES_V3 = [
