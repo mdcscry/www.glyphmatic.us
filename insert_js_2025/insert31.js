@@ -607,12 +607,13 @@
             char.style.fontWeight = fontWeight;
             char.style.color = sq.color;
             // Font strategy per variant:
-            // v1: pure mono (override autoFont entirely)
-            // v2/v3: prepend mono so standard chars get mono, extended chars fall back to autoFont
+            // v1: pure mono, letters only
+            // v2: pure mono — Noto Sans Mono covers all Latin+IPA ranges, no emoji fallback
+            // v3: mono first, then autoFont stack for extended blocks
             const MONO = "'Noto Sans Mono', 'Courier New', monospace";
-            char.style.fontFamily = variant === 1
-              ? MONO
-              : MONO + ', ' + (glyphData.fontStack || 'monospace');
+            char.style.fontFamily = variant === 3
+              ? MONO + ', ' + (glyphData.fontStack || 'monospace')
+              : MONO;
             char.style.zIndex = '50';
             container.appendChild(char);
           }
