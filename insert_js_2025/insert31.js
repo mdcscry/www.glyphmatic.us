@@ -12,7 +12,20 @@
   'use strict';
 
   let container = null;
-  let variant = Math.random() < 0.5 ? 1 : 2; // Random choice on load
+  let variant = Math.floor(Math.random() * 3) + 1; // Random choice on load (1, 2, or 3)
+
+  // Palettes for variant 3: [glyphColor1, glyphColor2, lineColor1, lineColor2]
+  const PALETTES_V3 = [
+    ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3'],
+    ['#00d2d3', '#ff9f43', '#a29bfe', '#55efc4'],
+    ['#e056fd', '#badc58', '#fdcb6e', '#00cec9'],
+    ['#6c5ce7', '#fd79a8', '#00b894', '#fdcb6e'],
+    ['#2ed573', '#1e90ff', '#ff4757', '#eccc68'],
+    ['#a29bfe', '#fd79a8', '#55efc4', '#ff7675'],
+    ['#ffeaa7', '#dfe6e9', '#74b9ff', '#fd79a8'],
+    ['#00cec9', '#e17055', '#0984e3', '#6c5ce7'],
+  ];
+  let currentPalette = PALETTES_V3[Math.floor(Math.random() * PALETTES_V3.length)];
 
   // Block arrays for each variant
   const variantBlocks = {
@@ -99,14 +112,24 @@
     const fibs = getFibonacci(maxVal);
     const diagLength = Math.sqrt(width * width + height * height) * 1.5;
 
-    // === GRID LINES (same for both variants) ===
-    
-    // Vertical lines - left to right (red)
+    // === GRID LINES ===
+    // For variant 3, use palette line colors instead of CSS classes
+    const lineColor1 = variant === 3 ? currentPalette[2] : null;
+    const lineColor2 = variant === 3 ? currentPalette[3] : null;
+    function applyLineColor(el, cssClass) {
+      el.className = `line-v line-h line-d ${cssClass}`.trim();
+      if (variant === 3) {
+        el.style.background = cssClass === 'red' ? lineColor1 : lineColor2;
+      }
+    }
+
+    // Vertical lines - left to right
     fibs.forEach(f => {
       const x = (f / maxVal) * width;
       if (x < width) {
         const line = document.createElement('div');
         line.className = 'line-v red';
+        if (variant === 3) line.style.background = lineColor1;
         line.style.position = 'absolute';
         line.style.top = '0';
         line.style.height = '100vh';
@@ -123,6 +146,7 @@
       if (x > 0) {
         const line = document.createElement('div');
         line.className = 'line-v red';
+        if (variant === 3) line.style.background = lineColor1;
         line.style.position = 'absolute';
         line.style.top = '0';
         line.style.height = '100vh';
@@ -139,6 +163,7 @@
       if (y < height) {
         const line = document.createElement('div');
         line.className = 'line-h orange';
+        if (variant === 3) line.style.background = lineColor2;
         line.style.position = 'absolute';
         line.style.left = '0';
         line.style.width = '100vw';
@@ -155,6 +180,7 @@
       if (y > 0) {
         const line = document.createElement('div');
         line.className = 'line-h orange';
+        if (variant === 3) line.style.background = lineColor2;
         line.style.position = 'absolute';
         line.style.left = '0';
         line.style.width = '100vw';
@@ -379,7 +405,7 @@
     }
     
     // Ring 1 (color differs by variant)
-    const ring1Color = variant === 1 ? '#e08020' : '#d03020';
+    const ring1Color = variant === 3 ? currentPalette[0] : variant === 1 ? '#e08020' : '#d03020';
     const ring1 = [
       { x1: farFarLeft, y1: farFarTop, x2: farLeft, y2: farTop },
       { x1: farLeft, y1: farFarTop, x2: farRight, y2: farTop },
@@ -406,7 +432,7 @@
       if (allY[i] <= farFarBottom && allY[i + 1] > farFarBottom) fff_Bottom = allY[i + 1];
     }
     
-    const ring2Color = variant === 1 ? '#d03020' : '#e08020';
+    const ring2Color = variant === 3 ? currentPalette[1] : variant === 1 ? '#d03020' : '#e08020';
     const ring2 = [
       { x1: fff_Left, y1: fff_Top, x2: farFarLeft, y2: farFarTop },
       { x1: farFarLeft, y1: fff_Top, x2: farFarRight, y2: farFarTop },
@@ -437,7 +463,7 @@
       if (allY[i] <= fff_Bottom && allY[i + 1] > fff_Bottom) ffff_Bottom = allY[i + 1];
     }
     
-    const ring3Color = variant === 1 ? '#e08020' : '#d03020';
+    const ring3Color = variant === 3 ? currentPalette[0] : variant === 1 ? '#e08020' : '#d03020';
     const ring3 = [
       { x1: ffff_Left, y1: ffff_Top, x2: fff_Left, y2: fff_Top },
       { x1: fff_Left, y1: ffff_Top, x2: fff_Right, y2: fff_Top },
@@ -472,7 +498,7 @@
       if (allY[i] <= ffff_Bottom && allY[i + 1] > ffff_Bottom) fffff_Bottom = allY[i + 1];
     }
     
-    const ring4Color = variant === 1 ? '#d03020' : '#e08020';
+    const ring4Color = variant === 3 ? currentPalette[1] : variant === 1 ? '#d03020' : '#e08020';
     const ring4 = [
       { x1: fffff_Left, y1: fffff_Top, x2: ffff_Left, y2: ffff_Top },
       { x1: ffff_Left, y1: fffff_Top, x2: ffff_Right, y2: ffff_Top },
@@ -572,6 +598,12 @@
       } else if (e.key === '2') {
         variant = 2;
         console.log('[insert31] Switched to variant 2 (IPA + Extended Latin)');
+        updateBackground();
+        render();
+      } else if (e.key === '3') {
+        variant = 3;
+        currentPalette = PALETTES_V3[Math.floor(Math.random() * PALETTES_V3.length)];
+        console.log('[insert31] Switched to variant 3 (palette colors)');
         updateBackground();
         render();
       }
