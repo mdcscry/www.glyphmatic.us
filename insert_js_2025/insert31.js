@@ -587,10 +587,13 @@
               block_hex_desc,
               block_lang,
               lang_font,
-              true, // testMode enabled
+              false, // testMode off — don't skip glyphs due to font load state
               { blocks: variantBlocks[variant], glyph: null },
               null // no exclusions
             );
+
+            // Skip if AutoFont returned nothing valid
+            if (variant !== 1 && (!glyphData || !glyphData.glyph)) continue;
 
             const char = document.createElement('div');
             // Variant 1: pure A-Z a-z only — no punctuation, digits, or symbols
