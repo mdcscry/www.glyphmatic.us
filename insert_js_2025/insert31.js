@@ -633,10 +633,18 @@
   }
 
   function init() {
-    container = document.getElementById('container') || document.body;
-    
-    if (!container.id) {
+    container = document.getElementById('container');
+    if (!container) {
+      // Don't fall back to body — that would wipe watermarks on render
+      container = document.createElement('div');
       container.id = 'container';
+      container.style.position = 'fixed';
+      container.style.top = '0';
+      container.style.left = '0';
+      container.style.width = '100vw';
+      container.style.height = '100vh';
+      container.style.zIndex = '1'; // watermarks sit above at z-index 10
+      document.body.appendChild(container);
     }
 
     injectStyles();
@@ -676,9 +684,17 @@
   function injectStyles() {
     const bgColor = variant === 1 ? '#0a0a0a' : '#000';
     
+    // Load Noto Sans Mono via <link> (not @import — @import in injected styles is unreliable)
+    if (!document.getElementById('noto-sans-mono-link')) {
+      const link = document.createElement('link');
+      link.id = 'noto-sans-mono-link';
+      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;900&display=swap';
+      document.head.appendChild(link);
+    }
+
     const style = document.createElement('style');
     style.textContent = `
-      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;900&display=swap');
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body {
         background: ${bgColor};
