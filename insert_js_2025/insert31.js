@@ -44,12 +44,17 @@
       "Latin Extended-E"
     ],
     3: [
+      "IPA Extensions",
+      "Phonetic Extensions",
+      "Phonetic Extensions Supplement",
       "Basic Latin",
       "Latin-1 Supplement",
       "Latin Extended-A",
-      "General Punctuation",
-      "Letterlike Symbols",
-      "Mathematical Operators"
+      "Latin Extended-B",
+      "Latin Extended Additional",
+      "Latin Extended-C",
+      "Latin Extended-D",
+      "Latin Extended-E"
     ]
   };
 
@@ -384,7 +389,8 @@
       }
     }
     
-    // Central squares (different for v1 and v2)
+    // Central squares (different for v1, v2, v3)
+    const c0 = currentPalette[0], c1 = currentPalette[1];
     let squares;
     if (variant === 1) {
       // v1: 4 squares, all RED
@@ -393,6 +399,19 @@
         { x1: rightOfCenter, y1: farTop, x2: farRight, y2: topOfCenter, color: '#d03020' },
         { x1: farLeft, y1: bottomOfCenter, x2: leftOfCenter, y2: farBottom, color: '#d03020' },
         { x1: rightOfCenter, y1: bottomOfCenter, x2: farRight, y2: farBottom, color: '#d03020' }
+      ];
+    } else if (variant === 3) {
+      // v3: 9 squares using palette colors
+      squares = [
+        { x1: farLeft, y1: farTop, x2: leftOfCenter, y2: topOfCenter, color: c1 },
+        { x1: rightOfCenter, y1: farTop, x2: farRight, y2: topOfCenter, color: c1 },
+        { x1: farLeft, y1: bottomOfCenter, x2: leftOfCenter, y2: farBottom, color: c1 },
+        { x1: rightOfCenter, y1: bottomOfCenter, x2: farRight, y2: farBottom, color: c1 },
+        { x1: leftOfCenter, y1: farTop, x2: rightOfCenter, y2: topOfCenter, color: c0 },
+        { x1: leftOfCenter, y1: bottomOfCenter, x2: rightOfCenter, y2: farBottom, color: c0 },
+        { x1: farLeft, y1: topOfCenter, x2: leftOfCenter, y2: bottomOfCenter, color: c0 },
+        { x1: rightOfCenter, y1: topOfCenter, x2: farRight, y2: bottomOfCenter, color: c0 },
+        { x1: leftOfCenter, y1: topOfCenter, x2: rightOfCenter, y2: bottomOfCenter, color: c1 }
       ];
     } else {
       // v2: 9 squares (4 corners ORANGE, 4 cross RED, 1 center ORANGE)
