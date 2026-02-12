@@ -598,7 +598,13 @@
             char.style.fontSize = `${fontSize}px`;
             char.style.fontWeight = fontWeight;
             char.style.color = sq.color;
-            char.style.fontFamily = glyphData.fontStack || 'monospace';
+            // Font strategy per variant:
+            // v1: pure mono (override autoFont entirely)
+            // v2/v3: prepend mono so standard chars get mono, extended chars fall back to autoFont
+            const MONO = "'Noto Sans Mono', 'Courier New', monospace";
+            char.style.fontFamily = variant === 1
+              ? MONO
+              : MONO + ', ' + (glyphData.fontStack || 'monospace');
             char.style.zIndex = '50';
             container.appendChild(char);
           }
@@ -655,6 +661,7 @@
     
     const style = document.createElement('style');
     style.textContent = `
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;900&display=swap');
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body {
         background: ${bgColor};
