@@ -49,28 +49,22 @@
     return LAM_PALETTES[Math.floor(Math.random() * LAM_PALETTES.length)];
   }
 
-  // Generate complementary palette: warm/cool opposition + accent
+  // Generate truly random palette across full OKLCH range
   function generatePalette() {
-    const h = Math.random() * 360;
-    // Complementary: warm hue + opposite cool hue
-    const hComplement = (h + 180) % 360;
+    const h1 = Math.random() * 360;
+    const h2 = h1 + 120 + Math.random() * 120;  // ~120-240° offset for variety
     
-    // Glyphs: vivid, saturated
-    const glyphL = 0.55 + Math.random() * 0.25;  // 0.55-0.80
-    const glyphC = 0.25 + Math.random() * 0.25;  // 0.25-0.50 (vivid)
-    
-    // Lines: softer, desaturated version
-    const lineL = glyphL + (Math.random() * 0.15 - 0.075);  // similar lightness
-    const lineC = 0.10 + Math.random() * 0.15;  // 0.10-0.25 (softer)
-    
-    // Accent: complementary accent color
-    const accentH = hComplement + 30 + Math.random() * 60 - 30;  // offset from complement
+    // Full random range: chroma 0-1, lightness 0.1-0.95
+    const l1 = 0.1 + Math.random() * 0.85;  // 0.1-0.95 (near black to near white)
+    const l2 = 0.1 + Math.random() * 0.85;
+    const c1 = Math.random();  // 0-1 (gray to saturated)
+    const c2 = Math.random();
     
     return [
-      `oklch(${glyphL.toFixed(2)} ${glyphC.toFixed(2)} ${h.toFixed(1)})`,                     // glyph 1 (warm)
-      `oklch(${glyphL.toFixed(2)} ${glyphC.toFixed(2)} ${accentH.toFixed(1)})`,            // glyph 2 (accent)
-      `oklch(${lineL.toFixed(2)} ${lineC.toFixed(2)} ${hComplement.toFixed(1)})`,          // line 1 (cool complement)
-      `oklch(${(lineL - 0.1).toFixed(2)} ${(lineC * 0.7).toFixed(2)} ${(hComplement + 60).toFixed(1)})` // line 2 (darker cool)
+      `oklch(${l1.toFixed(2)} ${c1.toFixed(2)} ${h1.toFixed(1)})`,
+      `oklch(${l2.toFixed(2)} ${c2.toFixed(2)} ${h2.toFixed(1)})`,
+      `oklch(${(l1 + 0.3).toFixed(2)} ${(c1 * 0.5).toFixed(2)} ${((h1 + 180) % 360).toFixed(1)})`,
+      `oklch(${(l2 - 0.2).toFixed(2)} ${(c2 * 0.3).toFixed(2)} ${((h2 + 180) % 360).toFixed(1)})`
     ];
   }
   let currentPalette = variant === 4 ? getLamPalette() : generatePalette();
