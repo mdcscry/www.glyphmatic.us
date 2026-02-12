@@ -49,16 +49,28 @@
     return LAM_PALETTES[Math.floor(Math.random() * LAM_PALETTES.length)];
   }
 
-  // Generate 4 OKLCH complementary colors: [glyphColor1, glyphColor2, lineColor1, lineColor2]
+  // Generate complementary palette: warm/cool opposition + accent
   function generatePalette() {
     const h = Math.random() * 360;
-    const l = 0.55 + Math.random() * 0.2; // 0.55–0.75 lightness (vivid on black)
-    const c = 0.18 + Math.random() * 0.12; // 0.18–0.30 chroma
+    // Complementary: warm hue + opposite cool hue
+    const hComplement = (h + 180) % 360;
+    
+    // Glyphs: vivid, saturated
+    const glyphL = 0.55 + Math.random() * 0.25;  // 0.55-0.80
+    const glyphC = 0.25 + Math.random() * 0.25;  // 0.25-0.50 (vivid)
+    
+    // Lines: softer, desaturated version
+    const lineL = glyphL + (Math.random() * 0.15 - 0.075);  // similar lightness
+    const lineC = 0.10 + Math.random() * 0.15;  // 0.10-0.25 (softer)
+    
+    // Accent: complementary accent color
+    const accentH = hComplement + 30 + Math.random() * 60 - 30;  // offset from complement
+    
     return [
-      `oklch(${l.toFixed(2)} ${c.toFixed(2)} ${h.toFixed(1)})`,           // glyph 1
-      `oklch(${l.toFixed(2)} ${c.toFixed(2)} ${((h+90)%360).toFixed(1)})`, // glyph 2 (+90°)
-      `oklch(${l.toFixed(2)} ${c.toFixed(2)} ${((h+180)%360).toFixed(1)})`,// line 1 (+180°)
-      `oklch(${l.toFixed(2)} ${c.toFixed(2)} ${((h+270)%360).toFixed(1)})` // line 2 (+270°)
+      `oklch(${glyphL.toFixed(2)} ${glyphC.toFixed(2)} ${h.toFixed(1)})`,                     // glyph 1 (warm)
+      `oklch(${glyphL.toFixed(2)} ${glyphC.toFixed(2)} ${accentH.toFixed(1)})`,            // glyph 2 (accent)
+      `oklch(${lineL.toFixed(2)} ${lineC.toFixed(2)} ${hComplement.toFixed(1)})`,          // line 1 (cool complement)
+      `oklch(${(lineL - 0.1).toFixed(2)} ${(lineC * 0.7).toFixed(2)} ${(hComplement + 60).toFixed(1)})` // line 2 (darker cool)
     ];
   }
   let currentPalette = variant === 4 ? getLamPalette() : generatePalette();
@@ -253,12 +265,6 @@
         container.appendChild(line);
       }
     });
-    
-    // DEBUG: Count horizontal lines for variant 4
-    if (variant === 4) {
-      const hLines = container.querySelectorAll('.line-h');
-      console.log(`[insert31] v4: ${hLines.length} horizontal lines drawn, height=${height}, maxVal=${maxVal}`);
-    }
     
     // 45° diagonals (red) - from left edge
     fibs.forEach(f => {
