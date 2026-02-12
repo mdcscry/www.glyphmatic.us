@@ -723,6 +723,8 @@
         variant = 3;
         currentPalette = generatePalette();
         console.log('[insert31] Switched to variant 3, palette:', currentPalette);
+        updateBackground();
+        render();
       } else if (e.key === '4') {
         variant = 4;
         currentPalette = getLamPalette();
