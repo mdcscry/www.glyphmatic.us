@@ -42,6 +42,14 @@
       "Latin Extended-C",
       "Latin Extended-D",
       "Latin Extended-E"
+    ],
+    3: [
+      "Basic Latin",
+      "Latin-1 Supplement",
+      "Latin Extended-A",
+      "General Punctuation",
+      "Letterlike Symbols",
+      "Mathematical Operators"
     ]
   };
 
@@ -197,6 +205,7 @@
       if (pos < height) {
         const line = document.createElement('div');
         line.className = 'line-d red';
+        if (variant === 3) line.style.background = lineColor1;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = '0px';
@@ -213,6 +222,7 @@
       if (pos < width && pos > 0) {
         const line = document.createElement('div');
         line.className = 'line-d red';
+        if (variant === 3) line.style.background = lineColor1;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${pos}px`;
@@ -229,6 +239,7 @@
       if (pos < height) {
         const line = document.createElement('div');
         line.className = 'line-d red';
+        if (variant === 3) line.style.background = lineColor1;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${width}px`;
@@ -245,6 +256,7 @@
       if (pos < width && pos > 0) {
         const line = document.createElement('div');
         line.className = 'line-d red';
+        if (variant === 3) line.style.background = lineColor1;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${width - pos}px`;
@@ -261,6 +273,7 @@
       if (pos < height) {
         const line = document.createElement('div');
         line.className = 'line-d orange';
+        if (variant === 3) line.style.background = lineColor2;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${width}px`;
@@ -277,6 +290,7 @@
       if (pos < width && pos > 0) {
         const line = document.createElement('div');
         line.className = 'line-d orange';
+        if (variant === 3) line.style.background = lineColor2;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${width - pos}px`;
@@ -293,6 +307,7 @@
       if (pos < height) {
         const line = document.createElement('div');
         line.className = 'line-d orange';
+        if (variant === 3) line.style.background = lineColor2;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = '0px';
@@ -309,6 +324,7 @@
       if (pos < width && pos > 0) {
         const line = document.createElement('div');
         line.className = 'line-d orange';
+        if (variant === 3) line.style.background = lineColor2;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${pos}px`;
