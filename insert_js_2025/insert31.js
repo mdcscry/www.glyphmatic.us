@@ -12,9 +12,23 @@
   'use strict';
 
   let container = null;
-  // URL param: ?variant=1|2|3 overrides random pick
+  // URL param: ?variant=1|2|3|4 overrides random pick
   const _urlVariant = parseInt(new URLSearchParams(window.location.search).get('variant'));
-  let variant = (_urlVariant >= 1 && _urlVariant <= 3) ? _urlVariant : Math.floor(Math.random() * 3) + 1;
+  let variant = (_urlVariant >= 1 && _urlVariant <= 4) ? _urlVariant : Math.floor(Math.random() * 4) + 1;
+
+  // Wifredo Lam palette — 6 combos from his color vocabulary
+  // [glyphColor1, glyphColor2, lineColor1, lineColor2]
+  const LAM_PALETTES = [
+    ['#B4966A', '#E8DCC0', '#9DA6A9', '#5C6163'], // tan + cream | blue-gray + slate
+    ['#C9B38A', '#9DA6A9', '#8C704E', '#3E3832'], // light sand + dusty blue | umber + dark warm gray
+    ['#E8DCC0', '#9DA6A9', '#B4966A', '#2A2C2B'], // cream + blue-gray | muted ochre + charcoal
+    ['#C9B38A', '#8C704E', '#5C6163', '#3E3832'], // light sand + umber | slate + dark warm gray
+    ['#E8DCC0', '#B4966A', '#9DA6A9', '#3E3832'], // cream + ochre | dusty blue + dark warm gray
+    ['#9DA6A9', '#C9B38A', '#8C704E', '#2A2C2B'], // dusty blue + sand | umber + deep charcoal
+  ];
+  function getLamPalette() {
+    return LAM_PALETTES[Math.floor(Math.random() * LAM_PALETTES.length)];
+  }
 
   // Generate 4 OKLCH complementary colors: [glyphColor1, glyphColor2, lineColor1, lineColor2]
   function generatePalette() {
@@ -28,7 +42,7 @@
       `oklch(${l.toFixed(2)} ${c.toFixed(2)} ${((h+270)%360).toFixed(1)})` // line 2 (+270°)
     ];
   }
-  let currentPalette = generatePalette();
+  let currentPalette = variant === 4 ? getLamPalette() : generatePalette();
 
   // Block arrays for each variant
   const variantBlocks = {
@@ -47,6 +61,19 @@
       "Latin Extended-E"
     ],
     3: [
+      "IPA Extensions",
+      "Phonetic Extensions",
+      "Phonetic Extensions Supplement",
+      "Basic Latin",
+      "Latin-1 Supplement",
+      "Latin Extended-A",
+      "Latin Extended-B",
+      "Latin Extended Additional",
+      "Latin Extended-C",
+      "Latin Extended-D",
+      "Latin Extended-E"
+    ],
+    4: [
       "IPA Extensions",
       "Phonetic Extensions",
       "Phonetic Extensions Supplement",
@@ -131,8 +158,8 @@
 
     // === GRID LINES ===
     // For variant 3, use palette line colors instead of CSS classes
-    const lineColor1 = variant === 3 ? currentPalette[2] : null;
-    const lineColor2 = variant === 3 ? currentPalette[3] : null;
+    const lineColor1 = (variant === 3 || variant === 4) ? currentPalette[2] : null;
+    const lineColor2 = (variant === 3 || variant === 4) ? currentPalette[3] : null;
     function applyLineColor(el, cssClass) {
       el.className = `line-v line-h line-d ${cssClass}`.trim();
       if (variant === 3) {
@@ -146,7 +173,7 @@
       if (x < width) {
         const line = document.createElement('div');
         line.className = 'line-v red';
-        if (variant === 3) line.style.background = lineColor1;
+        if (variant === 3 || variant === 4) line.style.background = lineColor1;
         line.style.position = 'absolute';
         line.style.top = '0';
         line.style.height = '100vh';
@@ -163,7 +190,7 @@
       if (x > 0) {
         const line = document.createElement('div');
         line.className = 'line-v red';
-        if (variant === 3) line.style.background = lineColor1;
+        if (variant === 3 || variant === 4) line.style.background = lineColor1;
         line.style.position = 'absolute';
         line.style.top = '0';
         line.style.height = '100vh';
@@ -180,7 +207,7 @@
       if (y < height) {
         const line = document.createElement('div');
         line.className = 'line-h orange';
-        if (variant === 3) line.style.background = lineColor2;
+        if (variant === 3 || variant === 4) line.style.background = lineColor2;
         line.style.position = 'absolute';
         line.style.left = '0';
         line.style.width = '100vw';
@@ -197,7 +224,7 @@
       if (y > 0) {
         const line = document.createElement('div');
         line.className = 'line-h orange';
-        if (variant === 3) line.style.background = lineColor2;
+        if (variant === 3 || variant === 4) line.style.background = lineColor2;
         line.style.position = 'absolute';
         line.style.left = '0';
         line.style.width = '100vw';
@@ -214,7 +241,7 @@
       if (pos < height) {
         const line = document.createElement('div');
         line.className = 'line-d red';
-        if (variant === 3) line.style.background = lineColor1;
+        if (variant === 3 || variant === 4) line.style.background = lineColor1;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = '0px';
@@ -231,7 +258,7 @@
       if (pos < width && pos > 0) {
         const line = document.createElement('div');
         line.className = 'line-d red';
-        if (variant === 3) line.style.background = lineColor1;
+        if (variant === 3 || variant === 4) line.style.background = lineColor1;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${pos}px`;
@@ -248,7 +275,7 @@
       if (pos < height) {
         const line = document.createElement('div');
         line.className = 'line-d red';
-        if (variant === 3) line.style.background = lineColor1;
+        if (variant === 3 || variant === 4) line.style.background = lineColor1;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${width}px`;
@@ -265,7 +292,7 @@
       if (pos < width && pos > 0) {
         const line = document.createElement('div');
         line.className = 'line-d red';
-        if (variant === 3) line.style.background = lineColor1;
+        if (variant === 3 || variant === 4) line.style.background = lineColor1;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${width - pos}px`;
@@ -282,7 +309,7 @@
       if (pos < height) {
         const line = document.createElement('div');
         line.className = 'line-d orange';
-        if (variant === 3) line.style.background = lineColor2;
+        if (variant === 3 || variant === 4) line.style.background = lineColor2;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${width}px`;
@@ -299,7 +326,7 @@
       if (pos < width && pos > 0) {
         const line = document.createElement('div');
         line.className = 'line-d orange';
-        if (variant === 3) line.style.background = lineColor2;
+        if (variant === 3 || variant === 4) line.style.background = lineColor2;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${width - pos}px`;
@@ -316,7 +343,7 @@
       if (pos < height) {
         const line = document.createElement('div');
         line.className = 'line-d orange';
-        if (variant === 3) line.style.background = lineColor2;
+        if (variant === 3 || variant === 4) line.style.background = lineColor2;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = '0px';
@@ -333,7 +360,7 @@
       if (pos < width && pos > 0) {
         const line = document.createElement('div');
         line.className = 'line-d orange';
-        if (variant === 3) line.style.background = lineColor2;
+        if (variant === 3 || variant === 4) line.style.background = lineColor2;
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${pos}px`;
@@ -404,7 +431,7 @@
         { x1: farLeft, y1: bottomOfCenter, x2: leftOfCenter, y2: farBottom, color: '#d03020' },
         { x1: rightOfCenter, y1: bottomOfCenter, x2: farRight, y2: farBottom, color: '#d03020' }
       ];
-    } else if (variant === 3) {
+    } else if (variant === 3 || variant === 4) {
       // v3: 9 squares using palette colors
       squares = [
         { x1: farLeft, y1: farTop, x2: leftOfCenter, y2: topOfCenter, color: c1 },
@@ -444,7 +471,7 @@
     }
     
     // Ring 1 (color differs by variant)
-    const ring1Color = variant === 3 ? currentPalette[0] : variant === 1 ? '#e08020' : '#d03020';
+    const ring1Color = (variant === 3 || variant === 4) ? currentPalette[0] : variant === 1 ? '#e08020' : '#d03020';
     const ring1 = [
       { x1: farFarLeft, y1: farFarTop, x2: farLeft, y2: farTop },
       { x1: farLeft, y1: farFarTop, x2: farRight, y2: farTop },
@@ -471,7 +498,7 @@
       if (allY[i] <= farFarBottom && allY[i + 1] > farFarBottom) fff_Bottom = allY[i + 1];
     }
     
-    const ring2Color = variant === 3 ? currentPalette[1] : variant === 1 ? '#d03020' : '#e08020';
+    const ring2Color = (variant === 3 || variant === 4) ? currentPalette[1] : variant === 1 ? '#d03020' : '#e08020';
     const ring2 = [
       { x1: fff_Left, y1: fff_Top, x2: farFarLeft, y2: farFarTop },
       { x1: farFarLeft, y1: fff_Top, x2: farFarRight, y2: farFarTop },
@@ -502,7 +529,7 @@
       if (allY[i] <= fff_Bottom && allY[i + 1] > fff_Bottom) ffff_Bottom = allY[i + 1];
     }
     
-    const ring3Color = variant === 3 ? currentPalette[0] : variant === 1 ? '#e08020' : '#d03020';
+    const ring3Color = (variant === 3 || variant === 4) ? currentPalette[0] : variant === 1 ? '#e08020' : '#d03020';
     const ring3 = [
       { x1: ffff_Left, y1: ffff_Top, x2: fff_Left, y2: fff_Top },
       { x1: fff_Left, y1: ffff_Top, x2: fff_Right, y2: fff_Top },
@@ -537,7 +564,7 @@
       if (allY[i] <= ffff_Bottom && allY[i + 1] > ffff_Bottom) fffff_Bottom = allY[i + 1];
     }
     
-    const ring4Color = variant === 3 ? currentPalette[1] : variant === 1 ? '#d03020' : '#e08020';
+    const ring4Color = (variant === 3 || variant === 4) ? currentPalette[1] : variant === 1 ? '#d03020' : '#e08020';
     const ring4 = [
       { x1: fffff_Left, y1: fffff_Top, x2: ffff_Left, y2: ffff_Top },
       { x1: ffff_Left, y1: fffff_Top, x2: ffff_Right, y2: ffff_Top },
@@ -677,6 +704,10 @@
         variant = 3;
         currentPalette = generatePalette();
         console.log('[insert31] Switched to variant 3, palette:', currentPalette);
+      } else if (e.key === '4') {
+        variant = 4;
+        currentPalette = getLamPalette();
+        console.log('[insert31] Switched to variant 4 (Lam), palette:', currentPalette);
         updateBackground();
         render();
       }
