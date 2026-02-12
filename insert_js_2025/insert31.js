@@ -650,7 +650,7 @@
       container.style.left = '0';
       container.style.width = '100vw';
       container.style.height = '100vh';
-      container.style.zIndex = '1'; // watermarks sit above at z-index 10
+      container.style.zIndex = '20'; // watermarks at z-index 10, fibonacci sits above them
       document.body.appendChild(container);
     }
 
