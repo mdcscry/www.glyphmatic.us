@@ -16,15 +16,34 @@
   const _urlVariant = parseInt(new URLSearchParams(window.location.search).get('variant'));
   let variant = (_urlVariant >= 1 && _urlVariant <= 4) ? _urlVariant : Math.floor(Math.random() * 4) + 1;
 
-  // Wifredo Lam palette — 6 combos from his color vocabulary
+  // Wifredo Lam — palettes drawn from major works across his career
   // [glyphColor1, glyphColor2, lineColor1, lineColor2]
   const LAM_PALETTES = [
-    ['#B4966A', '#E8DCC0', '#9DA6A9', '#5C6163'], // tan + cream | blue-gray + slate
-    ['#C9B38A', '#9DA6A9', '#8C704E', '#3E3832'], // light sand + dusty blue | umber + dark warm gray
-    ['#E8DCC0', '#9DA6A9', '#B4966A', '#2A2C2B'], // cream + blue-gray | muted ochre + charcoal
-    ['#C9B38A', '#8C704E', '#5C6163', '#3E3832'], // light sand + umber | slate + dark warm gray
-    ['#E8DCC0', '#B4966A', '#9DA6A9', '#3E3832'], // cream + ochre | dusty blue + dark warm gray
-    ['#9DA6A9', '#C9B38A', '#8C704E', '#2A2C2B'], // dusty blue + sand | umber + deep charcoal
+    // This painting (~1948) - sandy tans, dusty blue-grays, charcoal
+    ['#B4966A', '#E8DCC0', '#9DA6A9', '#5C6163'],
+    ['#E8DCC0', '#9DA6A9', '#8C704E', '#3E3832'],
+    ['#9DA6A9', '#C9B38A', '#8C704E', '#2A2C2B'],
+
+    // The Jungle (1943) — MoMA — deep olive, bamboo green, warm tan, near-black
+    ['#C4A060', '#D4BC80', '#4A5A2A', '#1A1F10'],
+    ['#C4A060', '#6A8040', '#2A3010', '#D4BC80'],
+    ['#8AAA50', '#C4A060', '#1A2010', '#4A5A2A'],
+
+    // Zambezia, Zambezia (1950) — Guggenheim — terracotta, sandy beige, dusty blue
+    ['#C86040', '#C8A470', '#7A8A9A', '#2A1A0A'],
+    ['#D07050', '#9DA6A9', '#7A5030', '#1A100A'],
+
+    // The Eternal Present (1945) — ochre, cool blue, raw sienna
+    ['#B89040', '#5A7A9A', '#A06030', '#1A1510'],
+    ['#C0A050', '#7A8A9A', '#6A5020', '#1A1510'],
+
+    // Rumblings of the Earth (1950) — deep red, ochre gold, slate
+    ['#8A2020', '#B08030', '#6A7070', '#1A0A08'],
+    ['#A03030', '#C09040', '#5A6060', '#180808'],
+
+    // Om, Shango (1951) — vibrant orange-red, golden ochre, deep teal
+    ['#C04020', '#C09040', '#2A5A4A', '#0A0A08'],
+    ['#D05030', '#B08020', '#3A6A5A', '#100A08'],
   ];
   function getLamPalette() {
     return LAM_PALETTES[Math.floor(Math.random() * LAM_PALETTES.length)];
