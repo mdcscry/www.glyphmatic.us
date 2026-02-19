@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../../js_glyph/google_font_range_coverage.js"></script>
+    <script src="../../js_glyph/reference/google_font_range_coverage.js"></script>
     <title>Google Fonts Coverage Lookup</title>
     <style>
         * {
@@ -143,12 +143,12 @@
 <body>
     <h1>Google Fonts Coverage Lookup</h1>
    <!-- This guy allows you to enter a glyph and the program searches through the
-    font coverage js to determine which if any fonts have coverage.  Its a big fat lie. -->
+    font coverage js to determine which if any fonts have coverage. -->
     <div class="section">
         <h2>Search for Glyph Coverage</h2>
         <p>Enter a codepoint in hex (e.g., 0F00, U+0F00, 0x0F00) to find fonts that cover it.</p>
         <input type="text" id="codepointInput" placeholder="e.g., 0F00 or U+0F00">
-        <button onclick="searchCodepoint()">Search</button>
+        <button id="searchButton" onclick="searchCodepoint()">Search</button>
         <div id="results"></div>
     </div>
 
@@ -195,21 +195,31 @@
                 return;
             }
 
-            if (typeof coveragedata === 'undefined' || !coveragedata || coveragedata.length === 0) {
-                resultsDiv.innerHTML = `<span class="error">No coverage data loaded. Make sure google_font_range_coverage.js is loaded.</span>`;
+            // --- Enhanced Error Checking ---
+            // Check if the data object is available and has keys.
+            if (typeof coveragedata === 'undefined' || typeof coveragedata !== 'object' || Object.keys(coveragedata).length === 0) {
+                console.error("Search failed: `coveragedata` is not a valid, non-empty object.");
+                if (typeof coveragedata === 'undefined') {
+                    console.log("`coveragedata` is undefined. The script likely hasn't finished loading yet.");
+                } else {
+                    console.log("`coveragedata` exists, but it's not a non-empty object as expected.");
+                    console.log("Type:", typeof coveragedata, "Is Array:", Array.isArray(coveragedata), "Keys:", Object.keys(coveragedata).length);
+                    console.log("Value:", coveragedata);
+                }
+                resultsDiv.innerHTML = `<span class="error">Coverage data is not ready or is invalid. Please wait a moment and try again. Check the console for details.</span>`;
                 return;
             }
 
             // Find matching fonts
             const matches = [];
-            const covData = coveragedata[0]; // Extract the object from the array
-
-            for (const [fontName, data] of Object.entries(covData)) {
+            // The data is a direct object.
+            for (const [fontName, data] of Object.entries(coveragedata)) {
                 for (const [start, end] of data.ranges) {
                     if (codepoint >= start && codepoint <= end) {
                         matches.push({
                             name: fontName,
-                            url: data.url
+                            url: data.url,
+                            isVF: data.isVF || false // Pass along the variable font flag
                         });
                         break;
                     }
@@ -290,7 +300,7 @@
 
                     const fontLabel = document.createElement('div');
                     fontLabel.className = 'font-name';
-                    fontLabel.textContent = match.name;
+                    fontLabel.textContent = match.name + (match.isVF ? ' *' : '');
 
                     sample.appendChild(charSpan);
                     sample.appendChild(fontLabel);
