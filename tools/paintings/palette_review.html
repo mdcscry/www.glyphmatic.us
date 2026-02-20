@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Palette Review</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; color: #ccc; font-family: monospace; font-size: 12px; }
+#toolbar {
+    position: sticky; top: 0; z-index: 100;
+    background: #1a1a1a; border-bottom: 1px solid #333;
+    padding: 12px 16px; display: flex; align-items: center; gap: 16px;
+}
+#toolbar h1 { font-size: 14px; font-weight: normal; color: #fff; }
+#toolbar button {
+    background: #333; color: #fff; border: 1px solid #555;
+    border-radius: 4px; padding: 6px 14px; cursor: pointer; font-family: monospace; font-size: 12px;
+}
+#toolbar button:hover { background: #444; }
+#toolbar button.active { background: #c44; border-color: #e66; }
+#stats { color: #999; }
+#filter-bar { padding: 8px 16px; display: flex; gap: 8px; }
+#filter-bar label { cursor: pointer; padding: 4px 10px; border-radius: 3px; background: #222; }
+#filter-bar label:hover { background: #333; }
+#filter-bar input:checked + span { color: #fff; font-weight: bold; }
+#grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 10px; padding: 12px 16px 40px;
+}
+.card {
+    background: #1e1e1e; border-radius: 6px; overflow: hidden;
+    border: 2px solid transparent; cursor: pointer; transition: border-color 0.2s;
+}
+.card:hover { border-color: #555; }
+.card.selected { outline: 3px solid #fff; outline-offset: -3px; }
+.card.flagged-bad_palette { border-color: #c44; }
+.card.flagged-wrong_picture { border-color: #c84; }
+.card.flagged-no_picture { border-color: #88c; }
+.card.flagged-needs_crop { border-color: #c8c; }
+.card.flagged-ok { border-color: #4a4; }
+.card-img {
+    width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; background: #000;
+}
+.card-img.missing { display: flex; align-items: center; justify-content: center; color: #555; font-size: 11px; }
+.card-body { padding: 8px; }
+.card-artist { color: #fff; font-size: 12px; font-weight: bold; }
+.card-ref { color: #999; font-size: 10px; margin: 2px 0 6px; }
+.card-key { color: #666; font-size: 10px; }
+.swatches { display: flex; gap: 1px; margin: 6px 0 4px; }
+.swatch { width: 100%; height: 16px; }
+.card-status {
+    display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap;
+}
+.status-btn {
+    font-family: monospace; font-size: 10px; padding: 2px 8px;
+    border-radius: 3px; border: 1px solid #444; background: #222; color: #888; cursor: pointer;
+}
+.status-btn:hover { background: #333; }
+.status-btn.selected { color: #fff; font-weight: bold; }
+.status-btn.s-bad_palette.selected { background: #833; border-color: #c44; }
+.status-btn.s-wrong_picture.selected { background: #853; border-color: #c84; }
+.status-btn.s-no_picture.selected { background: #448; border-color: #88c; }
+.status-btn.s-needs_crop.selected { background: #648; border-color: #c8c; }
+.status-btn.s-ok.selected { background: #383; border-color: #4a4; }
+#csv-output {
+    display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.85);
+    align-items: center; justify-content: center;
+}
+#csv-output.open { display: flex; }
+#csv-box {
+    background: #1a1a1a; border: 1px solid #444; border-radius: 8px;
+    padding: 20px; width: 700px; max-height: 80vh;
+}
+#csv-box textarea {
+    width: 100%; height: 300px; background: #111; color: #ccc; border: 1px solid #333;
+    border-radius: 4px; padding: 8px; font-family: monospace; font-size: 11px; resize: vertical;
+}
+#csv-box .actions { margin-top: 10px; display: flex; gap: 8px; }
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+    <h1>Palette Review</h1>
+    <button onclick="selectAllVisible()">Select All Visible</button>
+    <button onclick="deselectAll()">Deselect All</button>
+    <button onclick="exportCSV()">Export Selected CSV</button>
+    <button onclick="clearAll()">Clear All Flags</button>
+    <span id="stats"></span>
+    <span id="sel-count" style="color:#fff;"></span>
+</div>
+<div id="filter-bar">
+    <label><input type="checkbox" checked onchange="applyFilter()" data-f="all"><span> All</span></label>
+    <label><input type="checkbox" checked onchange="applyFilter()" data-f="unflagged"><span> Unflagged</span></label>
+    <label><input type="checkbox" checked onchange="applyFilter()" data-f="bad_palette"><span> Bad Palette</span></label>
+    <label><input type="checkbox" checked onchange="applyFilter()" data-f="wrong_picture"><span> Wrong Picture</span></label>
+    <label><input type="checkbox" checked onchange="applyFilter()" data-f="no_picture"><span> No Picture</span></label>
+    <label><input type="checkbox" checked onchange="applyFilter()" data-f="needs_crop"><span> Needs Crop</span></label>
+    <label><input type="checkbox" checked onchange="applyFilter()" data-f="ok"><span> OK</span></label>
+</div>
+<div id="grid"></div>
+
+<div id="csv-output">
+    <div id="csv-box">
+        <div style="color:#fff; margin-bottom:10px; font-size:13px;">Flagged entries — copy to spreadsheet</div>
+        <textarea id="csv-text" readonly></textarea>
+        <div class="actions">
+            <button onclick="copyCSV()">Copy to Clipboard</button>
+            <button onclick="document.getElementById('csv-output').classList.remove('open')">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>window.ARTIST_PALETTES = {};</script>
+<script src="../../js_funct/artist_palettes/old_masters.js"></script>
+<script src="../../js_funct/artist_palettes/impressionism.js"></script>
+<script src="../../js_funct/artist_palettes/expressionism_fauvism.js"></script>
+<script src="../../js_funct/artist_palettes/cubism_bauhaus.js"></script>
+<script src="../../js_funct/artist_palettes/surrealism.js"></script>
+<script src="../../js_funct/artist_palettes/abstract_expressionism.js"></script>
+<script src="../../js_funct/artist_palettes/pop_minimal.js"></script>
+<script src="../../js_funct/artist_palettes/americas.js"></script>
+<script src="../../js_funct/artist_palettes/contemporary.js"></script>
+<script src="../../js_funct/artist_palettes/_loaded.js"></script>
+<script>
+var flags = {};  // key -> status string
+var selected = {};  // key -> true (multi-select)
+var STATUSES = ['bad_palette', 'wrong_picture', 'no_picture', 'needs_crop', 'ok'];
+var LABELS = { bad_palette: 'Bad Palette', wrong_picture: 'Wrong Picture', no_picture: 'No Picture', needs_crop: 'Needs Crop', ok: 'OK' };
+
+// Restore from localStorage
+try { flags = JSON.parse(localStorage.getItem('palette_review_flags') || '{}'); } catch(e) {}
+
+function saveFlags() {
+    localStorage.setItem('palette_review_flags', JSON.stringify(flags));
+    updateStats();
+}
+
+function updateStats() {
+    var counts = { bad_palette: 0, wrong_picture: 0, no_picture: 0, needs_crop: 0, ok: 0, unflagged: 0 };
+    var keys = Object.keys(ARTIST_PALETTES);
+    keys.forEach(function(k) {
+        var f = flags[k];
+        if (f && counts.hasOwnProperty(f)) counts[f]++;
+        else counts.unflagged++;
+    });
+    document.getElementById('stats').textContent =
+        keys.length + ' total | ' +
+        counts.ok + ' ok | ' +
+        counts.bad_palette + ' bad palette | ' +
+        counts.wrong_picture + ' wrong pic | ' +
+        counts.no_picture + ' no pic | ' +
+        counts.needs_crop + ' needs crop | ' +
+        counts.unflagged + ' unflagged';
+}
+
+function setFlag(key, status) {
+    if (flags[key] === status) {
+        delete flags[key];  // toggle off
+    } else {
+        flags[key] = status;
+    }
+    saveFlags();
+    // Update card visuals
+    var card = document.querySelector('[data-key="' + key + '"]');
+    if (card) {
+        STATUSES.forEach(function(s) { card.classList.remove('flagged-' + s); });
+        if (flags[key]) card.classList.add('flagged-' + flags[key]);
+        card.querySelectorAll('.status-btn').forEach(function(btn) {
+            btn.classList.toggle('selected', btn.dataset.status === flags[key]);
+        });
+    }
+}
+
+function applyFilter() {
+    var checks = {};
+    document.querySelectorAll('#filter-bar input').forEach(function(inp) {
+        checks[inp.dataset.f] = inp.checked;
+    });
+    document.querySelectorAll('.card').forEach(function(card) {
+        var k = card.dataset.key;
+        var f = flags[k] || 'unflagged';
+        var show = checks.all || checks[f];
+        card.style.display = show ? '' : 'none';
+    });
+}
+
+function buildGrid() {
+    var gridEl = document.getElementById('grid');
+    var keys = Object.keys(ARTIST_PALETTES);
+    keys.sort(function(a, b) {
+        var aa = ARTIST_PALETTES[a].artist.toLowerCase();
+        var bb = ARTIST_PALETTES[b].artist.toLowerCase();
+        return aa < bb ? -1 : aa > bb ? 1 : 0;
+    });
+
+    keys.forEach(function(key) {
+        var p = ARTIST_PALETTES[key];
+        var card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.key = key;
+        if (flags[key]) card.classList.add('flagged-' + flags[key]);
+
+        // Image
+        var img = document.createElement('img');
+        img.className = 'card-img';
+        img.src = key + '.jpg';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            var div = document.createElement('div');
+            div.className = 'card-img missing';
+            div.textContent = 'no image';
+            this.replaceWith(div);
+        };
+        card.appendChild(img);
+
+        // Body
+        var body = document.createElement('div');
+        body.className = 'card-body';
+
+        body.innerHTML =
+            '<div class="card-artist">' + p.artist + '</div>' +
+            '<div class="card-ref">' + p.ref + '</div>' +
+            '<div class="card-key">' + key + '</div>';
+
+        // Swatches
+        var sw = document.createElement('div');
+        sw.className = 'swatches';
+        var colors = p.colors || [];
+        colors.slice(0, 8).forEach(function(c) {
+            var s = document.createElement('div');
+            s.className = 'swatch';
+            s.style.backgroundColor = c;
+            sw.appendChild(s);
+        });
+        body.appendChild(sw);
+
+        // Status buttons
+        var statusDiv = document.createElement('div');
+        statusDiv.className = 'card-status';
+        STATUSES.forEach(function(st) {
+            var btn = document.createElement('button');
+            btn.className = 'status-btn s-' + st;
+            if (flags[key] === st) btn.classList.add('selected');
+            btn.dataset.status = st;
+            btn.textContent = LABELS[st];
+            btn.onclick = function(e) {
+                e.stopPropagation();
+                setFlag(key, st);
+            };
+            statusDiv.appendChild(btn);
+        });
+        body.appendChild(statusDiv);
+
+        card.addEventListener('click', function() {
+            toggleSelect(key);
+        });
+
+        card.appendChild(body);
+        gridEl.appendChild(card);
+    });
+
+    updateStats();
+}
+
+function toggleSelect(key) {
+    if (selected[key]) {
+        delete selected[key];
+    } else {
+        selected[key] = true;
+    }
+    var card = document.querySelector('[data-key="' + key + '"]');
+    if (card) card.classList.toggle('selected', !!selected[key]);
+    updateSelCount();
+}
+
+function updateSelCount() {
+    var n = Object.keys(selected).length;
+    document.getElementById('sel-count').textContent = n ? n + ' selected' : '';
+}
+
+function selectAllVisible() {
+    document.querySelectorAll('.card').forEach(function(card) {
+        if (card.style.display !== 'none') {
+            var k = card.dataset.key;
+            selected[k] = true;
+            card.classList.add('selected');
+        }
+    });
+    updateSelCount();
+}
+
+function deselectAll() {
+    selected = {};
+    document.querySelectorAll('.card.selected').forEach(function(card) {
+        card.classList.remove('selected');
+    });
+    updateSelCount();
+}
+
+function exportCSV() {
+    var lines = ['key,artist,ref,status'];
+    var keys = Object.keys(selected).sort();
+    keys.forEach(function(k) {
+        if (!ARTIST_PALETTES[k]) return;
+        var p = ARTIST_PALETTES[k];
+        var ref = p.ref.replace(/,/g, ';');  // escape commas
+        var status = flags[k] || 'unflagged';
+        lines.push(k + ',' + p.artist + ',' + ref + ',' + status);
+    });
+    document.getElementById('csv-text').value = lines.join('\n');
+    document.getElementById('csv-output').classList.add('open');
+}
+
+function copyCSV() {
+    var ta = document.getElementById('csv-text');
+    ta.select();
+    document.execCommand('copy');
+}
+
+function clearAll() {
+    if (!confirm('Clear all flags?')) return;
+    flags = {};
+    saveFlags();
+    document.querySelectorAll('.card').forEach(function(card) {
+        STATUSES.forEach(function(s) { card.classList.remove('flagged-' + s); });
+        card.querySelectorAll('.status-btn').forEach(function(btn) { btn.classList.remove('selected'); });
+    });
+}
+
+function waitForPalettes(cb) {
+    if (typeof ARTIST_PALETTES_LOADED !== 'undefined') cb();
+    else setTimeout(function() { waitForPalettes(cb); }, 50);
+}
+
+waitForPalettes(buildGrid);
+</script>
+</body>
+</html>

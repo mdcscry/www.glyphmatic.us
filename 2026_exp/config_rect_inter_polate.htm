@@ -50,17 +50,47 @@
     }
 
     /* Controls panel */
+    .controls-toggle {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 36px;
+      height: 36px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+      z-index: 101;
+      transition: all 0.2s ease;
+    }
+
+    .controls-toggle:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
     .controls {
       position: fixed;
-      top: 2rem;
-      left: 2rem;
-      background: rgba(0, 0, 0, 0.7);
+      bottom: 5.5rem;
+      right: 2rem;
+      background: rgba(0, 0, 0, 0.8);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 12px;
-      padding: 1.5rem;
+      padding: 1.25rem;
       backdrop-filter: blur(10px);
       z-index: 100;
       max-width: 240px;
+      display: none;
+    }
+
+    .controls.open {
+      display: block;
     }
 
     .controls h3 {
@@ -158,7 +188,8 @@
   </style>
 </head>
 <body>
-  <div class="controls">
+  <button class="controls-toggle" id="controls-toggle" title="Toggle controls">⚙</button>
+  <div class="controls" id="controls-panel">
     <h3>Rectangle Morphs</h3>
     
     <label class="toggle">
@@ -227,7 +258,39 @@
     const grid = document.getElementById('grid');
     const regenerateBtn = document.getElementById('regenerate');
     const paletteNameEl = document.getElementById('palette-name');
-    
+
+    // ── Collapsible controls ─────────────────────────────────────────────────
+    document.getElementById('controls-toggle').addEventListener('click', () => {
+      document.getElementById('controls-panel').classList.toggle('open');
+    });
+
+    // ── Random gradient palette generator ───────────────────────────────────
+    function generateRandomPalette() {
+      const baseHue = Math.random() * 360;
+      const scheme = Math.floor(Math.random() * 5);
+      const profiles = [
+        { sMin: 60, sMax: 90,  lMin: 40, lMax: 60  },
+        { sMin: 50, sMax: 80,  lMin: 20, lMax: 45  },
+        { sMin: 30, sMax: 60,  lMin: 65, lMax: 85  },
+        { sMin: 80, sMax: 100, lMin: 50, lMax: 65  },
+      ];
+      const prof = profiles[Math.floor(Math.random() * profiles.length)];
+      function makeStop(h) {
+        return { h: ((h % 360) + 360) % 360,
+          s: prof.sMin + Math.random() * (prof.sMax - prof.sMin),
+          l: prof.lMin + Math.random() * (prof.lMax - prof.lMin) };
+      }
+      let hues = [];
+      switch (scheme) {
+        case 0: for (let i = 0; i < 6; i++) hues.push(baseHue + i * 18 + (Math.random()-0.5)*10); break;
+        case 1: hues = [baseHue, baseHue+30, baseHue+60, baseHue+180, baseHue+210, baseHue+240]; break;
+        case 2: hues = [baseHue, baseHue+30, baseHue+120, baseHue+150, baseHue+240, baseHue+270]; break;
+        case 3: hues = [baseHue, baseHue+20, baseHue+90, baseHue+110, baseHue+180, baseHue+270]; break;
+        case 4: for (let i = 0; i < 6; i++) hues.push(baseHue + i*55 + (Math.random()-0.5)*20); break;
+      }
+      return hues.map(makeStop);
+    }
+
     // Shape type toggles
     const morphToggles = {
       breathe: document.getElementById('toggle-breathe'),
@@ -316,6 +379,15 @@
     let currentPaletteIndex = 0;
     let palette = palettes[paletteNames[0]];
     let styleSheets = [];
+
+    function getNextPalette() {
+      if (Math.random() < 0.5) {
+        const name = paletteNames[currentPaletteIndex % paletteNames.length];
+        currentPaletteIndex++;
+        return { name, colors: palettes[name] };
+      }
+      return { name: 'Random', colors: generateRandomPalette() };
+    }
 
     function getColor(index, total) {
       const x = index % 40;
@@ -439,9 +511,9 @@
       styleSheets = [];
 
       // Update palette
-      const paletteName = paletteNames[currentPaletteIndex];
-      palette = palettes[paletteName];
-      paletteNameEl.textContent = paletteName;
+      const next = getNextPalette();
+      palette = next.colors;
+      paletteNameEl.textContent = next.name;
 
       const activeMorphs = getActiveMorphTypes();
       const activeCorners = getActiveCornerTypes();
@@ -473,8 +545,6 @@
         grid.appendChild(shape);
       }
 
-      // Move to next palette for next regeneration
-      currentPaletteIndex = (currentPaletteIndex + 1) % paletteNames.length;
     }
 
     regenerateBtn.addEventListener('click', generate);
@@ -483,10 +553,9 @@
     let autoTransitionInterval;
     
     function transitionColors() {
-      const paletteName = paletteNames[currentPaletteIndex];
-      palette = palettes[paletteName];
-      paletteNameEl.textContent = paletteName;
-      currentPaletteIndex = (currentPaletteIndex + 1) % paletteNames.length;
+      const next = getNextPalette();
+      palette = next.colors;
+      paletteNameEl.textContent = next.name;
 
       const shapes = grid.querySelectorAll('.shape');
       shapes.forEach((shape, i) => {

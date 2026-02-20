@@ -1,0 +1,1 @@
+../bin/fetch_images.py

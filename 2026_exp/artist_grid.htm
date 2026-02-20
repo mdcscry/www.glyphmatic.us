@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artist Grid</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; }
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    transition: background-color 30s ease;
+}
+#grid-wrapper {
+    display: flex;
+    gap: 50px;
+    align-items: center;
+    justify-content: center;
+}
+#grid, #grid2 {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 3px;
+}
+/* Single layout */
+#grid-wrapper.single #grid {
+    width: min(70vw, 70vh);
+    height: min(70vw, 70vh);
+}
+#grid-wrapper.single #grid2 { display: none; }
+/* Dual layout */
+#grid-wrapper.dual #grid,
+#grid-wrapper.dual #grid2 {
+    width: min(47vw, 70vh);
+    height: min(47vw, 70vh);
+}
+.cell {
+    transition: background-color 14s ease, border-radius 14s ease;
+    background: transparent;
+}
+#info-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.65);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 7px 18px;
+    font-family: monospace;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    z-index: 100;
+    transition: background 0.3s;
+}
+#info-panel {
+    display: none;
+    position: fixed;
+    bottom: 58px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.75);
+    color: #ddd;
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    z-index: 100;
+    width: 280px;
+    text-align: center;
+}
+#info-panel.open { display: block; }
+#info-panel strong { color: #fff; font-size: 13px; }
+#panel-thumb {
+    width: 100%;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    display: block;
+    cursor: pointer;
+}
+/* Lightbox overlay */
+#lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 200;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+}
+#lightbox.open { display: flex; }
+#lightbox img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+}
+/* School dropdown */
+#school-filter {
+    display: none;
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 100;
+}
+#school-filter select {
+    background: rgba(0,0,0,0.65);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 7px 18px;
+    font-family: monospace;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding-right: 32px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23fff'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+#school-filter select:hover { background-color: rgba(0,0,0,0.8); }
+#school-filter select option { background: #222; color: #fff; }
+/* Next button */
+#next-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 24px;
+    background: rgba(0,0,0,0.65);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 7px 18px;
+    font-family: monospace;
+    font-size: 13px;
+    cursor: pointer;
+    z-index: 100;
+    transition: background 0.3s;
+}
+#next-btn:hover { background: rgba(0,0,0,0.85); }
+</style>
+</head>
+<body>
+<div id="grid-wrapper" class="single">
+    <div id="grid"></div>
+    <div id="grid2"></div>
+</div>
+<div id="lightbox"><img id="lightbox-img"></div>
+<div id="school-filter"><select id="school-select"><option value="">All Schools</option></select></div>
+<div id="info-panel"></div>
+<button id="info-btn">▲ artist</button>
+<button id="next-btn">next →</button>
+
+<script>window.ARTIST_PALETTES = {}; window._PALETTE_GENRE = {};</script>
+<script>var _before = Object.keys(ARTIST_PALETTES);</script>
+<script src="../js_funct/artist_palettes/impressionism.js"></script>
+<script>Object.keys(ARTIST_PALETTES).forEach(function(k){if(_before.indexOf(k)===-1)_PALETTE_GENRE[k]='Impressionism';}); _before=Object.keys(ARTIST_PALETTES);</script>
+<script src="../js_funct/artist_palettes/expressionism_fauvism.js"></script>
+<script>Object.keys(ARTIST_PALETTES).forEach(function(k){if(_before.indexOf(k)===-1)_PALETTE_GENRE[k]='Expressionism & Fauvism';}); _before=Object.keys(ARTIST_PALETTES);</script>
+<script src="../js_funct/artist_palettes/cubism_bauhaus.js"></script>
+<script>Object.keys(ARTIST_PALETTES).forEach(function(k){if(_before.indexOf(k)===-1)_PALETTE_GENRE[k]='Cubism & Bauhaus';}); _before=Object.keys(ARTIST_PALETTES);</script>
+<script src="../js_funct/artist_palettes/surrealism.js"></script>
+<script>Object.keys(ARTIST_PALETTES).forEach(function(k){if(_before.indexOf(k)===-1)_PALETTE_GENRE[k]='Surrealism';}); _before=Object.keys(ARTIST_PALETTES);</script>
+<script src="../js_funct/artist_palettes/abstract_expressionism.js"></script>
+<script>Object.keys(ARTIST_PALETTES).forEach(function(k){if(_before.indexOf(k)===-1)_PALETTE_GENRE[k]='Abstract Expressionism';}); _before=Object.keys(ARTIST_PALETTES);</script>
+<script src="../js_funct/artist_palettes/pop_minimal.js"></script>
+<script>Object.keys(ARTIST_PALETTES).forEach(function(k){if(_before.indexOf(k)===-1)_PALETTE_GENRE[k]='Pop & Minimal';}); _before=Object.keys(ARTIST_PALETTES);</script>
+<script src="../js_funct/artist_palettes/old_masters.js"></script>
+<script>Object.keys(ARTIST_PALETTES).forEach(function(k){if(_before.indexOf(k)===-1)_PALETTE_GENRE[k]='Old Masters';}); _before=Object.keys(ARTIST_PALETTES);</script>
+<script src="../js_funct/artist_palettes/americas.js"></script>
+<script>Object.keys(ARTIST_PALETTES).forEach(function(k){if(_before.indexOf(k)===-1)_PALETTE_GENRE[k]='Americas';}); _before=Object.keys(ARTIST_PALETTES);</script>
+<script src="../js_funct/artist_palettes/contemporary.js"></script>
+<script>Object.keys(ARTIST_PALETTES).forEach(function(k){if(_before.indexOf(k)===-1)_PALETTE_GENRE[k]='Contemporary';}); _before=Object.keys(ARTIST_PALETTES);</script>
+<script src="../js_funct/artist_palettes/_loaded.js"></script>
+<script>
+    var grid    = document.getElementById('grid');
+    var grid2   = document.getElementById('grid2');
+    var wrapper = document.getElementById('grid-wrapper');
+    var panel   = document.getElementById('info-panel');
+    var btn     = document.getElementById('info-btn');
+    var schoolSelect = document.getElementById('school-select');
+    var schoolFilter = document.getElementById('school-filter');
+    var nextBtn      = document.getElementById('next-btn');
+    var lightbox     = document.getElementById('lightbox');
+    var lightboxImg  = document.getElementById('lightbox-img');
+
+    // Lightbox — click thumbnail to enlarge, click anywhere to close
+    panel.addEventListener('click', function(e) {
+        if (e.target && e.target.id === 'panel-thumb') {
+            lightboxImg.src = e.target.src;
+            lightbox.classList.add('open');
+        }
+    });
+    lightbox.addEventListener('click', function() {
+        lightbox.classList.remove('open');
+    });
+    var cells1  = [];
+    var cells2  = [];
+    var currentPaletteKey = null;
+    var currentBg = '#ffffff'; // tracked separately from palette morphs
+    var panelTimer = null;     // delayed label update — cleared on rapid morph
+    var activeGenre = '';      // '' = all
+
+    // Build 100 cells in each grid
+    for (var i = 0; i < 100; i++) {
+        var c = document.createElement('div');
+        c.className = 'cell';
+        grid.appendChild(c);
+        cells1.push(c);
+    }
+    for (var i = 0; i < 100; i++) {
+        var c = document.createElement('div');
+        c.className = 'cell';
+        grid2.appendChild(c);
+        cells2.push(c);
+    }
+
+    // Toggle info panel
+    btn.addEventListener('click', function() {
+        panel.classList.toggle('open');
+        btn.textContent = panel.classList.contains('open') ? '▼ artist' : '▲ artist';
+    });
+
+    function waitForPalettes(cb) {
+        if (typeof ARTIST_PALETTES_LOADED !== 'undefined') cb();
+        else setTimeout(function() { waitForPalettes(cb); }, 50);
+    }
+
+    function getFilteredKeys() {
+        return Object.keys(ARTIST_PALETTES).filter(function(k) {
+            return !activeGenre || _PALETTE_GENRE[k] === activeGenre;
+        });
+    }
+
+    function pickRandomKey(exclude) {
+        var keys = getFilteredKeys().filter(function(k) { return k !== exclude; });
+        if (!keys.length) keys = getFilteredKeys(); // only one in genre
+        return keys[Math.floor(Math.random() * keys.length)];
+    }
+
+    // Pick a shape mode each palette application
+    // 'squares' = all sharp corners, 'circles' = all 50% radius, 'mixed' = per-cell random
+    function pickShapeMode() {
+        var r = Math.random();
+        if (r < 0.50) return 'squares';
+        if (r < 0.90) return 'mixed';
+        return 'circles';   // rare accent ~10%
+    }
+
+    function cellRadius(mode) {
+        if (mode === 'circles') return '50%';
+        if (mode === 'squares') return '0%';
+        // mixed: ~40% circles, ~60% squares
+        return Math.random() < 0.4 ? '50%' : '0%';
+    }
+
+    function bgFromKey(key) {
+        var p = ARTIST_PALETTES[key];
+        var bg = p.bg;
+        var r = parseInt(bg.slice(1,3),16), g = parseInt(bg.slice(3,5),16), b2 = parseInt(bg.slice(5,7),16);
+        var lum = (r*299 + g*587 + b2*114) / 1000;
+        return lum > 160 ? '#ffffff' : '#000000';
+    }
+
+    function weightedColor(colors, pcts) {
+        if (!pcts || !pcts.length) return colors[Math.floor(Math.random() * colors.length)];
+        var total = pcts.reduce(function(a, b) { return a + b; }, 0);
+        var r = Math.random() * total;
+        var acc = 0;
+        for (var i = 0; i < colors.length; i++) {
+            acc += (pcts[i] || 0);
+            if (r <= acc) return colors[i];
+        }
+        return colors[colors.length - 1];
+    }
+
+    function fillGrid(cellArr, colors, pcts, shapeMode) {
+        var n = cellArr.length;
+        var nColors = colors.length;
+        // Build assignment array: guarantee every color at least once, rest weighted-random
+        var assignments = [];
+        for (var i = 0; i < nColors; i++) assignments.push(colors[i]);
+        var transparentCount = Math.round(n * 0.35);
+        for (var i = 0; i < transparentCount; i++) assignments.push(null);
+        while (assignments.length < n) {
+            assignments.push(weightedColor(colors, pcts));
+        }
+        // Shuffle (Fisher-Yates)
+        for (var i = assignments.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = assignments[i]; assignments[i] = assignments[j]; assignments[j] = tmp;
+        }
+        cellArr.forEach(function(cell, idx) {
+            cell.style.borderRadius = cellRadius(shapeMode);
+            cell.style.backgroundColor = assignments[idx] || 'transparent';
+        });
+    }
+
+    function applyPalette(key, instant) {
+        currentPaletteKey = key;
+        var p = ARTIST_PALETTES[key];
+        var shapeMode = pickShapeMode();
+
+        // Cancel any pending label update from a previous morph
+        if (panelTimer) { clearTimeout(panelTimer); panelTimer = null; }
+
+        // ~20% chance: two grids side by side, same palette, different random arrangements
+        if (Math.random() < 0.20) {
+            wrapper.className = 'dual';
+            fillGrid(cells1, p.colors, p.pcts, shapeMode);
+            fillGrid(cells2, p.colors, p.pcts, shapeMode);
+        } else {
+            wrapper.className = 'single';
+            fillGrid(cells1, p.colors, p.pcts, shapeMode);
+        }
+
+        // First load: show label immediately; subsequent morphs: wait for 14s cell transition
+        var desc = p.name.indexOf(' \u2014 ') !== -1 ? p.name.split(' \u2014 ')[1] : p.name;
+        var html = '<img id="panel-thumb" src="../tools/paintings/' + key + '.jpg"'
+            + ' onerror="this.style.display=\'none\'">'
+            + '<strong>' + p.artist + '</strong>'
+            + '<br><span style="opacity:0.85; font-size:11px; font-style:italic;">' + (p.school || '') + '</span>'
+            + '<br>' + desc
+            + '<br><span style="opacity:0.7;">' + p.ref + '</span>';
+        if (!panel.innerHTML || instant) {
+            panel.innerHTML = html;
+        } else {
+            panelTimer = setTimeout(function() { panel.innerHTML = html; panelTimer = null; }, 7000);
+        }
+    }
+
+    // Background shifts independently — less often than palette, slower transition
+    function scheduleBgShift() {
+        // 2–5 minutes between bg changes
+        var delay = 120000 + Math.random() * 180000;
+        setTimeout(function() {
+            var newBg = bgFromKey(currentPaletteKey);
+            if (newBg !== currentBg) {
+                currentBg = newBg;
+                document.body.style.backgroundColor = currentBg;
+            }
+            scheduleBgShift();
+        }, delay);
+    }
+
+    function scheduleMorph() {
+        var delay = 30000 + Math.random() * 60000; // 30–90s
+        setTimeout(function() {
+            applyPalette(pickRandomKey(currentPaletteKey));
+            scheduleMorph();
+        }, delay);
+    }
+
+    // ?artist=rothko  picks randomly among all palettes for that artist (case-insensitive partial match)
+    function pickKeyForArtist(name) {
+        var lc = name.toLowerCase().replace(/[\s\-_]/g, '');
+        var matches = Object.keys(ARTIST_PALETTES).filter(function(k) {
+            var artistNorm = ARTIST_PALETTES[k].artist.toLowerCase().replace(/[\s\-_]/g, '');
+            var keyNorm = k.toLowerCase().replace(/[\s\-_]/g, '');
+            return artistNorm.indexOf(lc) !== -1 || keyNorm.indexOf(lc) !== -1;
+        });
+        if (matches.length === 0) return null;
+        return matches[Math.floor(Math.random() * matches.length)];
+    }
+
+    // Next button — instant skip (disable transitions, apply, re-enable)
+    nextBtn.addEventListener('click', function() {
+        var allCells = cells1.concat(cells2);
+        allCells.forEach(function(c) { c.style.transition = 'none'; });
+        document.body.style.transition = 'none';
+        applyPalette(pickRandomKey(currentPaletteKey), true);
+        currentBg = bgFromKey(currentPaletteKey);
+        document.body.style.backgroundColor = currentBg;
+        // Force reflow then restore transitions
+        void document.body.offsetHeight;
+        allCells.forEach(function(c) { c.style.transition = ''; });
+        document.body.style.transition = '';
+    });
+
+    waitForPalettes(function() {
+        var params    = new URLSearchParams(window.location.search);
+        var urlArtist = params.get('artist');
+
+        // Populate genre dropdown if ?school=true
+        if (params.get('school') === 'true') {
+            schoolFilter.style.display = 'block';
+            var genres = [];
+            Object.keys(_PALETTE_GENRE).forEach(function(k) {
+                var g = _PALETTE_GENRE[k];
+                if (genres.indexOf(g) === -1) genres.push(g);
+            });
+            genres.forEach(function(g) {
+                var opt = document.createElement('option');
+                opt.value = g;
+                opt.textContent = g;
+                schoolSelect.appendChild(opt);
+            });
+            schoolSelect.addEventListener('change', function() {
+                activeGenre = this.value;
+                applyPalette(pickRandomKey(currentPaletteKey));
+                currentBg = bgFromKey(currentPaletteKey);
+                document.body.style.backgroundColor = currentBg;
+            });
+        }
+
+        var firstKey  = (urlArtist && pickKeyForArtist(urlArtist)) || pickRandomKey(null);
+        currentBg = bgFromKey(firstKey);
+        document.body.style.backgroundColor = currentBg;
+        applyPalette(firstKey);
+        // Open panel on load if ?artist= or ?panel=open
+        if (urlArtist || params.get('panel') === 'open') {
+            panel.classList.add('open');
+            btn.textContent = '▼ artist';
+        }
+        scheduleMorph();
+        scheduleBgShift();
+    });
+</script>
+</body>
+</html>
