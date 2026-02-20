@@ -255,6 +255,33 @@
             return 5;
         },
 
+        // =========================================================
+        // TWO WAYS TO USE ColorPalette — READ BEFORE USING
+        // =========================================================
+        //
+        // PATH A — OKLCH GENERATIVE (truly random, infinite variety)
+        //   Use this when you want a fresh, unpredictable palette each time.
+        //   Does NOT use FIXED_PALETTES at all.
+        //
+        //   ColorPalette.init();                   // generates bg + glyph colors
+        //   document.body.style.backgroundColor = ColorPalette.currentPageBg;
+        //   const color = ColorPalette.randomGlyphColor();
+        //
+        //   To refresh mid-session:
+        //   ColorPalette.init();                   // regenerates everything
+        //
+        // PATH B — FIXED PALETTES (5 curated hand-crafted schemes)
+        //   Use this when you want one of the named palettes:
+        //   black_lightgray, brown, white_teal_red, white_primary, silver_lightgray.
+        //   This is what insert23 (Macroglyph) uses. Do NOT use this path
+        //   when the goal is "random palette each time" — you only get 5 options.
+        //
+        //   ColorPalette.selectRandomPalette();    // picks one of the 5
+        //   const color = ColorPalette.randomPaletteGlyphColor();
+        //   ColorPalette.applyFixedPalette(body, table, footer1, footer2, borderRow);
+        //
+        // =========================================================
+
         // === Fixed Palette Methods ===
 
         // Select a random fixed palette

@@ -422,59 +422,6 @@
             return positions;
         }
 
-        function generateSmoothPolygon(steps, numPoints) {
-            const polygons = [];
-            let points = [];
-            for (let i = 0; i < numPoints; i++) {
-                const angle = (i / numPoints) * Math.PI * 2 - Math.PI / 2;
-                const baseR = rand(35, 48);
-                points.push({
-                    x: 50 + baseR * Math.cos(angle),
-                    y: 50 + baseR * Math.sin(angle),
-                    baseAngle: angle,
-                    r: baseR,
-                    vr: rand(-0.5, 0.5),
-                    va: rand(-0.02, 0.02)
-                });
-            }
-            
-            for (let s = 0; s < steps; s++) {
-                const poly = points.map(p => `${p.x.toFixed(2)}% ${p.y.toFixed(2)}%`).join(', ');
-                polygons.push(`polygon(${poly})`);
-                points = points.map(p => {
-                    p.vr += rand(-0.3, 0.3);
-                    p.va += rand(-0.008, 0.008);
-                    p.vr *= 0.9;
-                    p.va *= 0.9;
-                    p.vr = Math.max(-2, Math.min(2, p.vr));
-                    p.va = Math.max(-0.05, Math.min(0.05, p.va));
-                    p.r += p.vr;
-                    p.r = Math.max(25, Math.min(48, p.r));
-                    const newAngle = p.baseAngle + p.va * 10;
-                    return {
-                        ...p,
-                        x: 50 + p.r * Math.cos(newAngle),
-                        y: 50 + p.r * Math.sin(newAngle)
-                    };
-                });
-            }
-            const closeSteps = 6;
-            const startPoints = polygons[0].match(/[\d.]+/g).map(Number);
-            const endPoints = polygons[polygons.length - 1].match(/[\d.]+/g).map(Number);
-            for (let i = 1; i <= closeSteps; i++) {
-                const t = i / closeSteps;
-                const eased = t * t * (3 - 2 * t);
-                const interpolated = [];
-                for (let j = 0; j < startPoints.length; j += 2) {
-                    const x = endPoints[j] + (startPoints[j] - endPoints[j]) * eased;
-                    const y = endPoints[j + 1] + (startPoints[j + 1] - endPoints[j + 1]) * eased;
-                    interpolated.push(`${x.toFixed(2)}% ${y.toFixed(2)}%`);
-                }
-                polygons.push(`polygon(${interpolated.join(', ')})`);
-            }
-            return polygons;
-        }
-
         let styleSheet = null;
         let animationCounter = 0;
         let currentPalette = null;
@@ -574,7 +521,6 @@
             const size = rand(50, 280);
             const color = pick(palette.colors);
             const color2 = pick(palette.colors);
-            const useClipPath = Math.random() > 0.5;
 
             shape.style.width = `${size}px`;
             shape.style.height = `${size}px`;
@@ -615,38 +561,22 @@
             const durations = [];
             const targetOpacity = rand(0.35, 1);
 
-            if (useClipPath) {
-                const numPoints = randInt(5, 8);
-                const steps = randInt(30, 50);
-                const polygons = generateSmoothPolygon(steps, numPoints);
-                const animName = `poly_${animationCounter++}`;
-                let css = `@keyframes ${animName} {\n`;
-                polygons.forEach((poly, i) => {
-                    const percent = ((i / (polygons.length - 1)) * 100).toFixed(3);
-                    css += `  ${percent}% { clip-path: ${poly}; }\n`;
-                });
-                css += '}';
-                registerAnimation(animName, css);
-                shape.style.clipPath = polygons[0];
-                animationNames.push(animName);
-                durations.push(`${rand(18, 35)}s`);
-            } else {
-                const steps = randInt(30, 50);
-                const radii = generateSmoothBorderRadii(steps);
-                const animName = `morph_${animationCounter++}`;
-                let css = `@keyframes ${animName} {\n`;
-                radii.forEach((r, i) => {
-                    const percent = ((i / (radii.length - 1)) * 100).toFixed(3);
-                    const br = `${r[0].toFixed(2)}% ${r[1].toFixed(2)}% ${r[2].toFixed(2)}% ${r[3].toFixed(2)}% / ${r[4].toFixed(2)}% ${r[5].toFixed(2)}% ${r[6].toFixed(2)}% ${r[7].toFixed(2)}%`;
-                    css += `  ${percent}% { border-radius: ${br}; }\n`;
-                });
-                css += '}';
-                registerAnimation(animName, css);
-                const initBr = radii[0];
-                shape.style.borderRadius = `${initBr[0]}% ${initBr[1]}% ${initBr[2]}% ${initBr[3]}% / ${initBr[4]}% ${initBr[5]}% ${initBr[6]}% ${initBr[7]}%`;
-                animationNames.push(animName);
-                durations.push(`${rand(15, 30)}s`);
-            }
+            // ALL BLOBS - use smooth border-radius morphing (no pointy polygons)
+            const steps = randInt(30, 50);
+            const radii = generateSmoothBorderRadii(steps);
+            const animName = `morph_${animationCounter++}`;
+            let css = `@keyframes ${animName} {\n`;
+            radii.forEach((r, i) => {
+                const percent = ((i / (radii.length - 1)) * 100).toFixed(3);
+                const br = `${r[0].toFixed(2)}% ${r[1].toFixed(2)}% ${r[2].toFixed(2)}% ${r[3].toFixed(2)}% / ${r[4].toFixed(2)}% ${r[5].toFixed(2)}% ${r[6].toFixed(2)}% ${r[7].toFixed(2)}%`;
+                css += `  ${percent}% { border-radius: ${br}; }\n`;
+            });
+            css += '}';
+            registerAnimation(animName, css);
+            const initBr = radii[0];
+            shape.style.borderRadius = `${initBr[0]}% ${initBr[1]}% ${initBr[2]}% ${initBr[3]}% / ${initBr[4]}% ${initBr[5]}% ${initBr[6]}% ${initBr[7]}%`;
+            animationNames.push(animName);
+            durations.push(`${rand(15, 30)}s`);
 
             const driftSteps = randInt(40, 60);
             const maxDrift = rand(20, 50);
