@@ -152,26 +152,26 @@
             artist: 'Wassily Kandinsky',
             school: 'Expressionism',
             ref: 'Composition VIII (1923)',
-            bg: '#EDE7E3',
+            bg: '#E9E0D9',
             colors: [
-                '#EDE7E3',   // dominant (27.1%)
-                '#E8DFD8',   // secondary (25.6%)
-                '#E0D4CA',   // tertiary (10.3%)
-                '#F5F0F0',   // accent (9.6%)
-                '#1E0E15',   // accent (4.9%)
-                '#332229',   // accent (4.7%)
-                '#E3C4A1',   // accent (2.7%)
-                '#DC917F',   // accent (2.4%)
-                '#A9B6CB',   // accent (2.4%)
-                '#998A95',   // accent (2.1%)
-                '#B87B49',   // accent (1.8%)
-                '#594A4A',   // accent (1.6%)
-                '#E6C153',   // accent (1.6%)
-                '#815377',   // accent (1.5%)
-                '#CC3C34',   // accent (1.1%)
-                '#1D71AB',   // accent (0.7%)
+                '#E9E0D9',   // dominant (26.7%)
+                '#EDE8E4',   // secondary (25.0%)
+                '#E1D5CB',   // tertiary (11.2%)
+                '#F5F1F0',   // accent (9.0%)
+                '#312027',   // accent (5.0%)
+                '#1C0D13',   // accent (4.4%)
+                '#E3C6A4',   // accent (3.0%)
+                '#DC9281',   // accent (2.4%)
+                '#AAB6CB',   // accent (2.4%)
+                '#998896',   // accent (2.2%)
+                '#7D586E',   // accent (1.8%)
+                '#BD7B4A',   // accent (1.8%)
+                '#524346',   // accent (1.6%)
+                '#E6C051',   // accent (1.6%)
+                '#CA3C34',   // accent (1.1%)
+                '#1C6FAA',   // accent (0.7%)
             ],
-            pcts: [27.1, 25.6, 10.3, 9.6, 4.9, 4.7, 2.7, 2.4, 2.4, 2.1, 1.8, 1.6, 1.6, 1.5, 1.1, 0.7],
+            pcts: [26.7, 25.0, 11.2, 9.0, 5.0, 4.4, 3.0, 2.4, 2.4, 2.2, 1.8, 1.8, 1.6, 1.6, 1.1, 0.7],
             useBoxMuller: false
         },
 
