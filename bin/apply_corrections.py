@@ -20,6 +20,7 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 PAINTINGS_DIR = ROOT_DIR / 'tools' / 'paintings'
 META_DIR = PAINTINGS_DIR / '.meta'
 CSV_IN = META_DIR / 'palette_corrections.csv'
+OVERRIDES_IN = META_DIR / 'palette_overrides.csv'
 
 PALETTE_FILES = [
     ROOT_DIR / 'js_funct' / 'artist_palettes' / 'old_masters.js',
@@ -37,6 +38,12 @@ LABELS = ['dominant', 'secondary', 'tertiary',
           'accent', 'accent', 'accent', 'accent', 'accent',
           'accent', 'accent', 'accent', 'accent',
           'accent', 'accent', 'accent', 'accent']
+
+ROW_FIELDS = (
+    ['key', 'file', 'ref', 'bg'] +
+    [f'c{i}' for i in range(16)] +
+    [f'pct{i}' for i in range(16)]
+)
 
 
 def patch_entry(content, key, new_bg, new_colors, pcts):
@@ -124,6 +131,28 @@ def main():
             rows[row['key']] = row
 
     print(f"Loaded {len(rows)} entries from {CSV_IN}")
+
+    if OVERRIDES_IN.exists():
+        applied_overrides = 0
+        with open(OVERRIDES_IN) as f:
+            for ovr in csv.DictReader(f):
+                key = (ovr.get('key') or '').strip()
+                if not key:
+                    continue
+                if key not in rows:
+                    continue
+                base = rows[key]
+                changed = False
+                for field in ROW_FIELDS:
+                    val = (ovr.get(field) or '').strip()
+                    if val:
+                        if base.get(field) != val:
+                            changed = True
+                        base[field] = val
+                rows[key] = base
+                if changed:
+                    applied_overrides += 1
+        print(f"Applied overrides for {applied_overrides} entries from {OVERRIDES_IN}")
 
     if args.only:
         if args.only not in rows:

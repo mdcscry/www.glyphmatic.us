@@ -9,7 +9,8 @@
 ## Startup Checklist (Every Session)
 1. Confirm this repository is trusted and active.
 2. Read `AGENTS.md`, `.serena/project.yml`, and `.roborev.toml`.
-3. Follow Roborev review constraints and Serena project context before making edits.
+3. For palette work, follow `tools/paintings/PALETTE_SKILL.md` and prefer `bin/palette_one.sh`.
+4. Follow Roborev review constraints and Serena project context before making edits.
 
 ## Notes
 - This project is browser-first creative coding with no build step unless explicitly requested.

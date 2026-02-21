@@ -516,26 +516,26 @@
             artist: 'Sigmar Polke',
             school: 'Neo-Expressionism',
             ref: 'Watchtower (1984)',
-            bg: '#292527',
+            bg: '#231D1D',
             colors: [
-                '#292527',   // dominant (16.1%)
-                '#231C1C',   // secondary (15.6%)
-                '#382927',   // tertiary (9.7%)
-                '#353037',   // accent (8.8%)
-                '#483630',   // accent (7.5%)
-                '#443E47',   // accent (7.2%)
-                '#534E58',   // accent (6.5%)
-                '#5C4439',   // accent (4.8%)
-                '#64616C',   // accent (4.8%)
-                '#777783',   // accent (3.5%)
-                '#765640',   // accent (3.1%)
-                '#C1C3C8',   // accent (3.0%)
-                '#A9AAAF',   // accent (2.9%)
-                '#8E909A',   // accent (2.9%)
-                '#8B7555',   // accent (2.2%)
-                '#AC9B6B',   // accent (1.4%)
+                '#231D1D',   // dominant (17.6%)
+                '#2B2628',   // secondary (16.5%)
+                '#3A2B28',   // tertiary (10.0%)
+                '#37323A',   // accent (8.8%)
+                '#47414A',   // accent (7.1%)
+                '#4B3831',   // accent (7.0%)
+                '#57525C',   // accent (6.2%)
+                '#676571',   // accent (4.5%)
+                '#60473A',   // accent (4.5%)
+                '#7C7C88',   // accent (3.4%)
+                '#785C44',   // accent (3.0%)
+                '#94969F',   // accent (2.8%)
+                '#3F2F4F',   // accent (2.8%)
+                '#804230',   // accent (2.6%)
+                '#A08D4A',   // accent (2.0%)
+                '#AE9D6E',   // accent (1.3%)
             ],
-            pcts: [16.1, 15.6, 9.7, 8.8, 7.5, 7.2, 6.5, 4.8, 4.8, 3.5, 3.1, 3.0, 2.9, 2.9, 2.2, 1.4],
+            pcts: [17.6, 16.5, 10.0, 8.8, 7.1, 7.0, 6.2, 4.5, 4.5, 3.4, 3.0, 2.8, 2.8, 2.6, 2.0, 1.3],
             useBoxMuller: false
         },
 
@@ -572,26 +572,26 @@
             artist: 'Jean Dubuffet',
             school: 'Art Brut',
             ref: 'Corps de dame, jardin fleuri (1950)',
-            bg: '#D5BFB9',
+            bg: '#212721',
             colors: [
-                '#D5BFB9',   // dominant (11.6%)
-                '#5E4845',   // secondary (11.5%)
-                '#6B5451',   // tertiary (11.1%)
-                '#CAB2AC',   // accent (10.6%)
-                '#513B38',   // accent (8.6%)
-                '#79615D',   // accent (8.1%)
-                '#BEA49E',   // accent (7.8%)
-                '#E1CDC7',   // accent (6.6%)
-                '#B2958C',   // accent (5.4%)
-                '#8A6F6B',   // accent (5.0%)
-                '#3C2C2A',   // accent (4.2%)
-                '#9D827E',   // accent (4.2%)
-                '#AA7D5E',   // accent (2.1%)
-                '#84433B',   // accent (2.0%)
-                '#F8F6F5',   // accent (0.6%)
-                '#44416B',   // accent (0.5%)
+                '#212721',   // dominant (15.1%)
+                '#3E382C',   // secondary (11.3%)
+                '#2A352E',   // tertiary (10.9%)
+                '#322C22',   // accent (10.6%)
+                '#161B16',   // accent (9.1%)
+                '#514636',   // accent (6.5%)
+                '#3A443C',   // accent (6.5%)
+                '#000100',   // accent (5.6%)
+                '#705732',   // accent (4.7%)
+                '#54554B',   // accent (4.1%)
+                '#886A3E',   // accent (4.1%)
+                '#6F6454',   // accent (3.6%)
+                '#9E7E50',   // accent (3.0%)
+                '#583F1D',   // accent (2.3%)
+                '#7E786E',   // accent (2.0%)
+                '#B89F7A',   // accent (0.6%)
             ],
-            pcts: [11.6, 11.5, 11.1, 10.6, 8.6, 8.1, 7.8, 6.6, 5.4, 5.0, 4.2, 4.2, 2.1, 2.0, 0.6, 0.5],
+            pcts: [15.1, 11.3, 10.9, 10.6, 9.1, 6.5, 6.5, 5.6, 4.7, 4.1, 4.1, 3.6, 3.0, 2.3, 2.0, 0.6],
             useBoxMuller: false
         },
 

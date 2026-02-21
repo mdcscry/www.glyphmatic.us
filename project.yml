@@ -1,0 +1,49 @@
+project_name: "glyphmatic"
+
+# JavaScript files - use typescript language server (handles JS too)
+languages: ["typescript"]
+
+encoding: "utf-8"
+ignore_all_files_in_gitignore: true
+
+ignored_paths:
+  - "node_modules/**"
+  - "fonts/**"
+  - "*.ttf"
+  - "*.woff"
+  - "*.woff2"
+
+initial_prompt: |
+  This is glyphmatic.us - a generative Unicode art project (16 years, 2010-2026).
+  
+  STRUCTURE:
+  - g.us3.htm: Main host page that loads inserts via insertArray[]
+  - insert_js_2025/: Insert files (insert1.js through insert29.js+)
+  - insert_js_2013/: Legacy insert files  
+  - js_funct/: Shared utilities (insert_config.js, font_utility.js, nav_menu.js)
+  - js_glyph/: Glyph/font utilities
+  - 2025_exp/: 2025 experiment HTML files
+  - 2026_exp/: 2026 experiment HTML files
+  
+  NAMING CONVENTIONS (for bundling into multi-flavor inserts):
+  - lotus_* → lotus family (done: insert29.js)
+  - degenerator1_* → degenerator1 family
+  - dagenerator2-* → dagenerator2 family
+  - fibonacci_v* → fibonacci family
+  - triangle_tile_* → triangle family
+  - config_*inter_polate* → interpolate family
+  - circlepack* → circlepack family
+  
+  INSERT PATTERN:
+  Each insert is a self-contained JS file with:
+  - A CSS string injected into <style>
+  - A startVisualization(flavor) function
+  - Keyboard handlers for flavor switching (keys 0-9)
+  - A watermark reference stub
+  
+  GOAL: Convert 200+ experiments into inserts efficiently using symbol-level extraction.
+  Key functions to extract per experiment:
+  - Canvas/SVG initialization
+  - Animation loop (requestAnimationFrame)
+  - Color generation
+  - Core render logic

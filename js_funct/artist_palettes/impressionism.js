@@ -348,26 +348,26 @@
             artist: 'Claude Monet',
             school: 'Impressionism',
             ref: 'Water Lilies (Large Composition) (1906)',
-            bg: '#4F7C9A',
+            bg: '#586D7C',
             colors: [
-                '#4F7C9A',   // dominant (10.2%)
-                '#597080',   // secondary (10.0%)
-                '#4D6177',   // tertiary (9.4%)
-                '#406265',   // accent (8.9%)
-                '#406D8C',   // accent (8.8%)
-                '#345E79',   // accent (8.2%)
-                '#6388A4',   // accent (7.3%)
-                '#52736A',   // accent (7.2%)
-                '#2A575D',   // accent (6.9%)
-                '#677D8B',   // accent (6.0%)
-                '#829490',   // accent (4.1%)
-                '#9AA5A3',   // accent (3.2%)
-                '#194A44',   // accent (3.1%)
-                '#466B49',   // accent (2.7%)
-                '#6D896F',   // accent (2.6%)
-                '#BCBDB7',   // accent (1.3%)
+                '#586D7C',   // dominant (10.2%)
+                '#44637D',   // secondary (9.4%)
+                '#527F9D',   // tertiary (9.3%)
+                '#4E6769',   // accent (9.3%)
+                '#437190',   // accent (8.8%)
+                '#3A6065',   // accent (8.2%)
+                '#61798A',   // accent (7.9%)
+                '#6789A4',   // accent (6.3%)
+                '#305D79',   // accent (6.3%)
+                '#27555A',   // accent (5.7%)
+                '#7C8F86',   // accent (4.1%)
+                '#5E8268',   // accent (3.6%)
+                '#95A19E',   // accent (3.6%)
+                '#44694A',   // accent (3.0%)
+                '#174940',   // accent (2.4%)
+                '#986BA0',   // accent (1.8%)
             ],
-            pcts: [10.2, 10.0, 9.4, 8.9, 8.8, 8.2, 7.3, 7.2, 6.9, 6.0, 4.1, 3.2, 3.1, 2.7, 2.6, 1.3],
+            pcts: [10.2, 9.4, 9.3, 9.3, 8.8, 8.2, 7.9, 6.3, 6.3, 5.7, 4.1, 3.6, 3.6, 3.0, 2.4, 1.8],
             useBoxMuller: true
         },
 
@@ -376,26 +376,26 @@
             artist: 'Claude Monet',
             school: 'Impressionism',
             ref: 'Impression, Sunrise (1872)',
-            bg: '#A0B2B9',
+            bg: '#9FB1B7',
             colors: [
-                '#A0B2B9',   // dominant (12.1%)
-                '#8CA4AF',   // secondary (10.5%)
-                '#BABFB3',   // tertiary (10.3%)
-                '#A6AEA3',   // accent (9.3%)
-                '#AFC1C5',   // accent (8.6%)
-                '#7395A5',   // accent (7.8%)
-                '#C3D1CD',   // accent (6.9%)
-                '#909B94',   // accent (6.7%)
-                '#DDCBB2',   // accent (5.8%)
-                '#D3B79C',   // accent (5.1%)
-                '#5A8091',   // accent (4.6%)
-                '#78847D',   // accent (3.7%)
-                '#E7E2CE',   // accent (3.6%)
-                '#4E6364',   // accent (2.3%)
-                '#C09B7E',   // accent (1.6%)
-                '#1D2E35',   // accent (1.1%)
+                '#9FB1B7',   // dominant (12.8%)
+                '#B8BEB1',   // secondary (10.6%)
+                '#8AA2AE',   // tertiary (10.3%)
+                '#A4ACA1',   // accent (9.2%)
+                '#AEC0C4',   // accent (9.1%)
+                '#C3D0CB',   // accent (7.9%)
+                '#7093A4',   // accent (7.2%)
+                '#8C9891',   // accent (6.2%)
+                '#DDCBB1',   // accent (6.0%)
+                '#D2B69B',   // accent (5.0%)
+                '#587F90',   // accent (4.1%)
+                '#E6E2CF',   // accent (3.9%)
+                '#D4A281',   // accent (3.2%)
+                '#F08D7C',   // accent (2.1%)
+                '#DFA086',   // accent (1.3%)
+                '#192A32',   // accent (1.0%)
             ],
-            pcts: [12.1, 10.5, 10.3, 9.3, 8.6, 7.8, 6.9, 6.7, 5.8, 5.1, 4.6, 3.7, 3.6, 2.3, 1.6, 1.1],
+            pcts: [12.8, 10.6, 10.3, 9.2, 9.1, 7.9, 7.2, 6.2, 6.0, 5.0, 4.1, 3.9, 3.2, 2.1, 1.3, 1.0],
             useBoxMuller: false
         },
 
@@ -630,24 +630,24 @@
             ref: 'Paris Street; Rainy Day (1877)',
             bg: '#E3DBC2',
             colors: [
-                '#E3DBC2',   // dominant (11.5%)
-                '#B4AF9F',   // secondary (9.3%)
-                '#CCCCBD',   // tertiary (8.7%)
-                '#BDBDB2',   // accent (8.6%)
-                '#A49F95',   // accent (7.6%)
-                '#3C3C36',   // accent (7.3%)
-                '#494B48',   // accent (7.0%)
-                '#807A73',   // accent (5.5%)
-                '#515C5B',   // accent (5.4%)
-                '#938D84',   // accent (5.3%)
-                '#312F23',   // accent (4.8%)
-                '#A2AAAA',   // accent (4.5%)
-                '#6B6560',   // accent (4.4%)
-                '#818E95',   // accent (3.5%)
-                '#637479',   // accent (3.4%)
-                '#A1796E',   // accent (3.3%)
+                '#E3DBC2',   // dominant (11.4%)
+                '#B3AE9E',   // secondary (9.3%)
+                '#BDBDB1',   // tertiary (8.9%)
+                '#CCCCBD',   // accent (8.7%)
+                '#A29D95',   // accent (7.7%)
+                '#484A47',   // accent (7.2%)
+                '#3C3C35',   // accent (6.9%)
+                '#515A5A',   // accent (5.6%)
+                '#7F7973',   // accent (5.3%)
+                '#928C83',   // accent (5.2%)
+                '#A3ABAB',   // accent (4.6%)
+                '#6B6460',   // accent (4.6%)
+                '#312E22',   // accent (4.6%)
+                '#617277',   // accent (3.4%)
+                '#A0796E',   // accent (3.3%)
+                '#7F8C93',   // accent (3.3%)
             ],
-            pcts: [11.5, 9.3, 8.7, 8.6, 7.6, 7.3, 7.0, 5.5, 5.4, 5.3, 4.8, 4.5, 4.4, 3.5, 3.4, 3.3],
+            pcts: [11.4, 9.3, 8.9, 8.7, 7.7, 7.2, 6.9, 5.6, 5.3, 5.2, 4.6, 4.6, 4.6, 3.4, 3.3, 3.3],
             useBoxMuller: true
         },
 
@@ -684,26 +684,26 @@
             artist: 'Camille Pissarro',
             school: 'Impressionism',
             ref: 'Boulevard Montmartre at Night (1897)',
-            bg: '#1E2D43',
+            bg: '#202F45',
             colors: [
-                '#1E2D43',   // dominant (10.2%)
-                '#111D33',   // secondary (9.3%)
-                '#424F61',   // tertiary (9.0%)
-                '#536074',   // accent (8.6%)
-                '#2E3D53',   // accent (7.9%)
-                '#403E3C',   // accent (7.3%)
-                '#5F5549',   // accent (6.5%)
-                '#2E2823',   // accent (6.2%)
-                '#7D7C7B',   // accent (6.0%)
-                '#786B5B',   // accent (5.8%)
-                '#0F0F13',   // accent (5.4%)
-                '#8B6132',   // accent (4.8%)
-                '#94908F',   // accent (4.7%)
-                '#634524',   // accent (3.7%)
-                '#A7855A',   // accent (3.3%)
-                '#C6B6A2',   // accent (1.2%)
+                '#202F45',   // dominant (10.8%)
+                '#121E33',   // secondary (10.1%)
+                '#445163',   // tertiary (8.7%)
+                '#303F55',   // accent (7.7%)
+                '#546275',   // accent (7.5%)
+                '#44423F',   // accent (7.3%)
+                '#665C50',   // accent (7.2%)
+                '#312B25',   // accent (6.7%)
+                '#787775',   // accent (6.3%)
+                '#111014',   // accent (5.8%)
+                '#8F8D8D',   // accent (5.6%)
+                '#8B7355',   // accent (4.3%)
+                '#8B5F30',   // accent (4.3%)
+                '#634829',   // accent (4.3%)
+                '#B18E62',   // accent (2.1%)
+                '#C4B7A5',   // accent (1.2%)
             ],
-            pcts: [10.2, 9.3, 9.0, 8.6, 7.9, 7.3, 6.5, 6.2, 6.0, 5.8, 5.4, 4.8, 4.7, 3.7, 3.3, 1.2],
+            pcts: [10.8, 10.1, 8.7, 7.7, 7.5, 7.3, 7.2, 6.7, 6.3, 5.8, 5.6, 4.3, 4.3, 4.3, 2.1, 1.2],
             useBoxMuller: false
         },
 

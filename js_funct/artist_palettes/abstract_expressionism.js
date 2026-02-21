@@ -742,24 +742,24 @@
             ref: 'Turnsole (1961)',
             bg: '#E3DECB',
             colors: [
-                '#E3DECB',   // dominant (25.8%)
-                '#E5E0CF',   // secondary (15.5%)
-                '#E1DBC7',   // tertiary (10.7%)
-                '#DED8C2',   // accent (8.2%)
-                '#DCD5BD',   // accent (7.9%)
-                '#CCD0C2',   // accent (7.3%)
-                '#1D1A16',   // accent (5.9%)
-                '#DAAE48',   // accent (5.7%)
-                '#D3D7CC',   // accent (5.6%)
-                '#D8CEB5',   // accent (3.1%)
-                '#DDB64E',   // accent (3.1%)
-                '#D5C79F',   // accent (0.5%)
-                '#D7BE71',   // accent (0.4%)
-                '#686970',   // accent (0.2%)
-                '#A09B8A',   // accent (0.1%)
-                '#444030',   // accent (0.1%)
+                '#E3DECB',   // dominant (25.4%)
+                '#E5DFCF',   // secondary (15.1%)
+                '#DED7C0',   // tertiary (12.7%)
+                '#E0DBC7',   // accent (12.6%)
+                '#CBD0C2',   // accent (7.0%)
+                '#1E1A16',   // accent (5.8%)
+                '#D2D7CC',   // accent (5.8%)
+                '#DAAD49',   // accent (5.7%)
+                '#DAD2B8',   // accent (5.5%)
+                '#DDB74E',   // accent (2.9%)
+                '#D6BB69',   // accent (0.4%)
+                '#CCC4AB',   // accent (0.3%)
+                '#DCC88E',   // accent (0.3%)
+                '#666770',   // accent (0.1%)
+                '#464132',   // accent (0.1%)
+                '#9A9686',   // accent (0.1%)
             ],
-            pcts: [25.8, 15.5, 10.7, 8.2, 7.9, 7.3, 5.9, 5.7, 5.6, 3.1, 3.1, 0.5, 0.4, 0.2, 0.1, 0.1],
+            pcts: [25.4, 15.1, 12.7, 12.6, 7.0, 5.8, 5.8, 5.7, 5.5, 2.9, 0.4, 0.3, 0.3, 0.1, 0.1, 0.1],
             useBoxMuller: false
         },
 

@@ -880,26 +880,26 @@
             artist: 'Beauford Delaney',
             school: 'Abstract Expressionism',
             ref: 'Can Fire in the Park (1946)',
-            bg: '#12100E',
+            bg: '#120F0D',
             colors: [
-                '#12100E',   // dominant (15.9%)
-                '#48422B',   // secondary (11.0%)
-                '#2F261C',   // tertiary (9.5%)
-                '#713C20',   // accent (8.1%)
-                '#5F5945',   // accent (7.3%)
-                '#8D6A26',   // accent (7.1%)
-                '#80725D',   // accent (6.6%)
-                '#768CAE',   // accent (5.5%)
-                '#96ABC7',   // accent (5.2%)
-                '#969483',   // accent (4.9%)
-                '#B19550',   // accent (3.7%)
-                '#586C8A',   // accent (3.5%)
-                '#C9BC95',   // accent (3.3%)
-                '#BD9116',   // accent (3.1%)
-                '#2D3F68',   // accent (2.8%)
-                '#E5E4CF',   // accent (2.6%)
+                '#120F0D',   // dominant (15.1%)
+                '#4C4D38',   // secondary (9.8%)
+                '#29251E',   // tertiary (8.8%)
+                '#4C351E',   // accent (8.1%)
+                '#716657',   // accent (7.7%)
+                '#754123',   // accent (7.5%)
+                '#8D6A25',   // accent (6.3%)
+                '#869DC1',   // accent (6.1%)
+                '#918E80',   // accent (5.6%)
+                '#657A9D',   // accent (4.8%)
+                '#9E854D',   // accent (4.5%)
+                '#B5BBB6',   // accent (3.8%)
+                '#BE9319',   // accent (3.3%)
+                '#334672',   // accent (3.2%)
+                '#C8B076',   // accent (2.9%)
+                '#EAE6CE',   // accent (2.5%)
             ],
-            pcts: [15.9, 11.0, 9.5, 8.1, 7.3, 7.1, 6.6, 5.5, 5.2, 4.9, 3.7, 3.5, 3.3, 3.1, 2.8, 2.6],
+            pcts: [15.1, 9.8, 8.8, 8.1, 7.7, 7.5, 6.3, 6.1, 5.6, 4.8, 4.5, 3.8, 3.3, 3.2, 2.9, 2.5],
             useBoxMuller: true
         },
 

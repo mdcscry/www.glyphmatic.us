@@ -209,6 +209,7 @@ body {
     var currentBg = '#ffffff'; // tracked separately from palette morphs
     var panelTimer = null;     // delayed label update — cleared on rapid morph
     var activeGenre = '';      // '' = all
+    var activeArtistQuery = ''; // '' = all artists
 
     // Build 100 cells in each grid
     for (var i = 0; i < 100; i++) {
@@ -235,15 +236,26 @@ body {
         else setTimeout(function() { waitForPalettes(cb); }, 50);
     }
 
+    function matchesArtistQuery(key, query) {
+        if (!query) return true;
+        var lc = query.toLowerCase().replace(/[\s\-_]/g, '');
+        var artistNorm = ARTIST_PALETTES[key].artist.toLowerCase().replace(/[\s\-_]/g, '');
+        var keyNorm = key.toLowerCase().replace(/[\s\-_]/g, '');
+        return artistNorm.indexOf(lc) !== -1 || keyNorm.indexOf(lc) !== -1;
+    }
+
     function getFilteredKeys() {
         return Object.keys(ARTIST_PALETTES).filter(function(k) {
-            return !activeGenre || _PALETTE_GENRE[k] === activeGenre;
+            var genreOk = !activeGenre || _PALETTE_GENRE[k] === activeGenre;
+            var artistOk = matchesArtistQuery(k, activeArtistQuery);
+            return genreOk && artistOk;
         });
     }
 
     function pickRandomKey(exclude) {
         var keys = getFilteredKeys().filter(function(k) { return k !== exclude; });
         if (!keys.length) keys = getFilteredKeys(); // only one in genre
+        if (!keys.length) keys = Object.keys(ARTIST_PALETTES); // fallback if filters over-constrain
         return keys[Math.floor(Math.random() * keys.length)];
     }
 
@@ -362,11 +374,8 @@ body {
 
     // ?artist=rothko  picks randomly among all palettes for that artist (case-insensitive partial match)
     function pickKeyForArtist(name) {
-        var lc = name.toLowerCase().replace(/[\s\-_]/g, '');
         var matches = Object.keys(ARTIST_PALETTES).filter(function(k) {
-            var artistNorm = ARTIST_PALETTES[k].artist.toLowerCase().replace(/[\s\-_]/g, '');
-            var keyNorm = k.toLowerCase().replace(/[\s\-_]/g, '');
-            return artistNorm.indexOf(lc) !== -1 || keyNorm.indexOf(lc) !== -1;
+            return matchesArtistQuery(k, name);
         });
         if (matches.length === 0) return null;
         return matches[Math.floor(Math.random() * matches.length)];
@@ -389,6 +398,7 @@ body {
     waitForPalettes(function() {
         var params    = new URLSearchParams(window.location.search);
         var urlArtist = params.get('artist');
+        activeArtistQuery = urlArtist || '';
 
         // Populate genre dropdown if ?school=true
         if (params.get('school') === 'true') {

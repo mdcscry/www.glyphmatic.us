@@ -96,26 +96,26 @@
             artist: 'Frida Kahlo',
             school: 'Surrealism',
             ref: 'Self-Portrait with Thorn Necklace and Hummingbird (1940)',
-            bg: '#111210',
+            bg: '#111311',
             colors: [
-                '#111210',   // dominant (21.1%)
-                '#201F19',   // secondary (10.0%)
-                '#372F22',   // tertiary (8.6%)
-                '#E1E5DF',   // accent (7.8%)
-                '#4C422F',   // accent (7.4%)
-                '#CC814F',   // accent (6.4%)
-                '#CFD2D0',   // accent (5.5%)
-                '#6B4F2D',   // accent (4.9%)
-                '#B86941',   // accent (4.8%)
-                '#8D6437',   // accent (4.4%)
-                '#B1B6BE',   // accent (4.2%)
-                '#D29C61',   // accent (3.9%)
-                '#999EAD',   // accent (3.4%)
-                '#655E55',   // accent (3.0%)
-                '#8E8371',   // accent (2.6%)
-                '#D4C57D',   // accent (2.0%)
+                '#111311',   // dominant (21.9%)
+                '#22211A',   // secondary (9.8%)
+                '#393124',   // tertiary (8.5%)
+                '#4F4430',   // accent (7.4%)
+                '#E1E5E0',   // accent (7.2%)
+                '#C16F44',   // accent (6.3%)
+                '#D68D57',   // accent (6.1%)
+                '#D1D4D1',   // accent (5.7%)
+                '#71522D',   // accent (4.7%)
+                '#94653A',   // accent (4.5%)
+                '#B3B8BF',   // accent (4.3%)
+                '#9BA0AF',   // accent (3.7%)
+                '#655E53',   // accent (3.0%)
+                '#D5C279',   // accent (2.4%)
+                '#B09661',   // accent (2.3%)
+                '#503948',   // accent (2.1%)
             ],
-            pcts: [21.1, 10.0, 8.6, 7.8, 7.4, 6.4, 5.5, 4.9, 4.8, 4.4, 4.2, 3.9, 3.4, 3.0, 2.6, 2.0],
+            pcts: [21.9, 9.8, 8.5, 7.4, 7.2, 6.3, 6.1, 5.7, 4.7, 4.5, 4.3, 3.7, 3.0, 2.4, 2.3, 2.1],
             useBoxMuller: false
         },
 
@@ -292,26 +292,26 @@
             artist: 'Giorgio de Chirico',
             school: 'Metaphysical Art',
             ref: 'The Disquieting Muses (1916)',
-            bg: '#312122',
+            bg: '#A75438',
             colors: [
-                '#312122',   // dominant (13.0%)
-                '#41332D',   // secondary (11.5%)
-                '#1D1418',   // tertiary (10.3%)
-                '#474C3C',   // accent (10.0%)
-                '#AB5D40',   // accent (8.9%)
-                '#855543',   // accent (8.4%)
-                '#A14B30',   // accent (6.9%)
-                '#545E4B',   // accent (6.1%)
-                '#CF6037',   // accent (5.7%)
-                '#6E3D28',   // accent (5.1%)
-                '#F2E393',   // accent (3.6%)
-                '#DEBD6E',   // accent (2.9%)
-                '#A88856',   // accent (2.7%)
-                '#FAF4C3',   // accent (1.9%)
-                '#7CAF7F',   // accent (1.6%)
-                '#F6AA36',   // accent (1.4%)
+                '#A75438',   // dominant (13.1%)
+                '#302225',   // secondary (12.7%)
+                '#42352E',   // tertiary (11.2%)
+                '#1D1418',   // accent (10.6%)
+                '#D4724A',   // accent (10.4%)
+                '#895644',   // accent (8.1%)
+                '#CD6038',   // accent (6.3%)
+                '#74422E',   // accent (5.7%)
+                '#56614C',   // accent (5.3%)
+                '#F1E191',   // accent (3.5%)
+                '#A88154',   // accent (3.1%)
+                '#DBBA6C',   // accent (2.9%)
+                '#FAF4C0',   // accent (2.1%)
+                '#53200E',   // accent (1.9%)
+                '#7EB07E',   // accent (1.6%)
+                '#F6A935',   // accent (1.5%)
             ],
-            pcts: [13.0, 11.5, 10.3, 10.0, 8.9, 8.4, 6.9, 6.1, 5.7, 5.1, 3.6, 2.9, 2.7, 1.9, 1.6, 1.4],
+            pcts: [13.1, 12.7, 11.2, 10.6, 10.4, 8.1, 6.3, 5.7, 5.3, 3.5, 3.1, 2.9, 2.1, 1.9, 1.6, 1.5],
             useBoxMuller: false
         },
 
@@ -404,26 +404,26 @@
             artist: 'Gustav Klimt',
             school: 'Symbolism',
             ref: 'The Kiss (1907–1908)',
-            bg: '#8A753F',
+            bg: '#89743C',
             colors: [
-                '#8A753F',   // dominant (15.5%)
-                '#7E6931',   // secondary (12.4%)
-                '#94824C',   // tertiary (12.2%)
-                '#A49458',   // accent (7.9%)
-                '#BDA445',   // accent (7.3%)
-                '#CFB453',   // accent (6.8%)
-                '#6A5827',   // accent (6.3%)
-                '#BCAB67',   // accent (4.6%)
-                '#869368',   // accent (4.5%)
-                '#A38737',   // accent (4.5%)
-                '#A5A07E',   // accent (4.4%)
-                '#C3B795',   // accent (3.7%)
-                '#6A7F48',   // accent (2.9%)
-                '#393020',   // accent (2.8%)
-                '#8E7F9D',   // accent (2.3%)
-                '#6A647C',   // accent (1.8%)
+                '#89743C',   // dominant (15.3%)
+                '#93804A',   // secondary (13.5%)
+                '#7C6730',   // tertiary (11.6%)
+                '#A29157',   // accent (8.5%)
+                '#BFA546',   // accent (7.7%)
+                '#CFB556',   // accent (6.4%)
+                '#685726',   // accent (5.7%)
+                '#B7A866',   // accent (4.9%)
+                '#869369',   // accent (4.6%)
+                '#A58A37',   // accent (4.2%)
+                '#A5A080',   // accent (4.1%)
+                '#C3B794',   // accent (3.6%)
+                '#C45D32',   // accent (3.1%)
+                '#382F21',   // accent (2.8%)
+                '#8C7F9D',   // accent (2.2%)
+                '#6D5DB2',   // accent (1.6%)
             ],
-            pcts: [15.5, 12.4, 12.2, 7.9, 7.3, 6.8, 6.3, 4.6, 4.5, 4.5, 4.4, 3.7, 2.9, 2.8, 2.3, 1.8],
+            pcts: [15.3, 13.5, 11.6, 8.5, 7.7, 6.4, 5.7, 4.9, 4.6, 4.2, 4.1, 3.6, 3.1, 2.8, 2.2, 1.6],
             useBoxMuller: false
         },
 
@@ -432,26 +432,26 @@
             artist: 'Gustav Klimt',
             school: 'Symbolism',
             ref: 'Portrait of Adele Bloch-Bauer I (1907)',
-            bg: '#9A7541',
+            bg: '#9F7942',
             colors: [
-                '#9A7541',   // dominant (12.9%)
-                '#AC8345',   // secondary (11.5%)
-                '#89663A',   // tertiary (10.9%)
-                '#BF944C',   // accent (9.6%)
-                '#D4A654',   // accent (8.2%)
-                '#715838',   // accent (7.3%)
-                '#E9B95E',   // accent (7.2%)
-                '#F8CD71',   // accent (5.5%)
-                '#796E55',   // accent (5.4%)
-                '#93856B',   // accent (3.9%)
-                '#AE9C82',   // accent (3.6%)
-                '#4E5F48',   // accent (3.5%)
-                '#4D4133',   // accent (3.5%)
-                '#CAB69C',   // accent (2.7%)
-                '#2C211B',   // accent (2.4%)
-                '#FCE593',   // accent (1.9%)
+                '#9F7942',   // dominant (13.1%)
+                '#8D693B',   // secondary (12.4%)
+                '#B18847',   // tertiary (11.1%)
+                '#C5984D',   // accent (8.9%)
+                '#755A38',   // accent (8.4%)
+                '#D9AA57',   // accent (7.5%)
+                '#ECBD61',   // accent (6.4%)
+                '#7A6E55',   // accent (5.5%)
+                '#F9D074',   // accent (4.9%)
+                '#504333',   // accent (3.8%)
+                '#4F5F48',   // accent (3.8%)
+                '#AD9B80',   // accent (3.6%)
+                '#C45D32',   // accent (3.6%)
+                '#C9B59A',   // accent (2.9%)
+                '#2C211C',   // accent (2.5%)
+                '#FCE697',   // accent (1.5%)
             ],
-            pcts: [12.9, 11.5, 10.9, 9.6, 8.2, 7.3, 7.2, 5.5, 5.4, 3.9, 3.6, 3.5, 3.5, 2.7, 2.4, 1.9],
+            pcts: [13.1, 12.4, 11.1, 8.9, 8.4, 7.5, 6.4, 5.5, 4.9, 3.8, 3.8, 3.6, 3.6, 2.9, 2.5, 1.5],
             useBoxMuller: false
         },
 
