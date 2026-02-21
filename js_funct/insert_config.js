@@ -237,10 +237,10 @@ const INSERT_CONFIG = {
             },
             watermarks: {
                 count: 1,
-                zIndex: 10,
+                zIndex: -1,
                 positioning: 'top-left'
             },
-            description: 'Lotus Mandala - Multi-Flavor Edition: Consolidates 6 lotus experiment variants with keyboard-selectable flavors. Press 0-5 to switch between: (0) Basic mandala with toroidal circles and 12 petals, (1) Enhanced with opposing rotation and random radial spokes, (2) Circle packing algorithm, (3) Circle packing with grid layout, (4) Non-overlapping circle packing, (5) Grid-based multi-mandala layout. Each flavor generates random OKLCH color palettes with rotating animations and geometric flower-of-life patterns.<br><br>URL parameter support: ?i=29&flavor=N to load specific flavor directly.'
+            description: 'Lotus / Flower-of-Life Multi-Flavor Edition: Consolidates 7 experiment variants with keyboard-selectable flavors. Press 0-6 to switch between: (0) Flower of Life Grid, (1) Lotus Redo (single mandala, spokes + petals), (2) Lotus CirclePack, (3) Lotus CirclePack Grid, (4) Lotus CirclePack NoOverlap, (5) Lotus Grid, (6) Petals CirclePack. Counter-rotation between inner Flower-of-Life and outer structures is applied across flavors, random flavor appears on refresh, and click-to-focus behavior is preserved for focus-capable variants.<br><br>URL parameter support: ?i=29&flavor=N to load specific flavor directly.'
         },
         30: {
             controls: {
