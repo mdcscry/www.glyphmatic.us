@@ -15,12 +15,23 @@ body {
     font-family: Arial, sans-serif;
     height: 100vh;
     width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     position: relative;
     margin: 0;
     padding: 0;
+}
+
+.i18-center-wrap {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.i18-center-wrap > * {
+    pointer-events: auto;
 }
 
 .stars {
@@ -268,10 +279,15 @@ function initContent() {
     starsContainer.appendChild(star);
   }
 
+  // Create centering wrapper (avoids body flex which conflicts with watermarks)
+  const centerWrap = document.createElement('div');
+  centerWrap.className = 'i18-center-wrap';
+
   // Create solar system container
   const solarSystem = document.createElement('div');
   solarSystem.className = 'solar-system';
-  document.body.appendChild(solarSystem);
+  centerWrap.appendChild(solarSystem);
+  document.body.appendChild(centerWrap);
 
   // Create sun
   const sun = document.createElement('div');

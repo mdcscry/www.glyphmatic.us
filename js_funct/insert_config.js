@@ -298,6 +298,48 @@ const INSERT_CONFIG = {
             },
             description: 'T H E   G E N E R A T O R: Typography design tool. Generates random typographic renderings of technical commands (HTML, CSS, JS, SQL, Git, Unix, crypto hashes, ML/AI terms, corporate admonitions) using random Google Fonts with randomized webkit styling. Use the control panel (top-right) to change command type, font, style, border, background, and export as PNG. "man the_generator" opens the full documentation.'
         },
+        34: {
+            controls: {
+                style: false,
+                html: true,
+                resize: false,
+                moveUpDown: false
+            },
+            watermarks: {
+                count: 1,
+                zIndex: 10,
+                positioning: 'top-left'
+            },
+            description: 'Artist Grid: 10\u00d710 color grid cycling through ~244 curated palettes from art history (Impressionism, Expressionism, Cubism, Surrealism, Abstract Expressionism, Pop & Minimal, Old Masters, Americas, Contemporary).<br><br>Palettes morph every 30\u201390s with 14s CSS transitions. ~20% chance of dual-grid layout. Shapes: squares, circles, or mixed.<br><br>Controls: \u25b3HTML = next palette. n / \u2192 = next palette. i = toggle info panel.<br><br>Info panel (bottom) shows artist, painting, school, and thumbnail. Click thumbnail for lightbox.<br><br>URL params: ?artist=rothko (filter by artist), ?school=true (genre dropdown), ?panel=open.'
+        },
+        35: {
+            controls: {
+                style: false,
+                html: true,
+                resize: false,
+                moveUpDown: false
+            },
+            watermarks: {
+                count: 1,
+                zIndex: -1,
+                positioning: 'top-left'
+            },
+            description: 'Flags Fun: Country flag glyphs rendered in native Unicode scripts. Each country\u2019s glyphs are drawn from its national languages\u2019 Unicode blocks (Devanagari, Arabic, CJK, Cyrillic, etc.) colored in flag colors, with a large flag emoji centered. AutoFont selects correct fonts per block.<br><br>Controls: \u25b3HTML / r = random country. \u2190\u2192 or n/p = prev/next. 0\u20139 = jump to index. Click info badge to expand (shows languages, Unicode blocks, ISO code). Hover block names to highlight those glyphs.<br><br>URL params: ?country=us (ISO or name), ?mode=UN or NON-UN, ?alpha (alphabetical order).'
+        },
+        36: {
+            controls: {
+                style: false,
+                html: true,
+                resize: false,
+                moveUpDown: false
+            },
+            watermarks: {
+                count: 1,
+                zIndex: -1,
+                positioning: 'top-left'
+            },
+            description: 'Numbers \u2014 Systems (AutoFont): 4\u00d76 grid of 24 tiles, each cycling through a different Unicode number block\u2019s glyphs. AutoFont loads correct fonts per writing system. Tiles shuffle through all number blocks; palette shifts on reshuffle. Symmetrical two-tone color patterns (12 variations). Click a tile to pause/unpause it.<br><br>Controls: \u25b3HTML = reload/reshuffle. Click tile = pause.'
+        },
     }
 };
 

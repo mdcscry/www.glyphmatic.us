@@ -292,26 +292,26 @@
             artist: 'Giorgio de Chirico',
             school: 'Metaphysical Art',
             ref: 'The Disquieting Muses (1916)',
-            bg: '#312122',
+            bg: '#A75438',
             colors: [
-                '#312122',   // dominant (13.0%)
-                '#41332D',   // secondary (11.5%)
-                '#1D1418',   // tertiary (10.3%)
-                '#474C3C',   // accent (10.0%)
-                '#AB5D40',   // accent (8.9%)
-                '#855543',   // accent (8.4%)
-                '#A14B30',   // accent (6.9%)
-                '#545E4B',   // accent (6.1%)
-                '#CF6037',   // accent (5.7%)
-                '#6E3D28',   // accent (5.1%)
-                '#F2E393',   // accent (3.6%)
-                '#DEBD6E',   // accent (2.9%)
-                '#A88856',   // accent (2.7%)
-                '#FAF4C3',   // accent (1.9%)
-                '#7CAF7F',   // accent (1.6%)
-                '#F6AA36',   // accent (1.4%)
+                '#A75438',   // dominant (13.1%)
+                '#302225',   // secondary (12.7%)
+                '#42352E',   // tertiary (11.2%)
+                '#1D1418',   // accent (10.6%)
+                '#D4724A',   // accent (10.4%)
+                '#895644',   // accent (8.1%)
+                '#CD6038',   // accent (6.3%)
+                '#74422E',   // accent (5.7%)
+                '#56614C',   // accent (5.3%)
+                '#F1E191',   // accent (3.5%)
+                '#A88154',   // accent (3.1%)
+                '#DBBA6C',   // accent (2.9%)
+                '#FAF4C0',   // accent (2.1%)
+                '#53200E',   // accent (1.9%)
+                '#7EB07E',   // accent (1.6%)
+                '#F6A935',   // accent (1.5%)
             ],
-            pcts: [13.0, 11.5, 10.3, 10.0, 8.9, 8.4, 6.9, 6.1, 5.7, 5.1, 3.6, 2.9, 2.7, 1.9, 1.6, 1.4],
+            pcts: [13.1, 12.7, 11.2, 10.6, 10.4, 8.1, 6.3, 5.7, 5.3, 3.5, 3.1, 2.9, 2.1, 1.9, 1.6, 1.5],
             useBoxMuller: false
         },
 

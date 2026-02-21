@@ -11,7 +11,7 @@ Comprehensive guide for creating modular JavaScript visualizations for glyphmati
 
 **URL:** `http://localhost/g.us3.htm?i=XX`
 
-**Current inserts:** 13-27 (15 total)
+**Current inserts:** 13-36 (24 total)
 
 ---
 
@@ -863,6 +863,15 @@ insertArray[16] = ['emoji_versions_data2.js', 'Emoji Grid'];
 | 25 | Rectangle Tiling | Random config | Cleanup, multi-flavor |
 | 26 | Bezier Curves | Presets | SVG animation, info panel |
 | 27 | Ghost Shapes | Clip-path | AutoFont, 25 shapes |
+| 28 | DeGenerator 1 Complete | Multi-flavor (9) | All degenerator1 variants consolidated |
+| 29 | Lotus Mandala | Multi-flavor (6) | Lotus flower mandala variants, circle-packing, OKLCH |
+| 30 | Plotly Charts | Multi-flavor (5) | Plotly.js from CDN, stacked bars, violin, polar, 3D scatter, area |
+| 31 | Fibonacci Spirals | URL variant | AutoFont, Wifredo Lam color palettes, IPA + Extended Latin |
+| 32 | Mad Punctuation | Multi-flavor (2) | Unicode punctuation grids, 5 color looks |
+| 33 | The Generator | UI-rich tool | Typography design tool, Google Fonts, webkit styling, PNG export |
+| 34 | Artist Grid | Self-contained | 244 art-historical palettes, 10×10 grid morph, dual-grid, lightbox |
+| 35 | Flags Fun | Self-contained | 200+ country flag glyphs, AutoFont, native scripts, color morphing |
+| 36 | Numbers Systems | Self-contained | 4×6 grid, Unicode number blocks, AutoFont, symmetrical patterns |
 
 ---
 
@@ -934,5 +943,5 @@ Creating new insert:
 
 ---
 
-*System by mcryer • Last updated: 2026-01-26*
-*Based on comprehensive review of all 15 inserts (13-27)*
+*System by mcryer • Last updated: 2026-02-21*
+*Based on comprehensive review of all 24 inserts (13-36)*
