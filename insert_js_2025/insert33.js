@@ -48,7 +48,7 @@ function createDOM() {
     controls.className = 'themed-element';
     controls.innerHTML = `
         <div class="text-center">
-            <button id="toggleMenu">−</button>
+            <button id="toggleMenu">+</button>
         </div>
         <div id="menuContent">
             <button id="refreshBtn">Refresh<br>T H E G E N E R A T O R</button>
