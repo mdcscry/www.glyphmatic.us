@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top 10 Generative Art</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: #03020a;
+    overflow: hidden;
+    font-family: monospace;
+  }
+
+  #chart { position: fixed; inset: 0; }
+
+  #ui {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    gap: 12px;
+  }
+
+  button {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    font-family: monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 8px 24px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.15); }
+</style>
+</head>
+<body>
+
+<div id="chart"></div>
+
+<div id="ui">
+  <button onclick="regenerate()">↺ Regenerate</button>
+  <button id="animBtn" onclick="toggleAnimate()">▶ Animate</button>
+</div>
+
+<script>
+/* ── Color palette generator ── */
+function randomPalette(n) {
+  const mode = Math.floor(Math.random() * 4);
+  return Array.from({length: n}, () => {
+    if (mode === 0) return `hsl(${Math.random()*360},100%,${55+Math.random()*20}%)`;
+    if (mode === 1) return `hsl(${Math.random()*360},70%,${65+Math.random()*15}%)`;
+    if (mode === 2) {
+      const h = Math.random() < 0.5 ? 10 + Math.random()*30 : 190 + Math.random()*40;
+      return `hsl(${h},90%,${50+Math.random()*20}%)`;
+    }
+    return `hsl(${200+Math.random()*160},${60+Math.random()*40}%,${50+Math.random()*25}%)`;
+  });
+}
+
+/* ── Data generator ── */
+function generateData() {
+  const N = 10;
+  const T = 16 + Math.floor(Math.random() * 8);
+  const colors = randomPalette(N);
+  const ranks = Array.from({length: N}, () => new Array(T).fill(0));
+
+  for (let t = 0; t < T; t++) {
+    if (t === 0) {
+      const perm = [...Array(N).keys()];
+      for (let i = perm.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [perm[i], perm[j]] = [perm[j], perm[i]];
+      }
+      perm.forEach((rank, entity) => { ranks[entity][t] = rank + 1; });
+    } else {
+      const drifted = ranks.map((r, i) => ({
+        i, score: r[t-1] + (Math.random() - 0.48) * 3
+      })).sort((a, b) => a.score - b.score);
+      drifted.forEach((d, rank) => { ranks[d.i][t] = rank + 1; });
+    }
+  }
+
+  return { colors, ranks, times: Array.from({length: T}, (_, i) => i), N, T };
+}
+
+/* ── Build Plotly traces ── */
+function buildTraces(data) {
+  const { colors, ranks, times, N } = data;
+  return Array.from({length: N}, (_, i) => ({
+    x: times,
+    y: ranks[i],
+    mode: 'lines',
+    line: {
+      color: colors[i],
+      width: 18 + Math.random() * 14,
+      shape: 'spline',
+      smoothing: 1.3,
+    },
+    opacity: 0.82,
+    hoverinfo: 'none',
+  }));
+}
+
+function getLayout() {
+  return {
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    margin: { l: 0, r: 0, t: 0, b: 0 },
+    showlegend: false,
+    xaxis: { visible: false, showgrid: false, zeroline: false },
+    yaxis: { autorange: 'reversed', range: [0.3, 10.7], visible: false, showgrid: false, zeroline: false },
+    width: window.innerWidth,
+    height: window.innerHeight,
+  };
+}
+
+const config = { displayModeBar: false, staticPlot: true };
+let currentData = null;
+
+function render(data) {
+  currentData = data;
+  Plotly.react('chart', buildTraces(data), getLayout(), config);
+}
+
+function regenerate() {
+  render(generateData());
+}
+
+/* ── Slow animation ── */
+let animTimer = null;
+
+function toggleAnimate() {
+  const btn = document.getElementById('animBtn');
+  if (animTimer) {
+    clearInterval(animTimer);
+    animTimer = null;
+    btn.textContent = '▶ Animate';
+    return;
+  }
+
+  btn.textContent = '■ Stop';
+  let data = generateData();
+  render(data);
+
+  animTimer = setInterval(() => {
+    const { N, T } = data;
+    for (let t = 1; t < T; t++) {
+      const drifted = data.ranks.map((r, i) => ({
+        i, score: r[t] + (Math.random() - 0.5) * 1.5
+      })).sort((a, b) => a.score - b.score);
+      drifted.forEach((d, rank) => { data.ranks[d.i][t] = rank + 1; });
+    }
+    Plotly.react('chart', buildTraces(data), getLayout(), config);
+  }, 1800);
+}
+
+/* ── Init & resize ── */
+render(generateData());
+
+window.addEventListener('resize', () => {
+  if (currentData) Plotly.relayout('chart', { width: window.innerWidth, height: window.innerHeight });
+});
+</script>
+</body>
+</html>

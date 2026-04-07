@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hinton</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #fff; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(0,0,0,0.07); border: 1px solid rgba(0,0,0,0.25);
+    color: #111; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(0,0,0,0.15); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="newColors()">&#x21BA; Colors Only</button>
+</div>
+<script>
+/* ── Random accent color ── */
+function randomAccent() {
+  return d3.hsl(Math.random()*360, 0.75+Math.random()*0.25, 0.40+Math.random()*0.25).toString();
+}
+let accent = randomAccent();
+
+/* ── Generate weight matrix ── */
+function randomWeights(rows, cols) {
+  // Mix of patterns like a real weight matrix
+  const pattern = Math.floor(Math.random()*5);
+  return Array.from({length:rows}, (_,r) =>
+    Array.from({length:cols}, (_,c) => {
+      const t = c/cols, s = r/rows;
+      let v;
+      if      (pattern===0) v = (Math.random()-0.5)*2;
+      else if (pattern===1) v = Math.sin(t*Math.PI*4)*Math.cos(s*Math.PI*3);
+      else if (pattern===2) v = (Math.random()-0.5)*2 * Math.exp(-((t-0.5)**2+(s-0.5)**2)*8);
+      else if (pattern===3) v = Math.sin((t+s)*Math.PI*5)*(0.5+Math.random()*0.5);
+      else                  v = (Math.random()-0.5) + Math.sin(t*Math.PI*2)*0.5;
+      return Math.max(-1, Math.min(1, v));
+    })
+  );
+}
+
+/* ── Draw ── */
+function render() {
+  const W=window.innerWidth, H=window.innerHeight;
+  const svg=d3.select('#viz').attr('width',W).attr('height',H);
+  svg.selectAll('*').remove();
+  svg.append('rect').attr('width',W).attr('height',H).attr('fill','#f0f0f0');
+
+  // Grid dimensions — fill viewport densely
+  const cellSize = Math.min(W,H) < 600 ? 18 : 22;
+  const cols = Math.floor(W/cellSize);
+  const rows = Math.floor(H/cellSize);
+  const padX = (W - cols*cellSize)/2;
+  const padY = (H - rows*cellSize)/2;
+
+  const weights = randomWeights(rows, cols);
+  const maxW = d3.max(weights.flat(), Math.abs) || 1;
+
+  const g = svg.append('g');
+
+  // Draw grey background grid cells
+  for (let r=0; r<rows; r++) {
+    for (let c=0; c<cols; c++) {
+      g.append('rect')
+        .attr('x', padX + c*cellSize)
+        .attr('y', padY + r*cellSize)
+        .attr('width', cellSize)
+        .attr('height', cellSize)
+        .attr('fill', '#d0d0d0')
+        .attr('stroke', '#f0f0f0')
+        .attr('stroke-width', 0.5);
+    }
+  }
+
+  // Draw weight squares
+  for (let r=0; r<rows; r++) {
+    for (let c=0; c<cols; c++) {
+      const v    = weights[r][c];
+      const size = Math.sqrt(Math.abs(v)/maxW) * (cellSize-1) * 0.92;
+      const x    = padX + c*cellSize + cellSize/2;
+      const y    = padY + r*cellSize + cellSize/2;
+
+      // Three color types matching the hatch v52 philosophy:
+      // ~80% black/white, ~15% colored, ~5% accent bg
+      const roll = Math.random();
+      let fillColor;
+      if (roll < 0.05) {
+        // Accent colored square
+        fillColor = accent;
+      } else if (roll < 0.20) {
+        // Sign-colored with accent tint
+        fillColor = v >= 0
+          ? d3.color(accent).brighter(1).toString()
+          : d3.color(accent).darker(1.5).toString();
+      } else {
+        // Classic Hinton — white=positive, black=negative
+        fillColor = v >= 0 ? '#ffffff' : '#111111';
+      }
+
+      if (size > 0.5) {
+        g.append('rect')
+          .attr('x', x - size/2)
+          .attr('y', y - size/2)
+          .attr('width', size)
+          .attr('height', size)
+          .attr('fill', fillColor);
+      }
+    }
+  }
+}
+
+function regenerate() { accent=randomAccent(); render(); }
+function newColors()  { accent=randomAccent(); render(); }
+
+render();
+window.addEventListener('resize', render);
+</script>
+</body>
+</html>

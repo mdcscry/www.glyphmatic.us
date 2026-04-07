@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dragon Curves</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  canvas { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 100; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(0,0,0,0.75); border: 1px solid rgba(255,255,255,0.4);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer;
+  }
+  button:hover { background: rgba(255,255,255,0.15); }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="newColors()">&#x21BA; Colors Only</button>
+</div>
+<script>
+var canvas = document.getElementById('c');
+var ctx = canvas.getContext('2d');
+
+var GRID = 5;
+var GAP  = 3;
+
+/* ══════════════════════════════════════════════════════
+   DRAGON CURVE
+   Start with a single segment direction sequence: [1]
+   Each iteration: take current seq, append 1, then append
+   the reversed/negated copy of current seq.
+   1 = turn left, 0 = turn right (or -1 = right)
+   Then walk the turns to get (x,y) points.
+══════════════════════════════════════════════════════ */
+function dragonTurns(iterations, folds) {
+  // folds is an array of 0/1 per iteration — 1=left fold, 0=right fold
+  // classic dragon curve always uses 1 (always fold left)
+  // varying folds produces different shapes from the same dragon family
+  var seq = [folds[0]];
+  for (var i = 1; i < iterations; i++) {
+    var rev = [];
+    for (var j = seq.length - 1; j >= 0; j--) {
+      rev.push(1 - seq[j]);
+    }
+    seq.push(folds[i] !== undefined ? folds[i] : 1);
+    for (var k = 0; k < rev.length; k++) seq.push(rev[k]);
+  }
+  return seq;
+}
+
+function dragonPoints(turns) {
+  // directions: 0=right, 1=up, 2=left, 3=down
+  var x = 0, y = 0, dir = 0;
+  var pts = [[x, y]];
+  for (var i = 0; i < turns.length; i++) {
+    // move forward
+    if (dir === 0) x++;
+    else if (dir === 1) y++;
+    else if (dir === 2) x--;
+    else y--;
+    pts.push([x, y]);
+    // turn
+    if (turns[i] === 1) dir = (dir + 1) % 4; // left
+    else dir = (dir + 3) % 4;                 // right
+  }
+  return pts;
+}
+
+/* ── Random color pair ── */
+function randomPair() {
+  var mode = Math.floor(Math.random() * 8);
+  var h  = Math.floor(Math.random() * 360);
+  var h2 = (h + 150 + Math.floor(Math.random() * 60)) % 360;
+  var s  = 80 + Math.floor(Math.random() * 20);
+  var l1 = 45 + Math.floor(Math.random() * 20);
+  var l2 = 50 + Math.floor(Math.random() * 25);
+  if (mode === 0) return ['#ff6b6b', '#4ecdc4'];
+  if (mode === 1) return ['#f7b731', '#a55eea'];
+  if (mode === 2) return ['#fd9644', '#45aaf2'];
+  if (mode === 3) return ['#26de81', '#fc5c65'];
+  if (mode === 4) return ['#2bcbba', '#fd79a8'];
+  if (mode === 5) return ['hsl(' + h + ',' + s + '%,' + l1 + '%)', 'hsl(' + h2 + ',' + s + '%,' + l2 + '%)'];
+  if (mode === 6) return ['#fff', 'hsl(' + h + ',' + s + '%,' + l1 + '%)'];
+  return ['hsl(' + h + ',90%,70%)', 'hsl(' + h2 + ',90%,65%)'];
+}
+
+var datasets = [];
+var colorPairs = [];
+
+function generate() {
+  datasets = [];
+  colorPairs = [];
+  var sharedIters = 7 + Math.floor(Math.random() * 7); // 7-13, same for all 25
+  for (var i = 0; i < GRID * GRID; i++) {
+    var iters = sharedIters;
+    var folds = [];
+    for (var f = 0; f < iters; f++) folds.push(Math.random() < 0.5 ? 1 : 0);
+    var turns = dragonTurns(iters, folds);
+    var pts   = dragonPoints(turns);
+    datasets.push({ pts: pts, iters: iters });
+    colorPairs.push(randomPair());
+  }
+}
+
+function drawDragon(pts, colors, ox, oy, cellW, cellH) {
+  if (pts.length < 2) return;
+
+  // Find bounds
+  var minX = pts[0][0], maxX = pts[0][0];
+  var minY = pts[0][1], maxY = pts[0][1];
+  for (var i = 1; i < pts.length; i++) {
+    if (pts[i][0] < minX) minX = pts[i][0];
+    if (pts[i][0] > maxX) maxX = pts[i][0];
+    if (pts[i][1] < minY) minY = pts[i][1];
+    if (pts[i][1] > maxY) maxY = pts[i][1];
+  }
+
+  var pad = Math.min(cellW, cellH) * 0.06;
+  var scaleX = (cellW - pad * 2) / Math.max(1, maxX - minX);
+  var scaleY = (cellH - pad * 2) / Math.max(1, maxY - minY);
+  var sc = Math.min(scaleX, scaleY);
+
+  var offX = ox + pad + (cellW - pad * 2 - (maxX - minX) * sc) / 2;
+  var offY = oy + pad + (cellH - pad * 2 - (maxY - minY) * sc) / 2;
+
+  function tx(x) { return offX + (x - minX) * sc; }
+  function ty(y) { return offY + (y - minY) * sc; }
+
+  // Line width scales with cell and inversely with segment count
+  var lw = Math.max(0.3, sc * 0.6);
+
+  // Draw segments, alternating color every generation block
+  // Each iteration doubles segments — color by segment parity
+  for (var j = 0; j < pts.length - 1; j++) {
+    var col = colors[j % 2];
+    ctx.strokeStyle = col;
+    ctx.lineWidth = lw;
+    ctx.beginPath();
+    ctx.moveTo(tx(pts[j][0]),   ty(pts[j][1]));
+    ctx.lineTo(tx(pts[j+1][0]), ty(pts[j+1][1]));
+    ctx.stroke();
+  }
+}
+
+function render() {
+  var W = canvas.width, H = canvas.height;
+  var cellW = (W - GAP * (GRID + 1)) / GRID;
+  var cellH = (H - GAP * (GRID + 1)) / GRID;
+
+  ctx.fillStyle = '#07060e';
+  ctx.fillRect(0, 0, W, H);
+
+  for (var idx = 0; idx < GRID * GRID; idx++) {
+    var row = Math.floor(idx / GRID);
+    var col = idx % GRID;
+    var ox  = GAP + col * (cellW + GAP);
+    var oy  = GAP + row * (cellH + GAP);
+
+    ctx.fillStyle = '#0d0c1a';
+    ctx.fillRect(ox, oy, cellW, cellH);
+
+    // clip
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(ox, oy, cellW, cellH);
+    ctx.clip();
+
+    drawDragon(datasets[idx].pts, colorPairs[idx], ox, oy, cellW, cellH);
+
+    ctx.restore();
+  }
+}
+
+function regenerate() {
+  generate();
+  render();
+}
+
+function newColors() {
+  for (var i = 0; i < GRID * GRID; i++) colorPairs[i] = randomPair();
+  render();
+}
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  render();
+}
+
+generate();
+window.addEventListener('resize', resize);
+resize();
+</script>
+</body>
+</html>

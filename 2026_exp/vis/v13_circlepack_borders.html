@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orb Borders</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.18);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(0,0,0,0.7); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">↺ Regenerate</button>
+  <button onclick="newColors()">↺ Colors Only</button>
+</div>
+
+<script>
+const GRID = 3;
+
+/* ── Palettes ── */
+const PALETTE_MODES = [
+  () => ['#ff2d55','#ff6b35','#ffd60a','#34c759','#5ac8fa','#bf5af2','#ff9f0a'],
+  () => ['#ff3b30','#ff9500','#ffcc02','#4cd964','#5ac8fa','#007aff','#ff2d55'],
+  () => { const b=Math.random()*360; return Array.from({length:7},(_,i)=>d3.hsl((b+i*51)%360,1.0,0.62).toString()); },
+  () => ['#f72585','#b5179e','#7209b7','#4361ee','#4cc9f0','#f77f00','#06d6a0'],
+  () => { const b=Math.random()*360; return Array.from({length:7},(_,i)=>d3.hsl((b+i*28)%360,0.95,0.60+i*0.02).toString()); },
+  () => ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff922b','#cc5de8','#20c997'],
+];
+
+function randomPalette() {
+  return PALETTE_MODES[Math.floor(Math.random() * PALETTE_MODES.length)]();
+}
+
+function toRgb(colorStr) {
+  const c = d3.color(colorStr);
+  return c ? c.rgb() : d3.rgb(255,100,100);
+}
+
+/* ── Random hierarchy ── */
+function randomHierarchy() {
+  const numGroups = 2 + Math.floor(Math.random() * 3);
+  return {
+    name: 'root',
+    children: Array.from({length: numGroups}, (_, gi) => ({
+      name: `g${gi}`, group: gi,
+      children: Array.from({length: 3 + Math.floor(Math.random() * 7)}, (_, ci) => {
+        const hasSubs = Math.random() < 0.3;
+        if (hasSubs) {
+          return {
+            name: `g${gi}c${ci}`, group: gi,
+            children: Array.from({length: 2 + Math.floor(Math.random() * 4)}, (_, si) => ({
+              name: `g${gi}c${ci}s${si}`, group: gi,
+              value: Math.pow(Math.random(), 0.5) * 70 + 8
+            }))
+          };
+        }
+        return { name: `g${gi}c${ci}`, group: gi, value: Math.pow(Math.random(), 0.5) * 80 + 8 };
+      })
+    }))
+  };
+}
+
+/* ── State ── */
+let currentPalette = randomPalette();
+let datasets = [];
+
+function generateDatasets() {
+  datasets = Array.from({length: GRID * GRID}, () => randomHierarchy());
+}
+
+/* ── Draw ── */
+function drawAll() {
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  const cellW = W / GRID;
+  const cellH = H / GRID;
+  const r = Math.min(cellW, cellH) * 0.46;
+
+  const svg = d3.select('#viz').attr('width', W).attr('height', H);
+  svg.selectAll('*').remove();
+
+  const defs = svg.append('defs');
+
+  // Glow filter for borders
+  const filterBorder = defs.append('filter')
+    .attr('id', 'border-glow')
+    .attr('x', '-60%').attr('y', '-60%')
+    .attr('width', '220%').attr('height', '220%');
+  filterBorder.append('feGaussianBlur')
+    .attr('in', 'SourceGraphic')
+    .attr('stdDeviation', '3')
+    .attr('result', 'blur');
+  const m1 = filterBorder.append('feMerge');
+  m1.append('feMergeNode').attr('in', 'blur');
+  m1.append('feMergeNode').attr('in', 'SourceGraphic');
+
+  // Stronger glow for parent shells
+  const filterParent = defs.append('filter')
+    .attr('id', 'parent-glow')
+    .attr('x', '-80%').attr('y', '-80%')
+    .attr('width', '260%').attr('height', '260%');
+  filterParent.append('feGaussianBlur')
+    .attr('stdDeviation', '6')
+    .attr('result', 'blur');
+  const m2 = filterParent.append('feMerge');
+  m2.append('feMergeNode').attr('in', 'blur');
+  m2.append('feMergeNode').attr('in', 'SourceGraphic');
+
+  // Radial gradients — dark fill so borders pop
+  currentPalette.forEach((color, i) => {
+    const rgb = toRgb(color);
+
+    // Fill gradient: dark center, slight color tint
+    const fill = defs.append('radialGradient')
+      .attr('id', `fill-${i}`)
+      .attr('cx', '40%').attr('cy', '35%').attr('r', '65%');
+    fill.append('stop').attr('offset', '0%')
+      .attr('stop-color', `rgb(${Math.min(255,rgb.r*0.35+30)},${Math.min(255,rgb.g*0.35+30)},${Math.min(255,rgb.b*0.35+30)})`)
+      .attr('stop-opacity', 1);
+    fill.append('stop').attr('offset', '100%')
+      .attr('stop-color', '#08070f')
+      .attr('stop-opacity', 1);
+
+    // Border/stroke gradient (used as stroke color — we just use flat color for stroke)
+    // but we add a bright inner highlight circle
+    const highlight = defs.append('radialGradient')
+      .attr('id', `hl-${i}`)
+      .attr('cx', '35%').attr('cy', '28%').attr('r', '40%');
+    highlight.append('stop').attr('offset', '0%')
+      .attr('stop-color', `rgb(${Math.min(255,rgb.r+120)},${Math.min(255,rgb.g+120)},${Math.min(255,rgb.b+120)})`)
+      .attr('stop-opacity', 0.5);
+    highlight.append('stop').attr('offset', '100%')
+      .attr('stop-color', color)
+      .attr('stop-opacity', 0);
+  });
+
+  datasets.forEach((data, idx) => {
+    const row = Math.floor(idx / GRID);
+    const col = idx % GRID;
+    const cx = col * cellW + cellW / 2;
+    const cy = row * cellH + cellH / 2;
+    const cellDelay = idx * 55;
+
+    const root = d3.hierarchy(data)
+      .sum(d => d.value || 0)
+      .sort((a, b) => b.value - a.value);
+
+    d3.pack().size([r * 2, r * 2]).padding(3)(root);
+
+    const cell = svg.append('g')
+      .attr('transform', `translate(${cx - r},${cy - r})`);
+
+    const nodes = root.descendants().slice(1);
+
+    const groupIndex = d => {
+      const anc = d.ancestors().slice(-2)[0];
+      return (anc?.data?.group ?? 0) % currentPalette.length;
+    };
+
+    // ── Parent shells — thin glowing ring only ──
+    cell.selectAll('circle.parent')
+      .data(nodes.filter(d => d.children))
+      .join('circle')
+        .attr('cx', d => d.x).attr('cy', d => d.y).attr('r', d => d.r)
+        .attr('fill', 'none')
+        .attr('stroke', d => currentPalette[groupIndex(d)])
+        .attr('stroke-width', 1.5)
+        .attr('opacity', 0)
+        .attr('filter', 'url(#parent-glow)')
+      .transition().duration(700).delay(cellDelay)
+        .attr('opacity', 0.5);
+
+    // ── Leaf circles — dark fill + glowing colored border ──
+    // Layer 1: dark filled circle
+    cell.selectAll('circle.leaf-fill')
+      .data(nodes.filter(d => !d.children))
+      .join('circle')
+        .attr('cx', d => d.x).attr('cy', d => d.y).attr('r', 0)
+        .attr('fill', d => `url(#fill-${groupIndex(d)})`)
+        .attr('stroke', 'none')
+        .attr('opacity', 0)
+      .transition().duration(700).delay((d,i) => cellDelay + i*10).ease(d3.easeBounceOut)
+        .attr('r', d => d.r)
+        .attr('opacity', 1);
+
+    // Layer 2: glowing stroke ring
+    cell.selectAll('circle.leaf-border')
+      .data(nodes.filter(d => !d.children))
+      .join('circle')
+        .attr('cx', d => d.x).attr('cy', d => d.y).attr('r', 0)
+        .attr('fill', 'none')
+        .attr('stroke', d => currentPalette[groupIndex(d)])
+        .attr('stroke-width', d => Math.max(1.5, d.r * 0.12))
+        .attr('opacity', 0)
+        .attr('filter', 'url(#border-glow)')
+      .transition().duration(700).delay((d,i) => cellDelay + i*10).ease(d3.easeBounceOut)
+        .attr('r', d => d.r)
+        .attr('opacity', 0.95);
+
+    // Layer 3: inner specular highlight
+    cell.selectAll('circle.leaf-hl')
+      .data(nodes.filter(d => !d.children))
+      .join('circle')
+        .attr('cx', d => d.x).attr('cy', d => d.y).attr('r', 0)
+        .attr('fill', d => `url(#hl-${groupIndex(d)})`)
+        .attr('stroke', 'none')
+        .attr('opacity', 0)
+      .transition().duration(700).delay((d,i) => cellDelay + i*10).ease(d3.easeBounceOut)
+        .attr('r', d => d.r)
+        .attr('opacity', 1);
+  });
+}
+
+function regenerate() {
+  currentPalette = randomPalette();
+  generateDatasets();
+  drawAll();
+}
+
+function newColors() {
+  currentPalette = randomPalette();
+  drawAll();
+}
+
+generateDatasets();
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>

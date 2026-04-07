@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Streamgraph Lines</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #06050f; overflow: hidden; }
+  svg { display: block; }
+  #ui {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff;
+    font-family: monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 8px 24px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<div id="ui">
+  <button onclick="resetPalette()">↺ New Colors</button>
+  <button id="pauseBtn" onclick="togglePause()">⏸ Pause</button>
+</div>
+
+<script>
+const W = window.innerWidth;
+const H = window.innerHeight;
+const N = 10;
+const VISIBLE = 80;
+const TICK_MS = 600;    // much slower — new point every 600ms
+const HISTORY = 400;
+
+const svg = d3.select('body').append('svg')
+  .attr('width', W).attr('height', H);
+
+svg.append('defs').append('clipPath')
+  .attr('id', 'clip')
+  .append('rect').attr('width', W).attr('height', H);
+
+const g = svg.append('g').attr('clip-path', 'url(#clip)');
+
+/* ── Palette ── */
+function randomPalette() {
+  const mode = Math.floor(Math.random() * 5);
+  return Array.from({length: N}, (_, i) => {
+    if (mode === 0) return d3.hsl(i * 36 + Math.random() * 20, 1.0, 0.6 + Math.random() * 0.15).toString();
+    if (mode === 1) return d3.hsl(Math.random() * 360, 0.9, 0.62 + Math.random() * 0.15).toString();
+    if (mode === 2) {
+      const h = Math.random() < 0.5 ? 10 + Math.random() * 30 : 185 + Math.random() * 50;
+      return d3.hsl(h, 0.95, 0.55 + Math.random() * 0.2).toString();
+    }
+    if (mode === 3) return d3.hsl(260 + Math.random() * 80, 0.85, 0.6 + Math.random() * 0.2).toString();
+    return d3.hsl(80 + Math.random() * 120, 0.85, 0.55 + Math.random() * 0.2).toString();
+  });
+}
+
+let colors = randomPalette();
+
+/* ── Fat, varied stroke widths per stream ── */
+const strokeWidths = Array.from({length: N}, () => 10 + Math.random() * 18);
+
+/* ── Drifting stream values ── */
+let vals = Array.from({length: N}, () => 15 + Math.random() * 50);
+let vels = Array.from({length: N}, () => (Math.random() - 0.5) * 2);
+
+function nextFrame() {
+  vals = vals.map((v, i) => {
+    vels[i] += (Math.random() - 0.5) * 2.5;
+    vels[i] *= 0.9;
+    vels[i] += (35 - v) * 0.018;
+    let nv = Math.max(1, Math.min(100, v + vels[i]));
+    vals[i] = nv;
+    return nv;
+  });
+  return [...vals];
+}
+
+let data = [];
+for (let i = 0; i < HISTORY; i++) data.push(nextFrame());
+
+/* ── Stack ── */
+const keys = Array.from({length: N}, (_, i) => i);
+
+const stack = d3.stack()
+  .keys(keys)
+  .value((d, k) => d[k])
+  .offset(d3.stackOffsetWiggle)
+  .order(d3.stackOrderInsideOut);
+
+/* ── Scales ── */
+const xScale = d3.scaleLinear().range([0, W]);
+const yScale = d3.scaleLinear().range([H, 0]);
+
+/* ── Line generator ── */
+const line = d3.line()
+  .x((d, i) => xScale(i))
+  .y(d => yScale((d[0] + d[1]) / 2))
+  .curve(d3.curveCatmullRom.alpha(0.5));
+
+/* ── Paths ── */
+const paths = g.selectAll('path')
+  .data(keys)
+  .enter().append('path')
+  .attr('fill', 'none')
+  .attr('stroke', (d, i) => colors[i])
+  .attr('stroke-width', i => strokeWidths[i])
+  .attr('stroke-linecap', 'round')
+  .attr('stroke-linejoin', 'round')
+  .attr('opacity', 0.8);
+
+/* ── Render with smooth D3 transition ── */
+let tail = data.length;
+
+function render() {
+  const start = Math.max(0, tail - VISIBLE);
+  const slice = data.slice(start, tail);
+
+  const rows = slice.map(frame => {
+    const obj = {};
+    keys.forEach(k => { obj[k] = frame[k]; });
+    return obj;
+  });
+
+  const series = stack(rows);
+
+  xScale.domain([0, slice.length - 1]);
+
+  const allMids = series.flatMap(s => s.map(d => (d[0] + d[1]) / 2));
+  const yMin = d3.min(allMids), yMax = d3.max(allMids);
+  const pad = (yMax - yMin) * 0.15;
+  yScale.domain([yMin - pad, yMax + pad]);
+
+  paths.data(series)
+    .transition()
+    .duration(TICK_MS * 0.9)
+    .ease(d3.easeLinear)
+    .attr('d', line);
+}
+
+/* ── Ticker ── */
+let paused = false;
+
+setInterval(() => {
+  if (paused) return;
+  data.push(nextFrame());
+  if (data.length > HISTORY) data.shift();
+  tail = data.length;
+  render();
+}, TICK_MS);
+
+function togglePause() {
+  paused = !paused;
+  document.getElementById('pauseBtn').textContent = paused ? '▶ Play' : '⏸ Pause';
+}
+
+function resetPalette() {
+  colors = randomPalette();
+  paths.attr('stroke', (d, i) => colors[i]);
+}
+
+window.addEventListener('resize', () => {
+  const nw = window.innerWidth, nh = window.innerHeight;
+  svg.attr('width', nw).attr('height', nh);
+  svg.select('#clip rect').attr('width', nw).attr('height', nh);
+  xScale.range([0, nw]);
+  yScale.range([nh, 0]);
+  render();
+});
+
+render();
+</script>
+</body>
+</html>

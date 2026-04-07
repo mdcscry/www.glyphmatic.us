@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DenseLines</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  canvas { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(0,0,0,0.7); }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+</div>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+const N_SERIES = 1000;
+const T_STEPS  = 320;
+const Y_BINS   = 240;
+const Y_RANGE  = 5;     // ± from zero
+
+/* ── Color modes ── */
+const COLOR_MODES = [
+  function(t) { return d3.interpolateViridis(t); },
+  function(t) { return d3.interpolatePlasma(t); },
+  function(t) { return d3.interpolateInferno(t); },
+  function(t) { return d3.interpolateCividis(t); },
+  function(t) { return d3.interpolateWarm(t); },
+  function(t) { return d3.interpolateCool(t); },
+];
+let colorMode = 0;
+
+/* ── Generate series ── */
+function generateSeries() {
+  const series = [];
+  for (let s = 0; s < N_SERIES; s++) {
+    const vol      = 0.06 + Math.random() * 0.22;
+    const revert   = 0.02 + Math.random() * 0.07;
+    const seasonal = Math.random() < 0.45 ? Math.random() * 1.8 : 0;
+    const freq     = 1 + Math.floor(Math.random() * 4);
+    // Random starting position — spread across the range
+    let v   = (Math.random() - 0.5) * Y_RANGE;
+    let vel = 0;
+    const vals = [];
+    for (let t = 0; t < T_STEPS; t++) {
+      vel += (Math.random() - 0.5) * vol;
+      vel -= v * revert;   // mean-revert to zero
+      vel *= 0.93;
+      v   += vel;
+      v    = Math.max(-Y_RANGE * 1.5, Math.min(Y_RANGE * 1.5, v));
+      const s_val = seasonal * Math.sin(t / T_STEPS * Math.PI * 2 * freq);
+      vals.push(v + s_val);
+    }
+    series.push(vals);
+  }
+  return series;
+}
+
+/* ── Build density with arc-length normalization (per the paper) ──
+   For each segment between t and t+1:
+     dx = 1 (one time step, normalized to 1)
+     dy = (v1 - v0) in bin units
+     arcLen = sqrt(dx² + dy²)
+     contribution per bin traversed = 1 / arcLen
+   This means steep segments contribute less per bin,
+   correcting the overrepresentation of high-slope lines.
+── */
+function buildDensity(series) {
+  const density = Array.from({length: T_STEPS}, function() {
+    return new Float64Array(Y_BINS);
+  });
+
+  // x step size in "data units" — normalized to 1
+  // y bin size in data units
+  const binSize = (Y_RANGE * 2) / Y_BINS;
+
+  series.forEach(function(vals) {
+    for (let t = 0; t < T_STEPS - 1; t++) {
+      const v0 = vals[t];
+      const v1 = vals[t + 1];
+
+      // Arc length: dx=1 time step, dy in data units
+      const dy = v1 - v0;
+      const arcLen = Math.sqrt(1 + dy * dy);
+      const contrib = 1.0 / arcLen;
+
+      // Walk from v0 to v1, incrementing by one bin at a time
+      const bin0 = Math.floor((v0 + Y_RANGE) / binSize);
+      const bin1 = Math.floor((v1 + Y_RANGE) / binSize);
+
+      const bMin = Math.max(0, Math.min(bin0, bin1));
+      const bMax = Math.min(Y_BINS - 1, Math.max(bin0, bin1));
+
+      for (let b = bMin; b <= bMax; b++) {
+        density[t][b] += contrib;
+      }
+    }
+  });
+
+  return density;
+}
+
+/* ── Optional: smooth density with a small Gaussian kernel (bin-summarize-smooth) ── */
+function smoothDensity(density, sigma) {
+  const kernel = [];
+  const kSize  = Math.ceil(sigma * 3);
+  for (let i = -kSize; i <= kSize; i++) {
+    kernel.push(Math.exp(-(i * i) / (2 * sigma * sigma)));
+  }
+  const kSum = kernel.reduce(function(a, b) { return a + b; }, 0);
+  const kNorm = kernel.map(function(k) { return k / kSum; });
+
+  return density.map(function(col) {
+    const out = new Float64Array(Y_BINS);
+    for (let b = 0; b < Y_BINS; b++) {
+      let val = 0;
+      for (let ki = 0; ki < kNorm.length; ki++) {
+        const bi = b + ki - kSize;
+        if (bi >= 0 && bi < Y_BINS) val += col[bi] * kNorm[ki];
+      }
+      out[b] = val;
+    }
+    return out;
+  });
+}
+
+/* ── Render ── */
+function render(density) {
+  const W = canvas.width;
+  const H = canvas.height;
+
+  ctx.fillStyle = '#07060e';
+  ctx.fillRect(0, 0, W, H);
+
+  // Find max for normalization
+  let maxD = 0;
+  density.forEach(function(col) {
+    col.forEach(function(v) { if (v > maxD) maxD = v; });
+  });
+  if (maxD === 0) return;
+
+  const cellW = W / T_STEPS;
+  const cellH = H / Y_BINS;
+  const colorFn = COLOR_MODES[colorMode];
+
+  // Use ImageData for speed
+  const imgData = ctx.createImageData(W, H);
+  const px = imgData.data;
+
+  // Fill background
+  for (let i = 0; i < px.length; i += 4) {
+    px[i]   = 7;
+    px[i+1] = 6;
+    px[i+2] = 14;
+    px[i+3] = 255;
+  }
+
+  for (let t = 0; t < T_STEPS; t++) {
+    const xStart = Math.floor(t * cellW);
+    const xEnd   = Math.floor((t + 1) * cellW);
+
+    for (let b = 0; b < Y_BINS; b++) {
+      const d = density[t][b];
+      if (d < 0.0001) continue;
+
+      // Power curve to reveal mid-density structure
+      const norm = Math.pow(d / maxD, 0.5);
+      const col  = d3.rgb(colorFn(norm));
+
+      // Y is flipped: bin 0 = bottom (negative), bin Y_BINS-1 = top (positive)
+      const yStart = Math.floor(H - (b + 1) * cellH);
+      const yEnd   = Math.floor(H - b * cellH);
+
+      for (let y = yStart; y < yEnd; y++) {
+        for (let x = xStart; x < xEnd; x++) {
+          const idx = (y * W + x) * 4;
+          px[idx]   = col.r;
+          px[idx+1] = col.g;
+          px[idx+2] = col.b;
+          px[idx+3] = 255;
+        }
+      }
+    }
+  }
+
+  ctx.putImageData(imgData, 0, 0);
+
+  // Subtle zero line
+  const zeroY = H / 2;
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3, 7]);
+  ctx.beginPath();
+  ctx.moveTo(0, zeroY);
+  ctx.lineTo(W, zeroY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function regenerate() {
+  colorMode = Math.floor(Math.random() * COLOR_MODES.length);
+  const series  = generateSeries();
+  const density = buildDensity(series);
+  const smooth  = smoothDensity(density, 1.2);
+  render(smooth);
+}
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  regenerate();
+}
+
+window.addEventListener('resize', resize);
+resize();
+</script>
+</body>
+</html>

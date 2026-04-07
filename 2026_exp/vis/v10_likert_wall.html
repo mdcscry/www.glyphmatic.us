@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Likert Wall</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #06050f; overflow: hidden; font-family: monospace; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.25);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(0,0,0,0.6); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">↺ Regenerate</button>
+</div>
+
+<script>
+const LEVELS = 5;
+
+/* ── Palettes — all vivid, no dark neutrals ── */
+const PALETTE_MODES = [
+  // Diverging red→orange→yellow→lime→green
+  () => ['#f94144','#f3722c','#f9c74f','#90be6d','#43aa8b'],
+  // Diverging magenta→pink→cream→sky→indigo
+  () => ['#d62828','#f77f00','#fcbf49','#eae2b7','#003049'],
+  // Diverging purple→violet→gold→teal→cyan
+  () => ['#7b2d8b','#c77dff','#e9c46a','#2a9d8f','#48cae4'],
+  // All random vivid HSL
+  () => Array.from({length: LEVELS}, () =>
+    d3.hsl(Math.random()*360, 0.85+Math.random()*0.15, 0.52+Math.random()*0.18).toString()
+  ),
+  // Analogous hue ramp — no dark shades, all bright
+  () => {
+    const base = Math.random() * 360;
+    return Array.from({length: LEVELS}, (_, i) =>
+      d3.hsl((base + i * 28) % 360, 0.9, 0.55 + i * 0.04).toString()
+    );
+  },
+  // Neon: high saturation, light values
+  () => Array.from({length: LEVELS}, (_, i) =>
+    d3.hsl((i * 72 + Math.random()*20) % 360, 1.0, 0.58 + Math.random()*0.1).toString()
+  ),
+];
+
+function randomPalette() {
+  return PALETTE_MODES[Math.floor(Math.random() * PALETTE_MODES.length)]();
+}
+
+/* ── Random Likert proportions ── */
+function randomLikert() {
+  const bias = Math.random();
+  const raw = Array.from({length: LEVELS}, (_, i) => {
+    if (bias < 0.33) {
+      return Math.exp(-(i * 0.8)) * (0.4 + Math.random());
+    } else if (bias < 0.66) {
+      return Math.exp(-((LEVELS-1-i) * 0.8)) * (0.4 + Math.random());
+    } else {
+      const center = (LEVELS-1)/2;
+      return Math.exp(-Math.pow(i-center,2)*0.5) * (0.4 + Math.random());
+    }
+  });
+  const total = d3.sum(raw);
+  return raw.map(v => v / total);
+}
+
+/* ── Draw ── */
+function draw() {
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+
+  const svg = d3.select('#viz')
+    .attr('width', W).attr('height', H);
+
+  svg.selectAll('*').remove();
+
+  const rowH = 16 + Math.floor(Math.random() * 28);
+  const numRows = Math.ceil(H / rowH);
+
+  // Global or per-row palette
+  const globalMode = Math.random() < 0.5;
+  const sharedPalette = randomPalette();
+
+  Array.from({length: numRows}, (_, row) => {
+    const y = row * rowH;
+    // Last row may be taller than needed — clamp height to remaining space
+    const h = Math.min(rowH, H - y);
+    const proportions = randomLikert();
+    const pal = globalMode ? sharedPalette : randomPalette();
+
+    // Compute pixel widths — use integer floors then give remainder to last segment
+    // so every row is EXACTLY W pixels wide with zero gaps
+    const rawWidths = proportions.map(p => p * W);
+    const floors = rawWidths.map(w => Math.floor(w));
+    const remainder = W - d3.sum(floors);
+    // Distribute remainder pixels to the largest fractional segments
+    const fracs = rawWidths.map((w, i) => ({i, frac: w - floors[i]}));
+    fracs.sort((a,b) => b.frac - a.frac);
+    fracs.slice(0, remainder).forEach(({i}) => floors[i]++);
+
+    let x = 0;
+    floors.forEach((w, i) => {
+      if (w <= 0) return;
+      svg.append('rect')
+        .attr('x', x)
+        .attr('y', y)
+        .attr('width', w)
+        .attr('height', h + 1) // +1 to overlap row boundary and kill sub-pixel gaps
+        .attr('fill', pal[i]);
+      x += w;
+    });
+  });
+
+  // Staggered fade in
+  svg.selectAll('rect')
+    .attr('opacity', 0)
+    .transition()
+    .duration(350)
+    .delay((d, i) => Math.floor(i / LEVELS) * 5)
+    .attr('opacity', 1);
+}
+
+function regenerate() { draw(); }
+
+draw();
+window.addEventListener('resize', draw);
+</script>
+</body>
+</html>

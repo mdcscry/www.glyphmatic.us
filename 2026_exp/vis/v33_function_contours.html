@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Function Contours</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-contour/4.0.2/d3-contour.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="newColors()">&#x21BA; Colors Only</button>
+</div>
+<script>
+const GRID = 5;
+const GAP  = 2;
+const RES  = 140;
+
+/* ── Palettes — single accent color per cell, lines only ── */
+const PALETTE_MODES = [
+  () => { const b=Math.random()*360; return Array.from({length:GRID*GRID},(_,i)=>d3.hsl((b+i*26)%360,0.95,0.65).toString()); },
+  () => Array.from({length:GRID*GRID},()=>d3.hsl(Math.random()*360,0.92,0.62+Math.random()*0.12).toString()),
+  () => Array.from({length:GRID*GRID},(_,i)=>d3.hsl(190+i*10,0.88,0.55+i*0.016).toString()),
+  () => Array.from({length:GRID*GRID},(_,i)=>d3.hsl(300+i*12,0.85,0.55+i*0.016).toString()),
+  () => { const b=Math.random()*360; return Array.from({length:GRID*GRID},(_,i)=>d3.hsl((b+i*7)%360,1.0,0.62).toString()); },
+];
+function randomPalette() { return PALETTE_MODES[Math.floor(Math.random()*PALETTE_MODES.length)](); }
+let currentPalette = randomPalette();
+
+/* ── Function library ── */
+function makeFunctions() {
+  // Random parameters for variety each call
+  const a = 0.5 + Math.random()*2.5;
+  const b = 0.5 + Math.random()*2.5;
+  const k = 1 + Math.floor(Math.random()*4);
+  const m = 1 + Math.floor(Math.random()*4);
+  const p = Math.random()*Math.PI*2;
+  const q = Math.random()*Math.PI*2;
+
+  return [
+    { fn:(x,y)=>Math.sin(x*a)*Math.cos(y*b),                    domain:[-Math.PI*2,Math.PI*2,-Math.PI*2,Math.PI*2] },
+    { fn:(x,y)=>Math.sin(Math.sqrt(x*x+y*y)+p),                 domain:[-8,8,-8,8] },
+    { fn:(x,y)=>Math.cos(x*a+p)*Math.sin(y*b+q),                domain:[-Math.PI*2,Math.PI*2,-Math.PI*2,Math.PI*2] },
+    { fn:(x,y)=>Math.sin(x*k+p)*Math.sin(y*m+q),                domain:[-Math.PI*2,Math.PI*2,-Math.PI*2,Math.PI*2] },
+    { fn:(x,y)=>(x*x-y*y)/(x*x+y*y+0.1),                       domain:[-3,3,-3,3] },
+    { fn:(x,y)=>Math.sin(x*x+y*y),                              domain:[-3,3,-3,3] },
+    { fn:(x,y)=>Math.cos(x*a)*Math.cos(y*b)+Math.sin((x+y)*0.5),domain:[-Math.PI*3,Math.PI*3,-Math.PI*3,Math.PI*3] },
+    { fn:(x,y)=>Math.sin(x+Math.sin(y+Math.sin(x))),            domain:[-Math.PI*2,Math.PI*2,-Math.PI*2,Math.PI*2] },
+    { fn:(x,y)=>Math.sin(a*x)*Math.sin(b*y)*Math.cos(x*y*0.3), domain:[-Math.PI*2,Math.PI*2,-Math.PI*2,Math.PI*2] },
+    { fn:(x,y)=>x*Math.sin(y*b)+y*Math.sin(x*a),                domain:[-Math.PI*2,Math.PI*2,-Math.PI*2,Math.PI*2] },
+    { fn:(x,y)=>Math.sin(x*a+y*b)*Math.cos(x*b-y*a),            domain:[-Math.PI*2,Math.PI*2,-Math.PI*2,Math.PI*2] },
+    { fn:(x,y)=>Math.sin(Math.sqrt(Math.abs(x*y))+p)*Math.cos(x-y),domain:[-Math.PI*2,Math.PI*2,-Math.PI*2,Math.PI*2] },
+    { fn:(x,y)=>(Math.sin(x*a)+Math.cos(y*b))/(Math.abs(x-y)+0.5), domain:[-Math.PI*2,Math.PI*2,-Math.PI*2,Math.PI*2] },
+    { fn:(x,y)=>Math.sin(x*x*0.2-y*y*0.2),                     domain:[-4,4,-4,4] },
+    { fn:(x,y)=>Math.cos(x*k)*Math.cos(y*m)-Math.cos((x+y)*0.5*a), domain:[-Math.PI*2,Math.PI*2,-Math.PI*2,Math.PI*2] },
+    { fn:(x,y)=>Math.sin(x+p)*Math.sin(y+q)+Math.cos(x*y*0.3), domain:[-Math.PI*2,Math.PI*2,-Math.PI*2,Math.PI*2] },
+    { fn:(x,y)=>Math.tanh(x*a)*Math.tanh(y*b),                  domain:[-3,3,-3,3] },
+    { fn:(x,y)=>Math.sin(x*a)*Math.cos(x+y)+Math.cos(y*b)*Math.sin(x-y), domain:[-Math.PI*2,Math.PI*2,-Math.PI*2,Math.PI*2] },
+    { fn:(x,y)=>Math.sin(x*x*b-y*y*a+p),                       domain:[-3,3,-3,3] },
+    { fn:(x,y)=>Math.cos(x*k*0.7+y*m*0.7)*Math.sin(x*m*0.7-y*k*0.7), domain:[-Math.PI*2,Math.PI*2,-Math.PI*2,Math.PI*2] },
+    { fn:(x,y)=>Math.sin(x+Math.cos(y*b))+Math.cos(y+Math.sin(x*a)), domain:[-Math.PI*3,Math.PI*3,-Math.PI*3,Math.PI*3] },
+    { fn:(x,y)=>(Math.sin(x*a)+Math.sin(y*b)+Math.sin((x+y)*0.7*a))/3, domain:[-Math.PI*3,Math.PI*3,-Math.PI*3,Math.PI*3] },
+    { fn:(x,y)=>Math.sin(Math.pow(x*x+y*y,0.4)*a+p),            domain:[-4,4,-4,4] },
+    { fn:(x,y)=>Math.cos(x*y*b*0.3+p),                          domain:[-Math.PI*2,Math.PI*2,-Math.PI*2,Math.PI*2] },
+    { fn:(x,y)=>Math.sin(x*a+y*y*0.3)*Math.cos(y*b+x*x*0.3),   domain:[-Math.PI*2,Math.PI*2,-Math.PI*2,Math.PI*2] },
+  ];
+}
+
+/* ── Sample function to grid ── */
+function sampleFn(fn, xMin, xMax, yMin, yMax) {
+  const vals = new Float64Array(RES*RES);
+  for (let j=0; j<RES; j++) {
+    for (let i=0; i<RES; i++) {
+      const x = xMin + (xMax-xMin)*i/(RES-1);
+      const y = yMin + (yMax-yMin)*j/(RES-1);
+      let v = fn(x,y);
+      if (!isFinite(v)) v=0;
+      vals[j*RES+i] = v;
+    }
+  }
+  return vals;
+}
+
+/* ── State ── */
+let datasets = [];
+
+function generateDatasets() {
+  const fns = makeFunctions();
+  // Shuffle and pick 25
+  const pool = d3.shuffle(fns.slice());
+  datasets = Array.from({length:GRID*GRID}, (_,i) => pool[i % pool.length]);
+}
+
+/* ── Draw ── */
+function drawAll() {
+  const W=window.innerWidth, H=window.innerHeight;
+  const cellW=(W-GAP*(GRID+1))/GRID;
+  const cellH=(H-GAP*(GRID+1))/GRID;
+
+  const svg=d3.select('#viz').attr('width',W).attr('height',H);
+  svg.selectAll('*').remove();
+  svg.append('rect').attr('width',W).attr('height',H).attr('fill','#07060e');
+
+  datasets.forEach(function(ds, idx) {
+    const row=Math.floor(idx/GRID), col=idx%GRID;
+    const ox=GAP+col*(cellW+GAP);
+    const oy=GAP+row*(cellH+GAP);
+    const color=currentPalette[idx];
+
+    const [xMin,xMax,yMin,yMax]=ds.domain;
+    const vals=sampleFn(ds.fn,xMin,xMax,yMin,yMax);
+    const ext=d3.extent(vals);
+    const vMin=ext[0], vMax=ext[1], range=vMax-vMin||1;
+
+    // More contour levels = denser lines
+    const nLevels = 18 + Math.floor(Math.random()*14);
+    const thresholds = Array.from({length:nLevels},(_,i)=>vMin+range*(i+0.5)/nLevels);
+
+    const contours = d3.contours().size([RES,RES]).thresholds(thresholds)(vals);
+
+    const xSc=d3.scaleLinear().domain([0,RES]).range([ox,ox+cellW]);
+    const ySc=d3.scaleLinear().domain([0,RES]).range([oy,oy+cellH]);
+
+    const pathGen=d3.geoPath().projection(
+      d3.geoTransform({ point: function(x,y){ this.stream.point(xSc(x),ySc(y)); } })
+    );
+
+    // Clip to cell
+    const clipId='clip-'+idx;
+    svg.append('defs').append('clipPath').attr('id',clipId)
+      .append('rect').attr('x',ox).attr('y',oy).attr('width',cellW).attr('height',cellH);
+
+    const g=svg.append('g').attr('clip-path','url(#'+clipId+')').attr('opacity',0);
+
+    // Dark cell bg
+    g.append('rect').attr('x',ox).attr('y',oy)
+      .attr('width',cellW).attr('height',cellH)
+      .attr('fill','#07060e');
+
+    // Lines only — no fill, just strokes
+    g.selectAll('path')
+      .data(contours)
+      .join('path')
+        .attr('d', pathGen)
+        .attr('fill', 'none')
+        .attr('stroke', color)
+        .attr('stroke-width', 0.7)
+        .attr('opacity', (d,i) => 0.4 + 0.5*(i/contours.length));
+
+    g.transition().duration(450).delay(idx*28).attr('opacity',1);
+  });
+}
+
+function regenerate() { currentPalette=randomPalette(); generateDatasets(); drawAll(); }
+function newColors()  { currentPalette=randomPalette(); drawAll(); }
+
+generateDatasets();
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>

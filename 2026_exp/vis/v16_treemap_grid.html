@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treemap Grid</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #06050f; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.22);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(0,0,0,0.7); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">↺ Regenerate</button>
+  <button onclick="newColors()">↺ Colors Only</button>
+</div>
+
+<script>
+const GRID = 5;
+const GAP = 3; // px between cells
+
+/* ── Palettes ── */
+const PALETTE_MODES = [
+  () => ['#f94144','#f3722c','#f9c74f','#90be6d','#43aa8b','#277da1','#577590','#e9c46a'],
+  () => ['#ff006e','#fb5607','#ffbe0b','#8338ec','#3a86ff','#06d6a0','#ef233c','#ffd60a'],
+  () => Array.from({length:8}, () => d3.hsl(Math.random()*360, 0.9+Math.random()*0.1, 0.52+Math.random()*0.18).toString()),
+  () => { const b=Math.random()*360; return Array.from({length:8}, (_,i) => d3.hsl((b+i*30)%360, 0.92, 0.54+i*0.02).toString()); },
+  () => ['#e63946','#457b9d','#a8dadc','#ffd60a','#fb8500','#8ecae6','#06d6a0','#f72585'],
+  () => { const b=Math.random()*360; return Array.from({length:8}, (_,i) => d3.hsl((b+i*45)%360, 1.0, 0.56).toString()); },
+  () => ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff922b','#cc5de8','#20c997','#f8961e'],
+];
+
+function randomPalette() {
+  return PALETTE_MODES[Math.floor(Math.random() * PALETTE_MODES.length)]();
+}
+
+/* ── Tiling algorithms — random pick per cell ── */
+const TILINGS = [
+  d3.treemapSquarify,
+  d3.treemapSlice,
+  d3.treemapDice,
+  d3.treemapSliceDice,
+  d3.treemapResquarify,
+];
+
+/* ── Random hierarchy ── */
+function randomHierarchy() {
+  const numGroups = 2 + Math.floor(Math.random() * 5); // 2–6 groups
+  return {
+    name: 'root',
+    children: Array.from({length: numGroups}, (_, gi) => ({
+      name: `g${gi}`, group: gi,
+      children: Array.from({length: 2 + Math.floor(Math.random() * 9)}, (_, ci) => ({
+        name: `g${gi}c${ci}`,
+        group: gi,
+        value: Math.pow(Math.random(), 0.5) * 90 + 5
+      }))
+    }))
+  };
+}
+
+/* ── State ── */
+let currentPalette = randomPalette();
+let datasets = [];
+
+function generateDatasets() {
+  datasets = Array.from({length: GRID * GRID}, () => ({
+    tree: randomHierarchy(),
+    tiling: TILINGS[Math.floor(Math.random() * TILINGS.length)]
+  }));
+}
+
+/* ── Draw ── */
+function drawAll() {
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+
+  const cellW = (W - GAP * (GRID + 1)) / GRID;
+  const cellH = (H - GAP * (GRID + 1)) / GRID;
+
+  const svg = d3.select('#viz').attr('width', W).attr('height', H);
+  svg.selectAll('*').remove();
+
+  // Dark background fill
+  svg.append('rect').attr('width', W).attr('height', H).attr('fill', '#06050f');
+
+  datasets.forEach((ds, idx) => {
+    const row = Math.floor(idx / GRID);
+    const col = idx % GRID;
+    const x0 = GAP + col * (cellW + GAP);
+    const y0 = GAP + row * (cellH + GAP);
+    const cellDelay = idx * 30;
+
+    const root = d3.hierarchy(ds.tree)
+      .sum(d => d.value || 0)
+      .sort((a, b) => b.value - a.value);
+
+    d3.treemap()
+      .tile(ds.tiling)
+      .size([cellW, cellH])
+      .padding(1)
+      .paddingOuter(0)
+      (root);
+
+    const cell = svg.append('g').attr('transform', `translate(${x0},${y0})`);
+
+    const leaves = root.leaves();
+
+    // Group-level background rects (slightly darker)
+    const groupNodes = root.children || [];
+    cell.selectAll('rect.group')
+      .data(groupNodes)
+      .join('rect')
+        .attr('x', d => d.x0).attr('y', d => d.y0)
+        .attr('width', d => d.x1 - d.x0)
+        .attr('height', d => d.y1 - d.y0)
+        .attr('fill', d => {
+          const c = d3.color(currentPalette[d.data.group % currentPalette.length]);
+          return c.darker(1.6).toString();
+        })
+        .attr('opacity', 0);
+
+    // Leaf rects
+    cell.selectAll('rect.leaf')
+      .data(leaves)
+      .join('rect')
+        .attr('x', d => d.x0).attr('y', d => d.y0)
+        .attr('width', d => Math.max(0, d.x1 - d.x0))
+        .attr('height', d => Math.max(0, d.y1 - d.y0))
+        .attr('fill', d => currentPalette[d.data.group % currentPalette.length])
+        .attr('stroke', '#06050f')
+        .attr('stroke-width', 0.5)
+        .attr('opacity', 0)
+      .transition()
+        .duration(500)
+        .delay((d, i) => cellDelay + i * 6)
+        .ease(d3.easeCubicOut)
+        .attr('opacity', 0.88);
+
+    // Group backgrounds fade in first
+    cell.selectAll('rect.group')
+      .transition()
+        .duration(400)
+        .delay(cellDelay)
+        .attr('opacity', 1);
+  });
+}
+
+function regenerate() {
+  currentPalette = randomPalette();
+  generateDatasets();
+  drawAll();
+}
+
+function newColors() {
+  currentPalette = randomPalette();
+  drawAll();
+}
+
+generateDatasets();
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Endless Stream</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #06050f; overflow: hidden; }
+  svg { display: block; }
+  #ui {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff;
+    font-family: monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 8px 24px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<div id="ui">
+  <button onclick="resetPalette()">↺ New Colors</button>
+  <button id="pauseBtn" onclick="togglePause()">⏸ Pause</button>
+</div>
+
+<script>
+const W = window.innerWidth;
+const H = window.innerHeight;
+const N = 10;
+const VISIBLE = 120;
+const TICK_MS = 600;
+const HISTORY = 600;
+
+const svg = d3.select('body').append('svg').attr('width', W).attr('height', H);
+
+svg.append('defs').append('clipPath')
+  .attr('id', 'clip')
+  .append('rect').attr('width', W).attr('height', H);
+
+const g = svg.append('g').attr('clip-path', 'url(#clip)');
+
+/* ── Palette ── */
+function randomPalette() {
+  const mode = Math.floor(Math.random() * 5);
+  return Array.from({length: N}, (_, i) => {
+    if (mode === 0) return d3.hsl((i * 36 + Math.random() * 20) % 360, 1.0, 0.6 + Math.random() * 0.15).toString();
+    if (mode === 1) return d3.hsl(Math.random() * 360, 0.9, 0.62 + Math.random() * 0.15).toString();
+    if (mode === 2) {
+      const h = Math.random() < 0.5 ? 10 + Math.random() * 30 : 185 + Math.random() * 50;
+      return d3.hsl(h, 0.95, 0.55 + Math.random() * 0.2).toString();
+    }
+    if (mode === 3) return d3.hsl(260 + Math.random() * 80, 0.85, 0.6 + Math.random() * 0.2).toString();
+    return d3.hsl(80 + Math.random() * 120, 0.85, 0.55 + Math.random() * 0.2).toString();
+  });
+}
+
+let colors = randomPalette();
+const strokeWidths = Array.from({length: N}, () => 10 + Math.random() * 16);
+
+/* ── Fixed lane positions ─────────────────────────────────
+   Each stream lives in a horizontal band. The band's center
+   is fixed; the value only controls thickness (y0/y1 around
+   the center), not the vertical position of the center itself.
+   This means lines never swap lanes — they just breathe.
+── */
+const laneH = H / N;
+const laneCenters = Array.from({length: N}, (_, i) => laneH * i + laneH / 2);
+
+/* ── Drifting thickness per stream ── */
+let vals = Array.from({length: N}, () => 15 + Math.random() * 40);
+let vels = Array.from({length: N}, () => (Math.random() - 0.5) * 2);
+
+function nextFrame() {
+  vals = vals.map((v, i) => {
+    vels[i] += (Math.random() - 0.5) * 2.5;
+    vels[i] *= 0.88;
+    vels[i] += (30 - v) * 0.02;
+    return Math.max(2, Math.min(laneH * 0.85, v + vels[i]));
+  });
+  return [...vals];
+}
+
+let data = [];
+for (let i = 0; i < HISTORY; i++) data.push(nextFrame());
+
+/* ── Scales ── */
+const xScale = d3.scaleLinear().range([0, W]);
+
+/* ── Area generator — one per stream, using fixed lane center ── */
+// For each stream i, the area spans center ± halfThickness
+function makeArea(i) {
+  return d3.area()
+    .x((d, t) => xScale(t))
+    .y0(d => laneCenters[i] - d / 2)
+    .y1(d => laneCenters[i] + d / 2)
+    .curve(d3.curveCatmullRom.alpha(0.5));
+}
+
+// Also a midline for the spine
+function makeLine(i) {
+  return d3.line()
+    .x((d, t) => xScale(t))
+    .y(() => laneCenters[i])
+    .curve(d3.curveCatmullRom.alpha(0.5));
+}
+
+/* ── Draw: filled area + spine line per stream ── */
+const areas = g.selectAll('path.area')
+  .data(d3.range(N))
+  .enter().append('path')
+  .attr('class', 'area')
+  .attr('fill', (d, i) => colors[i])
+  .attr('opacity', 0.55);
+
+const spines = g.selectAll('path.spine')
+  .data(d3.range(N))
+  .enter().append('path')
+  .attr('class', 'spine')
+  .attr('fill', 'none')
+  .attr('stroke', (d, i) => colors[i])
+  .attr('stroke-width', (d, i) => strokeWidths[i] * 0.35)
+  .attr('stroke-linecap', 'round')
+  .attr('opacity', 0.9);
+
+/* ── Render ── */
+let tail = data.length;
+
+function render() {
+  const start = Math.max(0, tail - VISIBLE);
+  const slice = data.slice(start, tail);
+  xScale.domain([0, slice.length - 1]);
+
+  areas.each(function(i) {
+    const seriesData = slice.map(frame => frame[i]);
+    d3.select(this)
+      .transition().duration(TICK_MS * 0.9).ease(d3.easeLinear)
+      .attr('d', makeArea(i)(seriesData));
+  });
+
+  spines.each(function(i) {
+    const seriesData = slice.map(frame => frame[i]);
+    d3.select(this)
+      .transition().duration(TICK_MS * 0.9).ease(d3.easeLinear)
+      .attr('d', makeLine(i)(seriesData));
+  });
+}
+
+/* ── Ticker ── */
+let paused = false;
+
+setInterval(() => {
+  if (paused) return;
+  data.push(nextFrame());
+  if (data.length > HISTORY) data.shift();
+  tail = data.length;
+  render();
+}, TICK_MS);
+
+function togglePause() {
+  paused = !paused;
+  document.getElementById('pauseBtn').textContent = paused ? '▶ Play' : '⏸ Pause';
+}
+
+function resetPalette() {
+  colors = randomPalette();
+  areas.attr('fill', (d, i) => colors[i]);
+  spines.attr('stroke', (d, i) => colors[i]);
+}
+
+window.addEventListener('resize', () => {
+  const nw = window.innerWidth, nh = window.innerHeight;
+  svg.attr('width', nw).attr('height', nh);
+  svg.select('#clip rect').attr('width', nw).attr('height', nh);
+  xScale.range([0, nw]);
+  render();
+});
+
+render();
+</script>
+</body>
+</html>

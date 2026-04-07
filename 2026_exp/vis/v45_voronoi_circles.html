@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voronoi Circles</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="newColors()">&#x21BA; Colors Only</button>
+</div>
+<script>
+const GRID = 5;
+const GAP  = 4;
+
+/* ── Palettes ── */
+const PALETTE_MODES = [
+  () => { const b=Math.random()*360; return Array.from({length:30},(_,i)=>d3.hsl((b+i*12)%360,0.85,0.55+Math.random()*0.15).toString()); },
+  () => Array.from({length:30},()=>d3.hsl(Math.random()*360,0.9,0.55+Math.random()*0.18).toString()),
+  () => { const b=Math.random()*360; return Array.from({length:30},(_,i)=>d3.hsl((b+i*7)%360,0.92,0.52+i*0.008).toString()); },
+  () => Array.from({length:30},(_,i)=>d3.hsl(200+i*6,0.85,0.48+i*0.01).toString()),
+  () => Array.from({length:30},(_,i)=>d3.hsl(340+i*8,0.88,0.50+i*0.01).toString()),
+];
+function randomPalette() { return PALETTE_MODES[Math.floor(Math.random()*PALETTE_MODES.length)](); }
+let currentPalette = randomPalette();
+
+/* ── Generate random points inside a circle ── */
+function randomPointsInCircle(n, cx, cy, r) {
+  const pts = [];
+  while (pts.length < n) {
+    const a = Math.random()*Math.PI*2;
+    const d = r * Math.sqrt(Math.random()); // uniform distribution in circle
+    pts.push([cx + Math.cos(a)*d, cy + Math.sin(a)*d]);
+  }
+  return pts;
+}
+
+let datasets = [];
+function generateDatasets() {
+  datasets = Array.from({length:GRID*GRID}, () => ({
+    n: 8 + Math.floor(Math.random()*22), // 8-29 sites
+  }));
+}
+
+/* ── Draw one voronoi circle ── */
+function drawVoronoi(svg, cellData, palette, ox, oy, cellW, cellH, idx) {
+  const r  = Math.min(cellW, cellH) * 0.44;
+  const cx = ox + cellW/2;
+  const cy = oy + cellH/2;
+
+  // Clip circle
+  const clipId = 'vclip-'+idx;
+  svg.append('defs').append('clipPath').attr('id', clipId)
+    .append('circle').attr('cx', cx).attr('cy', cy).attr('r', r);
+
+  const g = svg.append('g').attr('clip-path', 'url(#'+clipId+')').attr('opacity',0);
+
+  // Generate sites
+  const pts = randomPointsInCircle(cellData.n, cx, cy, r * 0.92);
+
+  // Compute Voronoi — bounded to a rect slightly larger than the circle
+  const pad = r * 1.2;
+  const delaunay  = d3.Delaunay.from(pts);
+  const voronoi   = delaunay.voronoi([cx-pad, cy-pad, cx+pad, cy+pad]);
+
+  // Draw cells
+  pts.forEach((pt, i) => {
+    const cell = voronoi.renderCell(i);
+    if (!cell) return;
+    const color = palette[i % palette.length];
+    g.append('path')
+      .attr('d', cell)
+      .attr('fill', color)
+      .attr('opacity', 0.88)
+      .attr('stroke', '#07060e')
+      .attr('stroke-width', 0.8);
+  });
+
+
+
+  // Circle border
+  svg.append('circle')
+    .attr('cx', cx).attr('cy', cy).attr('r', r)
+    .attr('fill', 'none')
+    .attr('stroke', 'rgba(255,255,255,0.15)')
+    .attr('stroke-width', 1);
+
+  g.transition().duration(500).delay(idx*28).attr('opacity',1);
+}
+
+/* ── Full render ── */
+function drawAll() {
+  const W=window.innerWidth, H=window.innerHeight;
+  const cellW=(W-GAP*(GRID+1))/GRID;
+  const cellH=(H-GAP*(GRID+1))/GRID;
+
+  const svg=d3.select('#viz').attr('width',W).attr('height',H);
+  svg.selectAll('*').remove();
+  svg.append('rect').attr('width',W).attr('height',H).attr('fill','#07060e');
+
+  datasets.forEach((cellData, idx) => {
+    const row=Math.floor(idx/GRID), col=idx%GRID;
+    const ox=GAP+col*(cellW+GAP);
+    const oy=GAP+row*(cellH+GAP);
+    drawVoronoi(svg, cellData, currentPalette, ox, oy, cellW, cellH, idx);
+  });
+}
+
+function regenerate() { currentPalette=randomPalette(); generateDatasets(); drawAll(); }
+function newColors()  { currentPalette=randomPalette(); drawAll(); }
+
+generateDatasets();
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>

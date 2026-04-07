@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Streaming Bump Chart</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #06050f; overflow: hidden; }
+  svg { display: block; }
+  #ui {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff;
+    font-family: monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 8px 24px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<div id="ui">
+  <button onclick="resetPalette()">↺ New Colors</button>
+  <button id="pauseBtn" onclick="togglePause()">⏸ Pause</button>
+</div>
+
+<script>
+const N = 10;
+const VISIBLE = 28;  // time steps visible in the window
+const TICK_MS = 900;
+
+/* ── SVG ── */
+const svg = d3.select('body').append('svg')
+  .attr('width', window.innerWidth)
+  .attr('height', window.innerHeight);
+
+svg.append('defs').append('clipPath')
+  .attr('id', 'clip')
+  .append('rect')
+  .attr('width', window.innerWidth)
+  .attr('height', window.innerHeight);
+
+const g = svg.append('g').attr('clip-path', 'url(#clip)');
+
+/* ── Palette ── */
+function randomPalette() {
+  const mode = Math.floor(Math.random() * 5);
+  return Array.from({length: N}, (_, i) => {
+    if (mode === 0) return d3.hsl((i * 36 + Math.random() * 20) % 360, 1.0, 0.62 + Math.random() * 0.12).toString();
+    if (mode === 1) return d3.hsl(Math.random() * 360, 0.9, 0.62 + Math.random() * 0.15).toString();
+    if (mode === 2) {
+      const h = Math.random() < 0.5 ? 10 + Math.random() * 30 : 185 + Math.random() * 50;
+      return d3.hsl(h, 0.95, 0.55 + Math.random() * 0.2).toString();
+    }
+    if (mode === 3) return d3.hsl(260 + Math.random() * 80, 0.85, 0.6 + Math.random() * 0.2).toString();
+    return d3.hsl(80 + Math.random() * 120, 0.85, 0.55 + Math.random() * 0.2).toString();
+  });
+}
+
+let colors = randomPalette();
+const strokeWidths = Array.from({length: N}, () => 14 + Math.random() * 14);
+
+/* ── Rank state ─────────────────────────────────────────────
+   history is an append-only log of snapshots.
+   Each snapshot is a frozen array of N ranks.
+   We NEVER mutate past snapshots — only push new ones.
+── */
+let currentScores = Array.from({length: N}, () => Math.random() * 10);
+
+function appendSnapshot() {
+  // Nudge scores slightly, re-rank — past history untouched
+  currentScores = currentScores.map(s => {
+    const delta = (Math.random() - 0.5) * 1.8;
+    return Math.max(0, Math.min(10, s + delta));
+  });
+  const sorted = currentScores
+    .map((s, i) => ({i, s}))
+    .sort((a, b) => b.s - a.s);
+  const snapshot = new Array(N);
+  sorted.forEach(({i}, rank) => { snapshot[i] = rank + 1; });
+  history.push(snapshot);
+}
+
+// history[t][i] = rank of entity i at time t
+const history = [];
+// Seed with enough steps to fill the window
+for (let t = 0; t < VISIBLE; t++) appendSnapshot();
+
+/* ── Scales ── */
+const W = () => window.innerWidth;
+const H = () => window.innerHeight;
+
+// xScale maps [0 .. VISIBLE-1] → [0 .. W]
+// We always show the last VISIBLE snapshots.
+// To create the scrolling illusion we shift the x origin
+// by one step each tick using a CSS/SVG translate transition.
+const xStep = () => W() / (VISIBLE - 1);
+
+const yScale = d3.scalePoint()
+  .domain(d3.range(1, N + 1))
+  .range([H() * 0.06, H() * 0.94])
+  .padding(0.5);
+
+/* ── Line generator ── */
+// x is just the index within the visible slice × xStep
+const line = d3.line()
+  .x((d, i) => i * xStep())
+  .y(d => yScale(d))
+  .curve(d3.curveCatmullRom.alpha(0.5));
+
+/* ── Paths ── */
+const paths = g.selectAll('path')
+  .data(d3.range(N))
+  .enter().append('path')
+  .attr('fill', 'none')
+  .attr('stroke', (d, i) => colors[i])
+  .attr('stroke-width', (d, i) => strokeWidths[i])
+  .attr('stroke-linecap', 'round')
+  .attr('stroke-linejoin', 'round')
+  .attr('opacity', 0.85);
+
+/* ── Render ──────────────────────────────────────────────────
+   Strategy: draw VISIBLE+1 points (one extra off-screen right),
+   then transition the group left by xStep over TICK_MS.
+   This makes the new point glide in from the right smoothly
+   while everything to the left stays exactly where it was.
+── */
+function drawPaths(slice) {
+  // slice has VISIBLE+1 snapshots; we draw all of them
+  // starting at x=0 for index 0. Index VISIBLE lands at
+  // exactly W + xStep (one step off-screen right).
+  paths.each(function(i) {
+    const rankSeries = slice.map(snap => snap[i]);
+    d3.select(this).attr('d', line(rankSeries));
+  });
+}
+
+function render() {
+  // Take VISIBLE+1 snapshots ending at current tail
+  const slice = history.slice(-(VISIBLE + 1));
+
+  // Reset group to x=0 (no translate) — draw full picture
+  g.attr('transform', 'translate(0,0)');
+  drawPaths(slice);
+
+  // Now animate the group sliding left by one xStep
+  g.transition()
+    .duration(TICK_MS * 0.95)
+    .ease(d3.easeLinear)
+    .attr('transform', `translate(${-xStep()},0)`);
+}
+
+/* ── Ticker ── */
+let paused = false;
+
+setInterval(() => {
+  if (paused) return;
+  appendSnapshot();        // freeze past, add one new point
+  render();                // draw + slide left
+}, TICK_MS);
+
+function togglePause() {
+  paused = !paused;
+  document.getElementById('pauseBtn').textContent = paused ? '▶ Play' : '⏸ Pause';
+}
+
+function resetPalette() {
+  colors = randomPalette();
+  paths.attr('stroke', (d, i) => colors[i]);
+}
+
+window.addEventListener('resize', () => {
+  svg.attr('width', W()).attr('height', H());
+  svg.select('#clip rect').attr('width', W()).attr('height', H());
+  yScale.range([H() * 0.06, H() * 0.94]);
+  render();
+});
+
+// Initial draw
+render();
+</script>
+</body>
+</html>

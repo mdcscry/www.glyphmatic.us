@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contours</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-contour/4.0.2/d3-contour.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="newColors()">&#x21BA; Colors Only</button>
+</div>
+<script>
+const GRID = 5;
+const GAP  = 3;
+const RES  = 80; // grid resolution for scalar field
+
+/* ── Color schemes ── */
+const SCHEMES = [
+  d3.interpolateViridis,
+  d3.interpolatePlasma,
+  d3.interpolateInferno,
+  d3.interpolateCividis,
+  d3.interpolateMagma,
+  d3.interpolateWarm,
+  d3.interpolateCool,
+  d3.interpolateRdYlGn,
+  d3.interpolateSpectral,
+  d3.interpolateTurbo,
+];
+
+let currentScheme = SCHEMES[Math.floor(Math.random() * SCHEMES.length)];
+
+/* ── Generate a random scalar field via gaussian mixture ── */
+function randomField(w, h) {
+  const n = RES, m = RES;
+  const values = new Float64Array(n * m);
+
+  // 3–8 random gaussian blobs
+  const numBlobs = 3 + Math.floor(Math.random() * 6);
+  const blobs = Array.from({length: numBlobs}, function() {
+    return {
+      cx: Math.random(),
+      cy: Math.random(),
+      sx: 0.08 + Math.random() * 0.28,
+      sy: 0.08 + Math.random() * 0.28,
+      amp: (Math.random() < 0.15 ? -1 : 1) * (0.4 + Math.random() * 0.6),
+    };
+  });
+
+  for (let j = 0; j < m; j++) {
+    for (let i = 0; i < n; i++) {
+      const x = i / (n - 1);
+      const y = j / (m - 1);
+      let v = 0;
+      blobs.forEach(function(b) {
+        const dx = (x - b.cx) / b.sx;
+        const dy = (y - b.cy) / b.sy;
+        v += b.amp * Math.exp(-(dx*dx + dy*dy) / 2);
+      });
+      values[j * n + i] = v;
+    }
+  }
+
+  return values;
+}
+
+/* ── State ── */
+let datasets = [];
+
+function generateDatasets() {
+  datasets = Array.from({length: GRID * GRID}, function() {
+    return randomField(RES, RES);
+  });
+}
+
+/* ── Draw ── */
+function drawAll() {
+  const W = window.innerWidth, H = window.innerHeight;
+  const cellW = (W - GAP * (GRID + 1)) / GRID;
+  const cellH = (H - GAP * (GRID + 1)) / GRID;
+
+  const svg = d3.select('#viz').attr('width', W).attr('height', H);
+  svg.selectAll('*').remove();
+
+  svg.append('rect').attr('width', W).attr('height', H).attr('fill', '#07060e');
+
+  datasets.forEach(function(values, idx) {
+    const row = Math.floor(idx / GRID);
+    const col = idx % GRID;
+    const ox = GAP + col * (cellW + GAP);
+    const oy = GAP + row * (cellH + GAP);
+
+    const cellDelay = idx * 40;
+
+    // Value extent
+    const ext = d3.extent(values);
+    const vMin = ext[0], vMax = ext[1];
+
+    // Contour thresholds — 16 levels
+    const nLevels = 16;
+    const thresholds = Array.from({length: nLevels}, function(_, i) {
+      return vMin + (vMax - vMin) * i / nLevels;
+    });
+
+    // Build contours
+    const contours = d3.contours()
+      .size([RES, RES])
+      .thresholds(thresholds)(values);
+
+    // Scale from [0,RES] to cell pixels
+    const xSc = d3.scaleLinear().domain([0, RES]).range([ox, ox + cellW]);
+    const ySc = d3.scaleLinear().domain([0, RES]).range([oy, oy + cellH]);
+
+    const pathGen = d3.geoPath().projection(
+      d3.geoTransform({
+        point: function(x, y) { this.stream.point(xSc(x), ySc(y)); }
+      })
+    );
+
+    const g = svg.append('g');
+
+    // Filled contour bands
+    g.selectAll('path.band')
+      .data(contours)
+      .join('path')
+        .attr('class', 'band')
+        .attr('d', pathGen)
+        .attr('fill', function(d) {
+          const t = (d.value - vMin) / (vMax - vMin);
+          return currentScheme(t);
+        })
+        .attr('stroke', 'none')
+        .attr('opacity', 0)
+      .transition()
+        .duration(500)
+        .delay(function(d, i) { return cellDelay + i * 18; })
+        .attr('opacity', 1);
+
+    // Contour lines on top
+    g.selectAll('path.line')
+      .data(contours)
+      .join('path')
+        .attr('class', 'line')
+        .attr('d', pathGen)
+        .attr('fill', 'none')
+        .attr('stroke', function(d) {
+          const t = (d.value - vMin) / (vMax - vMin);
+          // Slightly lighter/darker version of fill color for the line
+          return d3.color(currentScheme(t)).darker(0.5).toString();
+        })
+        .attr('stroke-width', 0.4)
+        .attr('opacity', 0)
+      .transition()
+        .duration(500)
+        .delay(function(d, i) { return cellDelay + i * 18; })
+        .attr('opacity', 0.7);
+  });
+}
+
+function regenerate() {
+  currentScheme = SCHEMES[Math.floor(Math.random() * SCHEMES.length)];
+  generateDatasets();
+  drawAll();
+}
+
+function newColors() {
+  currentScheme = SCHEMES[Math.floor(Math.random() * SCHEMES.length)];
+  drawAll();
+}
+
+generateDatasets();
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>

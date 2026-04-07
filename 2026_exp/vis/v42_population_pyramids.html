@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Population Pyramids</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="newColors()">&#x21BA; Colors Only</button>
+</div>
+<script>
+const GRID = 10;
+const GAP  = 2;
+
+/* ── Color pairs — left/right sides ── */
+const COLOR_PAIRS = [
+  ['#4361ee','#f72585'],
+  ['#3a86ff','#ff006e'],
+  ['#06d6a0','#ef233c'],
+  ['#ffd60a','#7209b7'],
+  ['#fb8500','#023e8a'],
+  ['#43aa8b','#f94144'],
+  ['#48cae4','#e76f51'],
+  ['#90be6d','#c77dff'],
+  ['#f9c74f','#577590'],
+  ['#e9c46a','#264653'],
+];
+
+function randomPair() {
+  return COLOR_PAIRS[Math.floor(Math.random() * COLOR_PAIRS.length)];
+}
+
+let currentPair = randomPair();
+
+/* ── Random pyramid data ── */
+function randomPyramid() {
+  // 6–14 age bands
+  const nBands = 6 + Math.floor(Math.random() * 9);
+
+  // Shape type: young (bottom heavy), old (top heavy), middle bulge, uniform, constrictive
+  const shape = Math.floor(Math.random() * 5);
+
+  return Array.from({length: nBands}, (_, i) => {
+    const t = i / (nBands - 1); // 0 = youngest, 1 = oldest
+    let base;
+    if (shape === 0)      base = 1 - t * 0.7;            // expansive (young)
+    else if (shape === 1) base = 0.3 + t * 0.7;           // aging
+    else if (shape === 2) base = Math.sin(t * Math.PI);   // middle bulge
+    else if (shape === 3) base = 0.5 + Math.random()*0.1; // uniform
+    else                  base = 0.4 + Math.sin(t*Math.PI*2)*0.3; // constrictive
+
+    const noise = (Math.random() - 0.5) * 0.15;
+    const left  = Math.max(0.05, base + noise + (Math.random()-0.5)*0.1);
+    const right = Math.max(0.05, base + noise + (Math.random()-0.5)*0.1);
+    return { band: i, left, right };
+  });
+}
+
+let datasets = [];
+function generateDatasets() {
+  datasets = Array.from({length: GRID*GRID}, randomPyramid);
+}
+
+/* ── Draw one pyramid ── */
+function drawPyramid(g, data, colorL, colorR, ox, oy, cellW, cellH) {
+  const nBands = data.length;
+  const bandH  = cellH / nBands;
+  const maxVal = d3.max(data, d => Math.max(d.left, d.right));
+  const halfW  = cellW / 2;
+
+  const xScale = d3.scaleLinear().domain([0, maxVal]).range([0, halfW * 0.95]);
+
+  data.forEach((d, i) => {
+    const y   = oy + i * bandH;
+    const lW  = xScale(d.left);
+    const rW  = xScale(d.right);
+    const mid = ox + halfW;
+
+    // Left bar
+    g.append('rect')
+      .attr('x', mid - lW)
+      .attr('y', y + 0.5)
+      .attr('width', lW)
+      .attr('height', bandH - 0.5)
+      .attr('fill', colorL)
+      .attr('opacity', 0.82);
+
+    // Right bar
+    g.append('rect')
+      .attr('x', mid)
+      .attr('y', y + 0.5)
+      .attr('width', rW)
+      .attr('height', bandH - 0.5)
+      .attr('fill', colorR)
+      .attr('opacity', 0.82);
+  });
+
+  // Center divider line
+  g.append('line')
+    .attr('x1', ox + halfW).attr('x2', ox + halfW)
+    .attr('y1', oy).attr('y2', oy + cellH)
+    .attr('stroke', 'rgba(255,255,255,0.08)')
+    .attr('stroke-width', 0.5);
+}
+
+/* ── Full render ── */
+function drawAll() {
+  const W = window.innerWidth, H = window.innerHeight;
+  const cellW = (W - GAP*(GRID+1)) / GRID;
+  const cellH = (H - GAP*(GRID+1)) / GRID;
+
+  const svg = d3.select('#viz').attr('width', W).attr('height', H);
+  svg.selectAll('*').remove();
+  svg.append('rect').attr('width', W).attr('height', H).attr('fill', '#07060e');
+
+  const [colorL, colorR] = currentPair;
+
+  datasets.forEach((data, idx) => {
+    const row = Math.floor(idx / GRID), col = idx % GRID;
+    const ox  = GAP + col * (cellW + GAP);
+    const oy  = GAP + row * (cellH + GAP);
+
+    svg.append('rect')
+      .attr('x', ox).attr('y', oy)
+      .attr('width', cellW).attr('height', cellH)
+      .attr('fill', '#0c0b18');
+
+    const g = svg.append('g').attr('opacity', 0);
+    drawPyramid(g, data, colorL, colorR, ox, oy, cellW, cellH);
+    g.transition().duration(400).delay(idx * 15).attr('opacity', 1);
+  });
+}
+
+function regenerate() { currentPair=randomPair(); generateDatasets(); drawAll(); }
+function newColors()  { currentPair=randomPair(); drawAll(); }
+
+generateDatasets();
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delaunay Links</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="newColors()">&#x21BA; Colors Only</button>
+</div>
+<script>
+const GRID = 5;
+const GAP  = 3;
+
+/* ── Palettes ── */
+const PALETTE_MODES = [
+  () => { const b=Math.random()*360; return { edge: d3.hsl((b+180)%360,0.85,0.62).toString(), node: d3.hsl(b,0.95,0.70).toString(), bg: d3.hsl(b,0.4,0.06).toString() }; },
+  () => { const b=Math.random()*360; return { edge: d3.hsl(b,0.88,0.60).toString(), node: '#ffffff', bg: '#07060e' }; },
+  () => { const b=Math.random()*360; return { edge: d3.hsl(b,0.9,0.65).toString(), node: d3.hsl(b,0.9,0.85).toString(), bg: d3.hsl(b,0.5,0.07).toString() }; },
+  () => { const b=Math.random()*360; return { edge: d3.hsl((b+60)%360,0.85,0.62).toString(), node: d3.hsl((b+120)%360,0.95,0.68).toString(), bg: '#07060e' }; },
+];
+function randomScheme() { return PALETTE_MODES[Math.floor(Math.random()*PALETTE_MODES.length)](); }
+let scheme = randomScheme();
+
+/* ── Point distribution modes ── */
+function randomPoints(n, ox, oy, cellW, cellH) {
+  const mode = Math.floor(Math.random()*5);
+  const pad = Math.min(cellW,cellH)*0.06;
+  const w = cellW - pad*2, h = cellH - pad*2;
+  const pts = [];
+
+  if (mode === 0) {
+    // Uniform random
+    for (let i=0;i<n;i++) pts.push([ox+pad+Math.random()*w, oy+pad+Math.random()*h]);
+  } else if (mode === 1) {
+    // Clustered — 2-4 gaussian clusters
+    const nc = 2+Math.floor(Math.random()*3);
+    const centers = Array.from({length:nc}, ()=>[ox+pad+Math.random()*w, oy+pad+Math.random()*h]);
+    for (let i=0;i<n;i++) {
+      const c = centers[Math.floor(Math.random()*nc)];
+      const sx = w*0.12, sy = h*0.12;
+      pts.push([
+        Math.max(ox+pad, Math.min(ox+cellW-pad, c[0]+(Math.random()-0.5)*sx*2)),
+        Math.max(oy+pad, Math.min(oy+cellH-pad, c[1]+(Math.random()-0.5)*sy*2)),
+      ]);
+    }
+  } else if (mode === 2) {
+    // Ring
+    for (let i=0;i<n;i++) {
+      const a = (i/n)*Math.PI*2 + (Math.random()-0.5)*0.3;
+      const r = Math.min(w,h)*0.35 + (Math.random()-0.5)*Math.min(w,h)*0.08;
+      pts.push([ox+cellW/2+Math.cos(a)*r, oy+cellH/2+Math.sin(a)*r]);
+    }
+  } else if (mode === 3) {
+    // Grid with jitter
+    const cols = Math.ceil(Math.sqrt(n*cellW/cellH));
+    const rows = Math.ceil(n/cols);
+    for (let r=0;r<rows&&pts.length<n;r++) {
+      for (let c=0;c<cols&&pts.length<n;c++) {
+        pts.push([
+          ox+pad + (c+0.5+( Math.random()-0.5)*0.6)*w/cols,
+          oy+pad + (r+0.5+(Math.random()-0.5)*0.6)*h/rows,
+        ]);
+      }
+    }
+  } else {
+    // Diagonal band
+    for (let i=0;i<n;i++) {
+      const t=(Math.random()+Math.random())*0.5;
+      pts.push([
+        ox+pad+t*w+(Math.random()-0.5)*w*0.2,
+        oy+pad+t*h+(Math.random()-0.5)*h*0.2,
+      ]);
+    }
+  }
+  return pts;
+}
+
+let datasets = [];
+function generateDatasets() {
+  datasets = Array.from({length:GRID*GRID}, () => ({
+    n: 12 + Math.floor(Math.random()*28),
+  }));
+}
+
+/* ── Draw one cell ── */
+function drawCell(svg, ds, scheme, ox, oy, cellW, cellH, idx) {
+  const clipId = 'dclip-'+idx;
+  svg.append('defs').append('clipPath').attr('id', clipId)
+    .append('rect').attr('x',ox).attr('y',oy).attr('width',cellW).attr('height',cellH);
+
+  svg.append('rect').attr('x',ox).attr('y',oy)
+    .attr('width',cellW).attr('height',cellH)
+    .attr('fill', scheme.bg);
+
+  const g = svg.append('g').attr('clip-path','url(#'+clipId+')').attr('opacity',0);
+
+  const pts = randomPoints(ds.n, ox, oy, cellW, cellH);
+  const delaunay = d3.Delaunay.from(pts);
+
+  // Draw triangulation edges
+  const seen = new Set();
+  const { triangles } = delaunay;
+  for (let i=0; i<triangles.length; i+=3) {
+    const a=triangles[i], b=triangles[i+1], c=triangles[i+2];
+    [[a,b],[b,c],[a,c]].forEach(([p,q]) => {
+      const key = Math.min(p,q)+'-'+Math.max(p,q);
+      if (seen.has(key)) return;
+      seen.add(key);
+      g.append('line')
+        .attr('x1',pts[p][0]).attr('y1',pts[p][1])
+        .attr('x2',pts[q][0]).attr('y2',pts[q][1])
+        .attr('stroke', scheme.edge)
+        .attr('stroke-width', 0.7)
+        .attr('opacity', 0.6);
+    });
+  }
+
+  // Draw nodes
+  pts.forEach(pt => {
+    g.append('circle')
+      .attr('cx', pt[0]).attr('cy', pt[1])
+      .attr('r', 2.5)
+      .attr('fill', scheme.node)
+      .attr('opacity', 0.9);
+  });
+
+  g.transition().duration(500).delay(idx*28).attr('opacity',1);
+}
+
+/* ── Render ── */
+function drawAll() {
+  const W=window.innerWidth, H=window.innerHeight;
+  const cellW=(W-GAP*(GRID+1))/GRID;
+  const cellH=(H-GAP*(GRID+1))/GRID;
+
+  const svg=d3.select('#viz').attr('width',W).attr('height',H);
+  svg.selectAll('*').remove();
+  svg.append('rect').attr('width',W).attr('height',H).attr('fill','#07060e');
+
+  datasets.forEach((ds,idx) => {
+    const row=Math.floor(idx/GRID), col=idx%GRID;
+    const ox=GAP+col*(cellW+GAP);
+    const oy=GAP+row*(cellH+GAP);
+    drawCell(svg, ds, scheme, ox, oy, cellW, cellH, idx);
+  });
+}
+
+function regenerate() { scheme=randomScheme(); generateDatasets(); drawAll(); }
+function newColors()  { scheme=randomScheme(); drawAll(); }
+
+generateDatasets();
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>

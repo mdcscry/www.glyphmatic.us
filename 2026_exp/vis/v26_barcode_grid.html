@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barcode Grid</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="newColors()">&#x21BA; Colors Only</button>
+</div>
+<script>
+const GRID = 6;
+const GAP  = 3;
+
+/* ── Palette modes ── */
+const PALETTE_MODES = [
+  () => ['#4361ee','#f72585','#4cc9f0','#ffd60a','#06d6a0','#fb8500'],
+  () => ['#e63946','#457b9d','#f4a261','#2a9d8f','#e9c46a','#264653'],
+  () => { const b=Math.random()*360; return Array.from({length:6},(_,i)=>d3.hsl((b+i*60)%360,0.92,0.62).toString()); },
+  () => ['#ff006e','#ffbe0b','#8338ec','#3a86ff','#06d6a0','#ff5400'],
+  () => Array.from({length:6},()=>d3.hsl(Math.random()*360,0.88,0.60+Math.random()*0.15).toString()),
+  () => ['#f94144','#f3722c','#f9c74f','#90be6d','#43aa8b','#577590'],
+];
+
+function randomPalette() {
+  return PALETTE_MODES[Math.floor(Math.random() * PALETTE_MODES.length)]();
+}
+
+let currentPalette = randomPalette();
+
+/* ── Distribution generators ── */
+function randn() {
+  let u=0,v=0;
+  while(!u) u=Math.random();
+  while(!v) v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+
+const DISTS = [
+  () => randn(),
+  () => (Math.random()<0.5?-2:2)+randn()*0.5,
+  () => Math.pow(Math.random(),0.4)*4,
+  () => (Math.random()-0.5)*6,
+  () => [-2.5,0,2.5][Math.floor(Math.random()*3)]+randn()*0.6,
+  () => randn()*0.4 + (Math.random()<0.3?3:0),
+];
+
+/* ── Generate one barcode dataset ──
+   Multiple "categories" (rows), each with N data points drawn from a dist.
+   All share the same x-domain so ticks are comparable across rows.
+── */
+function generateBarcode() {
+  const numRows  = 2 + Math.floor(Math.random() * 5);  // 2–6 rows
+  const distIdx  = Math.floor(Math.random() * DISTS.length);
+  const dist     = DISTS[distIdx];
+  const n        = 40 + Math.floor(Math.random() * 120); // points per row
+
+  const rows = Array.from({length: numRows}, function(_, ri) {
+    // Each row has a slight mean offset for variety
+    const offset = (Math.random()-0.5)*1.2;
+    return Array.from({length: n}, function() {
+      return dist() + offset;
+    });
+  });
+
+  // Global x domain across all rows
+  const allVals = rows.flat();
+  const xMin = d3.min(allVals), xMax = d3.max(allVals);
+  const pad  = (xMax - xMin) * 0.05;
+
+  return { rows, xMin: xMin-pad, xMax: xMax+pad, numRows };
+}
+
+let datasets = [];
+function generateDatasets() {
+  datasets = Array.from({length: GRID*GRID}, generateBarcode);
+}
+
+/* ── Draw one barcode cell ── */
+function drawBarcode(svg, ds, palette, ox, oy, cellW, cellH) {
+  const { rows, xMin, xMax, numRows } = ds;
+  const TICK_PAD = 8;
+  const innerH   = cellH - TICK_PAD*2;
+  const rowH     = innerH / numRows;
+  const innerW   = cellW - TICK_PAD*2;
+
+  const xSc = d3.scaleLinear().domain([xMin, xMax]).range([ox+TICK_PAD, ox+cellW-TICK_PAD]);
+
+  const g = svg.append('g');
+
+  rows.forEach(function(vals, ri) {
+    const rowY    = oy + TICK_PAD + ri * rowH;
+    const rowMid  = rowY + rowH / 2;
+    const tickH   = rowH * 0.72;
+    const color   = palette[ri % palette.length];
+
+    // Sort values so overlapping ticks render consistently
+    const sorted = vals.slice().sort(function(a,b){return a-b;});
+
+    sorted.forEach(function(v) {
+      const x = xSc(v);
+      if (x < ox || x > ox+cellW) return;
+
+      // Opacity fades toward extremes for that soft gradient look
+      const t = (v - xMin) / (xMax - xMin);
+      const opacity = 0.25 + Math.sin(t * Math.PI) * 0.7;
+
+      g.append('line')
+        .attr('x1', x).attr('x2', x)
+        .attr('y1', rowMid - tickH/2)
+        .attr('y2', rowMid + tickH/2)
+        .attr('stroke', color)
+        .attr('stroke-width', 1.2)
+        .attr('opacity', opacity);
+    });
+  });
+}
+
+/* ── Full render ── */
+function drawAll() {
+  const W = window.innerWidth, H = window.innerHeight;
+  const cellW = (W - GAP*(GRID+1)) / GRID;
+  const cellH = (H - GAP*(GRID+1)) / GRID;
+
+  const svg = d3.select('#viz').attr('width', W).attr('height', H);
+  svg.selectAll('*').remove();
+  svg.append('rect').attr('width', W).attr('height', H).attr('fill', '#07060e');
+
+  datasets.forEach(function(ds, idx) {
+    const row = Math.floor(idx/GRID), col = idx%GRID;
+    const ox  = GAP + col*(cellW+GAP);
+    const oy  = GAP + row*(cellH+GAP);
+
+    // Cell bg
+    svg.append('rect')
+      .attr('x', ox).attr('y', oy)
+      .attr('width', cellW).attr('height', cellH)
+      .attr('fill', '#0c0b18');
+
+    drawBarcode(svg, ds, currentPalette, ox, oy, cellW, cellH);
+  });
+
+  // Stagger opacity in
+  svg.selectAll('g').attr('opacity', 0)
+    .each(function(d, i) {
+      d3.select(this).transition().duration(400).delay(i*25).attr('opacity',1);
+    });
+}
+
+function regenerate() {
+  currentPalette = randomPalette();
+  generateDatasets();
+  drawAll();
+}
+
+function newColors() {
+  currentPalette = randomPalette();
+  drawAll();
+}
+
+generateDatasets();
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>

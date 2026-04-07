@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perlin Noise</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+  canvas { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="nextMode()">&#x21BA; Mode</button>
+</div>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+/* ════════════════════════════════════════════════════════
+   IMPROVED PERLIN NOISE — Ken Perlin, 2002
+   "Improving Noise", SIGGRAPH 2002
+   
+   Key improvements over original 1985 noise:
+   1. New fade function: 6t⁵ - 15t⁴ + 10t³  (vs old 3t² - 2t³)
+      — has zero first AND second derivatives at 0 and 1
+      — eliminates interpolation artifacts at grid boundaries
+   2. New gradient table: 12 vectors pointing to edges of a cube
+      instead of random unit vectors
+      — better angular distribution, no axis-aligned bias
+   3. Doubled permutation table (512) to avoid modulo
+════════════════════════════════════════════════════════ */
+
+/* ── Permutation table (Perlin's original values) ── */
+const P_BASE = [
+  151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,
+  140,36,103,30,69,142,8,99,37,240,21,10,23,190,6,148,
+  247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,
+  57,177,33,88,237,149,56,87,174,20,125,136,171,168,68,175,
+  74,165,71,134,139,48,27,166,77,146,158,231,83,111,229,122,
+  60,211,133,230,220,105,92,41,55,46,245,40,244,102,143,54,
+  65,25,63,161,1,216,80,73,209,76,132,187,208,89,18,169,
+  200,196,135,130,116,188,159,86,164,100,109,198,173,186,3,64,
+  52,217,226,250,124,123,5,202,38,147,118,126,255,82,85,212,
+  207,206,59,227,47,16,58,17,182,189,28,42,223,183,170,213,
+  119,248,152,2,44,154,163,70,221,153,101,155,167,43,172,9,
+  129,22,39,253,19,98,108,110,79,113,224,232,178,185,112,104,
+  218,246,97,228,251,34,242,193,238,210,144,12,191,179,162,241,
+  81,51,145,235,249,14,239,107,49,192,214,31,181,199,106,157,
+  184,84,204,176,115,121,50,45,127,4,150,254,138,236,205,93,
+  222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180
+];
+
+// Double the table to avoid modulo — Perlin's trick
+const P = new Uint8Array(512);
+for (let i=0; i<512; i++) P[i] = P_BASE[i & 255];
+
+/* ── Fade function: 6t⁵ - 15t⁴ + 10t³ ── */
+function fade(t) { return t*t*t*(t*(t*6-15)+10); }
+
+/* ── Linear interpolation ── */
+function lerp(t, a, b) { return a + t*(b-a); }
+
+/* ── Gradient: maps hash to one of 12 cube-edge vectors ── */
+function grad(hash, x, y, z) {
+  const h = hash & 15;
+  const u = h < 8 ? x : y;
+  const v = h < 4 ? y : (h===12||h===14 ? x : z);
+  return ((h&1)===0 ? u : -u) + ((h&2)===0 ? v : -v);
+}
+
+/* ── Improved Perlin noise at (x,y,z) ── */
+function noise(x, y, z) {
+  // Find unit cube containing point
+  const X = Math.floor(x) & 255;
+  const Y = Math.floor(y) & 255;
+  const Z = Math.floor(z) & 255;
+  // Relative position within cube
+  x -= Math.floor(x);
+  y -= Math.floor(y);
+  z -= Math.floor(z);
+  // Fade curves
+  const u = fade(x), v = fade(y), w = fade(z);
+  // Hash cube corners
+  const A  = P[X]+Y,   AA = P[A]+Z, AB = P[A+1]+Z;
+  const B  = P[X+1]+Y, BA = P[B]+Z, BB = P[B+1]+Z;
+  // Trilinearly interpolate
+  return lerp(w,
+    lerp(v,
+      lerp(u, grad(P[AA],   x,   y,   z  ), grad(P[BA],   x-1, y,   z  )),
+      lerp(u, grad(P[AB],   x,   y-1, z  ), grad(P[BB],   x-1, y-1, z  ))
+    ),
+    lerp(v,
+      lerp(u, grad(P[AA+1], x,   y,   z-1), grad(P[BA+1], x-1, y,   z-1)),
+      lerp(u, grad(P[AB+1], x,   y-1, z-1), grad(P[BB+1], x-1, y-1, z-1))
+    )
+  );
+}
+
+/* ── Fractal Brownian Motion — sum multiple octaves ── */
+function fbm(x, y, z, octaves, lacunarity, gain) {
+  let val=0, amp=1, freq=1, max=0;
+  for (let i=0; i<octaves; i++) {
+    val += noise(x*freq, y*freq, z*freq) * amp;
+    max += amp;
+    amp  *= gain;
+    freq *= lacunarity;
+  }
+  return val / max;
+}
+
+/* ── Color modes ── */
+const COLOR_MODES = [
+  // Domain warping — feed noise output back as input offset
+  // Creates swirling, fluid-like patterns
+  'domain_warp',
+  // Marble — sharp banded
+  'marble',
+  // Wood rings
+  'wood',
+  // Turbulence — abs(noise) for sharp ridges
+  'turbulence',
+  // Raw fBm with vivid color map
+  'fbm_color',
+  // Curl — two noise fields 90° apart
+  'curl',
+];
+
+let modeIdx = 0;
+
+function getColor(x, y, t, mode) {
+  const scale = 0.004;
+  const nx = x*scale, ny = y*scale;
+
+  let v;
+
+  if (mode === 'domain_warp') {
+    // Ken Perlin / Inigo Quilez domain warping
+    // q = fbm(p), r = fbm(p + q), f = fbm(p + r)
+    const qx = fbm(nx,       ny,       t, 6, 2.1, 0.5);
+    const qy = fbm(nx+5.2,   ny+1.3,   t, 6, 2.1, 0.5);
+    const rx = fbm(nx+qx*4,  ny+qy*4,  t, 6, 2.1, 0.5);
+    const ry = fbm(nx+qx*4+1.7, ny+qy*4+9.2, t, 6, 2.1, 0.5);
+    v = fbm(nx + rx*4, ny + ry*4, t, 6, 2.1, 0.5);
+    // Map to color — rich earth tones
+    const c = (v+1)*0.5;
+    const r = Math.floor(255*Math.pow(c,0.8)*0.9);
+    const g = Math.floor(255*Math.pow(c,1.2)*0.7);
+    const b = Math.floor(255*Math.pow(c,1.6)*0.5);
+    return [r,g,b];
+  }
+
+  if (mode === 'marble') {
+    v = nx*3 + fbm(nx, ny, t, 8, 2.0, 0.5)*5;
+    const c = (Math.sin(v*Math.PI)+1)*0.5;
+    const s = Math.pow(c,0.5);
+    return [Math.floor(230*s+20), Math.floor(210*s+20), Math.floor(255*s)];
+  }
+
+  if (mode === 'wood') {
+    v = fbm(nx, ny, t, 5, 2.0, 0.5)*8;
+    const c = (v - Math.floor(v));
+    const r = Math.floor(180*c+60);
+    const g = Math.floor(120*c+30);
+    const b = Math.floor(40*c+10);
+    return [r,g,b];
+  }
+
+  if (mode === 'turbulence') {
+    // Sum of absolute values of octaves — creates sharp ridges
+    let turb=0, amp=1, freq=1, max=0;
+    for(let i=0;i<8;i++){
+      turb += Math.abs(noise(nx*freq, ny*freq, t)) * amp;
+      max  += amp; amp*=0.5; freq*=2.1;
+    }
+    v = turb/max;
+    // Blue-white lightning palette
+    const c = Math.pow(v, 1.5);
+    return [Math.floor(c*180), Math.floor(c*220), Math.floor(80+c*175)];
+  }
+
+  if (mode === 'fbm_color') {
+    v = (fbm(nx, ny, t, 7, 2.0, 0.55)+1)*0.5;
+    // Vivid HSL → RGB
+    const hue = v*360 + t*80;
+    const h = hue/60 % 6;
+    const c2 = 0.85, x2 = c2*(1-Math.abs(h%2-1));
+    let r2=0,g2=0,b2=0;
+    if(h<1){r2=c2;g2=x2;}else if(h<2){r2=x2;g2=c2;}
+    else if(h<3){g2=c2;b2=x2;}else if(h<4){g2=x2;b2=c2;}
+    else if(h<5){r2=x2;b2=c2;}else{r2=c2;b2=x2;}
+    const m=v*0.3;
+    return [Math.floor((r2+m)*255), Math.floor((g2+m)*255), Math.floor((b2+m)*255)];
+  }
+
+  if (mode === 'curl') {
+    // Two fBm fields offset by 90° — creates flow/curl
+    const n1 = fbm(nx,     ny,     t, 6, 2.0, 0.5);
+    const n2 = fbm(nx+3.5, ny+7.1, t, 6, 2.0, 0.5);
+    const angle = Math.atan2(n1, n2);
+    const mag   = (Math.sqrt(n1*n1+n2*n2)+1)*0.5;
+    const hue   = (angle/(Math.PI*2)+0.5)*360;
+    const h = hue/60 % 6;
+    const c3=mag*0.9, x3=c3*(1-Math.abs(h%2-1));
+    let r3=0,g3=0,b3=0;
+    if(h<1){r3=c3;g3=x3;}else if(h<2){r3=x3;g3=c3;}
+    else if(h<3){g3=c3;b3=x3;}else if(h<4){g3=x3;b3=c3;}
+    else if(h<5){r3=x3;b3=c3;}else{r3=c3;b3=x3;}
+    return [Math.floor(r3*255), Math.floor(g3*255), Math.floor(b3*255)];
+  }
+
+  return [128,128,128];
+}
+
+/* ── Render ── */
+let currentOffset = [Math.random()*1000, Math.random()*1000];
+
+function render() {
+  const W=canvas.width, H=canvas.height;
+  const mode = COLOR_MODES[modeIdx];
+  const t = currentOffset[0]*0.001;
+
+  const imgData = ctx.createImageData(W, H);
+  const px = imgData.data;
+
+  // Use a slightly lower resolution for performance, then upscale via CSS — 
+  // actually render at full res but skip no pixels for quality
+  const STEP = 2; // render every 2nd pixel, fill the gap
+  for (let y=0; y<H; y+=STEP) {
+    for (let x=0; x<W; x+=STEP) {
+      const [r,g,b] = getColor(x + currentOffset[1], y + currentOffset[0], t, mode);
+      for (let dy=0; dy<STEP && y+dy<H; dy++) {
+        for (let dx=0; dx<STEP && x+dx<W; dx++) {
+          const i=((y+dy)*W+(x+dx))*4;
+          px[i]=r; px[i+1]=g; px[i+2]=b; px[i+3]=255;
+        }
+      }
+    }
+  }
+
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function regenerate() {
+  currentOffset = [Math.random()*1000, Math.random()*1000];
+  render();
+}
+
+function nextMode() {
+  modeIdx = (modeIdx+1) % COLOR_MODES.length;
+  render();
+}
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  render();
+}
+
+window.addEventListener('resize', resize);
+resize();
+</script>
+</body>
+</html>

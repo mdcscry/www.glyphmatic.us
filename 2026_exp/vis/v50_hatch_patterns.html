@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hatch Patterns</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #fff; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(0,0,0,0.07); border: 1px solid rgba(0,0,0,0.25);
+    color: #111; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(0,0,0,0.15); }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+</div>
+<script>
+const GRID = 10;
+const GAP  = 3;
+
+/* ── Define all hatch pattern types ──────────────────────────
+   Faithful to matplotlib's hatch style reference:
+   / \\ | - + x o O . * and combinations
+── */
+function definePatterns(svg, cellSize) {
+  const defs = svg.append('defs');
+  const s = Math.max(4, cellSize * 0.08); // pattern tile size scales with cell
+
+  const patterns = [];
+
+  function addPat(id, content) {
+    const p = defs.append('pattern')
+      .attr('id', id)
+      .attr('patternUnits', 'userSpaceOnUse')
+      .attr('width', s).attr('height', s);
+    content(p, s);
+    patterns.push(id);
+  }
+
+  // / diagonal forward
+  addPat('h-fwd', (p,s) => {
+    p.append('line').attr('x1',0).attr('y1',s).attr('x2',s).attr('y2',0)
+      .attr('stroke','#000').attr('stroke-width',1);
+  });
+
+  // \\ diagonal backward
+  addPat('h-bwd', (p,s) => {
+    p.append('line').attr('x1',0).attr('y1',0).attr('x2',s).attr('y2',s)
+      .attr('stroke','#000').attr('stroke-width',1);
+  });
+
+  // | vertical
+  addPat('h-vert', (p,s) => {
+    p.append('line').attr('x1',s/2).attr('y1',0).attr('x2',s/2).attr('y2',s)
+      .attr('stroke','#000').attr('stroke-width',1);
+  });
+
+  // - horizontal
+  addPat('h-horiz', (p,s) => {
+    p.append('line').attr('x1',0).attr('y1',s/2).attr('x2',s).attr('y2',s/2)
+      .attr('stroke','#000').attr('stroke-width',1);
+  });
+
+  // + crosshatch (| + -)
+  addPat('h-plus', (p,s) => {
+    p.append('line').attr('x1',s/2).attr('y1',0).attr('x2',s/2).attr('y2',s).attr('stroke','#000').attr('stroke-width',1);
+    p.append('line').attr('x1',0).attr('y1',s/2).attr('x2',s).attr('y2',s/2).attr('stroke','#000').attr('stroke-width',1);
+  });
+
+  // x cross diagonal
+  addPat('h-cross', (p,s) => {
+    p.append('line').attr('x1',0).attr('y1',s).attr('x2',s).attr('y2',0).attr('stroke','#000').attr('stroke-width',1);
+    p.append('line').attr('x1',0).attr('y1',0).attr('x2',s).attr('y2',s).attr('stroke','#000').attr('stroke-width',1);
+  });
+
+  // o small circles
+  addPat('h-o', (p,s) => {
+    p.append('circle').attr('cx',s/2).attr('cy',s/2).attr('r',s*0.3)
+      .attr('fill','none').attr('stroke','#000').attr('stroke-width',1);
+  });
+
+  // O large circles
+  addPat('h-O', (p,s) => {
+    p.append('circle').attr('cx',s/2).attr('cy',s/2).attr('r',s*0.45)
+      .attr('fill','none').attr('stroke','#000').attr('stroke-width',1.5);
+  });
+
+  // . dots
+  addPat('h-dot', (p,s) => {
+    p.append('circle').attr('cx',s/2).attr('cy',s/2).attr('r',s*0.12)
+      .attr('fill','#000');
+  });
+
+  // * stars (+ and x together)
+  addPat('h-star', (p,s) => {
+    p.append('line').attr('x1',s/2).attr('y1',0).attr('x2',s/2).attr('y2',s).attr('stroke','#000').attr('stroke-width',1);
+    p.append('line').attr('x1',0).attr('y1',s/2).attr('x2',s).attr('y2',s/2).attr('stroke','#000').attr('stroke-width',1);
+    p.append('line').attr('x1',0).attr('y1',s).attr('x2',s).attr('y2',0).attr('stroke','#000').attr('stroke-width',1);
+    p.append('line').attr('x1',0).attr('y1',0).attr('x2',s).attr('y2',s).attr('stroke','#000').attr('stroke-width',1);
+  });
+
+  // // dense forward diagonal
+  addPat('h-fwd2', (p,s) => {
+    const s2 = s/2;
+    [-s2,0,s2].forEach(o => {
+      p.append('line').attr('x1',o).attr('y1',s).attr('x2',o+s).attr('y2',0).attr('stroke','#000').attr('stroke-width',0.6);
+    });
+  });
+
+  // \\\\ dense backward diagonal
+  addPat('h-bwd2', (p,s) => {
+    const s2 = s/2;
+    [-s2,0,s2].forEach(o => {
+      p.append('line').attr('x1',o).attr('y1',0).attr('x2',o+s).attr('y2',s).attr('stroke','#000').attr('stroke-width',0.6);
+    });
+  });
+
+  // || dense vertical
+  addPat('h-vert2', (p,s) => {
+    [s*0.25, s*0.75].forEach(x => {
+      p.append('line').attr('x1',x).attr('y1',0).attr('x2',x).attr('y2',s).attr('stroke','#000').attr('stroke-width',0.6);
+    });
+  });
+
+  // -- dense horizontal
+  addPat('h-horiz2', (p,s) => {
+    [s*0.25, s*0.75].forEach(y => {
+      p.append('line').attr('x1',0).attr('y1',y).attr('x2',s).attr('y2',y).attr('stroke','#000').attr('stroke-width',0.6);
+    });
+  });
+
+  // /\\ zigzag
+  addPat('h-zag', (p,s) => {
+    p.append('polyline')
+      .attr('points', `0,${s} ${s/2},0 ${s},${s}`)
+      .attr('fill','none').attr('stroke','#000').attr('stroke-width',1);
+  });
+
+  // sparse dots
+  addPat('h-empty', (p,s) => {
+    p.append('rect').attr('width',s).attr('height',s).attr('fill','#fff');
+  });
+
+  // brick
+  addPat('h-brick', (p,s) => {
+    p.append('rect').attr('width',s).attr('height',s/2).attr('fill','none').attr('stroke','#000').attr('stroke-width',0.6);
+    p.append('rect').attr('x',s/2).attr('y',s/2).attr('width',s).attr('height',s/2).attr('fill','none').attr('stroke','#000').attr('stroke-width',0.6);
+  });
+
+  // diamond grid
+  addPat('h-diamond', (p,s) => {
+    const h = s/2;
+    p.append('polygon')
+      .attr('points', `${h},0 ${s},${h} ${h},${s} 0,${h}`)
+      .attr('fill','none').attr('stroke','#000').attr('stroke-width',0.6);
+  });
+
+  // checkerboard — smaller to avoid looking solid
+  addPat('h-check', (p,s) => {
+    const h = s/4;
+    [[0,0],[h*2,h*2],[h,h*3],[h*3,h]].forEach(([x,y]) => {
+      p.append('rect').attr('x',x).attr('y',y).attr('width',h).attr('height',h).attr('fill','#000');
+    });
+  });
+
+  return patterns;
+}
+
+/* ── Draw ── */
+function render() {
+  const W=window.innerWidth, H=window.innerHeight;
+  const cellW=(W-GAP*(GRID+1))/GRID;
+  const cellH=(H-GAP*(GRID+1))/GRID;
+  const cellSize = Math.min(cellW, cellH);
+
+  const svg = d3.select('#viz').attr('width',W).attr('height',H);
+  svg.selectAll('*').remove();
+  svg.append('rect').attr('width',W).attr('height',H).attr('fill','#fff');
+
+  const patterns = definePatterns(svg, cellSize);
+
+  // Shuffle patterns for variety, tile across 100 cells
+  const shuffled = [];
+  while (shuffled.length < GRID*GRID) {
+    const s = patterns.slice().sort(()=>Math.random()-0.5);
+    shuffled.push(...s);
+  }
+
+  for (let idx=0; idx<GRID*GRID; idx++) {
+    const row=Math.floor(idx/GRID), col=idx%GRID;
+    const ox=GAP+col*(cellW+GAP);
+    const oy=GAP+row*(cellH+GAP);
+
+    const patId = shuffled[idx % shuffled.length];
+
+    // White bg
+    svg.append('rect').attr('x',ox).attr('y',oy)
+      .attr('width',cellW).attr('height',cellH)
+      .attr('fill','#fff');
+
+    // Hatch fill
+    svg.append('rect').attr('x',ox).attr('y',oy)
+      .attr('width',cellW).attr('height',cellH)
+      .attr('fill', `url(#${patId})`)
+      .attr('stroke','#000').attr('stroke-width',1);
+  }
+}
+
+function regenerate() {
+  render();
+}
+
+render();
+window.addEventListener('resize', render);
+</script>
+</body>
+</html>
