@@ -49,6 +49,9 @@ function createDegenerator8() {
             }
             .layer > span {
                 font-size: 70vmin; line-height: 1; position: absolute; pointer-events: none;
+                font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Two STIX Math',
+                             'Noto Sans Math Full', 'DejaVu Sans', 'Symbola', 'Segoe UI Symbol',
+                             'Arial Unicode MS', 'Code2000', sans-serif;
                 transition: color 15s ease-in-out, mix-blend-mode 15s ease-in-out;
             }
         `;

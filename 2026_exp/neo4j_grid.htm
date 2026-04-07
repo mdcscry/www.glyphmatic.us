@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Field</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #080810; overflow: hidden; }
+        canvas { display: block; position: fixed; top: 0; left: 0; }
+
+        /* ── Info panel ── */
+        #info {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            background: rgba(0,0,0,0.65);
+            color: #aaa;
+            border-radius: 6px;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            overflow: hidden;
+            transition: max-width 0.35s ease, max-height 0.35s ease, padding 0.25s ease;
+            max-width: 36px;
+            max-height: 36px;
+            padding: 8px 11px;
+            white-space: nowrap;
+            user-select: none;
+        }
+        #info.open {
+            max-width: 340px;
+            max-height: 280px;
+            padding: 14px 18px;
+            white-space: normal;
+        }
+        #info .icon { font-size: 15px; font-weight: 600; line-height: 20px; opacity: 0.6; }
+        #info.open .icon { display: none; }
+        #info .details { display: none; line-height: 1.5; }
+        #info.open .details { display: block; }
+        #info .pal-artist { font-weight: 700; color: #e0e0e0; font-size: 14px; margin-bottom: 2px; }
+        #info .pal-ref { color: #ccc; font-size: 12px; font-style: italic; margin-bottom: 1px; }
+        #info .pal-school { color: rgba(255,255,255,0.45); font-size: 11px; }
+        #info .controls { margin-top: 12px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); opacity: 0.4; font-size: 11px; line-height: 1.7; }
+        .ik { color: rgba(255,255,255,0.55); }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <div id="info" onclick="this.classList.toggle('open')">
+        <span class="icon">i</span>
+        <div class="details">
+            <div class="pal-artist" id="info-artist"></div>
+            <div class="pal-ref" id="info-ref"></div>
+            <div class="pal-school" id="info-school"></div>
+            <div class="controls">
+                <span class="ik">Enter</span> regenerate &nbsp;
+                <span class="ik">1&ndash;4</span> panel &nbsp;
+                <span class="ik">Space</span> pause &nbsp;
+                <span class="ik">p</span> recolor
+            </div>
+        </div>
+    </div>
+
+    <script>window.ARTIST_PALETTES = {};</script>
+    <script src="../js_funct/artist_palettes/impressionism.js"></script>
+    <script src="../js_funct/artist_palettes/expressionism_fauvism.js"></script>
+    <script src="../js_funct/artist_palettes/cubism_bauhaus.js"></script>
+    <script src="../js_funct/artist_palettes/surrealism.js"></script>
+    <script src="../js_funct/artist_palettes/abstract_expressionism.js"></script>
+    <script src="../js_funct/artist_palettes/pop_minimal.js"></script>
+    <script src="../js_funct/artist_palettes/old_masters.js"></script>
+    <script src="../js_funct/artist_palettes/americas.js"></script>
+    <script src="../js_funct/artist_palettes/contemporary.js"></script>
+    <script src="../js_funct/artist_palettes/_loaded.js"></script>
+
+    <script>
+    (function() {
+        'use strict';
+
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var DPR = window.devicePixelRatio || 1;
+        var W, H, hw, hh;
+        var panels = [null, null, null, null];
+        var paused = false;
+        var currentPal = null;
+        var animId = null;
+        var stripeColors = [];  // pre-computed stripe colors from palette
+        var STRIPE_W = 2;      // stripe width in CSS pixels
+        var stripeHorizontal = false;  // randomly H or V each build
+
+        // quadrant centers: [cx, cy] computed on resize
+        var QUAD = [];
+
+        function sizeCanvas() {
+            W = window.innerWidth;
+            H = window.innerHeight;
+            hw = W / 2;
+            hh = H / 2;
+            canvas.width = W * DPR;
+            canvas.height = H * DPR;
+            canvas.style.width = W + 'px';
+            canvas.style.height = H + 'px';
+            ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+            QUAD = [
+                { cx: W * 0.32, cy: H * 0.32, x: 0,  y: 0,  w: hw, h: hh },
+                { cx: W * 0.68, cy: H * 0.32, x: hw, y: 0,  w: hw, h: hh },
+                { cx: W * 0.32, cy: H * 0.68, x: 0,  y: hh, w: hw, h: hh },
+                { cx: W * 0.68, cy: H * 0.68, x: hw, y: hh, w: hw, h: hh }
+            ];
+        }
+
+        /* ── palette helpers ── */
+
+        function pickPalette() {
+            var keys = Object.keys(window.ARTIST_PALETTES);
+            var key = keys[Math.floor(Math.random() * keys.length)];
+            return { key: key, data: window.ARTIST_PALETTES[key] };
+        }
+
+        function weightedColor(colors, pcts) {
+            var sum = 0;
+            for (var i = 0; i < pcts.length; i++) sum += (pcts[i] || 0);
+            var r = Math.random() * sum, acc = 0;
+            for (var i = 0; i < colors.length; i++) {
+                acc += (pcts[i] || 0);
+                if (r <= acc) return colors[i];
+            }
+            return colors[colors.length - 1];
+        }
+
+        function hexToRgb(hex) {
+            var r = parseInt(hex.slice(1,3),16),
+                g = parseInt(hex.slice(3,5),16),
+                b = parseInt(hex.slice(5,7),16);
+            return [r, g, b];
+        }
+
+        /* ── graph topology generators ── */
+
+        function preferentialAttachment(n) {
+            var nodes = [{id:0},{id:1}];
+            var edges = [{source:0, target:1}];
+            var deg = [1, 1];
+            var m = 2;
+            for (var i = 2; i < n; i++) {
+                nodes.push({id: i});
+                deg.push(0);
+                var total = deg.reduce(function(a,b){return a+b;}, 0);
+                var used = {};
+                var added = 0;
+                for (var att = 0; att < 200 && added < Math.min(m, i); att++) {
+                    var r = Math.random() * total, acc = 0;
+                    for (var j = 0; j < i; j++) {
+                        acc += deg[j];
+                        if (r <= acc && !used[j]) {
+                            edges.push({source: i, target: j});
+                            deg[i]++; deg[j]++;
+                            used[j] = true;
+                            added++;
+                            break;
+                        }
+                    }
+                }
+            }
+            return {nodes: nodes, edges: edges};
+        }
+
+        function smallWorld(n) {
+            var nodes = [], edges = [];
+            for (var i = 0; i < n; i++) nodes.push({id: i});
+            var k = 4;
+            for (var i = 0; i < n; i++) {
+                for (var j = 1; j <= k/2; j++) {
+                    edges.push({source: i, target: (i+j) % n});
+                }
+            }
+            edges.forEach(function(e) {
+                if (Math.random() < 0.15) {
+                    e.target = Math.floor(Math.random() * n);
+                    if (e.target === e.source) e.target = (e.source + 1) % n;
+                }
+            });
+            return {nodes: nodes, edges: edges};
+        }
+
+        function randomGeometric(n) {
+            var nodes = [], edges = [];
+            for (var i = 0; i < n; i++) {
+                nodes.push({id: i, gx: Math.random(), gy: Math.random()});
+            }
+            var threshold = 1.8 / Math.sqrt(n);
+            for (var i = 0; i < n; i++) {
+                for (var j = i+1; j < n; j++) {
+                    var dx = nodes[i].gx - nodes[j].gx;
+                    var dy = nodes[i].gy - nodes[j].gy;
+                    if (Math.sqrt(dx*dx + dy*dy) < threshold) {
+                        edges.push({source: i, target: j});
+                    }
+                }
+            }
+            return {nodes: nodes, edges: edges};
+        }
+
+        function randomTree(n) {
+            var nodes = [{id: 0}], edges = [];
+            for (var i = 1; i < n; i++) {
+                nodes.push({id: i});
+                var parent = Math.floor(Math.pow(Math.random(), 1.5) * i);
+                edges.push({source: i, target: parent});
+            }
+            var extras = Math.floor(n * 0.15);
+            for (var i = 0; i < extras; i++) {
+                var a = Math.floor(Math.random() * n);
+                var b = Math.floor(Math.random() * n);
+                if (a !== b) edges.push({source: a, target: b});
+            }
+            return {nodes: nodes, edges: edges};
+        }
+
+        function clusterGraph(n) {
+            var k = 3 + Math.floor(Math.random() * 3);
+            var nodes = [], edges = [];
+            var perCluster = Math.floor(n / k);
+            for (var i = 0; i < n; i++) {
+                nodes.push({id: i, cluster: Math.floor(i / perCluster)});
+            }
+            for (var c = 0; c < k; c++) {
+                var start = c * perCluster;
+                var end = Math.min(start + perCluster, n);
+                for (var i = start; i < end; i++) {
+                    var conns = 1 + Math.floor(Math.random() * 3);
+                    for (var j = 0; j < conns; j++) {
+                        var t = start + Math.floor(Math.random() * (end - start));
+                        if (t !== i) edges.push({source: i, target: t});
+                    }
+                }
+            }
+            var bridges = Math.floor(n * 0.08);
+            for (var i = 0; i < bridges; i++) {
+                var a = Math.floor(Math.random() * n);
+                var b = Math.floor(Math.random() * n);
+                if (nodes[a].cluster !== nodes[b].cluster) {
+                    edges.push({source: a, target: b});
+                }
+            }
+            return {nodes: nodes, edges: edges};
+        }
+
+        function spiralGraph(n) {
+            var nodes = [], edges = [];
+            for (var i = 0; i < n; i++) nodes.push({id: i});
+            for (var i = 0; i < n - 1; i++) edges.push({source: i, target: i+1});
+            var stride = 5 + Math.floor(Math.random() * 8);
+            for (var i = 0; i < n; i++) {
+                var t = i + stride;
+                if (t < n) edges.push({source: i, target: t});
+                if (Math.random() < 0.08) {
+                    var far = Math.floor(Math.random() * n);
+                    if (far !== i) edges.push({source: i, target: far});
+                }
+            }
+            return {nodes: nodes, edges: edges};
+        }
+
+        var TOPOLOGIES = [preferentialAttachment, smallWorld, randomGeometric, randomTree, clusterGraph, spiralGraph];
+
+        /* ── compute node degrees ── */
+
+        function computeDegrees(graph) {
+            var deg = new Array(graph.nodes.length).fill(0);
+            graph.edges.forEach(function(e) {
+                deg[typeof e.source === 'object' ? e.source.id : e.source]++;
+                deg[typeof e.target === 'object' ? e.target.id : e.target]++;
+            });
+            graph.nodes.forEach(function(n) { n.degree = deg[n.id]; });
+        }
+
+        /* ── create a simulation for one quadrant ── */
+
+        function createSim(index, pal) {
+            var q = QUAD[index];
+            pal = pal || pickPalette();
+            var nodeCount = 40 + Math.floor(Math.random() * 50);
+            var topo = TOPOLOGIES[Math.floor(Math.random() * TOPOLOGIES.length)];
+            var graph = topo(nodeCount);
+            computeDegrees(graph);
+
+            var colors = pal.data.colors;
+            var pcts = pal.data.pcts;
+            graph.nodes.forEach(function(n) {
+                n.hex = weightedColor(colors, pcts);
+                n.rgb = hexToRgb(n.hex);
+                n.r = 6 + Math.min(18, n.degree * 2.5);
+            });
+
+            // force centered on this quadrant
+            var sim = d3.forceSimulation(graph.nodes)
+                .force('charge', d3.forceManyBody().strength(-100).distanceMax(250))
+                .force('center', d3.forceCenter(q.cx, q.cy))
+                .force('link', d3.forceLink(graph.edges).id(function(d){return d.id;}).distance(50).strength(0.3))
+                .force('collide', d3.forceCollide().radius(function(d){return d.r + 4;}))
+                .force('x', d3.forceX(q.cx).strength(0.008))
+                .force('y', d3.forceY(q.cy).strength(0.008))
+                .alphaDecay(0.003)
+                .velocityDecay(0.4)
+                .alpha(1)
+                .on('tick', function() {}); // tick handled by rAF draw loop
+
+            var reheat = setInterval(function() {
+                if (!paused && sim.alpha() < 0.05) {
+                    sim.alpha(0.08).restart();
+                }
+            }, 4000);
+
+            return {
+                sim: sim,
+                graph: graph,
+                palette: pal,
+                reheat: reheat,
+                quad: q
+            };
+        }
+
+        function destroyPanel(index) {
+            if (panels[index]) {
+                panels[index].sim.stop();
+                clearInterval(panels[index].reheat);
+                panels[index] = null;
+            }
+        }
+
+        /* ── background stripes from palette ── */
+
+        function buildStripes(pal) {
+            stripeColors = [];
+            stripeHorizontal = Math.random() < 0.5;
+            var dim = stripeHorizontal ? H : W;
+            var count = Math.ceil(dim / STRIPE_W);
+            var colors = pal.data.colors;
+            var pcts = pal.data.pcts;
+            for (var i = 0; i < count; i++) {
+                stripeColors.push(weightedColor(colors, pcts));
+            }
+        }
+
+        /* ── inter-graph bridges ── */
+
+        var bridges = []; // {srcPanel, srcNode, dstPanel, dstNode}
+
+        // adjacency pairs: [panelA, panelB]
+        var ADJACENT = [[0,1],[2,3],[0,2],[1,3],[0,3],[1,2]]; // include diagonals
+
+        function buildBridges() {
+            bridges = [];
+            var count = 5 + Math.floor(Math.random() * 6); // 5-10 bridges per pair
+            ADJACENT.forEach(function(pair) {
+                var pA = panels[pair[0]], pB = panels[pair[1]];
+                if (!pA || !pB) return;
+                var nA = pA.graph.nodes, nB = pB.graph.nodes;
+                var bridgeCount = Math.min(count, nA.length, nB.length);
+                // pick random nodes from each
+                var usedA = {}, usedB = {};
+                for (var i = 0; i < bridgeCount; i++) {
+                    var a, b, att = 0;
+                    do { a = Math.floor(Math.random() * nA.length); att++; } while (usedA[a] && att < 50);
+                    do { b = Math.floor(Math.random() * nB.length); att++; } while (usedB[b] && att < 50);
+                    usedA[a] = true; usedB[b] = true;
+                    bridges.push({ sn: nA[a], dn: nB[b] });
+                }
+            });
+        }
+
+        /* ── bridge force: nudge connected nodes toward each other ── */
+
+        function applyBridgeForces() {
+            var strength = 0.3;
+            bridges.forEach(function(b) {
+                var s = b.sn, t = b.dn;
+                var dx = t.x - s.x;
+                var dy = t.y - s.y;
+                var dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                var fx = (dx / dist) * strength;
+                var fy = (dy / dist) * strength;
+                s.vx += fx;
+                s.vy += fy;
+                t.vx -= fx;
+                t.vy -= fy;
+            });
+        }
+
+        /* ── single draw loop ── */
+
+        function draw() {
+            if (paused) { animId = requestAnimationFrame(draw); return; }
+
+            // apply cross-graph attraction
+            applyBridgeForces();
+
+            // clear
+            ctx.fillStyle = '#080810';
+            ctx.fillRect(0, 0, W, H);
+
+            // stripe background (randomly H or V)
+            for (var si = 0; si < stripeColors.length; si++) {
+                ctx.fillStyle = stripeColors[si];
+                if (stripeHorizontal) {
+                    ctx.fillRect(0, si * STRIPE_W, W, STRIPE_W);
+                } else {
+                    ctx.fillRect(si * STRIPE_W, 0, STRIPE_W, H);
+                }
+            }
+
+            // all edges (drawn first so nodes sit on top)
+            ctx.lineWidth = 0.5;
+            panels.forEach(function(p) {
+                if (!p) return;
+                p.graph.edges.forEach(function(e) {
+                    var s = e.source, t = e.target;
+                    var rgb = s.rgb || [120,120,120];
+                    ctx.strokeStyle = 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',0.12)';
+                    ctx.beginPath();
+                    var mx = (s.x + t.x) / 2 + (s.y - t.y) * 0.08;
+                    var my = (s.y + t.y) / 2 + (t.x - s.x) * 0.08;
+                    ctx.moveTo(s.x, s.y);
+                    ctx.quadraticCurveTo(mx, my, t.x, t.y);
+                    ctx.stroke();
+                });
+            });
+
+            // inter-graph bridges
+            ctx.lineWidth = 1;
+            bridges.forEach(function(b) {
+                var s = b.sn, t = b.dn;
+                var rgb = s.rgb || [120,120,120];
+                ctx.strokeStyle = 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',0.18)';
+                ctx.beginPath();
+                var mx = (s.x + t.x) / 2 + (s.y - t.y) * 0.12;
+                var my = (s.y + t.y) / 2 + (t.x - s.x) * 0.12;
+                ctx.moveTo(s.x, s.y);
+                ctx.quadraticCurveTo(mx, my, t.x, t.y);
+                ctx.stroke();
+            });
+
+            // all nodes with glow
+            panels.forEach(function(p) {
+                if (!p) return;
+                p.graph.nodes.forEach(function(n) {
+                    var rgb = n.rgb;
+                    ctx.shadowColor = 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',0.6)';
+                    ctx.shadowBlur = n.r * 2;
+                    ctx.fillStyle = n.hex;
+                    ctx.beginPath();
+                    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+
+                    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+                    ctx.beginPath();
+                    ctx.arc(n.x, n.y, n.r * 0.35, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            });
+
+            animId = requestAnimationFrame(draw);
+        }
+
+        /* ── build / rebuild ── */
+
+        function buildPanel(index, pal) {
+            destroyPanel(index);
+            panels[index] = createSim(index, pal);
+        }
+
+        function updateInfoPalettes() {
+            if (!currentPal) return;
+            document.getElementById('info-artist').textContent = currentPal.data.artist;
+            document.getElementById('info-ref').textContent = currentPal.data.ref;
+            document.getElementById('info-school').textContent = currentPal.data.school;
+        }
+
+        function buildAll() {
+            currentPal = pickPalette();
+            buildStripes(currentPal);
+            for (var i = 0; i < 4; i++) buildPanel(i, currentPal);
+            buildBridges();
+            updateInfoPalettes();
+        }
+
+        function recolorAll() {
+            currentPal = pickPalette();
+            buildStripes(currentPal);
+            var colors = currentPal.data.colors;
+            var pcts = currentPal.data.pcts;
+            panels.forEach(function(p) {
+                if (!p) return;
+                p.palette = currentPal;
+                p.graph.nodes.forEach(function(n) {
+                    n.hex = weightedColor(colors, pcts);
+                    n.rgb = hexToRgb(n.hex);
+                });
+            });
+            updateInfoPalettes();
+        }
+
+        /* ── keyboard ── */
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') buildAll();
+            else if (e.key >= '1' && e.key <= '4') { buildPanel(parseInt(e.key) - 1, currentPal); buildBridges(); }
+            else if (e.key === ' ') {
+                e.preventDefault();
+                paused = !paused;
+                if (!paused) panels.forEach(function(p) { if (p) p.sim.alpha(0.3).restart(); });
+                else panels.forEach(function(p) { if (p) p.sim.stop(); });
+            }
+            else if (e.key === 'p') recolorAll();
+        });
+
+        /* ── resize ── */
+
+        window.addEventListener('resize', function() {
+            sizeCanvas();
+            buildAll();
+        });
+
+        /* ── init ── */
+
+        (function wait() {
+            if (typeof window.ARTIST_PALETTES_LOADED !== 'undefined') {
+                sizeCanvas();
+                buildAll();
+                draw();
+            } else {
+                setTimeout(wait, 100);
+            }
+        })();
+
+    })();
+    </script>
+</body>
+</html>

@@ -52,7 +52,7 @@ body {
 }
 
 #menuContent {
-    display: block;
+    display: none;
 }
 
 /* Position the toggle button to the right */

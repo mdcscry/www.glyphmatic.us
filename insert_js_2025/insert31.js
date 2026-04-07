@@ -12,7 +12,62 @@
   'use strict';
 
   let container = null;
-  let variant = Math.random() < 0.5 ? 1 : 2; // Random choice on load
+  // URL param: ?variant=1|2|3|4 overrides random pick
+  const _urlVariant = parseInt(new URLSearchParams(window.location.search).get('variant'));
+  let variant = (_urlVariant >= 1 && _urlVariant <= 4) ? _urlVariant : Math.floor(Math.random() * 4) + 1;
+
+  // Wifredo Lam — palettes drawn from major works across his career
+  // [glyphColor1, glyphColor2, lineColor1, lineColor2]
+  const LAM_PALETTES = [
+    // This painting (~1948) - sandy tans, dusty blue-grays, charcoal
+    ['#B4966A', '#E8DCC0', '#9DA6A9', '#5C6163'],
+    ['#E8DCC0', '#9DA6A9', '#8C704E', '#3E3832'],
+    ['#9DA6A9', '#C9B38A', '#8C704E', '#2A2C2B'],
+
+    // The Jungle (1943) — MoMA — deep olive, bamboo green, warm tan, near-black
+    ['#C4A060', '#D4BC80', '#4A5A2A', '#1A1F10'],
+    ['#C4A060', '#6A8040', '#2A3010', '#D4BC80'],
+    ['#8AAA50', '#C4A060', '#1A2010', '#4A5A2A'],
+
+    // Zambezia, Zambezia (1950) — Guggenheim — terracotta, sandy beige, dusty blue
+    ['#C86040', '#C8A470', '#7A8A9A', '#2A1A0A'],
+    ['#D07050', '#9DA6A9', '#7A5030', '#1A100A'],
+
+    // The Eternal Present (1945) — ochre, cool blue, raw sienna
+    ['#B89040', '#5A7A9A', '#A06030', '#1A1510'],
+    ['#C0A050', '#7A8A9A', '#6A5020', '#1A1510'],
+
+    // Rumblings of the Earth (1950) — deep red, ochre gold, slate
+    ['#8A2020', '#B08030', '#6A7070', '#1A0A08'],
+    ['#A03030', '#C09040', '#5A6060', '#180808'],
+
+    // Om, Shango (1951) — vibrant orange-red, golden ochre, deep teal
+    ['#C04020', '#C09040', '#2A5A4A', '#0A0A08'],
+    ['#D05030', '#B08020', '#3A6A5A', '#100A08'],
+  ];
+  function getLamPalette() {
+    return LAM_PALETTES[Math.floor(Math.random() * LAM_PALETTES.length)];
+  }
+
+  // Generate truly random palette across full OKLCH range
+  function generatePalette() {
+    const h1 = Math.random() * 360;
+    const h2 = h1 + 120 + Math.random() * 120;  // ~120-240° offset for variety
+    
+    // Full random range: chroma 0-1, lightness 0.1-0.95
+    const l1 = 0.1 + Math.random() * 0.85;  // 0.1-0.95 (near black to near white)
+    const l2 = 0.1 + Math.random() * 0.85;
+    const c1 = Math.random();  // 0-1 (gray to saturated)
+    const c2 = Math.random();
+    
+    return [
+      `oklch(${l1.toFixed(2)} ${c1.toFixed(2)} ${h1.toFixed(1)})`,
+      `oklch(${l2.toFixed(2)} ${c2.toFixed(2)} ${h2.toFixed(1)})`,
+      `oklch(${(l1 + 0.3).toFixed(2)} ${(c1 * 0.5).toFixed(2)} ${((h1 + 180) % 360).toFixed(1)})`,
+      `oklch(${(l2 - 0.2).toFixed(2)} ${(c2 * 0.3).toFixed(2)} ${((h2 + 180) % 360).toFixed(1)})`
+    ];
+  }
+  let currentPalette = variant === 4 ? getLamPalette() : generatePalette();
 
   // Block arrays for each variant
   const variantBlocks = {
@@ -29,6 +84,35 @@
       "Latin Extended-C",
       "Latin Extended-D",
       "Latin Extended-E"
+<<<<<<< HEAD
+=======
+    ],
+    3: [
+      "IPA Extensions",
+      "Phonetic Extensions",
+      "Phonetic Extensions Supplement",
+      "Basic Latin",
+      "Latin-1 Supplement",
+      "Latin Extended-A",
+      "Latin Extended-B",
+      "Latin Extended Additional",
+      "Latin Extended-C",
+      "Latin Extended-D",
+      "Latin Extended-E"
+    ],
+    4: [
+      "IPA Extensions",
+      "Phonetic Extensions",
+      "Phonetic Extensions Supplement",
+      "Basic Latin",
+      "Latin-1 Supplement",
+      "Latin Extended-A",
+      "Latin Extended-B",
+      "Latin Extended Additional",
+      "Latin Extended-C",
+      "Latin Extended-D",
+      "Latin Extended-E"
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
     ]
   };
 
@@ -48,6 +132,10 @@
   async function loadDependencies() {
     try {
       // Load core libraries
+<<<<<<< HEAD
+=======
+      await loadScript('../js_funct/colorpalette.js');
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
       await loadScript('../js_funct/autoFont.js');
       
       // Load data files
@@ -99,14 +187,33 @@
     const fibs = getFibonacci(maxVal);
     const diagLength = Math.sqrt(width * width + height * height) * 1.5;
 
+<<<<<<< HEAD
     // === GRID LINES (same for both variants) ===
     
     // Vertical lines - left to right (red)
+=======
+    // === GRID LINES ===
+    // For variant 3, use palette line colors instead of CSS classes
+    const lineColor1 = (variant === 3 || variant === 4) ? currentPalette[2] : null;
+    const lineColor2 = (variant === 3 || variant === 4) ? currentPalette[3] : null;
+    function applyLineColor(el, cssClass) {
+      el.className = `line-v line-h line-d ${cssClass}`.trim();
+      if (variant === 3) {
+        el.style.background = cssClass === 'red' ? lineColor1 : lineColor2;
+      }
+    }
+
+    // Vertical lines - left to right
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
     fibs.forEach(f => {
       const x = (f / maxVal) * width;
       if (x < width) {
         const line = document.createElement('div');
         line.className = 'line-v red';
+<<<<<<< HEAD
+=======
+        if (variant === 3 || variant === 4) line.style.background = lineColor1;
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
         line.style.position = 'absolute';
         line.style.top = '0';
         line.style.height = '100vh';
@@ -123,6 +230,10 @@
       if (x > 0) {
         const line = document.createElement('div');
         line.className = 'line-v red';
+<<<<<<< HEAD
+=======
+        if (variant === 3 || variant === 4) line.style.background = lineColor1;
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
         line.style.position = 'absolute';
         line.style.top = '0';
         line.style.height = '100vh';
@@ -139,6 +250,10 @@
       if (y < height) {
         const line = document.createElement('div');
         line.className = 'line-h orange';
+<<<<<<< HEAD
+=======
+        if (variant === 3 || variant === 4) line.style.background = lineColor2;
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
         line.style.position = 'absolute';
         line.style.left = '0';
         line.style.width = '100vw';
@@ -155,6 +270,10 @@
       if (y > 0) {
         const line = document.createElement('div');
         line.className = 'line-h orange';
+<<<<<<< HEAD
+=======
+        if (variant === 3 || variant === 4) line.style.background = lineColor2;
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
         line.style.position = 'absolute';
         line.style.left = '0';
         line.style.width = '100vw';
@@ -171,6 +290,10 @@
       if (pos < height) {
         const line = document.createElement('div');
         line.className = 'line-d red';
+<<<<<<< HEAD
+=======
+        if (variant === 3 || variant === 4) line.style.background = lineColor1;
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = '0px';
@@ -187,6 +310,10 @@
       if (pos < width && pos > 0) {
         const line = document.createElement('div');
         line.className = 'line-d red';
+<<<<<<< HEAD
+=======
+        if (variant === 3 || variant === 4) line.style.background = lineColor1;
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${pos}px`;
@@ -203,6 +330,10 @@
       if (pos < height) {
         const line = document.createElement('div');
         line.className = 'line-d red';
+<<<<<<< HEAD
+=======
+        if (variant === 3 || variant === 4) line.style.background = lineColor1;
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${width}px`;
@@ -219,6 +350,10 @@
       if (pos < width && pos > 0) {
         const line = document.createElement('div');
         line.className = 'line-d red';
+<<<<<<< HEAD
+=======
+        if (variant === 3 || variant === 4) line.style.background = lineColor1;
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${width - pos}px`;
@@ -235,6 +370,10 @@
       if (pos < height) {
         const line = document.createElement('div');
         line.className = 'line-d orange';
+<<<<<<< HEAD
+=======
+        if (variant === 3 || variant === 4) line.style.background = lineColor2;
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${width}px`;
@@ -251,6 +390,10 @@
       if (pos < width && pos > 0) {
         const line = document.createElement('div');
         line.className = 'line-d orange';
+<<<<<<< HEAD
+=======
+        if (variant === 3 || variant === 4) line.style.background = lineColor2;
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${width - pos}px`;
@@ -267,6 +410,10 @@
       if (pos < height) {
         const line = document.createElement('div');
         line.className = 'line-d orange';
+<<<<<<< HEAD
+=======
+        if (variant === 3 || variant === 4) line.style.background = lineColor2;
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = '0px';
@@ -283,6 +430,10 @@
       if (pos < width && pos > 0) {
         const line = document.createElement('div');
         line.className = 'line-d orange';
+<<<<<<< HEAD
+=======
+        if (variant === 3 || variant === 4) line.style.background = lineColor2;
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
         line.style.width = '1px';
         line.style.height = `${diagLength}px`;
         line.style.left = `${pos}px`;
@@ -342,7 +493,12 @@
       }
     }
     
+<<<<<<< HEAD
     // Central squares (different for v1 and v2)
+=======
+    // Central squares (different for v1, v2, v3)
+    const c0 = currentPalette[0], c1 = currentPalette[1];
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
     let squares;
     if (variant === 1) {
       // v1: 4 squares, all RED
@@ -352,6 +508,22 @@
         { x1: farLeft, y1: bottomOfCenter, x2: leftOfCenter, y2: farBottom, color: '#d03020' },
         { x1: rightOfCenter, y1: bottomOfCenter, x2: farRight, y2: farBottom, color: '#d03020' }
       ];
+<<<<<<< HEAD
+=======
+    } else if (variant === 3 || variant === 4) {
+      // v3: 9 squares using palette colors
+      squares = [
+        { x1: farLeft, y1: farTop, x2: leftOfCenter, y2: topOfCenter, color: c1 },
+        { x1: rightOfCenter, y1: farTop, x2: farRight, y2: topOfCenter, color: c1 },
+        { x1: farLeft, y1: bottomOfCenter, x2: leftOfCenter, y2: farBottom, color: c1 },
+        { x1: rightOfCenter, y1: bottomOfCenter, x2: farRight, y2: farBottom, color: c1 },
+        { x1: leftOfCenter, y1: farTop, x2: rightOfCenter, y2: topOfCenter, color: c0 },
+        { x1: leftOfCenter, y1: bottomOfCenter, x2: rightOfCenter, y2: farBottom, color: c0 },
+        { x1: farLeft, y1: topOfCenter, x2: leftOfCenter, y2: bottomOfCenter, color: c0 },
+        { x1: rightOfCenter, y1: topOfCenter, x2: farRight, y2: bottomOfCenter, color: c0 },
+        { x1: leftOfCenter, y1: topOfCenter, x2: rightOfCenter, y2: bottomOfCenter, color: c1 }
+      ];
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
     } else {
       // v2: 9 squares (4 corners ORANGE, 4 cross RED, 1 center ORANGE)
       squares = [
@@ -379,7 +551,11 @@
     }
     
     // Ring 1 (color differs by variant)
+<<<<<<< HEAD
     const ring1Color = variant === 1 ? '#e08020' : '#d03020';
+=======
+    const ring1Color = (variant === 3 || variant === 4) ? currentPalette[0] : variant === 1 ? '#e08020' : '#d03020';
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
     const ring1 = [
       { x1: farFarLeft, y1: farFarTop, x2: farLeft, y2: farTop },
       { x1: farLeft, y1: farFarTop, x2: farRight, y2: farTop },
@@ -406,7 +582,11 @@
       if (allY[i] <= farFarBottom && allY[i + 1] > farFarBottom) fff_Bottom = allY[i + 1];
     }
     
+<<<<<<< HEAD
     const ring2Color = variant === 1 ? '#d03020' : '#e08020';
+=======
+    const ring2Color = (variant === 3 || variant === 4) ? currentPalette[1] : variant === 1 ? '#d03020' : '#e08020';
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
     const ring2 = [
       { x1: fff_Left, y1: fff_Top, x2: farFarLeft, y2: farFarTop },
       { x1: farFarLeft, y1: fff_Top, x2: farFarRight, y2: farFarTop },
@@ -437,7 +617,11 @@
       if (allY[i] <= fff_Bottom && allY[i + 1] > fff_Bottom) ffff_Bottom = allY[i + 1];
     }
     
+<<<<<<< HEAD
     const ring3Color = variant === 1 ? '#e08020' : '#d03020';
+=======
+    const ring3Color = (variant === 3 || variant === 4) ? currentPalette[0] : variant === 1 ? '#e08020' : '#d03020';
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
     const ring3 = [
       { x1: ffff_Left, y1: ffff_Top, x2: fff_Left, y2: fff_Top },
       { x1: fff_Left, y1: ffff_Top, x2: fff_Right, y2: fff_Top },
@@ -472,7 +656,11 @@
       if (allY[i] <= ffff_Bottom && allY[i + 1] > ffff_Bottom) fffff_Bottom = allY[i + 1];
     }
     
+<<<<<<< HEAD
     const ring4Color = variant === 1 ? '#d03020' : '#e08020';
+=======
+    const ring4Color = (variant === 3 || variant === 4) ? currentPalette[1] : variant === 1 ? '#d03020' : '#e08020';
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
     const ring4 = [
       { x1: fffff_Left, y1: fffff_Top, x2: ffff_Left, y2: ffff_Top },
       { x1: ffff_Left, y1: fffff_Top, x2: ffff_Right, y2: ffff_Top },
@@ -507,8 +695,15 @@
     const fontWeight = variant === 1 ? 'normal' : '900';
     const minBoxSize = variant === 1 ? 20 : 10;
     
+<<<<<<< HEAD
     allBoxes.forEach(sq => {
       if (!sq.x1 || !sq.x2 || !sq.y1 || !sq.y2) return;
+=======
+    if (variant === 3) console.log('[insert31] v3 palette:', currentPalette, '| boxes:', allBoxes.length);
+    let _drawn = 0, _skippedCoord = 0, _skippedSize = 0;
+    allBoxes.forEach(sq => {
+      if (!sq.x1 || !sq.x2 || !sq.y1 || !sq.y2) { _skippedCoord++; return; }
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
       const sqWidth = sq.x2 - sq.x1;
       const sqHeight = sq.y2 - sq.y1;
       
@@ -518,6 +713,7 @@
         
         for (let row = 0; row < rows; row++) {
           for (let col = 0; col < cols; col++) {
+<<<<<<< HEAD
             // Use AutoFont to generate glyph with proper font
             const glyphData = AutoFont.generateGlyph(
               block_hex,
@@ -530,6 +726,46 @@
             );
 
             const char = document.createElement('div');
+=======
+            let glyphData = null;
+            let glyphError = null;
+            
+            // Wrap generateGlyph in try-catch to catch any autoFont errors
+            try {
+              glyphData = AutoFont.generateGlyph(
+                block_hex,
+                block_hex_desc,
+                block_lang,
+                lang_font,
+                true, // testMode enabled
+                { blocks: variantBlocks[variant], glyph: null },
+                null // no exclusions
+              );
+            } catch (err) {
+              glyphError = err;
+              console.error('[insert31] generateGlyph error:', err.message);
+            }
+
+            const char = document.createElement('div');
+            const _ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            const MONO = "'Noto Sans Mono', 'Courier New', monospace";
+            
+            // Fallback if variant 1, error occurred, or no glyph data
+            if (variant === 1 || glyphError || !glyphData || !glyphData.glyph) {
+              char.textContent = _ALPHA[Math.floor(Math.random() * _ALPHA.length)];
+              char.style.fontFamily = MONO;
+              char.style.fontSize = `${fontSize}px`;
+              char.style.fontWeight = fontWeight;
+              char.style.color = sq.color;
+              char.style.position = 'absolute';
+              char.style.left = `${sq.x1 + 6 + col * 12}px`;
+              char.style.top = `${sq.y1 + 4 + row * 14}px`;
+              char.style.zIndex = '50';
+              container.appendChild(char);
+              continue;
+            }
+            
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
             char.textContent = String.fromCodePoint(parseInt(glyphData.glyph, 16));
             char.style.position = 'absolute';
             char.style.left = `${sq.x1 + 6 + col * 12}px`;
@@ -537,11 +773,32 @@
             char.style.fontSize = `${fontSize}px`;
             char.style.fontWeight = fontWeight;
             char.style.color = sq.color;
+<<<<<<< HEAD
             char.style.fontFamily = glyphData.fontStack || 'monospace';
+=======
+            // Font strategy per variant:
+            // v1: pure mono (override autoFont entirely)
+            // v2/v3: prepend mono so standard chars get mono, extended chars fall back to autoFont
+            if (variant === 1) {
+              char.style.fontFamily = MONO;
+            } else {
+              // Safely handle fontStack - may be undefined in some error cases
+              const rawStack = glyphData.fontStack || 'monospace';
+              // Strip emoji/symbol fonts from autoFont stack — Latin+IPA only
+              const cleanStack = (typeof rawStack === 'string' ? rawStack : 'monospace')
+                .replace(/'Noto Emoji',?\s*/g, '')
+                .replace(/'Symbola',?\s*/g, '')
+                .replace(/'Noto Sans Symbols[^']*',?\s*/g, '')
+                .replace(/'Noto Sans Math',?\s*/g, '')
+                .replace(/,\s*,/g, ',').replace(/,\s*$/, '').trim();
+              char.style.fontFamily = MONO + ', ' + (cleanStack || 'monospace');
+            }
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
             char.style.zIndex = '50';
             container.appendChild(char);
           }
         }
+<<<<<<< HEAD
       }
     });
 
@@ -553,6 +810,30 @@
     
     if (!container.id) {
       container.id = 'container';
+=======
+        _drawn++;
+      } else {
+        _skippedSize++;
+      }
+    });
+
+    console.log(`[insert31] v${variant} rendered: ${allBoxes.length} boxes, ${_drawn} drawn, ${_skippedCoord} bad-coords, ${_skippedSize} too-small`);
+  }
+
+  function init() {
+    container = document.getElementById('container');
+    if (!container) {
+      // Don't fall back to body — that would wipe watermarks on render
+      container = document.createElement('div');
+      container.id = 'container';
+      container.style.position = 'fixed';
+      container.style.top = '0';
+      container.style.left = '0';
+      container.style.width = '100vw';
+      container.style.height = '100vh';
+      container.style.zIndex = '20'; // watermarks at z-index 10, fibonacci sits above them
+      document.body.appendChild(container);
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
     }
 
     injectStyles();
@@ -574,6 +855,21 @@
         console.log('[insert31] Switched to variant 2 (IPA + Extended Latin)');
         updateBackground();
         render();
+<<<<<<< HEAD
+=======
+      } else if (e.key === '3') {
+        variant = 3;
+        currentPalette = generatePalette();
+        console.log('[insert31] Switched to variant 3, palette:', currentPalette);
+        updateBackground();
+        render();
+      } else if (e.key === '4') {
+        variant = 4;
+        currentPalette = getLamPalette();
+        console.log('[insert31] Switched to variant 4 (Lam), palette:', currentPalette);
+        updateBackground();
+        render();
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
       }
     });
   }
@@ -586,6 +882,18 @@
   function injectStyles() {
     const bgColor = variant === 1 ? '#0a0a0a' : '#000';
     
+<<<<<<< HEAD
+=======
+    // Load Noto Sans Mono via <link> (not @import — @import in injected styles is unreliable)
+    if (!document.getElementById('noto-sans-mono-link')) {
+      const link = document.createElement('link');
+      link.id = 'noto-sans-mono-link';
+      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;900&display=swap';
+      document.head.appendChild(link);
+    }
+
+>>>>>>> 506dd74c29c2bed59f7be9088134f09295a3e708
     const style = document.createElement('style');
     style.textContent = `
       * { margin: 0; padding: 0; box-sizing: border-box; }

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triangles</title>
+    <style>
+        @font-face {
+            font-family: 'Noto Symbols 2';
+            src: url('../tff/NotoSansSymbols2-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Noto Symbols';
+            src: url('../tff/NotoSansSymbols-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Noto Sans Math';
+            src: url('../tff/NotoSansMath-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'BabelStone Pseudographica';
+            src: url('../fonts/BabelStonePseudographica.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        #tri-info {
+            position: fixed;
+            bottom: 18px;
+            right: 18px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #888;
+            color: #fff;
+            font-family: monospace;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: width 0.3s ease, border-radius 0.3s ease, background 0.6s ease, color 0.6s ease;
+            z-index: 9999;
+            user-select: none;
+        }
+        #tri-info.expanded {
+            width: 160px;
+            height: auto;
+            min-height: 36px;
+            border-radius: 18px;
+            padding: 8px 14px;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 3px;
+        }
+        #tri-info .dot { flex-shrink: 0; }
+        #tri-info .label { display: none; }
+        #tri-info.expanded .dot { display: none; }
+        #tri-info.expanded .label { display: block; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        body {
+            position: relative;
+        }
+        .tri {
+            position: absolute;
+            line-height: 1;
+            user-select: none;
+            pointer-events: none;
+            display: block;
+            transform-origin: center center;
+            z-index: 1;
+            font-family: 'Noto Symbols 2', 'Noto Symbols', 'Noto Sans Math', 'BabelStone Pseudographica', sans-serif;
+        }
+    </style>
+</head>
+<body>
+<script src="../js_funct/contrast_tester.js"></script>
+<script src="../js_funct/colorpalette.js"></script>
+<script>
+    // Unicode geometric triangle shapes + close cousins
+    const SHAPES = [
+        '▲', '▼', '◀', '▶',   // solid cardinal
+        '△', '▽', '◁', '▷',   // outline cardinal
+        '◤', '◥', '◣', '◢',   // corner fills
+        '▴', '▾', '◂', '▸',   // small solid
+        '◬',                    // triangle with dot
+        '⃤',                    // combining enclosing upward pointing triangle (may render oddly - skip via fallback)
+        //'⏫', '⏬',             // double arrows / big triangles
+        '⯅', '⯆', '⯇', '⯈',  // geometric arrows (large)
+        '◭', '◮',              // triangle with circle
+    ];
+
+    // Safer curated set — guaranteed to render as triangle-like shapes
+    const SAFE_SHAPES = [
+        '▲', '▼', '◀', '▶',
+        '△', '▽', '◁', '▷',
+        '◤', '◥', '◣', '◢',
+        '▴', '▾', '◂', '▸',
+         '◭', '◮'
+    ];
+
+    // Legacy computing systems — named triangular block characters
+    // Noto Symbols 2 covers U+1FB00–U+1FBFF and U+1F780–U+1F783
+    // U+1CC00–U+1CEBF (Legacy Computing Supplement) covered by BabelStone Pseudographica
+    const LEGACY_SHAPES = [
+        '\u{1FB6C}', '\u{1FB6D}',           // left / upper triangular ¼ block
+        '\u{1FB6E}', '\u{1FB6F}',           // right / lower triangular ¼ block
+        '\u{1FB62}', '\u{1FB63}',           // upper-right diagonal: upper centre to upper middle right, upper left to upper middle right
+        '\u{1FB64}', '\u{1FB65}',           // upper-right diagonal: upper centre to lower middle right, upper left to lower middle right
+        '\u{1FB66}',                        // upper-right diagonal: upper centre to lower right
+        '\u{1FB57}', '\u{1FB58}',           // upper-left diagonal: upper middle left to upper centre/right
+        '\u{1FB59}', '\u{1FB5A}',           // upper-left diagonal: lower middle left to upper centre/right
+        '\u{1FB5B}',                        // upper-left diagonal: lower left to upper centre
+        '\u{1FB47}', '\u{1FB48}',           // lower-right diagonal: lower centre/left to lower middle right
+        '\u{1FB49}', '\u{1FB4A}',           // lower-right diagonal: lower centre/left to upper middle right
+        '\u{1FB4B}',                        // lower-right diagonal: lower centre to upper right
+        '\u{1FB3C}', '\u{1FB3D}',           // lower-left diagonal: lower middle left to lower centre/right
+        '\u{1FB3E}', '\u{1FB3F}',           // lower-left diagonal: upper middle left to lower centre/right
+        '\u{1FB40}',                        // lower-left diagonal: upper left to lower centre
+       // '\u{1FB9C}', '\u{1FB9D}',           // upper-left / upper-right triangular medium shade
+       // '\u{1FB9E}', '\u{1FB9F}',           // lower-right / lower-left triangular medium shade
+        '\u{1F780}', '\u{1F781}',           // black left/up isosceles right triangle
+        '\u{1F782}', '\u{1F783}',           // black right/down isosceles right triangle
+       // '\u{1CC80}', '\u{1CC81}',           // striped left/up-pointing triangle (supplement)
+       // '\u{1CC82}', '\u{1CC83}',           // striped right/down-pointing triangle (supplement)
+        '\u{1CE07}',                        // top left black left-pointing small triangle (supplement)
+    ];
+
+    // Alchemical symbols — classical elements and sulfur use triangle forms
+    const ALCHEMICAL_SHAPES = [
+        '\u{1F701}', '\u{1F702}',           // 🜁🜂 air (△ with bar), fire (△)
+        '\u{1F704}',                        // 🜄 water (plain ▽ — earth removed, bar becomes legs when rotated)
+       // '\u{1F70D}', '\u{1F70E}',           // 🜍🜎 sulfur (△ with cross), philosophers sulfur
+    ];
+
+    // Mathematical symbols — clearly triangular shapes only
+    const MATH_SHAPES = [
+        '\u2206', '\u2207',                 // ∆ INCREMENT, ∇ NABLA
+        '\u22BF',                           // ⊿ RIGHT TRIANGLE
+        //'\u29CA', 
+        '\u29CB',                 // ⧊ triangle with dot, ⧋ triangle with underbar
+        '\u29CD',                           // ⧍ triangle with serifs at bottom
+        '\u29E8', '\u29E9',                 // ⧨⧩ down-pointing triangle with left/right half black
+    ];
+
+    // Combined pool — all shape sets
+    const ALL_SHAPES = SAFE_SHAPES.concat(LEGACY_SHAPES, MATH_SHAPES, ALCHEMICAL_SHAPES);
+
+    // Solid-fill shapes only — safe for background-clip:text gradients
+    // Outline glyphs (△▽◁▷ alchemical math symbols) leave interior transparent under background-clip
+    const GRADIENT_SAFE_SHAPES = new Set(
+        ['▲','▼','◀','▶','◤','◥','◣','◢','▴','▾','◂','▸','◭','◮']
+        .concat(LEGACY_SHAPES)
+    );
+
+    // Wait for ColorPalette to be available
+    function waitForColorPalette(cb) {
+        if (typeof ColorPalette !== 'undefined') {
+            cb();
+        } else {
+            setTimeout(function() { waitForColorPalette(cb); }, 50);
+        }
+    }
+
+    waitForColorPalette(function() {
+        // PATH A: OKLCH generative — truly random palette, not the 5 fixed ones
+        ColorPalette.init();
+
+        // Expand 2 base OKLCH colors into light/dark variants — all same hue family
+        // Each base yields: root, +0.12, +0.22, -0.12, -0.22 → 2 bases × 5 = 10 options
+        // 11th color: background, derived from root[0] hue — very dark or light, desaturated
+        var expandedPalette = [];
+        var derivedBgColor = '#000';
+        function buildExpandedPalette() {
+            expandedPalette = [];
+            ColorPalette.currentGlyphColors.slice(0, 2).forEach(function(color) {
+                var m = color.match(/oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/);
+                if (!m) { expandedPalette.push(color); return; }
+                var l = parseFloat(m[1]), c = m[2], h = m[3];
+                expandedPalette.push(color);                                                                  // root
+                expandedPalette.push('oklch(' + Math.min(0.95, l + 0.12).toFixed(3) + ' ' + c + ' ' + h + ')'); // light 1
+                expandedPalette.push('oklch(' + Math.min(0.95, l + 0.22).toFixed(3) + ' ' + c + ' ' + h + ')'); // light 2
+                expandedPalette.push('oklch(' + Math.max(0.05, l - 0.12).toFixed(3) + ' ' + c + ' ' + h + ')'); // dark 1
+                expandedPalette.push('oklch(' + Math.max(0.05, l - 0.22).toFixed(3) + ' ' + c + ' ' + h + ')'); // dark 2
+            });
+            // 11th color: background from root[0] hue — pushed to dark or light extreme, low chroma
+            var r0 = ColorPalette.currentGlyphColors[0];
+            var rm = r0.match(/oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/);
+            if (rm) {
+                var bgL = Math.random() < 0.3
+                    ? 0.18 + Math.random() * 0.14   // dark (not black) — 30% chance
+                    : 0.82 + Math.random() * 0.12;  // light — 70% chance
+                var bgC = (parseFloat(rm[2]) * 0.25).toFixed(4); // desaturated
+                derivedBgColor = 'oklch(' + bgL.toFixed(3) + ' ' + bgC + ' ' + rm[3] + ')';
+            }
+        }
+        // Info panel — created here so updateInfoColor() can reference it
+        var infoEl = document.createElement('div');
+        infoEl.id = 'tri-info';
+        infoEl.innerHTML = '<span class="dot">△</span><span class="label" id="tri-count">0 triangles</span><span class="label" id="tri-shifts">0 shifts</span>';
+        infoEl.addEventListener('click', function() { infoEl.classList.toggle('expanded'); });
+        document.body.appendChild(infoEl);
+        var triCountEl = document.getElementById('tri-count');
+        var triShiftsEl = document.getElementById('tri-shifts');
+        var triTotal = 0;
+        var paletteShifts = 0;
+        var triQueue = [];       // tracks live DOM elements for removal
+        var HIGH_TRIS = 850;    // start draining at this count
+        var LOW_TRIS  = 10;     // stop draining at this count
+        var draining  = false;
+
+        function updateInfoColor() {
+            var btnBg = ColorPalette.currentGlyphColors[0] || '#888';
+            // Derive fg from bg lightness — light bg gets near-black, dark bg gets near-white
+            var bm = btnBg.match(/oklch\(([\d.]+)/);
+            var btnFg = (bm && parseFloat(bm[1]) > 0.5) ? 'oklch(0.08 0 0)' : 'oklch(0.97 0 0)';
+            infoEl.style.background = btnBg;
+            infoEl.style.color = btnFg;
+        }
+
+        buildExpandedPalette();
+        updateInfoColor();
+        document.body.style.backgroundColor = derivedBgColor;
+
+        // On refresh: pick 2 colors from existing expanded palette as new roots
+        // Hue family stays the same — only lightness centre shifts
+        function shiftPaletteRoots() {
+            if (expandedPalette.length < 10) return;
+            // indices 0–4 are variants of root0, indices 5–9 are variants of root1
+            // pick each new root from its own family so both hue threads are preserved
+            var newRoot0 = expandedPalette[Math.floor(Math.random() * 5)];
+            var newRoot1 = expandedPalette[5 + Math.floor(Math.random() * 5)];
+            ColorPalette.currentGlyphColors[0] = newRoot0;
+            ColorPalette.currentGlyphColors[1] = newRoot1;
+        }
+
+        // Vary palette every ~1 minute (55–75s) — stays in same hue family
+        function schedulePaletteRefresh() {
+            var delay = 55000 + Math.random() * 20000; // 55–75 seconds
+            setTimeout(function() {
+                shiftPaletteRoots();
+                buildExpandedPalette();
+                updateInfoColor();
+                paletteShifts++;
+                triShiftsEl.textContent = paletteShifts + (paletteShifts === 1 ? ' shift' : ' shifts');
+                // Transition the background over 12–17 seconds
+                var transDur = 12 + Math.random() * 5;
+                document.body.style.transition = 'background-color ' + transDur.toFixed(1) + 's ease';
+                document.body.style.backgroundColor = derivedBgColor;
+                setTimeout(function() {
+                    document.body.style.transition = '';
+                }, (transDur + 0.5) * 1000);
+                schedulePaletteRefresh();
+            }, delay);
+        }
+        schedulePaletteRefresh();
+
+        // Removal loop — oscillates between HIGH_TRIS and LOW_TRIS
+        // Draining: removes faster than adds (~140ms avg vs ~430ms add avg) → net drain
+        // Filling:  removal idles, adds accumulate freely back up to HIGH_TRIS
+        function removeOldest() {
+            if (!draining && triQueue.length >= HIGH_TRIS) draining = true;
+            if (draining && triQueue.length <= LOW_TRIS)  draining = false;
+
+            var delay;
+            if (draining && triQueue.length > 0) {
+                var old = triQueue.shift();
+                if (old && old.parentNode) old.parentNode.removeChild(old);
+                triCountEl.textContent = triQueue.length.toLocaleString() + ' on screen';
+                delay = 80 + Math.random() * 120;   // fast drain — avg ~140ms
+            } else {
+                delay = 400 + Math.random() * 400;  // idle while filling
+            }
+            setTimeout(removeOldest, delay);
+        }
+        setTimeout(removeOldest, 350); // offset from addShape start
+
+        // Size bands: mix of tiny, medium, large, huge
+        // Using vw so they scale with viewport
+        function randomSize() {
+            var bands = [
+                { min: 1.5, max: 4 },     // small
+                { min: 4, max: 9 },       // medium
+                { min: 9, max: 18 },      // large
+                { min: 18, max: 32 },     // huge
+            ];
+            // Weight toward small/medium
+            var weights = [4, 3, 2, 1];
+            var total = 10;
+            var r = Math.random() * total;
+            var cum = 0;
+            var band = bands[0];
+            for (var i = 0; i < bands.length; i++) {
+                cum += weights[i];
+                if (r < cum) { band = bands[i]; break; }
+            }
+            return band.min + Math.random() * (band.max - band.min);
+        }
+
+        function addShape() {
+            try {
+                var shape = ALL_SHAPES[Math.floor(Math.random() * ALL_SHAPES.length)];
+                var size = randomSize();
+                var x = -5 + Math.random() * 105;   // slightly offscreen allowed
+                var y = -15 + Math.random() * 115;  // extend into negative so large shapes cover top
+                var rotation = Math.random() * 360;
+                // Pick from expanded palette (base + light/dark permutations, all same hue family)
+                var color = (expandedPalette.length > 0)
+                    ? expandedPalette[Math.floor(Math.random() * expandedPalette.length)]
+                    : 'oklch(0.6 0.15 200)'; // fallback if palette not ready
+
+                // Border color: light/dark variant of same OKLCH hue
+                // Light glyphs get darker border; dark glyphs get lighter border; mid-tones go random
+                var borderColor = color;
+                var bm = color.match(/oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/);
+                if (bm) {
+                    var bl = parseFloat(bm[1]);
+                    var shift = (bl > 0.55) ? -(0.25 + Math.random() * 0.15)   // light glyph → darker border
+                              : (bl < 0.45) ?  (0.25 + Math.random() * 0.15)   // dark glyph → lighter border
+                              : ((Math.random() < 0.5 ? 1 : -1) * (0.25 + Math.random() * 0.15));
+                    var newBl = Math.max(0.05, Math.min(0.95, bl + shift));
+                    borderColor = 'oklch(' + newBl.toFixed(3) + ' ' + bm[2] + ' ' + bm[3] + ')';
+                }
+
+                // 2D only — no perspective/rotateX/rotateY (those create GPU layers × 700 = crash)
+                var skewX  = (Math.random() - 0.5) * 36;   // ±18deg
+                var skewY  = (Math.random() - 0.5) * 36;
+
+                var el = document.createElement('span');
+                el.className = 'tri';
+                el.textContent = shape;
+                el.style.left = x + 'vw';
+                el.style.top = y + 'vh';
+                el.style.fontSize = size + 'vw';
+
+                // ~35% chance of gradient fill — solid shapes only (outline glyphs show gaps)
+                var useGradient = expandedPalette.length >= 2 && Math.random() < 0.35 && GRADIENT_SAFE_SHAPES.has(shape);
+                if (useGradient) {
+                    var gAngle = Math.floor(Math.random() * 360);
+                    var stops = Math.random() < 0.4 ? 3 : 2;
+                    var gColors = [];
+                    for (var gi = 0; gi < stops; gi++) {
+                        gColors.push(expandedPalette[Math.floor(Math.random() * expandedPalette.length)]);
+                    }
+                    el.style.background = 'linear-gradient(' + gAngle + 'deg, ' + gColors.join(', ') + ')';
+                    el.style.webkitBackgroundClip = 'text';
+                    el.style.backgroundClip = 'text';
+                    el.style.webkitTextFillColor = 'transparent';
+                    el.style.color = 'transparent';
+                } else {
+                    el.style.color = color;
+                }
+                var strokePx = (1 + Math.random() * 2).toFixed(1);
+                el.style.webkitTextStroke = strokePx + 'px ' + borderColor;
+                el.style.transform =
+                    'rotate(' + rotation + 'deg) ' +
+                    'skewX(' + skewX + 'deg) ' +
+                    'skewY(' + skewY + 'deg)';
+
+                document.body.appendChild(el);
+                triQueue.push(el);
+                triTotal++;
+                triCountEl.textContent = triQueue.length.toLocaleString() + ' on screen';
+            } catch(e) {
+                console.warn('addShape error (loop continues):', e);
+            }
+
+            // Always reschedule — loop must never die
+            var delay = 120 + Math.pow(Math.random(), 1.5) * 780;
+            setTimeout(addShape, delay);
+        }
+
+        addShape();
+    });
+</script>
+</body>
+</html>
