@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triplot</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="newColors()">&#x21BA; Colors Only</button>
+</div>
+<script>
+const GRID = 5;
+const GAP  = 3;
+
+/* ── Math functions — all interesting over [-3,3]×[-3,3] ── */
+const FUNCTIONS = [
+  (x,y) => (1 - x/2 + Math.pow(x,5) + Math.pow(y,3)) * Math.exp(-x*x - y*y),           // the matplotlib one
+  (x,y) => Math.sin(x*x + y*y) / (x*x + y*y + 0.1),                     // sinc radial
+  (x,y) => Math.cos(x) * Math.sin(y) * Math.exp(-(x*x+y*y)*0.2),        // damped cossin
+  (x,y) => (x*x - y*y) * Math.exp(-x*x*0.3 - y*y*0.3),                  // saddle * gaussian
+  (x,y) => Math.sin(x + Math.cos(y*2)) * Math.cos(y + Math.sin(x*2)),    // interference
+  (x,y) => (x*y*(x*x-y*y)) / (x*x+y*y+0.01) * Math.exp(-(x*x+y*y)*0.15),// monkey saddle
+  (x,y) => Math.sin(Math.sqrt(x*x+y*y) * 2) * Math.exp(-(x*x+y*y)*0.1), // radial ripple
+  (x,y) => (1-x*x-y*y) * Math.exp(-x*x*0.5) * Math.cos(y*Math.PI),      // hat wave
+];
+
+/* ── Color schemes — all dark, no white midpoints ── */
+const SCHEMES = [
+  t => d3.interpolateInferno(t),
+  t => d3.interpolateMagma(t),
+  t => d3.interpolatePlasma(t),
+  t => d3.interpolateViridis(t),
+  t => d3.interpolateCividis(t),
+  t => d3.interpolateTurbo(t),
+  t => d3.interpolateWarm(t),
+  t => d3.interpolateCool(t),
+  t => d3.interpolateCubehelixDefault(t),
+  // Custom dark diverging — no white
+  t => t < 0.5 ? d3.interpolateRgb('#0d0887','#cc4778')(t*2) : d3.interpolateRgb('#cc4778','#f0f921')((t-0.5)*2),
+  t => t < 0.5 ? d3.interpolateRgb('#00204d','#7eb8c9')(t*2) : d3.interpolateRgb('#7eb8c9','#ffea46')((t-0.5)*2),
+  t => t < 0.5 ? d3.interpolateRgb('#3d0158','#d45a93')(t*2) : d3.interpolateRgb('#d45a93','#f7e44d')((t-0.5)*2),
+  t => t < 0.5 ? d3.interpolateRgb('#0a0a2e','#5b5ea6')(t*2) : d3.interpolateRgb('#5b5ea6','#e8a838')((t-0.5)*2),
+  t => t < 0.5 ? d3.interpolateRgb('#001a00','#2d8f4e')(t*2) : d3.interpolateRgb('#2d8f4e','#f5c518')((t-0.5)*2),
+  t => t < 0.5 ? d3.interpolateRgb('#1a0000','#c0392b')(t*2) : d3.interpolateRgb('#c0392b','#f39c12')((t-0.5)*2),
+  t => d3.interpolateSinebow(t),
+  t => d3.interpolateRainbow(t),
+];
+
+let currentSchemeIdx = 0;
+
+/* ── State ── */
+let datasets = [];
+
+function randomPoints(n) {
+  // Slightly clustered for more interesting triangulations
+  return Array.from({length: n}, () => [
+    (Math.random() - 0.5) * 6,  // x in [-3, 3]
+    (Math.random() - 0.5) * 6,  // y in [-3, 3]
+  ]);
+}
+
+function generateDatasets() {
+  datasets = Array.from({length: GRID*GRID}, () => ({
+    pts:    randomPoints(80 + Math.floor(Math.random()*120)),
+    fnIdx:  Math.floor(Math.random()*FUNCTIONS.length),
+  }));
+}
+
+/* ── Draw one triplot cell ── */
+function drawTriplot(g, ds, scheme, ox, oy, cellW, cellH) {
+  const { pts, fnIdx } = ds;
+  const fn = FUNCTIONS[fnIdx];
+
+  // Compute z values
+  const zVals = pts.map(([x,y]) => fn(x,y));
+  const zMin = d3.min(zVals), zMax = d3.max(zVals);
+  const zRange = Math.max(Math.abs(zMin), Math.abs(zMax));
+
+  // Scale from data space [-3,3] to pixel space
+  const pad = Math.min(cellW,cellH)*0.03;
+  const xSc = d3.scaleLinear().domain([-3,3]).range([ox+pad, ox+cellW-pad]);
+  const ySc = d3.scaleLinear().domain([-3,3]).range([oy+pad, oy+cellH-pad]);
+
+  // Delaunay triangulation
+  const delaunay = d3.Delaunay.from(pts);
+  const { triangles } = delaunay;
+
+  for (let i=0; i<triangles.length; i+=3) {
+    const a=triangles[i], b=triangles[i+1], c=triangles[i+2];
+    const [ax,ay]=pts[a], [bx,by]=pts[b], [cx2,cy2]=pts[c];
+
+    // Function value at centroid
+    const mx=(ax+bx+cx2)/3, my=(ay+by+cy2)/3;
+    const z = fn(mx, my);
+    const t = (z / (zRange*2+0.001)) + 0.5; // normalize to [0,1]
+
+    const color = scheme(Math.max(0, Math.min(1, t)));
+
+    g.append('path')
+      .attr('d', `M${xSc(ax)},${ySc(ay)}L${xSc(bx)},${ySc(by)}L${xSc(cx2)},${ySc(cy2)}Z`)
+      .attr('fill', color)
+      .attr('opacity', 0.88)
+      .attr('stroke', 'rgba(0,0,0,0.15)')
+      .attr('stroke-width', 0.3);
+  }
+}
+
+/* ── Full render ── */
+function drawAll() {
+  const W=window.innerWidth, H=window.innerHeight;
+  const cellW=(W-GAP*(GRID+1))/GRID;
+  const cellH=(H-GAP*(GRID+1))/GRID;
+
+  const svg=d3.select('#viz').attr('width',W).attr('height',H);
+  svg.selectAll('*').remove();
+  svg.append('rect').attr('width',W).attr('height',H).attr('fill','#07060e');
+
+  const scheme = SCHEMES[currentSchemeIdx];
+
+  datasets.forEach((ds, idx) => {
+    const row=Math.floor(idx/GRID), col=idx%GRID;
+    const ox=GAP+col*(cellW+GAP);
+    const oy=GAP+row*(cellH+GAP);
+
+    const clipId='clip-'+idx;
+    svg.append('defs').append('clipPath').attr('id',clipId)
+      .append('rect').attr('x',ox).attr('y',oy).attr('width',cellW).attr('height',cellH);
+
+    svg.append('rect').attr('x',ox).attr('y',oy)
+      .attr('width',cellW).attr('height',cellH)
+      .attr('fill','#0c0b18');
+
+    const g=svg.append('g')
+      .attr('clip-path','url(#'+clipId+')')
+      .attr('opacity',0);
+
+    drawTriplot(g, ds, scheme, ox, oy, cellW, cellH);
+
+    g.transition().duration(500).delay(idx*25).attr('opacity',1);
+  });
+}
+
+function regenerate() {
+  currentSchemeIdx = Math.floor(Math.random()*SCHEMES.length);
+  generateDatasets();
+  drawAll();
+}
+
+function newColors() {
+  currentSchemeIdx = (currentSchemeIdx+1) % SCHEMES.length;
+  drawAll();
+}
+
+generateDatasets();
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>

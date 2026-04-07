@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beeswarm Rows</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #06050f; overflow: hidden; font-family: monospace; }
+  svg { display: block; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<div id="ui">
+  <button onclick="pushAll()">⚡ Push All</button>
+  <button onclick="newPalette()">↺ Colors</button>
+</div>
+
+<script>
+const ROWS = 3;
+const RADIUS = 6;
+const PAD = 2;
+
+// Each row gets its own random interval between 12–28 seconds
+const ROW_INTERVALS = Array.from({length: ROWS}, () => 12000 + Math.floor(Math.random() * 16000));
+
+const W = window.innerWidth;
+const H = window.innerHeight;
+const ROW_H = H / ROWS;
+
+/* ── Palette ── */
+const CATEGORIES = ['Alpha','Beta','Gamma','Delta','Epsilon'];
+
+function randomPalette() {
+  const mode = Math.floor(Math.random() * 5);
+  return Array.from({length: CATEGORIES.length}, (_, i) => {
+    if (mode === 0) return d3.hsl((i*(360/CATEGORIES.length)+Math.random()*20)%360,1,0.62).toString();
+    if (mode === 1) return d3.hsl(Math.random()*360,0.9,0.65).toString();
+    if (mode === 2) { const h=Math.random()<0.5?10+Math.random()*30:185+Math.random()*50; return d3.hsl(h,0.95,0.6).toString(); }
+    if (mode === 3) return d3.hsl(260+Math.random()*80,0.85,0.65).toString();
+    return d3.hsl(80+Math.random()*140,0.82,0.62).toString();
+  });
+}
+
+let palette = randomPalette();
+function colorForCat(cat) { return palette[CATEGORIES.indexOf(cat) % palette.length]; }
+
+/* ── Distributions ── */
+function randn() {
+  let u=0,v=0;
+  while(!u) u=Math.random();
+  while(!v) v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+
+const distributions = [
+  { name: 'normal',    fn: () => randn() },
+  { name: 'bimodal',   fn: () => (Math.random()<0.5?-2.5:2.5)+randn()*0.7 },
+  { name: 'skewed',    fn: () => Math.pow(Math.random(),0.3)*5-2 },
+  { name: 'uniform',   fn: () => (Math.random()-0.5)*7 },
+  { name: 'trimodal',  fn: () => [-3.5,0,3.5][Math.floor(Math.random()*3)]+randn()*0.8 },
+];
+
+function generateBatch() {
+  const numCats = 2 + Math.floor(Math.random()*(CATEGORIES.length-1));
+  const cats = d3.shuffle([...CATEGORIES]).slice(0,numCats);
+  const dist = distributions[Math.floor(Math.random()*distributions.length)];
+  const n = 50 + Math.floor(Math.random()*90);
+  return cats.flatMap(cat =>
+    Array.from({length: Math.floor(n/cats.length)}, () => ({
+      category: cat,
+      value: dist.fn()
+    }))
+  );
+}
+
+/* ── Beeswarm layout ── */
+function beeswarm(data, xScale, centerY) {
+  const r2 = (RADIUS+PAD)*2;
+  const maxY = ROW_H * 0.46; // keep dots inside their row band
+  const placed = [];
+  [...data].sort((a,b)=>a.value-b.value).forEach(d => {
+    const x = xScale(d.value);
+    const candidates = [centerY];
+    placed.forEach(p => {
+      const dx = x-p.x;
+      if (Math.abs(dx)<r2) {
+        const dy = Math.sqrt(Math.max(0,r2*r2-dx*dx));
+        candidates.push(p.y-dy, p.y+dy);
+      }
+    });
+    const valid = candidates.filter(cy =>
+      Math.abs(cy-centerY) < maxY &&
+      placed.every(p => {
+        const dx=x-p.x, dy=cy-p.y;
+        return dx*dx+dy*dy>=r2*r2-0.1;
+      })
+    );
+    const y = (valid.length?valid:[centerY])
+      .sort((a,b)=>Math.abs(a-centerY)-Math.abs(b-centerY))[0];
+    placed.push({...d, x, y});
+  });
+  return placed;
+}
+
+/* ── SVG ── */
+const svg = d3.select('body').append('svg').attr('width',W).attr('height',H);
+
+// Row dividers
+Array.from({length:ROWS-1},(_,i)=>{
+  svg.append('line')
+    .attr('x1',0).attr('x2',W)
+    .attr('y1',(i+1)*ROW_H).attr('y2',(i+1)*ROW_H)
+    .attr('stroke','rgba(255,255,255,0.06)')
+    .attr('stroke-width',1);
+});
+
+// Per-row groups, axis lines, countdown labels
+const rowGroups = Array.from({length:ROWS},(_,i)=>{
+  const centerY = ROW_H*i + ROW_H/2;
+
+  // axis
+  svg.append('line')
+    .attr('x1',70).attr('x2',W-70)
+    .attr('y1',centerY).attr('y2',centerY)
+    .attr('stroke','rgba(255,255,255,0.07)')
+    .attr('stroke-width',1);
+
+  // countdown label
+  const label = svg.append('text')
+    .attr('x', W-18)
+    .attr('y', centerY - 10)
+    .attr('text-anchor','end')
+    .attr('fill','rgba(255,255,255,0.22)')
+    .attr('font-size',9)
+    .attr('font-family','monospace')
+    .attr('letter-spacing','0.12em')
+    .text(`row ${i+1}`);
+
+  return { g: svg.append('g'), centerY, label };
+});
+
+/* ── Per-row render ── */
+function renderRow(rowIdx, data) {
+  const { g, centerY } = rowGroups[rowIdx];
+  const vals = data.map(d=>d.value);
+  const xScale = d3.scaleLinear()
+    .domain([d3.min(vals)-0.8, d3.max(vals)+0.8])
+    .range([80, W-80]);
+
+  const placed = beeswarm(data, xScale, centerY);
+
+  const dots = g.selectAll('circle').data(placed, (_,i)=>i);
+
+  dots.exit()
+    .transition().duration(300)
+    .attr('r',0).attr('opacity',0)
+    .remove();
+
+  dots.enter().append('circle')
+    .attr('cx', d=>d.x)
+    .attr('cy', centerY)
+    .attr('r',0)
+    .attr('fill', d=>colorForCat(d.category))
+    .attr('opacity',0)
+    .transition().duration(700)
+    .delay((_,i)=>i*4)
+    .ease(d3.easeBounceOut)
+    .attr('cy', d=>d.y)
+    .attr('r', RADIUS)
+    .attr('opacity',0.88);
+
+  dots.transition().duration(700)
+    .delay((_,i)=>i*3)
+    .ease(d3.easeQuadInOut)
+    .attr('cx', d=>d.x)
+    .attr('cy', d=>d.y)
+    .attr('fill', d=>colorForCat(d.category))
+    .attr('r', RADIUS)
+    .attr('opacity',0.88);
+}
+
+/* ── Independent timers per row ── */
+const rowCountdowns = [...ROW_INTERVALS.map(ms=>ms/1000)];
+
+function pushRow(i) {
+  renderRow(i, generateBatch());
+  rowCountdowns[i] = ROW_INTERVALS[i] / 1000;
+}
+
+// stagger initial renders so they don't all fire at once
+Array.from({length:ROWS},(_,i)=>{
+  setTimeout(()=>pushRow(i), i*600);
+  setInterval(()=>pushRow(i), ROW_INTERVALS[i]);
+});
+
+// Countdown ticks
+setInterval(()=>{
+  rowGroups.forEach(({label}, i)=>{
+    rowCountdowns[i] = Math.max(0, rowCountdowns[i]-1);
+    const secs = Math.round(rowCountdowns[i]);
+    label.text(`${secs}s`);
+  });
+},1000);
+
+/* ── Controls ── */
+function pushAll() {
+  Array.from({length:ROWS},(_,i)=>pushRow(i));
+}
+
+function newPalette() {
+  palette = randomPalette();
+  rowGroups.forEach(({g})=>{
+    g.selectAll('circle')
+      .transition().duration(500)
+      .attr('fill', d=>colorForCat(d.category));
+  });
+}
+</script>
+</body>
+</html>

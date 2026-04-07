@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generative Sankey</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-sankey/0.12.3/d3-sankey.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #06050f; overflow: hidden; }
+  svg { display: block; }
+  #ui {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff;
+    font-family: monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 8px 24px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+
+  path.link {
+    transition: opacity 0.2s;
+  }
+  path.link:hover {
+    opacity: 1 !important;
+  }
+</style>
+</head>
+<body>
+<div id="ui">
+  <button onclick="regenerate()">↺ Regenerate</button>
+</div>
+
+<script>
+const PAD = { top: 40, right: 60, bottom: 40, left: 60 };
+
+/* ── Palette ── */
+function randomPalette(n) {
+  const mode = Math.floor(Math.random() * 5);
+  return Array.from({length: n}, (_, i) => {
+    if (mode === 0) return d3.hsl((i * (360 / n) + Math.random() * 20) % 360, 0.95, 0.62).toString();
+    if (mode === 1) return d3.hsl(Math.random() * 360, 0.88, 0.62 + Math.random() * 0.12).toString();
+    if (mode === 2) {
+      const h = Math.random() < 0.5 ? 10 + Math.random() * 30 : 185 + Math.random() * 50;
+      return d3.hsl(h, 0.95, 0.55 + Math.random() * 0.2).toString();
+    }
+    if (mode === 3) return d3.hsl(260 + Math.random() * 80, 0.85, 0.62).toString();
+    return d3.hsl(80 + Math.random() * 140, 0.82, 0.58 + Math.random() * 0.15).toString();
+  });
+}
+
+/* ── Random graph generator ─────────────────────────────────
+   Builds a layered DAG:
+   - 3–6 layers
+   - 2–7 nodes per layer
+   - each node in layer L connects to 1–3 random nodes in layer L+1
+── */
+function generateGraph() {
+  const numLayers = 3 + Math.floor(Math.random() * 4);        // 3–6
+  const layers = Array.from({length: numLayers}, () =>
+    2 + Math.floor(Math.random() * 6)                          // 2–7 nodes
+  );
+
+  // Build node list with layer membership
+  const nodes = [];
+  let id = 0;
+  const layerNodes = layers.map(count => {
+    const group = [];
+    for (let i = 0; i < count; i++) {
+      nodes.push({ id, layer: layers.indexOf(count) });        // rough, fix below
+      group.push(id++);
+    }
+    return group;
+  });
+
+  // Fix layer assignment properly
+  let nid = 0;
+  layerNodes.forEach((group, li) => {
+    group.forEach(gid => { nodes[nid++].layer = li; });
+  });
+
+  // Build edges: each node → 1–3 random nodes in next layer
+  const links = [];
+  for (let li = 0; li < layerNodes.length - 1; li++) {
+    const srcs = layerNodes[li];
+    const tgts = layerNodes[li + 1];
+    srcs.forEach(src => {
+      const numLinks = 1 + Math.floor(Math.random() * Math.min(3, tgts.length));
+      const chosen = d3.shuffle([...tgts]).slice(0, numLinks);
+      chosen.forEach(tgt => {
+        links.push({
+          source: src,
+          target: tgt,
+          value: 5 + Math.random() * 95   // random flow weight
+        });
+      });
+    });
+
+    // Ensure every target node has at least one incoming edge
+    tgts.forEach(tgt => {
+      const hasIncoming = links.some(l => l.target === tgt);
+      if (!hasIncoming) {
+        const src = srcs[Math.floor(Math.random() * srcs.length)];
+        links.push({ source: src, target: tgt, value: 5 + Math.random() * 50 });
+      }
+    });
+  }
+
+  const totalNodes = nodes.length;
+  const palette = randomPalette(totalNodes);
+  nodes.forEach((n, i) => { n.color = palette[i]; });
+
+  return { nodes, links };
+}
+
+/* ── SVG setup ── */
+const svg = d3.select('body').append('svg');
+const g = svg.append('g');
+
+/* ── Draw ── */
+function draw() {
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+
+  svg.attr('width', W).attr('height', H);
+  g.selectAll('*').remove();
+
+  const innerW = W - PAD.left - PAD.right;
+  const innerH = H - PAD.top - PAD.bottom;
+  g.attr('transform', `translate(${PAD.left},${PAD.top})`);
+
+  const { nodes, links } = generateGraph();
+
+  /* ── Sankey layout ── */
+  const sankey = d3.sankey()
+    .nodeId(d => d.id)
+    .nodeWidth(18 + Math.random() * 22)
+    .nodePadding(12 + Math.random() * 20)
+    .extent([[0, 0], [innerW, innerH]]);
+
+  const { nodes: sNodes, links: sLinks } = sankey({
+    nodes: nodes.map(d => ({...d})),
+    links: links.map(d => ({...d}))
+  });
+
+  /* ── Links ── */
+  const linkColor = Math.random() < 0.5 ? 'source' : 'target';
+
+  g.append('g').selectAll('path')
+    .data(sLinks)
+    .join('path')
+    .attr('class', 'link')
+    .attr('d', d3.sankeyLinkHorizontal())
+    .attr('fill', 'none')
+    .attr('stroke', d => linkColor === 'source' ? d.source.color : d.target.color)
+    .attr('stroke-width', d => Math.max(1, d.width))
+    .attr('stroke-opacity', 0.38)
+    .on('mouseover', function() { d3.select(this).attr('stroke-opacity', 0.72); })
+    .on('mouseout',  function() { d3.select(this).attr('stroke-opacity', 0.38); });
+
+  /* ── Nodes ── */
+  g.append('g').selectAll('rect')
+    .data(sNodes)
+    .join('rect')
+    .attr('x', d => d.x0)
+    .attr('y', d => d.y0)
+    .attr('width', d => d.x1 - d.x0)
+    .attr('height', d => Math.max(1, d.y1 - d.y0))
+    .attr('fill', d => d.color)
+    .attr('opacity', 0.92)
+    .attr('rx', 3);
+
+  /* ── Entrance animation ── */
+  g.selectAll('path.link, rect')
+    .style('opacity', 0)
+    .transition()
+    .duration(600)
+    .delay((d, i) => i * 18)
+    .style('opacity', null);
+}
+
+function regenerate() {
+  g.selectAll('*')
+    .transition().duration(250)
+    .style('opacity', 0)
+    .on('end', function(d, i) { if (i === 0) draw(); });
+}
+
+window.addEventListener('resize', draw);
+draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contour Blocks</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-contour/4.0.2/d3-contour.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; }
+  canvas { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(0,0,0,0.12); border: 1px solid rgba(0,0,0,0.25);
+    color: #111; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(0,0,0,0.22); }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="nextFn()">&#x21BA; Function</button>
+</div>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+// ONLY solid rectangular block elements — no shades, no quadrants, no circles
+// U+2580 ▀  upper half
+// U+2584 ▄  lower half
+// U+2588 █  full block
+// U+2581-2587  lower 1-7 eighths ▁▂▃▄▅▆▇
+// U+2589-258F  left 7-1 eighths ▉▊▋▌▍▎▏
+const BLOCKS = [
+  '\u2580',
+  '\u2584',
+  '\u2588',
+  '\u2581','\u2582','\u2583','\u2585','\u2586','\u2587',
+  '\u2589','\u258A','\u258B','\u258C','\u258D','\u258E','\u258F',
+];
+
+const FUNCTIONS = [
+  (x,y) => Math.sin(x)*Math.cos(y),
+  (x,y) => Math.cos(x)*Math.cos(y),
+  (x,y) => Math.sin(x+y),
+  (x,y) => Math.sin(x)*Math.sin(y),
+  (x,y) => Math.sin(x+Math.cos(y)),
+  (x,y) => Math.sin(2*x)*Math.cos(2*y),
+  (x,y) => Math.sin(x*x*0.25+y*y*0.25),
+];
+let fnIdx = 0;
+
+const DIVERGING_PAIRS = [
+  ['#b2182b','#f7f7f7','#2166ac'],
+  ['#d73027','#ffffbf','#4575b4'],
+  ['#762a83','#f7f7f7','#1b7837'],
+  ['#b35806','#f7f7f7','#542788'],
+  ['#c51b7d','#f7f7f7','#4d9221'],
+  ['#d6604d','#f5f5f5','#4393c3'],
+];
+
+let colorPair = DIVERGING_PAIRS[0];
+
+function makeScale(pair) {
+  return function(v) {
+    // v in [-1,1], map to t in [0,1]
+    const t = (v + 1) / 2;
+    if (t <= 0.5) return d3.interpolateRgb(pair[0], pair[1])(t * 2);
+    return d3.interpolateRgb(pair[1], pair[2])((t - 0.5) * 2);
+  };
+}
+
+function safeRgb(colorStr) {
+  const c = d3.color(colorStr);
+  return c ? c.rgb() : { r: 200, g: 200, b: 200 };
+}
+
+function render() {
+  const W = canvas.width, H = canvas.height;
+  const fn = FUNCTIONS[fnIdx];
+  const scale = makeScale(colorPair);
+  const xDomain = 6 * Math.PI;
+  const yDomain = 4 * Math.PI;
+
+  // 1. Filled pixel layer
+  const imgData = ctx.createImageData(W, H);
+  const px = imgData.data;
+  for (let py = 0; py < H; py++) {
+    for (let x2 = 0; x2 < W; x2++) {
+      const x = (x2 / W) * xDomain;
+      const y = (py / H) * yDomain;
+      const v = fn(x, y);
+      const col = safeRgb(scale(v));
+      const i = (py * W + x2) * 4;
+      px[i] = col.r; px[i+1] = col.g; px[i+2] = col.b; px[i+3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  // 2. Faint contour lines
+  const RES = 180;
+  const vals = new Float64Array(RES * RES);
+  for (let j = 0; j < RES; j++) {
+    for (let i = 0; i < RES; i++) {
+      vals[j*RES+i] = fn((i/RES)*xDomain, (j/RES)*yDomain);
+    }
+  }
+  const thresholds = Array.from({length:16}, (_,i) => -1 + 2*(i+0.5)/16);
+  const contours = d3.contours().size([RES,RES]).thresholds(thresholds)(vals);
+  const xSc = d3.scaleLinear().domain([0,RES]).range([0,W]);
+  const ySc = d3.scaleLinear().domain([0,RES]).range([0,H]);
+  const pathGen = d3.geoPath().projection(
+    d3.geoTransform({ point: function(x,y){ this.stream.point(xSc(x),ySc(y)); } })
+  );
+  ctx.save();
+  ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+  ctx.lineWidth = 0.5;
+  contours.forEach(c => { ctx.stroke(new Path2D(pathGen(c))); });
+  ctx.restore();
+
+  // 3. Block elements tiling the full page
+  const cellSize = 14 + Math.floor(Math.random() * 16);
+  ctx.save();
+  ctx.font = cellSize + 'px monospace';
+  ctx.textBaseline = 'top';
+  ctx.textAlign = 'left';
+
+  const cols = Math.ceil(W / cellSize) + 1;
+  const rows = Math.ceil(H / cellSize) + 1;
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const gx = col * cellSize;
+      const gy = row * cellSize;
+      const x = (gx / W) * xDomain;
+      const y = (gy / H) * yDomain;
+      const v = fn(x, y);
+      const bg = safeRgb(scale(v));
+      const lum = 0.299*bg.r + 0.587*bg.g + 0.114*bg.b;
+      const alpha = 0.08 + Math.random() * 0.18;
+      ctx.fillStyle = lum > 128
+        ? 'rgba(0,0,0,' + alpha + ')'
+        : 'rgba(255,255,255,' + alpha + ')';
+      ctx.fillText(BLOCKS[Math.floor(Math.random() * BLOCKS.length)], gx, gy);
+    }
+  }
+  ctx.restore();
+}
+
+function regenerate() {
+  colorPair = DIVERGING_PAIRS[Math.floor(Math.random() * DIVERGING_PAIRS.length)];
+  render();
+}
+
+function nextFn() {
+  fnIdx = (fnIdx + 1) % FUNCTIONS.length;
+  render();
+}
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  render();
+}
+
+window.addEventListener('resize', resize);
+resize();
+</script>
+</body>
+</html>

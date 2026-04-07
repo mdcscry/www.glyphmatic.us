@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Square Limit</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+  canvas { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 100; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(0,0,0,0.75); border: 1px solid rgba(255,255,255,0.5);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer;
+    backdrop-filter: blur(4px);
+  }
+  button:hover { background: rgba(255,255,255,0.15); }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="moreDepth()">&#x21E7; Deeper</button>
+</div>
+<script>
+var canvas = document.getElementById('c');
+var ctx = canvas.getContext('2d');
+
+function vadd(a,b){ return {x:a.x+b.x, y:a.y+b.y}; }
+function vscale(v,s){ return {x:v.x*s, y:v.y*s}; }
+function vv(x,y){ return {x:x, y:y}; }
+function pt(a,b,c,u,w){ return vadd(a,vadd(vscale(b,u),vscale(c,w))); }
+
+/* ── Fish segments — unit box, more detail for density ── */
+var FISH = [
+  [[0.20,0.50],[0.30,0.65],[0.45,0.72],[0.60,0.72],[0.75,0.65],[0.85,0.52],[0.75,0.38],[0.60,0.30],[0.45,0.28],[0.30,0.35],[0.20,0.50]],
+  [[0.20,0.50],[0.08,0.68],[0.00,0.50],[0.08,0.32],[0.20,0.50]],
+  [[0.42,0.70],[0.48,0.84],[0.58,0.72]],
+  [[0.42,0.30],[0.48,0.16],[0.58,0.28]],
+  [[0.73,0.53],[0.74,0.55],[0.73,0.57],[0.72,0.55],[0.73,0.53]],
+  [[0.82,0.50],[0.86,0.52],[0.84,0.50]],
+  [[0.35,0.52],[0.42,0.58],[0.49,0.52],[0.42,0.46],[0.35,0.52]],
+  [[0.50,0.52],[0.57,0.58],[0.64,0.52],[0.57,0.46],[0.50,0.52]],
+  [[0.38,0.40],[0.45,0.34],[0.52,0.40]],
+  [[0.28,0.56],[0.33,0.62],[0.38,0.56]],
+];
+
+var pal = ['#111'];
+var ci  = 0;
+var bg  = '#f5f0e8';
+
+function makeFish(){
+  return function(a,b,c){
+    var len = Math.sqrt(b.x*b.x+b.y*b.y);
+    var lw  = Math.max(0.2, len*0.019);
+    var col = pal[ci % pal.length]; ci++;
+    ctx.strokeStyle = col;
+    ctx.lineWidth   = lw;
+    FISH.forEach(function(seg){
+      if(seg.length<2) return;
+      ctx.beginPath();
+      var p0=pt(a,b,c,seg[0][0],seg[0][1]); ctx.moveTo(p0.x,p0.y);
+      for(var i=1;i<seg.length;i++){ var pi=pt(a,b,c,seg[i][0],seg[i][1]); ctx.lineTo(pi.x,pi.y); }
+      ctx.stroke();
+    });
+  };
+}
+
+function blank(){ return function(){}; }
+
+function beside(p,q){
+  return function(a,b,c){
+    p(a,vscale(b,.5),c);
+    q(vadd(a,vscale(b,.5)),vscale(b,.5),c);
+  };
+}
+function above(p,q){
+  return function(a,b,c){
+    p(vadd(a,vscale(c,.5)),b,vscale(c,.5));
+    q(a,b,vscale(c,.5));
+  };
+}
+function over(p,q){ return function(a,b,c){ q(a,b,c); p(a,b,c); }; }
+function rot(p){ return function(a,b,c){ p(vadd(a,b),c,vv(-b.x,-b.y)); }; }
+
+function quartet(p,q,r,s){ return above(beside(p,q),beside(r,s)); }
+
+function nonet(p1,p2,p3,p4,p5,p6,p7,p8,p9){
+  return function(a,b,c){
+    var w=vscale(b,1/3), h=vscale(c,1/3);
+    function row(prims, rowA){
+      prims[0](rowA, w, h);
+      prims[1](vadd(rowA,w), w, h);
+      prims[2](vadd(rowA,vscale(b,2/3)), w, h);
+    }
+    row([p1,p2,p3], vadd(a,vscale(c,2/3)));
+    row([p4,p5,p6], vadd(a,vscale(c,1/3)));
+    row([p7,p8,p9], a);
+  };
+}
+
+function squareLimit(depth){
+  function F(){ return makeFish(); }
+  function u(){
+    return over(over(F(),rot(F())),over(rot(rot(F())),rot(rot(rot(F())))));
+  }
+  function side(n){
+    if(n<=0) return blank();
+    var s=side(n-1);
+    return quartet(s,s,rot(F()),F());
+  }
+  function corner(n){
+    if(n<=0) return blank();
+    return quartet(corner(n-1),side(n-1),rot(side(n-1)),u());
+  }
+  var c=corner(depth), s=side(depth);
+  return nonet(
+    c,           s,           rot(rot(rot(corner(depth)))),
+    rot(s),      u(),         rot(rot(rot(s))),
+    rot(c),      rot(rot(s)), rot(rot(corner(depth)))
+  );
+}
+
+/* ── Palettes ── */
+function rndPal(){
+  var mode=Math.floor(Math.random()*7);
+  var h=Math.floor(Math.random()*360);
+  var h2=(h+180)%360, h3=(h+90)%360;
+  if(mode===0) return ['#111','#444','#777','#aaa'];
+  if(mode===1) return ['hsl('+h+',80%,20%)','hsl('+h+',70%,40%)','hsl('+h+',60%,60%)'];
+  if(mode===2) return ['hsl('+h+',80%,25%)','hsl('+h2+',80%,30%)','hsl('+h3+',75%,40%)'];
+  if(mode===3) return ['#3d1f0a','#8a4520','#d4854a','#f0c090'];
+  if(mode===4) return ['#0a1828','#1a4878','#3a88c8','#8ac8f8'];
+  if(mode===5) return ['hsl('+Math.floor(Math.random()*360)+',85%,35%)','hsl('+Math.floor(Math.random()*360)+',85%,40%)','hsl('+Math.floor(Math.random()*360)+',85%,45%)','hsl('+Math.floor(Math.random()*360)+',85%,50%)'];
+  return ['#111','hsl('+h+',80%,40%)','hsl('+h2+',80%,45%)'];
+}
+
+function rndBg(){
+  var mode=Math.floor(Math.random()*8);
+  var h=Math.floor(Math.random()*360);
+  if(mode===0) return '#f5f0e8';
+  if(mode===1) return '#fafafa';
+  if(mode===2) return '#080808';
+  if(mode===3) return '#0a0818';
+  if(mode===4) return '#0a1808';
+  if(mode===5) return '#180808';
+  if(mode===6) return 'hsl('+h+',20%,94%)';
+  return 'hsl('+h+',35%,08%)';
+}
+
+var depth = 4;
+
+function render(){
+  var W=canvas.width, H=canvas.height;
+  var size=Math.min(W,H)*0.96;
+  var ox=(W-size)/2, oy=(H-size)/2;
+  ctx.fillStyle=bg;
+  ctx.fillRect(0,0,W,H);
+  ci=0;
+  var pic=squareLimit(depth);
+  pic(vv(ox,oy+size), vv(size,0), vv(0,-size));
+}
+
+function regenerate(){
+  pal=rndPal(); bg=rndBg();
+  depth=4+Math.floor(Math.random()*3);
+  render();
+}
+
+function moreDepth(){
+  depth=Math.min(depth+1,7);
+  render();
+}
+
+function resize(){
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+  render();
+}
+
+pal=rndPal(); bg=rndBg(); depth=5;
+window.addEventListener('resize',resize);
+resize();
+</script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marimekko</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="newColors()">&#x21BA; Colors Only</button>
+</div>
+<script>
+const COLS = 6;
+const ROWS = 3;
+
+/* ── Palettes ── */
+const PALETTE_MODES = [
+  () => ['#f94144','#f3722c','#f9c74f','#90be6d','#43aa8b','#277da1','#577590','#e9c46a'],
+  () => ['#ff006e','#fb5607','#ffbe0b','#8338ec','#3a86ff','#06d6a0','#ef233c','#ffd60a'],
+  () => Array.from({length:8}, () => d3.hsl(Math.random()*360, 0.9, 0.55+Math.random()*0.16).toString()),
+  () => { const b=Math.random()*360; return Array.from({length:8}, (_,i) => d3.hsl((b+i*45)%360, 0.92, 0.58).toString()); },
+  () => ['#e63946','#f4a261','#2a9d8f','#e9c46a','#264653','#457b9d','#a8dadc','#ffd60a'],
+  () => { const b=Math.random()*360; return Array.from({length:8}, (_,i) => d3.hsl((b+i*30)%360, 1.0, 0.60).toString()); },
+];
+
+function randomPalette() {
+  return PALETTE_MODES[Math.floor(Math.random() * PALETTE_MODES.length)]();
+}
+
+let currentPalette = randomPalette();
+
+/* ── Generate one Marimekko chart data ──────────────────────
+   A Marimekko = N columns each with:
+     - a width proportion (col width / total width = 100%)
+     - M stacked segments each with a height proportion (sums to 100%)
+── */
+function generateMarimekko() {
+  // Random number of columns: 3–8
+  const nCols = 3 + Math.floor(Math.random() * 6);
+  // Random number of segment categories: 2–6
+  const nSegs = 2 + Math.floor(Math.random() * 5);
+
+  // Column widths — random, will be normalized to sum to 1
+  const rawWidths = Array.from({length: nCols}, () => 0.5 + Math.random() * 2.5);
+  const totalW = rawWidths.reduce((a,b) => a+b, 0);
+  const colWidths = rawWidths.map(w => w / totalW);
+
+  // Segment heights per column — each column independently random, normalized to 1
+  const cols = colWidths.map((cw) => {
+    const rawH = Array.from({length: nSegs}, () => 0.3 + Math.random() * 2);
+    const total = rawH.reduce((a,b) => a+b, 0);
+    const segs = rawH.map(h => h / total);
+    return { width: cw, segs };
+  });
+
+  return { cols, nSegs };
+}
+
+let datasets = [];
+function generateDatasets() {
+  // Each row gets its own independent set of 6 Marimekkos
+  datasets = Array.from({length: ROWS}, () =>
+    Array.from({length: COLS}, generateMarimekko)
+  );
+}
+
+/* ── Draw ── */
+function drawAll() {
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  const rowH = H / ROWS;
+
+  const svg = d3.select('#viz').attr('width', W).attr('height', H);
+  svg.selectAll('*').remove();
+  svg.append('rect').attr('width', W).attr('height', H).attr('fill', '#07060e');
+
+  datasets.forEach(function(row, ri) {
+    const oy = ri * rowH;
+
+    // Each row: divide W equally among 6 charts, no gaps
+    const chartW = W / COLS;
+
+    row.forEach(function(chart, ci) {
+      const ox = ci * chartW;
+      const { cols, nSegs } = chart;
+
+      // Scale column widths to chartW
+      let xCursor = ox;
+
+      cols.forEach(function(col, coli) {
+        const colPxW = col.width * chartW;
+        let yCursor = oy;
+
+        col.segs.forEach(function(segH, si) {
+          const segPxH = segH * rowH;
+          const colorIdx = (si + coli) % currentPalette.length;
+
+          svg.append('rect')
+            .attr('x', xCursor)
+            .attr('y', yCursor)
+            .attr('width', Math.max(0, colPxW))
+            .attr('height', Math.max(0, segPxH))
+            .attr('fill', currentPalette[colorIdx])
+            .attr('opacity', 0)
+            .transition()
+              .duration(500)
+              .delay((ri * COLS + ci) * 28 + si * 12)
+              .attr('opacity', 0.92);
+
+          yCursor += segPxH;
+        });
+
+        xCursor += colPxW;
+      });
+    });
+  });
+}
+
+function regenerate() {
+  currentPalette = randomPalette();
+  generateDatasets();
+  drawAll();
+}
+
+function newColors() {
+  currentPalette = randomPalette();
+  drawAll();
+}
+
+generateDatasets();
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chord Grid</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #06050f; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.22);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(0,0,0,0.7); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">↺ Regenerate</button>
+  <button onclick="newColors()">↺ Colors Only</button>
+</div>
+
+<script>
+const GRID = 3;
+
+/* ── Palettes ── */
+const PALETTE_MODES = [
+  () => ['#f94144','#f3722c','#f9c74f','#90be6d','#43aa8b','#277da1','#577590'],
+  () => ['#ff006e','#fb5607','#ffbe0b','#8338ec','#3a86ff','#06d6a0','#ef233c'],
+  () => Array.from({length:7}, () => d3.hsl(Math.random()*360, 0.9+Math.random()*0.1, 0.54+Math.random()*0.16).toString()),
+  () => { const b=Math.random()*360; return Array.from({length:7}, (_,i) => d3.hsl((b+i*30)%360, 0.9, 0.56+i*0.025).toString()); },
+  () => ['#e63946','#457b9d','#a8dadc','#f1faee','#ffd60a','#fb8500','#8ecae6'],
+  () => { const b=Math.random()*360; return Array.from({length:7}, (_,i) => d3.hsl((b+i*51)%360, 1.0, 0.58).toString()); },
+];
+
+function randomPalette() {
+  return PALETTE_MODES[Math.floor(Math.random() * PALETTE_MODES.length)]();
+}
+
+/* ── Random flow matrix ── */
+function randomMatrix(n) {
+  return Array.from({length: n}, (_, i) =>
+    Array.from({length: n}, (_, j) =>
+      i === j ? 0 : Math.random() < 0.65 ? Math.pow(Math.random(), 0.6) * 100 : 0
+    )
+  );
+}
+
+/* ── State ── */
+let currentPalette = randomPalette();
+// Pre-generate all 9 datasets so colors-only swap works
+let datasets = [];
+
+function generateDatasets() {
+  datasets = Array.from({length: GRID * GRID}, () => {
+    const n = 4 + Math.floor(Math.random() * 4); // 4–7 nodes
+    return { n, matrix: randomMatrix(n) };
+  });
+}
+
+/* ── Draw ── */
+function drawAll() {
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  const cellW = W / GRID;
+  const cellH = H / GRID;
+  const r = Math.min(cellW, cellH) * 0.44;
+
+  const svg = d3.select('#viz').attr('width', W).attr('height', H);
+  svg.selectAll('*').remove();
+
+  datasets.forEach((ds, idx) => {
+    const row = Math.floor(idx / GRID);
+    const col = idx % GRID;
+    const cx = col * cellW + cellW / 2;
+    const cy = row * cellH + cellH / 2;
+    const cellDelay = idx * 70;
+
+    const colors = currentPalette.slice(0, ds.n);
+
+    const chordLayout = d3.chord()
+      .padAngle(0.04)
+      .sortSubgroups(d3.descending);
+
+    const chords = chordLayout(ds.matrix);
+
+    const arc = d3.arc()
+      .innerRadius(r * 0.82)
+      .outerRadius(r * 0.96);
+
+    const ribbon = d3.ribbon()
+      .radius(r * 0.80);
+
+    const cell = svg.append('g');
+
+    // Ribbons
+    cell.append('g')
+      .attr('transform', `translate(${cx},${cy})`)
+      .selectAll('path')
+      .data(chords)
+      .join('path')
+        .attr('d', ribbon)
+        .attr('fill', d => colors[d.source.index])
+        .attr('stroke', 'none')
+        .attr('opacity', 0)
+      .transition()
+        .duration(600)
+        .delay(cellDelay)
+        .attr('opacity', 0.52);
+
+    // Arcs
+    cell.append('g')
+      .attr('transform', `translate(${cx},${cy})`)
+      .selectAll('path')
+      .data(chords.groups)
+      .join('path')
+        .attr('d', arc)
+        .attr('fill', d => colors[d.index])
+        .attr('stroke', 'none')
+        .attr('opacity', 0)
+      .transition()
+        .duration(600)
+        .delay(cellDelay)
+        .attr('opacity', 0.94);
+  });
+}
+
+function regenerate() {
+  currentPalette = randomPalette();
+  generateDatasets();
+  drawAll();
+}
+
+function newColors() {
+  currentPalette = randomPalette();
+  drawAll();
+}
+
+generateDatasets();
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>

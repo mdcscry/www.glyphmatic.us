@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generative Viz Library</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #07060e;
+    --surface: #0f0e1a;
+    --border: rgba(255,255,255,0.07);
+    --text: rgba(255,255,255,0.85);
+    --muted: rgba(255,255,255,0.35);
+    --accent: #7c6cfc;
+  }
+
+  html, body {
+    width: 100%; min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+  }
+
+  header {
+    padding: 56px 48px 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  header h1 {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(18px, 2.5vw, 30px);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    color: var(--text);
+  }
+
+  header p {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .section-label {
+    padding: 32px 48px 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border-top: 1px solid var(--border);
+  }
+
+  .card {
+    background: var(--bg);
+    padding: 28px 32px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: background 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    background: var(--surface);
+  }
+
+  .card:hover .arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .card-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .arrow {
+    position: absolute;
+    top: 28px;
+    right: 28px;
+    font-size: 16px;
+    color: var(--accent);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.15s, transform 0.15s;
+  }
+
+  footer {
+    padding: 32px 48px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Generative Viz Library</h1>
+  <p>A collection of generative data visualization experiments — built in one session.</p>
+</header>
+
+<div class="section-label">Streaming &amp; Time Series</div>
+<div class="grid">
+
+  <a class="card" href="top10_generative_art.html" target="_blank">
+    <span class="card-tag">Plotly</span>
+    <div class="card-title">Top 10 Generative Art</div>
+    <div class="card-desc">Bump chart with fat spline lines, random palettes, slow animation.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v3_d3_streamlines_smooth.html" target="_blank">
+    <span class="card-tag">D3 · v3</span>
+    <div class="card-title">Streamlines — Smooth</div>
+    <div class="card-desc">Wiggle-offset streaming line chart, fat strokes, D3 easeLinear scroll.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="top10_streamlines.html" target="_blank">
+    <span class="card-tag">D3</span>
+    <div class="card-title">Streamlines — Spindly</div>
+    <div class="card-desc">Thin midline spines of a stacked streamgraph scrolling endlessly.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v5_d3_endless_stream.html" target="_blank">
+    <span class="card-tag">D3 · v5</span>
+    <div class="card-title">Endless Stream</div>
+    <div class="card-desc">Fixed-lane streamgraph — lines stay in position, thickness breathes.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v6_streaming_bump_chart.html" target="_blank">
+    <span class="card-tag">D3 · v6</span>
+    <div class="card-title">Streaming Bump Chart</div>
+    <div class="card-desc">Rank lines scroll left to right, past data frozen, new points glide in.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v19_denselines.html" target="_blank">
+    <span class="card-tag">Canvas · v19</span>
+    <div class="card-title">DenseLines</div>
+    <div class="card-desc">1000 arc-length-normalized time series rendered as a density heatmap.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Time Curves</div>
+<div class="grid">
+
+  <a class="card" href="v17_time_curves_segments.html" target="_blank">
+    <span class="card-tag">D3 · v17</span>
+    <div class="card-title">Time Curves — Segments</div>
+    <div class="card-desc">MDS-projected distance matrices, colored line segments, 3×3 grid.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v18_time_curves_bezier.html" target="_blank">
+    <span class="card-tag">D3 · v18</span>
+    <div class="card-title">Time Curves — Bezier</div>
+    <div class="card-desc">Thick Catmull-Rom beziers, gradated light→dark, colored outlined nodes.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Network &amp; Graph</div>
+<div class="grid">
+
+  <a class="card" href="v7_generative_sankey.html" target="_blank">
+    <span class="card-tag">D3 · v7</span>
+    <div class="card-title">Generative Sankey</div>
+    <div class="card-desc">Random layered DAGs, 3–6 layers, random flow weights, fade-in entrance.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v11_chord_grid.html" target="_blank">
+    <span class="card-tag">D3 · v11</span>
+    <div class="card-title">Chord Grid — 3×3</div>
+    <div class="card-desc">Nine chord diagrams, shared palette, different random flow matrices.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v20_biofabric_single.html" target="_blank">
+    <span class="card-tag">Canvas · v20</span>
+    <div class="card-title">BioFabric — Single</div>
+    <div class="card-desc">Nodes as horizontal lines, edges as vertical columns. BFS layout.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v21_biofabric_grid.html" target="_blank">
+    <span class="card-tag">Canvas · v21</span>
+    <div class="card-title">BioFabric — 2×2 Grid</div>
+    <div class="card-desc">Four BioFabric networks, shared cycling color palette, black background.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v22_edge_bundling_grid.html" target="_blank">
+    <span class="card-tag">Canvas · v22</span>
+    <div class="card-title">Edge Bundling Grid</div>
+    <div class="card-desc">Compound graph — beziers route through cell centroids, power-law hubs.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Distribution &amp; Statistical</div>
+<div class="grid">
+
+  <a class="card" href="v8_beeswarm_single.html" target="_blank">
+    <span class="card-tag">D3 · v8</span>
+    <div class="card-title">Beeswarm — Single</div>
+    <div class="card-desc">One row, random distributions, bounce-in animation, 20s auto-refresh.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v9_beeswarm_rows.html" target="_blank">
+    <span class="card-tag">D3 · v9</span>
+    <div class="card-title">Beeswarm — 3 Rows</div>
+    <div class="card-desc">Three independent swarm rows each on their own random timer.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v10_likert_wall.html" target="_blank">
+    <span class="card-tag">D3 · v10</span>
+    <div class="card-title">Likert Wall</div>
+    <div class="card-desc">Full-page diverging Likert bars, pixel-perfect fill, no gaps, no black.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Hierarchical</div>
+<div class="grid">
+
+  <a class="card" href="v14_circlepack_flat.html" target="_blank">
+    <span class="card-tag">D3 · v14</span>
+    <div class="card-title">Circle Pack — Flat</div>
+    <div class="card-desc">3×3 grid, flat solid fills, ghosted parent shells, bounce animation.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v15_circlepack_flat_borders.html" target="_blank">
+    <span class="card-tag">D3 · v15</span>
+    <div class="card-title">Circle Pack — Bordered</div>
+    <div class="card-desc">v14 with contrasting borders — dark fill, bright ring, white inner highlight.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v12_circlepack_glowing_orbs.html" target="_blank">
+    <span class="card-tag">D3 · v12</span>
+    <div class="card-title">Circle Pack — Glowing Orbs</div>
+    <div class="card-desc">Radial gradients, feGaussianBlur bloom, specular highlights. Dark bg.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v13_circlepack_borders.html" target="_blank">
+    <span class="card-tag">D3 · v13</span>
+    <div class="card-title">Circle Pack — Glowing Borders</div>
+    <div class="card-desc">Dark fill, glowing colored stroke border, specular highlight layer.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v16_treemap_grid.html" target="_blank">
+    <span class="card-tag">D3 · v16</span>
+    <div class="card-title">Treemap — 5×5 Grid</div>
+    <div class="card-desc">25 treemaps, random tiling algorithms, dark group backgrounds, stagger in.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Field &amp; Spatial</div>
+<div class="grid">
+
+  <a class="card" href="v23_contours_grid.html" target="_blank">
+    <span class="card-tag">D3 · v23</span>
+    <div class="card-title">Contours — 5×5 Grid</div>
+    <div class="card-desc">Gaussian mixture scalar fields, 16 iso-contour levels, 10 color schemes.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v24_radar_grid.html" target="_blank">
+    <span class="card-tag">D3 · v24</span>
+    <div class="card-title">Radar — 5×5 Grid</div>
+    <div class="card-desc">Rounded cardinal-closed spider charts, no labels, no gridlines, glowing strokes.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+
+<div class="section-label">Generative Art &amp; Texture</div>
+<div class="grid">
+
+  <a class="card" href="v27_watercolor.html" target="_blank">
+    <span class="card-tag">Canvas · v27</span>
+    <div class="card-title">Watercolor</div>
+    <div class="card-desc">Tyler Hobbs recursive polygon deformation — 50–80 transparent layers, shadowBlur edge bleed, radial gradient bloom, paper grain.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Part-to-Whole &amp; Proportion</div>
+<div class="grid">
+
+  <a class="card" href="v28_marimekko.html" target="_blank">
+    <span class="card-tag">D3 · v28</span>
+    <div class="card-title">Marimekko — 3×6 Grid</div>
+    <div class="card-desc">18 independent Marimekko charts, zero gaps, filling the full viewport as one unified composition. Random column widths and segment heights per chart.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Optimization Landscapes</div>
+<div class="grid">
+
+  <a class="card" href="v25_optimization_landscapes.html" target="_blank">
+    <span class="card-tag">D3 · v25</span>
+    <div class="card-title">Optimization Test Functions</div>
+    <div class="card-desc">25 real functions — Rastrigin, Ackley, Eggholder, Himmelblau, Rosenbrock, Schaffer, and 19 more — as contour landscapes. Random domain perturbation each render.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Barcode &amp; Distribution</div>
+<div class="grid">
+
+  <a class="card" href="v26_barcode_grid.html" target="_blank">
+    <span class="card-tag">D3 · v26</span>
+    <div class="card-title">Barcode — 6×6 Grid</div>
+    <div class="card-desc">36 barcode charts — vertical tick marks per data point, 2–6 colored rows, opacity fades at extremes, random distributions per cell.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+
+<div class="section-label">Graph &amp; Network</div>
+<div class="grid">
+
+  <a class="card" href="v29_optimal_substructure.html" target="_blank">
+    <span class="card-tag">D3 · v29</span>
+    <div class="card-title">Optimal Substructure — 3×3</div>
+    <div class="card-desc">Dynamic programming graphs — Dijkstra shortest path, bold optimal line, sinusoidal subpath edges, distance-weighted stroke widths.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Ridgeline</div>
+<div class="grid">
+
+  <a class="card" href="v30_ridgeline_grid.html" target="_blank">
+    <span class="card-tag">D3 · v30</span>
+    <div class="card-title">Ridgeline — 3×3 Grid</div>
+    <div class="card-desc">9 independent KDE ridgeline plots, overlapping density curves, random distributions, Joy Division aesthetic.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v31_ridgeline_full.html" target="_blank">
+    <span class="card-tag">D3 · v31</span>
+    <div class="card-title">Ridgeline — Full Viewport</div>
+    <div class="card-desc">Single full-screen ridgeline, 14–23 lumpy gaussian-mixture ridges, occluding layers, capped peaks.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Warped &amp; Projected</div>
+<div class="grid">
+
+  <a class="card" href="v32_custom_projections.html" target="_blank">
+    <span class="card-tag">D3 · v32</span>
+    <div class="card-title">Custom Cartesian Projections — 4×4</div>
+    <div class="card-desc">Regular grids warped through custom math transforms — swirl, fisheye, Möbius, spiral, hyperbolic, polynomial and more.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v33_function_contours.html" target="_blank">
+    <span class="card-tag">D3 · v33</span>
+    <div class="card-title">Function Contours — 5×5</div>
+    <div class="card-desc">25 math functions as iso-contour lines — sin×cos, interference, ripple, saddle, hyperbolic, recursive compositions. Lines only, no fill.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Perlin Noise</div>
+<div class="grid">
+
+  <a class="card" href="v34_perlin_noise.html" target="_blank">
+    <span class="card-tag">Canvas · v34</span>
+    <div class="card-title">Improved Perlin Noise</div>
+    <div class="card-desc">Faithful implementation of Perlin 2002 — fade 6t⁵-15t⁴+10t³, cube-edge gradients, fBm. 6 modes: domain warp, marble, wood, turbulence, color, curl.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v35_perlin_glyphs.html" target="_blank">
+    <span class="card-tag">Canvas · v35</span>
+    <div class="card-title">Perlin Noise + Latin Glyphs</div>
+    <div class="card-desc">v34 with randomized Latin capital glyphs tiled edge to edge using overlay composite — letters interact with the noise field.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+
+<div class="section-label">Function Contour Color</div>
+<div class="grid">
+
+  <a class="card" href="v36_sincos_contour.html" target="_blank">
+    <span class="card-tag">Canvas · v36</span>
+    <div class="card-title">sin(x)cos(y) Contour</div>
+    <div class="card-desc">Pixel-exact diverging color field with faint iso-contour lines. Cycles through 8 math functions. Matches Observable Plot's function contour aesthetic.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v37_contour_blocks.html" target="_blank">
+    <span class="card-tag">Canvas · v37</span>
+    <div class="card-title">Contour + Block Elements</div>
+    <div class="card-desc">Diverging color contour field with thousands of Unicode block elements (▀▄█▁▂▃▌▍▎) tiling the viewport. Random color pairs, 7 functions.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+
+<div class="section-label">Voronoi &amp; Delaunay</div>
+<div class="grid">
+
+  <a class="card" href="v45_voronoi_circles.html" target="_blank">
+    <span class="card-tag">D3 · v45</span>
+    <div class="card-title">Voronoi Circles — 5×5</div>
+    <div class="card-desc">5×5 circles each clipped and filled with a Voronoi diagram. 8–29 random sites, 5 distribution modes, cycling color palettes.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v46_delaunay_links.html" target="_blank">
+    <span class="card-tag">D3 · v46</span>
+    <div class="card-title">Delaunay Links — 5×5</div>
+    <div class="card-desc">Delaunay triangulation meshes — random point distributions, colored edges and nodes, 5 layout modes per cell.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v47_delaunay_glyphs.html" target="_blank">
+    <span class="card-tag">D3 · v47</span>
+    <div class="card-title">Delaunay + Latin Glyphs</div>
+    <div class="card-desc">Delaunay mesh with a continuous full-viewport Latin capital glyph grid overlaid on top in the node color.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Population Pyramids</div>
+<div class="grid">
+
+  <a class="card" href="v42_population_pyramids.html" target="_blank">
+    <span class="card-tag">D3 · v42</span>
+    <div class="card-title">Population Pyramids — Bar — 10×10</div>
+    <div class="card-desc">100 mirrored horizontal bar chart pyramids, 5 shape archetypes, two-color pairs.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v43_population_areas.html" target="_blank">
+    <span class="card-tag">D3 · v43</span>
+    <div class="card-title">Population Pyramids — Area — 10×10</div>
+    <div class="card-desc">Smooth CatmullRom area chart pyramids, continuous silhouette, bright outer stroke.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Vega-Lite</div>
+<div class="grid">
+
+  <a class="card" href="v40_comet_grid.html" target="_blank">
+    <span class="card-tag">Vega-Lite · v40</span>
+    <div class="card-title">Comet Chart — 5×5</div>
+    <div class="card-desc">Trail mark comet charts — tapered lines showing change between two states. Diverging color scales, random data.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v41_lasagna.html" target="_blank">
+    <span class="card-tag">Vega-Lite · v41</span>
+    <div class="card-title">Lasagna Plot</div>
+    <div class="card-desc">Full-viewport dense time-series heatmap — 10 rows × 600 time steps, 18 color schemes, random walk data.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Watercolor &amp; Generative</div>
+<div class="grid">
+
+  <a class="card" href="v38_perlin_square.html" target="_blank">
+    <span class="card-tag">Canvas · v38</span>
+    <div class="card-title">Perlin Square</div>
+    <div class="card-desc">Domain-warped Perlin noise inside a squircle SDF with iridescent rim lighting. Dark metallic aesthetic.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v39_perlin_square_circles.html" target="_blank">
+    <span class="card-tag">Canvas · v39</span>
+    <div class="card-title">Perlin Square + Circles</div>
+    <div class="card-desc">v38 with amber circle/half-circle grid overlay tiling the viewport.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+
+<div class="section-label">Circular & Radial</div>
+<div class="grid">
+
+  <a class="card" href="v48_circular_heatmaps.html" target="_blank">
+    <span class="card-tag">D3 · v48</span>
+    <div class="card-title">Circular Heatmaps — 5×5</div>
+    <div class="card-desc">circlize-inspired concentric ring heatmaps. 4–10 rings, 6–19 sectors, 8 diverging color schemes, 5 data patterns.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Triangulation</div>
+<div class="grid">
+
+  <a class="card" href="v49_triplot.html" target="_blank">
+    <span class="card-tag">D3 · v49</span>
+    <div class="card-title">Triplot — 5×5</div>
+    <div class="card-desc">matplotlib-style Delaunay triplot — triangles colored by math function at centroid. 8 functions, 17 dark color schemes.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Hatch Patterns</div>
+<div class="grid">
+
+  <a class="card" href="v50_hatch_patterns.html" target="_blank">
+    <span class="card-tag">SVG · v50</span>
+    <div class="card-title">Hatch Patterns — 100 Squares</div>
+    <div class="card-desc">matplotlib hatch style reference — 20 SVG hatch patterns across 100 black and white squares.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v51_hatch_color.html" target="_blank">
+    <span class="card-tag">SVG · v51</span>
+    <div class="card-title">Hatch — Color Accent</div>
+    <div class="card-desc">Hatch patterns with ~15% colored hatch lines and ~5% white hatch on color background.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v52_hatch_accent.html" target="_blank">
+    <span class="card-tag">SVG · v52</span>
+    <div class="card-title">Hatch — Three Tier</div>
+    <div class="card-desc">80% black/white, 15% colored hatch on white, 5% white hatch on color. Single accent color per render.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Neural & Statistical</div>
+<div class="grid">
+
+  <a class="card" href="v53_hinton.html" target="_blank">
+    <span class="card-tag">D3 · v53</span>
+    <div class="card-title">Hinton Diagram</div>
+    <div class="card-desc">Full viewport Hinton diagram — square size encodes magnitude, white/black encodes sign. Three-tier color accent treatment.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<div class="section-label">Recursive & Fractal</div>
+<div class="grid">
+
+  <a class="card" href="v54_square_limit.html" target="_blank">
+    <span class="card-tag">Canvas · v54</span>
+    <div class="card-title">Square Limit</div>
+    <div class="card-desc">Henderson 1982 functional geometry — recursive fish tessellation using picture combinators. Depth 4–7, random palettes.</div>
+    <span class="arrow">→</span>
+  </a>
+
+  <a class="card" href="v55_dragon_curves.html" target="_blank">
+    <span class="card-tag">Canvas · v55</span>
+    <div class="card-title">Dragon Curves — 5×5</div>
+    <div class="card-desc">25 dragon curves with randomized fold sequences — same iteration per render, different shapes per cell. 2 alternating colors each.</div>
+    <span class="arrow">→</span>
+  </a>
+
+</div>
+
+<footer>
+  Generated in one session &mdash; Director of Data &mdash; 2026
+</footer>
+
+</body>
+</html>

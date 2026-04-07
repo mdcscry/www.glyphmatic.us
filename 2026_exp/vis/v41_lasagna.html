@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lasagna</title>
+<script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  #chart { width: 100vw; height: 100vh; }
+  #chart .vega-embed { width: 100% !important; height: 100% !important; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 100; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<div id="chart"></div>
+<canvas id="tri-canvas" style="position:fixed;top:0;left:0;pointer-events:none;z-index:9999;"></canvas>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+</div>
+<script>
+const SCHEMES = [
+  'viridis','magma','inferno','plasma','cividis',
+  'turbo','blues','greens','oranges','reds','purples',
+  'yelloworangered','yellowgreenblue','bluepurple',
+  'tealblues','orangered','goldgreen','lightgreyteal',
+];
+
+const N_ROWS  = 10;
+const N_STEPS = 600; // time steps per row
+
+/* ── Random time series data ── */
+function randomData() {
+  const rows = [];
+  for (let r = 0; r < N_ROWS; r++) {
+    // Each row is a random walk with different character
+    let v = 20 + Math.random() * 60;
+    let vel = 0;
+    const volatility = 0.5 + Math.random() * 3;
+    const revert     = 0.02 + Math.random() * 0.08;
+    const seasonal   = Math.random() < 0.5 ? Math.random() * 20 : 0;
+    const freq       = 1 + Math.floor(Math.random() * 4);
+
+    for (let t = 0; t < N_STEPS; t++) {
+      vel += (Math.random() - 0.5) * volatility;
+      vel -= v * revert * 0.1;
+      vel *= 0.92;
+      v = Math.max(0, v + vel + seasonal * Math.sin(t / N_STEPS * Math.PI * 2 * freq));
+      rows.push({ row: 'row' + r, t: t, value: v });
+    }
+  }
+  return rows;
+}
+
+function makeSpec(data, scheme) {
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+
+  return {
+    $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+    width: W,
+    height: H,
+    background: '#07060e',
+    data: { values: data },
+    mark: { type: 'rect', clip: true, stroke: null, strokeWidth: 0 },
+    encoding: {
+      x: {
+        field: 't',
+        type: 'quantitative',
+        axis: null,
+        bin: { step: 1, extent: [0, 600] },
+      },
+      y: {
+        field: 'row',
+        type: 'nominal',
+        axis: null,
+        sort: null,
+      },
+      color: {
+        field: 'value',
+        type: 'quantitative',
+        scale: { scheme: scheme },
+        legend: null,
+      }
+    },
+    config: {
+      view: { stroke: null },
+      axis: { grid: false },
+      scale: { bandPaddingInner: 0, bandPaddingOuter: 0 },
+      rect: { stroke: null, strokeWidth: 0 },
+      bar: { stroke: null },
+    }
+  };
+}
+
+function regenerate() {
+  const data   = randomData();
+  const scheme = SCHEMES[Math.floor(Math.random() * SCHEMES.length)];
+  const spec   = makeSpec(data, scheme);
+
+  vegaEmbed('#chart', spec, {
+    actions: false,
+    renderer: 'canvas',
+  }).then(() => setTimeout(() => drawTriangles(scheme), 200)).catch(e => console.warn(e));
+}
+
+/* ── Pick a color from the scheme and tile triangles ── */
+const SCHEME_SAMPLES = {
+  'viridis':         ['#440154','#31688e','#35b779','#fde725'],
+  'magma':           ['#000004','#7b2d8b','#fd9567','#fcfdbf'],
+  'inferno':         ['#000004','#7c2a8b','#fc8761','#fcffa4'],
+  'plasma':          ['#0d0887','#7e03a8','#f89540','#f0f921'],
+  'cividis':         ['#00204d','#4a5c6a','#7c9b8e','#ffe945'],
+  'turbo':           ['#23171b','#4076f5','#a8fc3b','#900c00'],
+  'blues':           ['#f7fbff','#9ecae1','#3182bd','#08306b'],
+  'greens':          ['#f7fcf5','#a1d99b','#41ab5d','#00441b'],
+  'oranges':         ['#fff5eb','#fdae6b','#e6550d','#7f2704'],
+  'reds':            ['#fff5f0','#fc9272','#de2d26','#67000d'],
+  'purples':         ['#fcfbfd','#bcbddc','#756bb1','#3f007d'],
+  'yelloworangered': ['#ffffcc','#feb24c','#f03b20','#800026'],
+  'yellowgreenblue': ['#ffffd9','#7fcdbb','#1d91c0','#081d58'],
+  'bluepurple':      ['#edf8fb','#9ebcda','#8856a7','#4d004b'],
+  'tealblues':       ['#d1eeea','#78c8c4','#2a9ac4','#253494'],
+  'orangered':       ['#fff7ec','#fdd49e','#fc8d59','#b30000'],
+  'goldgreen':       ['#f4d166','#b6d757','#52b46b','#1a7a4a'],
+  'lightgreyteal':   ['#e4e4e4','#9bd8d0','#42b7b5','#007a7a'],
+};
+
+function drawTriangles(scheme) {
+  const W = window.innerWidth, H = window.innerHeight;
+
+  const oc = document.getElementById('tri-canvas');
+  oc.width = W; oc.height = H;
+  oc.style.width = W+'px'; oc.style.height = H+'px';
+  const ctx = oc.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  // Pick one color from the scheme
+  const colors = SCHEME_SAMPLES[scheme] || ['#ffffff'];
+  const color  = colors[Math.floor(Math.random()*colors.length)];
+
+  // Tile equilateral triangles
+  const side = 18 + Math.floor(Math.random()*22);
+  const h    = side * Math.sqrt(3)/2;
+  const cols = Math.ceil(W/side) + 2;
+  const rows = Math.ceil(H/h)   + 2;
+
+  ctx.fillStyle = hexToRgba(color, 0.22);
+
+  for (let row=0; row<rows; row++) {
+    for (let col=0; col<cols; col++) {
+      const ox = col*side - side + (row%2)*side*0.5;
+      const oy = row*h - h;
+      // Up triangle
+      ctx.beginPath();
+      ctx.moveTo(ox + side*0.5, oy);
+      ctx.lineTo(ox + side,     oy + h);
+      ctx.lineTo(ox,            oy + h);
+      ctx.closePath();
+      ctx.fill();
+      // Down triangle
+      ctx.beginPath();
+      ctx.moveTo(ox + side,     oy + h);
+      ctx.lineTo(ox + side*1.5, oy);
+      ctx.lineTo(ox + side*0.5, oy);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+}
+
+function hexToRgba(hex, alpha) {
+  hex = hex.replace('#','');
+  if (hex.length===3) hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+  const r=parseInt(hex.slice(0,2),16);
+  const g=parseInt(hex.slice(2,4),16);
+  const b=parseInt(hex.slice(4,6),16);
+  return 'rgba('+r+','+g+','+b+','+alpha+')';
+}
+
+regenerate();
+window.addEventListener('resize', regenerate);
+</script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Circle Pack Flat</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #06050f; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.22);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(0,0,0,0.7); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">↺ Regenerate</button>
+  <button onclick="newColors()">↺ Colors Only</button>
+</div>
+
+<script>
+const GRID = 3;
+
+/* ── Palettes ── */
+const PALETTE_MODES = [
+  () => ['#f94144','#f3722c','#f9c74f','#90be6d','#43aa8b','#277da1','#577590'],
+  () => ['#ff006e','#fb5607','#ffbe0b','#8338ec','#3a86ff','#06d6a0','#ef233c'],
+  () => Array.from({length:8}, () => d3.hsl(Math.random()*360, 0.9+Math.random()*0.1, 0.54+Math.random()*0.16).toString()),
+  () => { const b=Math.random()*360; return Array.from({length:8}, (_,i) => d3.hsl((b+i*30)%360, 0.9, 0.56+i*0.025).toString()); },
+  () => ['#e63946','#457b9d','#a8dadc','#ffd60a','#fb8500','#8ecae6','#06d6a0','#ef233c'],
+  () => { const b=Math.random()*360; return Array.from({length:8}, (_,i) => d3.hsl((b+i*45)%360, 1.0, 0.58).toString()); },
+];
+
+function randomPalette() {
+  return PALETTE_MODES[Math.floor(Math.random() * PALETTE_MODES.length)]();
+}
+
+/* ── Random hierarchy ── */
+function randomHierarchy() {
+  const numGroups = 2 + Math.floor(Math.random() * 3);
+  return {
+    name: 'root',
+    children: Array.from({length: numGroups}, (_, gi) => ({
+      name: `g${gi}`, group: gi,
+      children: Array.from({length: 3 + Math.floor(Math.random() * 8)}, (_, ci) => {
+        const hasSubs = Math.random() < 0.35;
+        if (hasSubs) {
+          return {
+            name: `g${gi}c${ci}`, group: gi,
+            children: Array.from({length: 2 + Math.floor(Math.random() * 4)}, (_, si) => ({
+              name: `g${gi}c${ci}s${si}`, group: gi,
+              value: Math.pow(Math.random(), 0.5) * 70 + 8
+            }))
+          };
+        }
+        return { name: `g${gi}c${ci}`, group: gi, value: Math.pow(Math.random(), 0.5) * 80 + 8 };
+      })
+    }))
+  };
+}
+
+/* ── State ── */
+let currentPalette = randomPalette();
+let datasets = [];
+
+function generateDatasets() {
+  datasets = Array.from({length: GRID * GRID}, () => randomHierarchy());
+}
+
+/* ── Draw ── */
+function drawAll() {
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  const cellW = W / GRID;
+  const cellH = H / GRID;
+  const r = Math.min(cellW, cellH) * 0.46;
+
+  const svg = d3.select('#viz').attr('width', W).attr('height', H);
+  svg.selectAll('*').remove();
+
+  datasets.forEach((data, idx) => {
+    const row = Math.floor(idx / GRID);
+    const col = idx % GRID;
+    const cx = col * cellW + cellW / 2;
+    const cy = row * cellH + cellH / 2;
+    const cellDelay = idx * 60;
+
+    const root = d3.hierarchy(data)
+      .sum(d => d.value || 0)
+      .sort((a, b) => b.value - a.value);
+
+    d3.pack().size([r * 2, r * 2]).padding(2.5)(root);
+
+    const cell = svg.append('g')
+      .attr('transform', `translate(${cx - r},${cy - r})`);
+
+    const nodes = root.descendants().slice(1);
+
+    const groupIndex = d => {
+      const anc = d.ancestors().slice(-2)[0];
+      return (anc?.data?.group ?? 0) % currentPalette.length;
+    };
+
+    // Parent shells — same color, very low opacity
+    cell.selectAll('circle.parent')
+      .data(nodes.filter(d => d.children))
+      .join('circle')
+        .attr('cx', d => d.x).attr('cy', d => d.y).attr('r', d => d.r)
+        .attr('fill', d => currentPalette[groupIndex(d)])
+        .attr('stroke', 'none')
+        .attr('opacity', 0)
+      .transition().duration(600).delay(cellDelay)
+        .attr('opacity', 0.28);
+
+    // Leaf circles — flat solid fill
+    cell.selectAll('circle.leaf')
+      .data(nodes.filter(d => !d.children))
+      .join('circle')
+        .attr('cx', d => d.x).attr('cy', d => d.y).attr('r', 0)
+        .attr('fill', d => currentPalette[groupIndex(d)])
+        .attr('stroke', 'none')
+        .attr('opacity', 0)
+      .transition().duration(700).delay((d, i) => cellDelay + i * 8)
+        .ease(d3.easeBounceOut)
+        .attr('r', d => d.r)
+        .attr('opacity', 0.88);
+  });
+}
+
+function regenerate() {
+  currentPalette = randomPalette();
+  generateDatasets();
+  drawAll();
+}
+
+function newColors() {
+  currentPalette = randomPalette();
+  drawAll();
+}
+
+generateDatasets();
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>

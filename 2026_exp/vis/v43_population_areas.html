@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Population Pyramids Rounded</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="newColors()">&#x21BA; Colors Only</button>
+</div>
+<script>
+const GRID = 10;
+const GAP  = 2;
+
+const COLOR_PAIRS = [
+  ['#4361ee','#f72585'], ['#3a86ff','#ff006e'], ['#06d6a0','#ef233c'],
+  ['#ffd60a','#7209b7'], ['#fb8500','#023e8a'], ['#43aa8b','#f94144'],
+  ['#48cae4','#e76f51'], ['#90be6d','#c77dff'], ['#f9c74f','#577590'],
+  ['#e9c46a','#264653'],
+];
+function randomPair() { return COLOR_PAIRS[Math.floor(Math.random()*COLOR_PAIRS.length)]; }
+let currentPair = randomPair();
+
+function randomPyramid() {
+  const nBands = 8 + Math.floor(Math.random()*8);
+  const shape  = Math.floor(Math.random()*5);
+  return Array.from({length:nBands}, (_,i) => {
+    const t = i/(nBands-1);
+    let base;
+    if      (shape===0) base = 1 - t*0.75;
+    else if (shape===1) base = 0.25 + t*0.75;
+    else if (shape===2) base = Math.sin(t*Math.PI)*0.9+0.1;
+    else if (shape===3) base = 0.4+Math.sin(t*Math.PI*2)*0.35;
+    else                base = 0.5+(Math.random()-0.5)*0.1;
+    return {
+      band:  i,
+      left:  Math.max(0.04, base+(Math.random()-0.5)*0.15),
+      right: Math.max(0.04, base+(Math.random()-0.5)*0.15),
+    };
+  });
+}
+
+let datasets = [];
+function generateDatasets() {
+  datasets = Array.from({length:GRID*GRID}, randomPyramid);
+}
+
+/* ── Draw one pyramid with rounded pill bars ── */
+function drawPyramid(g, data, colorL, colorR, ox, oy, cellW, cellH) {
+  const nBands = data.length;
+  const maxVal = d3.max(data, d => Math.max(d.left, d.right));
+  const halfW  = cellW/2;
+  const mid    = ox+halfW;
+  const gap    = 1;
+  const bandH  = cellH/nBands - gap;
+  const xScale = d3.scaleLinear().domain([0, maxVal]).range([0, halfW*0.95]);
+
+  data.forEach((d, i) => {
+    const y  = oy + i*(cellH/nBands) + gap*0.5;
+    const lW = xScale(d.left);
+    const rW = xScale(d.right);
+    const rx = bandH/2; // fully rounded ends — pill shape
+
+    // Left bar — drawn right-to-left from center
+    // Use a path to get rounded left end only (flat at center)
+    const lh = bandH;
+
+    // Left pill: flat right edge at mid, rounded left end
+    g.append('rect')
+      .attr('x', mid - lW)
+      .attr('y', y)
+      .attr('width', lW)
+      .attr('height', lh)
+      .attr('rx', rx)
+      .attr('ry', rx)
+      .attr('fill', colorL)
+      .attr('opacity', 0.88);
+
+    // Right pill: flat left edge at mid, rounded right end
+    g.append('rect')
+      .attr('x', mid)
+      .attr('y', y)
+      .attr('width', rW)
+      .attr('height', lh)
+      .attr('rx', rx)
+      .attr('ry', rx)
+      .attr('fill', colorR)
+      .attr('opacity', 0.88);
+  });
+}
+
+function drawAll() {
+  const W=window.innerWidth, H=window.innerHeight;
+  const cellW=(W-GAP*(GRID+1))/GRID;
+  const cellH=(H-GAP*(GRID+1))/GRID;
+
+  const svg=d3.select('#viz').attr('width',W).attr('height',H);
+  svg.selectAll('*').remove();
+  svg.append('rect').attr('width',W).attr('height',H).attr('fill','#07060e');
+
+  const [colorL,colorR]=currentPair;
+
+  datasets.forEach((data,idx) => {
+    const row=Math.floor(idx/GRID), col=idx%GRID;
+    const ox=GAP+col*(cellW+GAP);
+    const oy=GAP+row*(cellH+GAP);
+
+    const clipId='clip-'+idx;
+    svg.append('defs').append('clipPath').attr('id',clipId)
+      .append('rect').attr('x',ox).attr('y',oy).attr('width',cellW).attr('height',cellH);
+
+    svg.append('rect').attr('x',ox).attr('y',oy)
+      .attr('width',cellW).attr('height',cellH).attr('fill','#0c0b18');
+
+    const g=svg.append('g')
+      .attr('clip-path','url(#'+clipId+')')
+      .attr('opacity',0);
+
+    drawPyramid(g, data, colorL, colorR, ox, oy, cellW, cellH);
+    g.transition().duration(400).delay(idx*12).attr('opacity',1);
+  });
+}
+
+function regenerate(){ currentPair=randomPair(); generateDatasets(); drawAll(); }
+function newColors() { currentPair=randomPair(); drawAll(); }
+
+generateDatasets();
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>

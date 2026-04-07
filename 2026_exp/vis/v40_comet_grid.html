@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comet Grid</title>
+<script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%;
+    background: #07060e;
+    overflow: hidden;
+    font-family: monospace;
+  }
+
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    width: 100vw;
+    height: 100vh;
+    gap: 2px;
+    background: #07060e;
+  }
+
+  .cell {
+    background: #0d0c1a;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cell .vega-embed {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .cell .vega-embed canvas,
+  .cell .vega-embed svg {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 100; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<div id="grid"></div>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+</div>
+
+<script>
+const GRID = 5;
+const SCHEMES = [
+  'redblue', 'blueorange', 'purplegreen', 'pinkyellowgreen',
+  'spectral', 'redyellowblue', 'brownbluegreen', 'purpleorange'
+];
+
+/* ── Random comet data ── */
+function randomCometData() {
+  const nCategories = 4 + Math.floor(Math.random() * 7); // 4–10 items
+  const categories  = Array.from({length: nCategories}, (_, i) => 'Item ' + (i+1));
+  const baseValues  = categories.map(() => 20 + Math.random() * 80);
+  const rows = [];
+  categories.forEach((cat, i) => {
+    const v1 = baseValues[i];
+    const v2 = v1 + (Math.random() - 0.45) * 40;
+    rows.push({ category: cat, period: 'A', value: Math.max(2, v1), delta: Math.max(-50, Math.min(50, v2-v1)) });
+    rows.push({ category: cat, period: 'B', value: Math.max(2, v2), delta: Math.max(-50, Math.min(50, v2-v1)) });
+  });
+  return rows;
+}
+
+/* ── Build Vega-Lite spec ── */
+function makeSpec(data, w, h, scheme) {
+  return {
+    $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+    width:  w - 8,
+    height: h - 8,
+    background: '#0d0c1a',
+    data: { values: data },
+    mark: { type: 'trail', clip: true },
+    encoding: {
+      x: {
+        field: 'period',
+        type: 'ordinal',
+        axis: { labels: false, ticks: false, domain: false, grid: false, title: null }
+      },
+      y: {
+        field: 'category',
+        type: 'ordinal',
+        axis: { labels: false, ticks: false, domain: false, grid: false, title: null }
+      },
+      size: {
+        field: 'value',
+        type: 'quantitative',
+        scale: { range: [1, Math.min(w, h) * 0.09], clamp: true },
+        legend: null
+      },
+      color: {
+        field: 'delta',
+        type: 'quantitative',
+        scale: { scheme: scheme, domain: [-50, 0, 50] },
+        legend: null
+      },
+      detail: { field: 'category', type: 'nominal' }
+    },
+    config: {
+      view: { stroke: null },
+      axis: { grid: false },
+    }
+  };
+}
+
+/* ── Render grid ── */
+async function regenerate() {
+  const grid  = document.getElementById('grid');
+  grid.innerHTML = '';
+
+  const cellW = Math.floor(window.innerWidth  / GRID) - 2;
+  const cellH = Math.floor(window.innerHeight / GRID) - 2;
+
+  const promises = [];
+  for (let i = 0; i < GRID * GRID; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.id = 'cell-' + i;
+    grid.appendChild(cell);
+
+    const data   = randomCometData();
+    const scheme = SCHEMES[Math.floor(Math.random() * SCHEMES.length)];
+    const spec   = makeSpec(data, cellW, cellH, scheme);
+
+    promises.push(
+      vegaEmbed('#cell-' + i, spec, {
+        actions: false,
+        renderer: 'canvas',
+        theme: 'dark',
+      }).catch(e => console.warn('embed error', e))
+    );
+  }
+
+  await Promise.all(promises);
+}
+
+regenerate();
+window.addEventListener('resize', regenerate);
+</script>
+</body>
+</html>

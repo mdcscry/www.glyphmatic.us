@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radar Grid</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="newColors()">&#x21BA; Colors Only</button>
+</div>
+<script>
+const GRID = 5;
+const GAP  = 3;
+
+/* ── Palettes ── */
+const PALETTE_MODES = [
+  () => ['#f94144','#f3722c','#f9c74f','#90be6d','#43aa8b'],
+  () => ['#ff006e','#fb5607','#ffbe0b','#8338ec','#3a86ff'],
+  () => Array.from({length:5}, () => d3.hsl(Math.random()*360,0.9,0.62).toString()),
+  () => { const b=Math.random()*360; return Array.from({length:5},(_,i)=>d3.hsl((b+i*60)%360,0.92,0.60).toString()); },
+  () => ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#cc5de8'],
+  () => ['#e63946','#f4a261','#2a9d8f','#e9c46a','#264653'],
+];
+
+function randomPalette() {
+  return PALETTE_MODES[Math.floor(Math.random() * PALETTE_MODES.length)]();
+}
+
+let currentPalette = randomPalette();
+
+/* ── Random radar data ── */
+function randomRadarData() {
+  // 2–4 overlapping blobs per chart
+  const numBlobs = 2 + Math.floor(Math.random() * 3);
+  // 5–9 axes
+  const numAxes  = 5 + Math.floor(Math.random() * 5);
+  return Array.from({length: numBlobs}, function() {
+    return Array.from({length: numAxes}, function(_, i) {
+      return { axis: i, value: 0.1 + Math.random() * 0.9 };
+    });
+  });
+}
+
+let datasets = [];
+function generateDatasets() {
+  datasets = Array.from({length: GRID*GRID}, randomRadarData);
+}
+
+/* ── Draw one radar chart ── */
+function drawRadar(g, data, palette, cx, cy, r) {
+  const total      = data[0].length;
+  const angleSlice = Math.PI * 2 / total;
+
+  const rScale = d3.scaleLinear().range([0, r]).domain([0, 1]);
+
+  // Glow filter (unique per cell)
+  const filterId = 'glow-' + Math.random().toString(36).slice(2);
+  const defs = g.append('defs');
+  const filter = defs.append('filter').attr('id', filterId);
+  filter.append('feGaussianBlur').attr('stdDeviation','2.5').attr('result','coloredBlur');
+  const merge = filter.append('feMerge');
+  merge.append('feMergeNode').attr('in','coloredBlur');
+  merge.append('feMergeNode').attr('in','SourceGraphic');
+
+  const radarLine = d3.lineRadial()
+    .curve(d3.curveCardinalClosed.tension(0.0))
+    .radius(function(d) { return rScale(d.value); })
+    .angle(function(d, i) { return i * angleSlice; });
+
+  // Draw blobs
+  data.forEach(function(blobData, bi) {
+    const color = palette[bi % palette.length];
+
+    // Fill
+    g.append('path')
+      .datum(blobData)
+      .attr('d', radarLine)
+      .attr('transform', 'translate(' + cx + ',' + cy + ')')
+      .attr('fill', color)
+      .attr('fill-opacity', 0.18)
+      .attr('stroke', 'none');
+
+    // Stroke with glow
+    g.append('path')
+      .datum(blobData)
+      .attr('d', radarLine)
+      .attr('transform', 'translate(' + cx + ',' + cy + ')')
+      .attr('fill', 'none')
+      .attr('stroke', color)
+      .attr('stroke-width', 1.8)
+      .attr('filter', 'url(#' + filterId + ')');
+
+    // Dots at each axis point
+    blobData.forEach(function(d, i) {
+      const px = rScale(d.value) * Math.cos(angleSlice * i - Math.PI / 2);
+      const py = rScale(d.value) * Math.sin(angleSlice * i - Math.PI / 2);
+      g.append('circle')
+        .attr('cx', cx + px).attr('cy', cy + py)
+        .attr('r', 2.5)
+        .attr('fill', color)
+        .attr('fill-opacity', 0.85);
+    });
+  });
+}
+
+/* ── Full render ── */
+function drawAll() {
+  const W = window.innerWidth, H = window.innerHeight;
+  const cellW = (W - GAP*(GRID+1)) / GRID;
+  const cellH = (H - GAP*(GRID+1)) / GRID;
+  const r = Math.min(cellW, cellH) * 0.42;
+
+  const svg = d3.select('#viz').attr('width', W).attr('height', H);
+  svg.selectAll('*').remove();
+  svg.append('rect').attr('width', W).attr('height', H).attr('fill', '#07060e');
+
+  datasets.forEach(function(data, idx) {
+    const row = Math.floor(idx / GRID), col = idx % GRID;
+    const ox  = GAP + col * (cellW + GAP);
+    const oy  = GAP + row * (cellH + GAP);
+    const cx  = ox + cellW / 2;
+    const cy  = oy + cellH / 2;
+
+    // Subtle cell bg
+    svg.append('rect')
+      .attr('x', ox).attr('y', oy)
+      .attr('width', cellW).attr('height', cellH)
+      .attr('fill', '#0b0a14');
+
+    const g = svg.append('g');
+
+    // Stagger fade in
+    g.attr('opacity', 0)
+      .transition().duration(500).delay(idx * 35)
+      .attr('opacity', 1);
+
+    drawRadar(g, data, currentPalette, cx, cy, r);
+  });
+}
+
+function regenerate() {
+  currentPalette = randomPalette();
+  generateDatasets();
+  drawAll();
+}
+
+function newColors() {
+  currentPalette = randomPalette();
+  drawAll();
+}
+
+generateDatasets();
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>

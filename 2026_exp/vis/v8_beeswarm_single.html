@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beeswarm</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #06050f; overflow: hidden; font-family: monospace; }
+  svg { display: block; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+  #countdown {
+    position: fixed; top: 20px; right: 28px; font-size: 10px;
+    letter-spacing: 0.15em; color: rgba(255,255,255,0.25); pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div id="countdown">next in 20s</div>
+<div id="ui">
+  <button onclick="pushNow()">⚡ Push Now</button>
+  <button onclick="newPalette()">↺ Colors</button>
+</div>
+
+<script>
+const W = window.innerWidth;
+const H = window.innerHeight;
+const RADIUS = 7;
+const PAD = 2;
+const TICK_MS = 20000;
+
+/* ── Palette ── */
+const CATEGORIES = ['Alpha','Beta','Gamma','Delta','Epsilon'];
+
+function randomPalette() {
+  const mode = Math.floor(Math.random() * 5);
+  return Array.from({length: CATEGORIES.length}, (_, i) => {
+    if (mode === 0) return d3.hsl((i * (360/CATEGORIES.length) + Math.random()*20)%360, 1, 0.62).toString();
+    if (mode === 1) return d3.hsl(Math.random()*360, 0.9, 0.65).toString();
+    if (mode === 2) { const h = Math.random()<0.5 ? 10+Math.random()*30 : 185+Math.random()*50; return d3.hsl(h,0.95,0.6).toString(); }
+    if (mode === 3) return d3.hsl(260+Math.random()*80,0.85,0.65).toString();
+    return d3.hsl(80+Math.random()*140,0.82,0.62).toString();
+  });
+}
+
+let palette = randomPalette();
+function colorForCat(cat) { return palette[CATEGORIES.indexOf(cat) % palette.length]; }
+
+/* ── Distributions ── */
+function randn() {
+  let u=0, v=0;
+  while(!u) u=Math.random();
+  while(!v) v=Math.random();
+  return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
+}
+
+const distributions = [
+  () => randn(),                                                          // normal
+  () => (Math.random()<0.5 ? -2.5 : 2.5) + randn()*0.7,                // bimodal
+  () => Math.pow(Math.random(), 0.3) * 5 - 2,                           // skewed right
+  () => (Math.random()-0.5)*7,                                           // uniform
+  () => [-3.5, 0, 3.5][Math.floor(Math.random()*3)] + randn()*0.8,     // trimodal
+];
+
+function generateBatch() {
+  const numCats = 2 + Math.floor(Math.random() * (CATEGORIES.length - 1));
+  const cats = d3.shuffle([...CATEGORIES]).slice(0, numCats);
+  const dist = distributions[Math.floor(Math.random() * distributions.length)];
+  const n = 50 + Math.floor(Math.random() * 100);
+  return cats.flatMap(cat =>
+    Array.from({length: Math.floor(n / cats.length)}, () => ({
+      category: cat,
+      value: dist()
+    }))
+  );
+}
+
+/* ── Beeswarm layout ── */
+function beeswarm(data, xScale) {
+  const r2 = (RADIUS + PAD) * 2;
+  const placed = [];
+  [...data].sort((a,b) => a.value - b.value).forEach(d => {
+    const x = xScale(d.value);
+    const candidates = [H/2];
+    placed.forEach(p => {
+      const dx = x - p.x;
+      if (Math.abs(dx) < r2) {
+        const dy = Math.sqrt(Math.max(0, r2*r2 - dx*dx));
+        candidates.push(p.y - dy, p.y + dy);
+      }
+    });
+    const valid = candidates.filter(cy =>
+      cy > RADIUS*2 && cy < H - RADIUS*2 &&
+      placed.every(p => {
+        const dx = x - p.x, dy = cy - p.y;
+        return dx*dx + dy*dy >= r2*r2 - 0.1;
+      })
+    );
+    const y = (valid.length ? valid : [H/2])
+      .sort((a,b) => Math.abs(a - H/2) - Math.abs(b - H/2))[0];
+    placed.push({...d, x, y});
+  });
+  return placed;
+}
+
+/* ── SVG ── */
+const svg = d3.select('body').append('svg').attr('width', W).attr('height', H);
+
+// axis line
+svg.append('line')
+  .attr('x1', 70).attr('x2', W-70)
+  .attr('y1', H/2).attr('y2', H/2)
+  .attr('stroke', 'rgba(255,255,255,0.07)')
+  .attr('stroke-width', 1);
+
+const dotsG = svg.append('g');
+
+/* ── Render ── */
+let currentData = [];
+
+function render(newData) {
+  currentData = newData;
+  const vals = newData.map(d => d.value);
+  const xScale = d3.scaleLinear()
+    .domain([d3.min(vals) - 0.8, d3.max(vals) + 0.8])
+    .range([80, W - 80]);
+
+  const placed = beeswarm(newData, xScale);
+
+  const dots = dotsG.selectAll('circle').data(placed, (d, i) => i);
+
+  dots.exit()
+    .transition().duration(350)
+    .attr('r', 0).attr('opacity', 0)
+    .remove();
+
+  dots.enter().append('circle')
+    .attr('cx', d => d.x)
+    .attr('cy', H/2)
+    .attr('r', 0)
+    .attr('fill', d => colorForCat(d.category))
+    .attr('opacity', 0)
+    .transition().duration(700)
+    .delay((d, i) => i * 5)
+    .ease(d3.easeBounceOut)
+    .attr('cy', d => d.y)
+    .attr('r', RADIUS)
+    .attr('opacity', 0.88);
+
+  dots.transition().duration(800)
+    .delay((d, i) => i * 3)
+    .ease(d3.easeQuadInOut)
+    .attr('cx', d => d.x)
+    .attr('cy', d => d.y)
+    .attr('fill', d => colorForCat(d.category))
+    .attr('r', RADIUS)
+    .attr('opacity', 0.88);
+}
+
+/* ── Controls ── */
+let countdown = TICK_MS / 1000;
+
+function pushNow() {
+  render(generateBatch());
+  countdown = TICK_MS / 1000;
+}
+
+function newPalette() {
+  palette = randomPalette();
+  dotsG.selectAll('circle')
+    .transition().duration(500)
+    .attr('fill', d => colorForCat(d.category));
+}
+
+setInterval(pushNow, TICK_MS);
+setInterval(() => {
+  countdown = Math.max(0, countdown - 1);
+  document.getElementById('countdown').textContent = `next in ${countdown}s`;
+}, 1000);
+
+pushNow();
+</script>
+</body>
+</html>

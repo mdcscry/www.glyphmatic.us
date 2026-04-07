@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ridgeline</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="newColors()">&#x21BA; Colors Only</button>
+</div>
+<script>
+/* ── Gaussian random ── */
+function randn() {
+  let u=0,v=0;
+  while(!u) u=Math.random(); while(!v) v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+
+/* ── Palette modes ── */
+const PALETTE_MODES = [
+  () => { const b=Math.random()*360; return Array.from({length:20},(_,i)=>d3.hsl((b+i*18)%360,0.88,0.52+i*0.015).toString()); },
+  () => Array.from({length:20},(_,i)=>d3.hsl(200+i*8,0.82,0.42+i*0.025).toString()),
+  () => Array.from({length:20},(_,i)=>d3.hsl(340+i*9,0.88,0.45+i*0.022).toString()),
+  () => Array.from({length:20},()=>d3.hsl(Math.random()*360,0.85,0.55+Math.random()*0.15).toString()),
+  () => { const b=Math.random()*360; return Array.from({length:20},(_,i)=>d3.hsl((b+i*6)%360,0.92,0.48+i*0.02).toString()); },
+];
+function randomPalette() { return PALETTE_MODES[Math.floor(Math.random()*PALETTE_MODES.length)](); }
+let currentPalette = randomPalette();
+
+/* ── KDE ── */
+function epanechnikov(bw) {
+  return v => { v/=bw; return Math.abs(v)<=1 ? 0.75*(1-v*v)/bw : 0; };
+}
+function kde(kernel, xs, data) {
+  return xs.map(x => [x, d3.mean(data, v => kernel(x-v))]);
+}
+
+/* ── Generate lumpy ridge data ──────────────────────────────
+   Each ridge is a mixture of gaussians at random positions —
+   this creates the lumpy, multi-peaked shape.
+── */
+function generateRidge(xMin, xMax, nSamples) {
+  // 2–6 gaussian bumps per ridge = lumpy
+  const nBumps = 2 + Math.floor(Math.random() * 5);
+  const bumps = Array.from({length: nBumps}, () => ({
+    mean: xMin + Math.random() * (xMax - xMin),
+    std:  (xMax-xMin) * (0.03 + Math.random() * 0.12),
+    weight: 0.3 + Math.random() * 1.0,
+  }));
+  const totalWeight = bumps.reduce((s,b) => s+b.weight, 0);
+  bumps.forEach(b => b.weight /= totalWeight);
+
+  // Sample from the mixture
+  return Array.from({length: nSamples}, () => {
+    const r = Math.random();
+    let cum = 0;
+    for (const b of bumps) {
+      cum += b.weight;
+      if (r <= cum) return b.mean + randn()*b.std;
+    }
+    return bumps[bumps.length-1].mean;
+  });
+}
+
+/* ── Draw ── */
+let currentData = null;
+
+function draw() {
+  const W = window.innerWidth, H = window.innerHeight;
+  const svg = d3.select('#viz').attr('width', W).attr('height', H);
+  svg.selectAll('*').remove();
+  svg.append('rect').attr('width', W).attr('height', H).attr('fill', '#07060e');
+
+  const nRidges = 14 + Math.floor(Math.random() * 10); // 14–23 ridges
+  const overlap = 0.52 + Math.random() * 0.25;         // how much they overlap
+  const bandH   = H / (nRidges * (1 - overlap) + overlap);
+  const step    = bandH * (1 - overlap);
+
+  const xMin = 0, xMax = 1;
+  const nSamples = 400;
+  const bw = 0.018 + Math.random() * 0.025;
+  const nThresholds = 200;
+  const thresholds = Array.from({length: nThresholds}, (_,i) => xMin + (xMax-xMin)*i/(nThresholds-1));
+
+  // Generate all ridge densities
+  const ridges = currentData || Array.from({length: nRidges}, () => {
+    const samples = generateRidge(xMin, xMax, nSamples);
+    return kde(epanechnikov(bw), thresholds, samples);
+  });
+
+  const maxDensity = d3.max(ridges.flatMap(r => r.map(d => d[1])));
+
+  const xScale = d3.scaleLinear().domain([xMin, xMax]).range([0, W]);
+
+  // Draw bottom to top
+  for (let ri = nRidges-1; ri >= 0; ri--) {
+    const baseY = H * 0.96 - ri * step;
+    const peakH = Math.min(bandH * 1.35, baseY * 0.88);
+    const color = currentPalette[ri % currentPalette.length];
+    const density = ridges[ri];
+
+    const area = d3.area()
+      .x(d => xScale(d[0]))
+      .y0(baseY)
+      .y1(d => baseY - (d[1]/maxDensity) * peakH)
+      .curve(d3.curveCatmullRom.alpha(0.5));
+
+    const line = d3.line()
+      .x(d => xScale(d[0]))
+      .y(d => baseY - (d[1]/maxDensity) * peakH)
+      .curve(d3.curveCatmullRom.alpha(0.5));
+
+    // Occluding background fill
+    svg.append('path').datum(density).attr('d', area)
+      .attr('fill', '#07060e').attr('opacity', 1);
+
+    // Colored fill
+    svg.append('path').datum(density).attr('d', area)
+      .attr('fill', color).attr('opacity', 0.18);
+
+    // Bright stroke
+    svg.append('path').datum(density).attr('d', line)
+      .attr('fill', 'none')
+      .attr('stroke', color)
+      .attr('stroke-width', 1.8)
+      .attr('opacity', 0.95);
+  }
+}
+
+function regenerate() {
+  currentPalette = randomPalette();
+  currentData = null;
+  draw();
+}
+
+function newColors() {
+  currentPalette = randomPalette();
+  draw();
+}
+
+draw();
+window.addEventListener('resize', draw);
+</script>
+</body>
+</html>

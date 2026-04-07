@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Custom Projections</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="newColors()">&#x21BA; Colors Only</button>
+</div>
+<script>
+const GRID = 4;
+const GAP  = 3;
+
+/* ── Palettes ── */
+const PALETTE_MODES = [
+  () => { const b=Math.random()*360; return Array.from({length:GRID*GRID},(_,i)=>d3.hsl((b+i*22)%360,0.9,0.60).toString()); },
+  () => Array.from({length:GRID*GRID},()=>d3.hsl(Math.random()*360,0.88,0.58+Math.random()*0.14).toString()),
+  () => Array.from({length:GRID*GRID},(_,i)=>d3.hsl(200+i*12,0.85,0.50+i*0.018).toString()),
+  () => Array.from({length:GRID*GRID},(_,i)=>d3.hsl(340+i*11,0.88,0.50+i*0.018).toString()),
+  () => { const b=Math.random()*360; return Array.from({length:GRID*GRID},(_,i)=>d3.hsl((b+i*8)%360,0.92,0.55).toString()); },
+];
+function randomPalette() { return PALETTE_MODES[Math.floor(Math.random()*PALETTE_MODES.length)](); }
+let currentPalette = randomPalette();
+
+/* ── Projection functions ──────────────────────────────────
+   Each takes (u,v) in [-1,1]×[-1,1] and returns [x,y]
+   Results are then scaled/centered to fit the cell.
+── */
+function makeProjections() {
+  // Random parameters for variety
+  const a = 0.3 + Math.random()*0.7;
+  const b = 0.3 + Math.random()*0.7;
+  const k = 1 + Math.floor(Math.random()*4);
+  const m = 1 + Math.floor(Math.random()*4);
+  const p = Math.random()*Math.PI;
+
+  return [
+    // Sinusoidal warp
+    (u,v) => [u + a*Math.sin(v*Math.PI*k), v + b*Math.sin(u*Math.PI*m)],
+    // Polar swirl
+    (u,v) => { const r=Math.sqrt(u*u+v*v), θ=Math.atan2(v,u)+r*Math.PI*a*2; return [r*Math.cos(θ), r*Math.sin(θ)]; },
+    // Fisheye
+    (u,v) => { const r=Math.sqrt(u*u+v*v), s=r<1?(2*r/(1+r*r))/Math.max(r,0.001):1; return [u*s, v*s]; },
+    // Shear + sine
+    (u,v) => [u + a*Math.sin(v*Math.PI*2), v + b*Math.sin(u*Math.PI*2+p)],
+    // Radial squeeze
+    (u,v) => { const r=Math.sqrt(u*u+v*v), s=Math.pow(r,a)/(r+0.001); return [u*s, v*s]; },
+    // Wave both axes
+    (u,v) => [u*Math.cos(v*Math.PI*a) - v*Math.sin(v*Math.PI*a), u*Math.sin(u*Math.PI*b) + v*Math.cos(u*Math.PI*b)],
+    // Tanh compression
+    (u,v) => [Math.tanh(u*2)*a + b*Math.sin(v*Math.PI*k), Math.tanh(v*2)*a + b*Math.sin(u*Math.PI*m)],
+    // Parabolic
+    (u,v) => [u*(1-a*v*v), v*(1-b*u*u)],
+    // Hyperbolic
+    (u,v) => { const d=Math.max(0.1, Math.abs(u*u-v*v)); return [u/Math.sqrt(d)*a, v/Math.sqrt(d)*b]; },
+    // Möbius-ish
+    (u,v) => { const d=(u-a)*(u-a)+(v-b)*(v-b)+0.05; return [(u*a+v*b)/d, (v*a-u*b)/d]; },
+    // Polynomial
+    (u,v) => [u + a*u*v*v, v + b*v*u*u],
+    // Spiral
+    (u,v) => { const r=Math.sqrt(u*u+v*v)+0.001, θ=Math.atan2(v,u)+k*r; return [r*Math.cos(θ), r*Math.sin(θ)]; },
+    // Logarithmic
+    (u,v) => { const r=Math.sqrt(u*u+v*v)+0.001; return [Math.log(r+1)*u/r*2, Math.log(r+1)*v/r*2]; },
+    // Sin product
+    (u,v) => [Math.sin(u*Math.PI*a)*Math.cos(v*Math.PI*b), Math.sin(v*Math.PI*b)*Math.cos(u*Math.PI*a)],
+    // Affine twist
+    (u,v) => [(u*Math.cos(v*a*Math.PI) - v*Math.sin(v*a*Math.PI)), (u*Math.sin(v*b*Math.PI) + v*Math.cos(v*b*Math.PI))],
+    // Pinch
+    (u,v) => [u*Math.pow(Math.abs(v)+0.01, a-0.5)*2, v*Math.pow(Math.abs(u)+0.01, b-0.5)*2],
+  ];
+}
+
+/* ── Draw one warped grid ── */
+function drawWarpedGrid(g, projFn, color, ox, oy, cellW, cellH) {
+  const N = 22; // grid lines in each direction
+  const SAMPLES = 60; // points per line
+
+  const pts = [];
+
+  // Sample the projection over a [-1,1] grid
+  for (let i=0; i<=N; i++) {
+    const u = -1 + 2*i/N;
+    const row = [];
+    for (let j=0; j<=SAMPLES; j++) {
+      const v = -1 + 2*j/SAMPLES;
+      const [px, py] = projFn(u, v);
+      row.push([px, py]);
+    }
+    pts.push({type:'u', pts:row});
+  }
+  for (let j=0; j<=N; j++) {
+    const v = -1 + 2*j/N;
+    const row = [];
+    for (let i=0; i<=SAMPLES; i++) {
+      const u = -1 + 2*i/SAMPLES;
+      const [px, py] = projFn(u, v);
+      row.push([px, py]);
+    }
+    pts.push({type:'v', pts:row});
+  }
+
+  // Find bounds of all projected points
+  const allX = pts.flatMap(l => l.pts.map(p => p[0]));
+  const allY = pts.flatMap(l => l.pts.map(p => p[1]));
+  const xMin=d3.min(allX), xMax=d3.max(allX);
+  const yMin=d3.min(allY), yMax=d3.max(allY);
+  const xRange=xMax-xMin||1, yRange=yMax-yMin||1;
+
+  const PAD = Math.min(cellW,cellH)*0.05;
+  const sx = (cellW-PAD*2)/xRange;
+  const sy = (cellH-PAD*2)/yRange;
+  const s  = Math.min(sx, sy);
+
+  const toX = px => ox + PAD + (cellW-PAD*2)/2 + (px-(xMin+xMax)/2)*s;
+  const toY = py => oy + PAD + (cellH-PAD*2)/2 + (py-(yMin+yMax)/2)*s;
+
+  const line = d3.line().x(p=>toX(p[0])).y(p=>toY(p[1])).curve(d3.curveCatmullRom);
+
+  pts.forEach(l => {
+    // Filter out any NaN/Inf points
+    const clean = l.pts.filter(p => isFinite(p[0]) && isFinite(p[1]));
+    if (clean.length < 2) return;
+    g.append('path')
+      .datum(clean)
+      .attr('d', line)
+      .attr('fill', 'none')
+      .attr('stroke', color)
+      .attr('stroke-width', 0.7)
+      .attr('opacity', 0.75);
+  });
+}
+
+/* ── State ── */
+let projections = makeProjections();
+let selectedProjs = [];
+
+function pickProjections() {
+  projections = makeProjections();
+  const pool = d3.shuffle(projections.slice());
+  selectedProjs = Array.from({length:GRID*GRID}, (_,i) => pool[i % pool.length]);
+}
+
+/* ── Full render ── */
+function drawAll() {
+  const W=window.innerWidth, H=window.innerHeight;
+  const cellW=(W-GAP*(GRID+1))/GRID;
+  const cellH=(H-GAP*(GRID+1))/GRID;
+
+  const svg=d3.select('#viz').attr('width',W).attr('height',H);
+  svg.selectAll('*').remove();
+  svg.append('rect').attr('width',W).attr('height',H).attr('fill','#07060e');
+
+  selectedProjs.forEach(function(projFn, idx) {
+    const row=Math.floor(idx/GRID), col=idx%GRID;
+    const ox=GAP+col*(cellW+GAP);
+    const oy=GAP+row*(cellH+GAP);
+
+    svg.append('rect').attr('x',ox).attr('y',oy)
+      .attr('width',cellW).attr('height',cellH)
+      .attr('fill','#0b0a16');
+
+    // Clip to cell
+    const clipId='clip-'+idx;
+    svg.append('defs').append('clipPath').attr('id',clipId)
+      .append('rect').attr('x',ox).attr('y',oy).attr('width',cellW).attr('height',cellH);
+
+    const g=svg.append('g')
+      .attr('clip-path','url(#'+clipId+')')
+      .attr('opacity',0);
+
+    drawWarpedGrid(g, projFn, currentPalette[idx], ox, oy, cellW, cellH);
+
+    g.transition().duration(500).delay(idx*35).attr('opacity',1);
+  });
+}
+
+function regenerate() {
+  currentPalette=randomPalette();
+  pickProjections();
+  drawAll();
+}
+
+function newColors() {
+  currentPalette=randomPalette();
+  drawAll();
+}
+
+pickProjections();
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>

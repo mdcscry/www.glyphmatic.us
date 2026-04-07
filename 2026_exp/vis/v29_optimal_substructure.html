@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optimal Substructure</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #07060e; overflow: hidden; }
+  svg { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 8px 24px; cursor: pointer; transition: background 0.2s;
+  }
+  button:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+<svg id="viz"></svg>
+<div id="ui">
+  <button onclick="regenerate()">&#x21BA; Regenerate</button>
+  <button onclick="newColors()">&#x21BA; Colors</button>
+</div>
+<script>
+const GRID = 3;
+const GAP  = 3;
+
+/* ── Color modes ── */
+function randomColorMode() {
+  const modes = [
+    { bg:'#0a0914', node:'#e8e8e8', nodeStroke:'#aaa', edge:'rgba(200,200,200,0.4)', path:'#f9c74f', wave:'rgba(240,240,240,0.85)' },
+    { bg:'#07100a', node:'#d8ead8', nodeStroke:'#8ab', edge:'rgba(150,220,160,0.35)', path:'#43aa8b', wave:'rgba(100,240,160,0.85)' },
+    { bg:'#0d0914', node:'#e0d8f0', nodeStroke:'#99a', edge:'rgba(180,160,230,0.35)', path:'#bf5af2', wave:'rgba(200,160,255,0.85)' },
+    { bg:'#140a07', node:'#f0ddd8', nodeStroke:'#c99', edge:'rgba(240,150,120,0.35)', path:'#f94144', wave:'rgba(255,140,120,0.85)' },
+    { bg:'#07090d', node:'#d8e4f0', nodeStroke:'#89b', edge:'rgba(100,160,230,0.35)', path:'#3a86ff', wave:'rgba(100,180,255,0.85)' },
+  ];
+  return modes[Math.floor(Math.random() * modes.length)];
+}
+let colors = randomColorMode();
+
+/* ── Dijkstra ── */
+function dijkstra(nodes, edges, startId, endId) {
+  const dist = {}, prev = {};
+  const queue = new Set(nodes.map(n => n.id));
+  nodes.forEach(n => { dist[n.id] = Infinity; prev[n.id] = null; });
+  dist[startId] = 0;
+
+  while (queue.size > 0) {
+    // Pick min dist node in queue
+    let u = null;
+    queue.forEach(id => { if (u === null || dist[id] < dist[u]) u = id; });
+    if (u === endId || dist[u] === Infinity) break;
+    queue.delete(u);
+
+    edges.filter(e => e.a === u || e.b === u).forEach(e => {
+      const v = e.a === u ? e.b : e.a;
+      if (!queue.has(v)) return;
+      const alt = dist[u] + e.weight;
+      if (alt < dist[v]) { dist[v] = alt; prev[v] = u; }
+    });
+  }
+
+  // Reconstruct path
+  const path = [];
+  let cur = endId;
+  while (cur !== null) { path.unshift(cur); cur = prev[cur]; }
+  return path.length > 1 && path[0] === startId ? path : [];
+}
+
+/* ── Generate one graph ── */
+function generateGraph(cx, cy, r) {
+  // 3–6 intermediate nodes arranged in 2–3 layers
+  const numLayers = 2 + Math.floor(Math.random() * 2);
+  const nodesPerLayer = Array.from({length: numLayers}, () => 1 + Math.floor(Math.random() * 3));
+  const layerX = Array.from({length: numLayers}, (_, i) => cx - r*0.72 + r*1.44*(i+1)/(numLayers+1));
+
+  let id = 0;
+  const nodes = [];
+
+  // Start node
+  nodes.push({ id: id++, x: cx - r*0.85, y: cy, isStart: true, isEnd: false });
+
+  // Intermediate nodes
+  nodesPerLayer.forEach((count, li) => {
+    const lx = layerX[li];
+    for (let ni = 0; ni < count; ni++) {
+      const ly = cy + (ni - (count-1)/2) * r * 0.62;
+      nodes.push({ id: id++, x: lx, y: ly, isStart: false, isEnd: false });
+    }
+  });
+
+  // End node
+  nodes.push({ id: id++, x: cx + r*0.85, y: cy, isStart: false, isEnd: true });
+
+  const startId = 0;
+  const endId = nodes.length - 1;
+
+  // Edges: connect each layer to next, ensure connectivity
+  const edges = [];
+  const addEdge = (a, b, isSubpath) => {
+    if (edges.some(e => (e.a===a&&e.b===b)||(e.a===b&&e.b===a))) return;
+    edges.push({ a, b, weight: 2 + Math.floor(Math.random() * 28), isSubpath: !!isSubpath });
+  };
+
+  // Layer 0 (start) → layer 1
+  const layer0 = [startId];
+  let layerStart = 1;
+  nodesPerLayer.forEach((count, li) => {
+    const prevLayerNodes = li === 0 ? layer0 : nodes.slice(layerStart - nodesPerLayer[li-1], layerStart).map(n=>n.id);
+    const thisLayerNodes = nodes.slice(layerStart, layerStart + count).map(n=>n.id);
+    // Each node in this layer connects to at least one prev, each prev connects to at least one this
+    thisLayerNodes.forEach(tid => {
+      const src = prevLayerNodes[Math.floor(Math.random()*prevLayerNodes.length)];
+      addEdge(src, tid);
+    });
+    prevLayerNodes.forEach(pid => {
+      if (!edges.some(e => (e.a===pid||e.b===pid) && thisLayerNodes.includes(e.a===pid?e.b:e.a))) {
+        const tgt = thisLayerNodes[Math.floor(Math.random()*thisLayerNodes.length)];
+        addEdge(pid, tgt);
+      }
+    });
+    // Some random skip-layer subpath edges (wavy)
+    if (Math.random() < 0.5) addEdge(
+      thisLayerNodes[Math.floor(Math.random()*thisLayerNodes.length)],
+      thisLayerNodes[Math.floor(Math.random()*thisLayerNodes.length)],
+      true
+    );
+    layerStart += count;
+  });
+
+  // Last intermediate layer → end (direct)
+  const lastLayerNodes = nodes.slice(layerStart - nodesPerLayer[nodesPerLayer.length-1], layerStart).map(n=>n.id);
+  lastLayerNodes.forEach(lid => addEdge(lid, endId, false));
+  // Ensure at least one connection
+  if (!edges.some(e => e.a===endId||e.b===endId)) addEdge(lastLayerNodes[0], endId, false);
+
+  // Add a few skip-layer subpath edges (wavy) that jump across layers
+  if (numLayers >= 2 && Math.random() < 0.7) {
+    const allMid = nodes.filter(n => !n.isStart && !n.isEnd);
+    const a = allMid[Math.floor(Math.random()*allMid.length)];
+    const b = allMid[Math.floor(Math.random()*allMid.length)];
+    if (a && b && a.id !== b.id) addEdge(a.id, b.id, true);
+  }
+  // Sometimes a subpath edge from start or to end skipping layers
+  if (Math.random() < 0.5) {
+    const mid = nodes.filter(n => !n.isStart && !n.isEnd);
+    const skip = mid[Math.floor(Math.random()*mid.length)];
+    if (skip) addEdge(startId, skip.id, true);
+  }
+
+  // Remove self-loops
+  const cleanEdges = edges.filter(e => e.a !== e.b);
+
+  const shortestPath = dijkstra(nodes, cleanEdges, startId, endId);
+  const pathEdgeSet = new Set();
+  for (let i=0; i<shortestPath.length-1; i++) {
+    const a = shortestPath[i], b = shortestPath[i+1];
+    pathEdgeSet.add(Math.min(a,b)+'-'+Math.max(a,b));
+  }
+
+  return { nodes, edges: cleanEdges, shortestPath, pathEdgeSet, startId, endId };
+}
+
+/* ── Wavy path between two points ── */
+function wavyPath(x1, y1, x2, y2, amplitude, wavelength) {
+  const dx = x2-x1, dy = y2-y1;
+  const len = Math.sqrt(dx*dx+dy*dy);
+  if (len < 1) return 'M'+x1+','+y1;
+  const ux = dx/len, uy = dy/len;
+  const px = -uy, py = ux; // perpendicular unit vector
+
+  // Sample a smooth sine wave along the edge using many tiny line segments
+  const samples = Math.max(32, Math.floor(len * 1.2));
+  let d = 'M'+x1+','+y1;
+  for (let i=1; i<=samples; i++) {
+    const t = i / samples;
+    const along = t * len;
+    const wave  = amplitude * Math.sin((along / wavelength) * Math.PI * 2);
+    const sx = x1 + ux * along + px * wave;
+    const sy = y1 + uy * along + py * wave;
+    d += ' L'+sx+','+sy;
+  }
+  return d;
+}
+
+/* ── Draw one cell ── */
+function drawCell(svg, graph, ox, oy, cellW, cellH, cols) {
+  const { nodes, edges, pathEdgeSet, startId, endId } = graph;
+  const g = svg.append('g');
+
+  // Node radius scaled to cell
+  const nr = Math.min(cellW, cellH) * 0.065;
+
+  // Draw edges
+  edges.forEach(e => {
+    const na = nodes[e.a], nb = nodes[e.b];
+    if (!na||!nb) return;
+    const key = Math.min(e.a,e.b)+'-'+Math.max(e.a,e.b);
+    const isPath = pathEdgeSet.has(key);
+    const dx = nb.x-na.x, dy = nb.y-na.y;
+    const len = Math.sqrt(dx*dx+dy*dy);
+
+    // Shorten endpoints to node edge
+    const sx = na.x + dx/len*nr, sy = na.y + dy/len*nr;
+    const ex = nb.x - dx/len*nr, ey = nb.y - dy/len*nr;
+
+    if (isPath) {
+      // Bold straight line for optimal path
+      g.append('line')
+        .attr('x1', sx).attr('y1', sy)
+        .attr('x2', ex).attr('y2', ey)
+        .attr('stroke', cols.path)
+        .attr('stroke-width', Math.max(nr*0.15, (len / (cellW * 0.8)) * nr * 2.2))
+        .attr('stroke-linecap', 'round')
+        .attr('opacity', 0.95);
+    } else {
+      // Wavy line for subpaths
+      const amp  = len * 0.07;
+      const wlen = len * 0.18;
+      g.append('path')
+        .attr('d', wavyPath(sx, sy, ex, ey, amp, wlen))
+        .attr('fill', 'none')
+        .attr('stroke', cols.wave)
+        .attr('stroke-width', Math.max(nr*0.1,  (len / (cellW * 0.8)) * nr * 1.4))
+        .attr('stroke-linecap', 'round')
+        .attr('opacity', 0.85);
+    }
+  });
+
+  // Draw nodes
+  nodes.forEach(n => {
+    const isEndpoint = n.isStart || n.isEnd;
+    g.append('circle')
+      .attr('cx', n.x).attr('cy', n.y)
+      .attr('r', isEndpoint ? nr*1.35 : nr)
+      .attr('fill', cols.bg)
+      .attr('stroke', cols.nodeStroke)
+      .attr('stroke-width', isEndpoint ? nr*0.25 : nr*0.18);
+
+    // Inner fill circle
+    g.append('circle')
+      .attr('cx', n.x).attr('cy', n.y)
+      .attr('r', isEndpoint ? nr*1.1 : nr*0.72)
+      .attr('fill', cols.node)
+      .attr('opacity', isEndpoint ? 0.18 : 0.08);
+  });
+}
+
+/* ── State ── */
+let datasets = [];
+
+function generateDatasets() {
+  const W = window.innerWidth, H = window.innerHeight;
+  const cellW = (W - GAP*(GRID+1)) / GRID;
+  const cellH = (H - GAP*(GRID+1)) / GRID;
+
+  datasets = [];
+  for (let row=0; row<GRID; row++) {
+    for (let col=0; col<GRID; col++) {
+      const ox = GAP + col*(cellW+GAP);
+      const oy = GAP + row*(cellH+GAP);
+      const cx = ox + cellW/2, cy = oy + cellH/2;
+      const r  = Math.min(cellW, cellH) * 0.46;
+      datasets.push({ graph: generateGraph(cx, cy, r), ox, oy, cellW, cellH });
+    }
+  }
+}
+
+function drawAll() {
+  const W = window.innerWidth, H = window.innerHeight;
+  const svg = d3.select('#viz').attr('width', W).attr('height', H);
+  svg.selectAll('*').remove();
+  svg.append('rect').attr('width', W).attr('height', H).attr('fill', '#07060e');
+
+  const cellW = (W - GAP*(GRID+1)) / GRID;
+  const cellH = (H - GAP*(GRID+1)) / GRID;
+
+  datasets.forEach(function(ds, idx) {
+    const { graph, ox, oy } = ds;
+    // Cell bg
+    svg.append('rect').attr('x',ox).attr('y',oy)
+      .attr('width',cellW).attr('height',cellH)
+      .attr('fill', colors.bg);
+
+    const g = svg.append('g').attr('opacity',0);
+    drawCell(svg, graph, ox, oy, cellW, cellH, colors);
+    // Fade in
+    svg.select('g:last-child')
+      .transition().duration(500).delay(idx*30)
+      .attr('opacity',1);
+  });
+}
+
+function regenerate() {
+  colors = randomColorMode();
+  generateDatasets();
+  drawAll();
+}
+
+function newColors() { colors = randomColorMode(); drawAll(); }
+
+generateDatasets();
+drawAll();
+window.addEventListener('resize', () => { generateDatasets(); drawAll(); });
+</script>
+</body>
+</html>
