@@ -1,0 +1,1 @@
+../bin/download_manual.py
