@@ -112,8 +112,25 @@ function getBlockClassName(blockName) {
     return 'block-' + standardName.toLowerCase().replace(/ /g, '-');
 }
 
+// CJK structural blocks (radicals, strokes) belong to Chinese writing, not Japanese.
+// The global skeleton maps them to Japanese fonts; override here for Chinese-speaking countries.
+var CJK_CHINESE_BLOCKS = new Set(['Kangxi Radicals', 'CJK Strokes', 'CJK Radicals Supplement']);
+var CJK_CHINESE_FONTS = ['noto-simple-chinese', 'noto-trad-chinese', 'noto-hongkong'];
+
+function countryUsesChinese() {
+    if (!i35_currentCountry || !countryData[i35_currentCountry]) return false;
+    var langs = countryData[i35_currentCountry].languages || {};
+    var all = (langs.national || []).concat(langs.other || []);
+    return all.some(function(l) { return /mandarin|cantonese|chinese/i.test(l); });
+}
+
 function getFontForBlock(blockName) {
-    var fontDuJour = AutoFont.selectFont(blockName, block_lang, lang_font);
+    var blockLangOverride = block_lang;
+    if (CJK_CHINESE_BLOCKS.has(blockName) && countryUsesChinese()) {
+        blockLangOverride = Object.assign({}, block_lang);
+        blockLangOverride[blockName] = CJK_CHINESE_FONTS;
+    }
+    var fontDuJour = AutoFont.selectFont(blockName, blockLangOverride, lang_font);
     if (fontDuJour === 'Noto Sans-local') {
         if (!i35_warnedBlocks.has(blockName)) {
             console.warn('No font mapping for block: ' + blockName);

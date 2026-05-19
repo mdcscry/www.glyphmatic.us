@@ -1,0 +1,43 @@
+{
+  "family": "fields-contours-noise",
+  "title": "Fields / Contours / Noise",
+  "count": 1,
+  "screenshots": 1,
+  "source_areas": {
+    "2026_exp/vis": 1
+  },
+  "future_insert_candidate": "Field / Contour / Noise",
+  "entries": [
+    {
+      "id": "2026-exp-vis-v32-custom-projections-html",
+      "title": "Custom Projections",
+      "path": "2026_exp/vis/v32_custom_projections.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "fields-contours-noise",
+      "family_title": "Fields / Contours / Noise",
+      "subfamily": "v32",
+      "sequence_hint": 32,
+      "tags": [
+        "d3",
+        "fields-contours-noise",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v32-custom-projections.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Field / Contour / Noise",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Already adjacent to insert37 logic; extend family review with palette-mode and glyph-overlay notes.",
+      "summary": "Custom Projections — 2026_exp/vis; grouped under Fields / Contours / Noise. Signals: d3, fields-contours-noise, svg."
+    }
+  ]
+}

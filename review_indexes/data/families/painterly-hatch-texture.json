@@ -1,0 +1,198 @@
+{
+  "family": "painterly-hatch-texture",
+  "title": "Painterly / Hatch / Texture",
+  "count": 6,
+  "screenshots": 6,
+  "source_areas": {
+    "2025_exp/html_experiments": 1,
+    "2026_exp/vis": 5
+  },
+  "future_insert_candidate": "Painterly / Texture",
+  "entries": [
+    {
+      "id": "2026-exp-vis-molnar-25-html",
+      "title": "25 carrés",
+      "path": "2026_exp/vis/molnar_25.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "painterly-hatch-texture",
+      "family_title": "Painterly / Hatch / Texture",
+      "subfamily": "molnar",
+      "sequence_hint": 25,
+      "tags": [
+        "dom",
+        "molnar",
+        "painterly-hatch-texture"
+      ],
+      "libraries": [
+        "dom"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-molnar-25.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Painterly / Texture",
+      "notes": "2026_exp/vis · libraries: dom",
+      "upgrade_notes": "Promote stronger artist-palette and hybrid palette behavior; evaluate whether texture forms want their own insert family.",
+      "summary": "25 carrés — 2026_exp/vis; grouped under Painterly / Hatch / Texture. Signals: dom, molnar, painterly-hatch-texture."
+    },
+    {
+      "id": "2026-exp-vis-v27-watercolor-html",
+      "title": "Watercolor",
+      "path": "2026_exp/vis/v27_watercolor.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "painterly-hatch-texture",
+      "family_title": "Painterly / Hatch / Texture",
+      "subfamily": "watercolor",
+      "sequence_hint": 27,
+      "tags": [
+        "canvas",
+        "painterly-hatch-texture",
+        "watercolor"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v27-watercolor.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Painterly / Texture",
+      "notes": "2026_exp/vis · libraries: canvas",
+      "upgrade_notes": "Promote stronger artist-palette and hybrid palette behavior; evaluate whether texture forms want their own insert family.",
+      "summary": "Watercolor — 2026_exp/vis; grouped under Painterly / Hatch / Texture. Signals: canvas, painterly-hatch-texture, watercolor."
+    },
+    {
+      "id": "2026-exp-vis-v50-hatch-patterns-html",
+      "title": "Hatch Patterns",
+      "path": "2026_exp/vis/v50_hatch_patterns.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "painterly-hatch-texture",
+      "family_title": "Painterly / Hatch / Texture",
+      "subfamily": "hatch",
+      "sequence_hint": 50,
+      "tags": [
+        "d3",
+        "hatch",
+        "painterly-hatch-texture",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v50-hatch-patterns.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Painterly / Texture",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Promote stronger artist-palette and hybrid palette behavior; evaluate whether texture forms want their own insert family.",
+      "summary": "Hatch Patterns — 2026_exp/vis; grouped under Painterly / Hatch / Texture. Signals: d3, hatch, painterly-hatch-texture, svg."
+    },
+    {
+      "id": "2026-exp-vis-v51-hatch-color-html",
+      "title": "Hatch Patterns Color",
+      "path": "2026_exp/vis/v51_hatch_color.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "painterly-hatch-texture",
+      "family_title": "Painterly / Hatch / Texture",
+      "subfamily": "hatch",
+      "sequence_hint": 51,
+      "tags": [
+        "d3",
+        "hatch",
+        "painterly-hatch-texture",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v51-hatch-color.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Painterly / Texture",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Promote stronger artist-palette and hybrid palette behavior; evaluate whether texture forms want their own insert family.",
+      "summary": "Hatch Patterns Color — 2026_exp/vis; grouped under Painterly / Hatch / Texture. Signals: d3, hatch, painterly-hatch-texture, svg."
+    },
+    {
+      "id": "2026-exp-vis-v52-hatch-accent-html",
+      "title": "Hatch Patterns v52",
+      "path": "2026_exp/vis/v52_hatch_accent.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "painterly-hatch-texture",
+      "family_title": "Painterly / Hatch / Texture",
+      "subfamily": "hatch",
+      "sequence_hint": 52,
+      "tags": [
+        "d3",
+        "hatch",
+        "painterly-hatch-texture",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v52-hatch-accent.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Painterly / Texture",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Promote stronger artist-palette and hybrid palette behavior; evaluate whether texture forms want their own insert family.",
+      "summary": "Hatch Patterns v52 — 2026_exp/vis; grouped under Painterly / Hatch / Texture. Signals: d3, hatch, painterly-hatch-texture, svg."
+    },
+    {
+      "id": "2025-exp-html-experiments-kandinsky-html",
+      "title": "Circles in a Circle",
+      "path": "2025_exp/html_experiments/kandinsky.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "painterly-hatch-texture",
+      "family_title": "Painterly / Hatch / Texture",
+      "subfamily": "kandinsky",
+      "sequence_hint": null,
+      "tags": [
+        "dom",
+        "painterly-hatch-texture"
+      ],
+      "libraries": [
+        "dom"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-kandinsky.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Painterly / Texture",
+      "notes": "2025_exp/html_experiments · libraries: dom",
+      "upgrade_notes": "Promote stronger artist-palette and hybrid palette behavior; evaluate whether texture forms want their own insert family.",
+      "summary": "Circles in a Circle — 2025_exp/html_experiments; grouped under Painterly / Hatch / Texture. Signals: dom, painterly-hatch-texture."
+    }
+  ]
+}

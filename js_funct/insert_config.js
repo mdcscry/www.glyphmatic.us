@@ -340,6 +340,20 @@ const INSERT_CONFIG = {
             },
             description: 'Numbers \u2014 Systems (AutoFont): 4\u00d76 grid of 24 tiles, each cycling through a different Unicode number block\u2019s glyphs. AutoFont loads correct fonts per writing system. Tiles shuffle through all number blocks; palette shifts on reshuffle. Symmetrical two-tone color patterns (12 variations). Click a tile to pause/unpause it.<br><br>Controls: \u25b3HTML = reload/reshuffle. Click tile = pause.'
         },
+        37: {
+            controls: {
+                style: false,
+                html: false,
+                resize: false,
+                moveUpDown: false
+            },
+            watermarks: {
+                count: 1,
+                zIndex: 10,
+                positioning: 'top-left'
+            },
+            description: 'Field / Contour / Noise: multi-flavor visualization family consolidating contour fields, optimization landscapes, function contours, Perlin-noise systems, contour blocks, and perlin glyph overlays.<br><br>Controls: keys 0\u20138 switch flavors, r regenerates, p cycles palettes, a toggles artist/random-generated palette mode, h toggles HUD.'
+        },
     }
 };
 

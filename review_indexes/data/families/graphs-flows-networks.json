@@ -1,0 +1,261 @@
+{
+  "family": "graphs-flows-networks",
+  "title": "Graphs / Flows / Networks",
+  "count": 8,
+  "screenshots": 8,
+  "source_areas": {
+    "2026_exp/vis": 8
+  },
+  "future_insert_candidate": "Graphs / Flows / Networks",
+  "entries": [
+    {
+      "id": "2026-exp-vis-v7-generative-sankey-html",
+      "title": "Generative Sankey",
+      "path": "2026_exp/vis/v7_generative_sankey.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "graphs-flows-networks",
+      "family_title": "Graphs / Flows / Networks",
+      "subfamily": "sankey",
+      "sequence_hint": 7,
+      "tags": [
+        "d3",
+        "graphs-flows-networks",
+        "sankey",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v7-generative-sankey.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Graphs / Flows / Networks",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Add family-level palette bridge and shared HUD; consider glyph-capable variants for node/edge labeling.",
+      "summary": "Generative Sankey — 2026_exp/vis; grouped under Graphs / Flows / Networks. Signals: d3, graphs-flows-networks, sankey, svg."
+    },
+    {
+      "id": "2026-exp-vis-v11-chord-grid-html",
+      "title": "Chord Grid",
+      "path": "2026_exp/vis/v11_chord_grid.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "graphs-flows-networks",
+      "family_title": "Graphs / Flows / Networks",
+      "subfamily": "chord",
+      "sequence_hint": 11,
+      "tags": [
+        "chord",
+        "d3",
+        "graphs-flows-networks",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v11-chord-grid.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Graphs / Flows / Networks",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Add family-level palette bridge and shared HUD; consider glyph-capable variants for node/edge labeling.",
+      "summary": "Chord Grid — 2026_exp/vis; grouped under Graphs / Flows / Networks. Signals: chord, d3, graphs-flows-networks, svg."
+    },
+    {
+      "id": "2026-exp-vis-v20-biofabric-html",
+      "title": "BioFabric",
+      "path": "2026_exp/vis/v20_biofabric.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "graphs-flows-networks",
+      "family_title": "Graphs / Flows / Networks",
+      "subfamily": "biofabric",
+      "sequence_hint": 20,
+      "tags": [
+        "biofabric",
+        "canvas",
+        "graphs-flows-networks"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v20-biofabric.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Graphs / Flows / Networks",
+      "notes": "2026_exp/vis · libraries: canvas",
+      "upgrade_notes": "Add family-level palette bridge and shared HUD; consider glyph-capable variants for node/edge labeling.",
+      "summary": "BioFabric — 2026_exp/vis; grouped under Graphs / Flows / Networks. Signals: biofabric, canvas, graphs-flows-networks."
+    },
+    {
+      "id": "2026-exp-vis-v20-biofabric-single-html",
+      "title": "BioFabric",
+      "path": "2026_exp/vis/v20_biofabric_single.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "graphs-flows-networks",
+      "family_title": "Graphs / Flows / Networks",
+      "subfamily": "biofabric",
+      "sequence_hint": 20,
+      "tags": [
+        "biofabric",
+        "canvas",
+        "graphs-flows-networks"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v20-biofabric-single.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Graphs / Flows / Networks",
+      "notes": "2026_exp/vis · libraries: canvas",
+      "upgrade_notes": "Add family-level palette bridge and shared HUD; consider glyph-capable variants for node/edge labeling.",
+      "summary": "BioFabric — 2026_exp/vis; grouped under Graphs / Flows / Networks. Signals: biofabric, canvas, graphs-flows-networks."
+    },
+    {
+      "id": "2026-exp-vis-v21-biofabric-grid-html",
+      "title": "BioFabric Grid",
+      "path": "2026_exp/vis/v21_biofabric_grid.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "graphs-flows-networks",
+      "family_title": "Graphs / Flows / Networks",
+      "subfamily": "biofabric",
+      "sequence_hint": 21,
+      "tags": [
+        "biofabric",
+        "canvas",
+        "graphs-flows-networks"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v21-biofabric-grid.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Graphs / Flows / Networks",
+      "notes": "2026_exp/vis · libraries: canvas",
+      "upgrade_notes": "Add family-level palette bridge and shared HUD; consider glyph-capable variants for node/edge labeling.",
+      "summary": "BioFabric Grid — 2026_exp/vis; grouped under Graphs / Flows / Networks. Signals: biofabric, canvas, graphs-flows-networks."
+    },
+    {
+      "id": "2026-exp-vis-v22-edge-bundling-grid-html",
+      "title": "Edge Bundling",
+      "path": "2026_exp/vis/v22_edge_bundling_grid.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "graphs-flows-networks",
+      "family_title": "Graphs / Flows / Networks",
+      "subfamily": "bundling",
+      "sequence_hint": 22,
+      "tags": [
+        "bundling",
+        "canvas",
+        "d3",
+        "graphs-flows-networks"
+      ],
+      "libraries": [
+        "canvas",
+        "d3"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v22-edge-bundling-grid.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Graphs / Flows / Networks",
+      "notes": "2026_exp/vis · libraries: canvas, d3",
+      "upgrade_notes": "Add family-level palette bridge and shared HUD; consider glyph-capable variants for node/edge labeling.",
+      "summary": "Edge Bundling — 2026_exp/vis; grouped under Graphs / Flows / Networks. Signals: bundling, canvas, d3, graphs-flows-networks."
+    },
+    {
+      "id": "2026-exp-vis-v29-optimal-substructure-html",
+      "title": "Optimal Substructure",
+      "path": "2026_exp/vis/v29_optimal_substructure.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "graphs-flows-networks",
+      "family_title": "Graphs / Flows / Networks",
+      "subfamily": "v29",
+      "sequence_hint": 29,
+      "tags": [
+        "d3",
+        "graphs-flows-networks",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v29-optimal-substructure.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Graphs / Flows / Networks",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Add family-level palette bridge and shared HUD; consider glyph-capable variants for node/edge labeling.",
+      "summary": "Optimal Substructure — 2026_exp/vis; grouped under Graphs / Flows / Networks. Signals: d3, graphs-flows-networks, svg."
+    },
+    {
+      "id": "2026-exp-vis-vector-grid-html",
+      "title": "Vector Field Grid",
+      "path": "2026_exp/vis/vector_grid.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "graphs-flows-networks",
+      "family_title": "Graphs / Flows / Networks",
+      "subfamily": "vector",
+      "sequence_hint": null,
+      "tags": [
+        "css",
+        "d3",
+        "glyph-data",
+        "graphs-flows-networks"
+      ],
+      "libraries": [
+        "css",
+        "d3"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": true,
+      "screenshot_path": "screenshots/2026-exp-vis-vector-grid.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Graphs / Flows / Networks",
+      "notes": "2026_exp/vis · libraries: css, d3 · signals: glyph data",
+      "upgrade_notes": "Add family-level palette bridge and shared HUD; consider glyph-capable variants for node/edge labeling.",
+      "summary": "Vector Field Grid — 2026_exp/vis; grouped under Graphs / Flows / Networks. Signals: css, d3, glyph-data, graphs-flows-networks."
+    }
+  ]
+}

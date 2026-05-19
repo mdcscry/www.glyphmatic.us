@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glyph Layers</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #111118;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'EB Garamond', serif;
+    gap: 18px;
+    padding: 24px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 7px;
+    width: min(95vw, 960px);
+    aspect-ratio: 6 / 4;
+  }
+
+  .cell {
+    position: relative;
+    border-radius: 11px;
+    overflow: hidden;
+  }
+
+  .cell span {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1;
+    user-select: none;
+    mix-blend-mode: multiply;
+    white-space: nowrap;
+    display: block;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  button {
+    font-family: 'EB Garamond', serif;
+    font-size: 17px;
+    letter-spacing: 0.1em;
+    padding: 9px 32px;
+    background: transparent;
+    color: #ddd6fe;
+    border: 1px solid rgba(200,180,255,0.3);
+    border-radius: 40px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  button:hover {
+    background: rgba(200,180,255,0.08);
+    border-color: rgba(200,180,255,0.6);
+  }
+  button:active { transform: scale(0.97); }
+
+  .slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(200,180,255,0.55);
+    font-size: 15px;
+    letter-spacing: 0.06em;
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 160px;
+    height: 3px;
+    background: rgba(200,180,255,0.2);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ddd6fe;
+    cursor: pointer;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ddd6fe;
+    border: none;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="grid" id="grid"></div>
+
+<div class="controls">
+  <button id="shuffleBtn">⟳ &nbsp;Shuffle</button>
+  <div class="slider-wrap">
+    <span style="font-style:italic;opacity:0.5">size</span>
+    <input type="range" id="sizeSlider" min="50" max="220" value="120" step="1">
+    <span id="sizeVal" style="min-width:40px; color:#ddd6fe; font-size:16px;">120%</span>
+  </div>
+</div>
+
+<script>
+const glyphs = [
+  'Ω','Ξ','Σ','∆','ℜ','ℵ','∮','⊗','℘','∇','⊕','Ψ',
+  'Φ','Λ','Θ','∯','ℓ','ℍ','⋈','♦','⟁','⊛','ℭ','⌬',
+  'ℤ','∞','≋','⊞','⊿','∄','⊻','≜','⋄','∐','⊡','⌂',
+  'Ж','Ч','Ш','Э','Д','Я'
+];
+
+const palettes = [
+  { bg: '#f0e6ff', colors: ['#c084fc','#a855f7','#7c3aed','#ec4899','#f59e0b','#10b981'] },
+  { bg: '#e0f2fe', colors: ['#38bdf8','#0284c7','#1d4ed8','#7dd3fc','#0ea5e9','#3b82f6'] },
+  { bg: '#fef3c7', colors: ['#f59e0b','#d97706','#b45309','#f97316','#ef4444','#eab308'] },
+  { bg: '#dcfce7', colors: ['#4ade80','#16a34a','#15803d','#22d3ee','#0891b2','#10b981'] },
+  { bg: '#ffe4e6', colors: ['#fb7185','#e11d48','#be123c','#f97316','#f59e0b','#ec4899'] },
+  { bg: '#e0e7ff', colors: ['#818cf8','#4f46e5','#3730a3','#7c3aed','#06b6d4','#6366f1'] },
+  { bg: '#fdf4ff', colors: ['#e879f9','#c026d3','#a21caf','#db2777','#f43f5e','#9333ea'] },
+  { bg: '#fff7ed', colors: ['#fb923c','#ea580c','#c2410c','#eab308','#d97706','#f59e0b'] },
+  { bg: '#f0fdf4', colors: ['#86efac','#22c55e','#15803d','#14b8a6','#0d9488','#4ade80'] },
+  { bg: '#fef9c3', colors: ['#fde047','#ca8a04','#a16207','#f97316','#fb923c','#eab308'] },
+  { bg: '#f5f3ff', colors: ['#a78bfa','#7c3aed','#6d28d9','#ec4899','#be185d','#8b5cf6'] },
+  { bg: '#ecfdf5', colors: ['#34d399','#059669','#047857','#0ea5e9','#0369a1','#10b981'] },
+  { bg: '#fff1f2', colors: ['#fda4af','#e11d48','#9f1239','#f97316','#c2410c','#fb7185'] },
+  { bg: '#eff6ff', colors: ['#93c5fd','#2563eb','#1d4ed8','#06b6d4','#0891b2','#60a5fa'] },
+  { bg: '#f0fdfa', colors: ['#5eead4','#0d9488','#0f766e','#818cf8','#4f46e5','#2dd4bf'] },
+  { bg: '#fdf2f8', colors: ['#f0abfc','#c026d3','#86198f','#ec4899','#db2777','#e879f9'] },
+  { bg: '#f1f5f9', colors: ['#94a3b8','#475569','#1e293b','#6366f1','#4f46e5','#64748b'] },
+  { bg: '#e8f5e9', colors: ['#66bb6a','#2e7d32','#1b5e20','#26c6da','#00838f','#43a047'] },
+  { bg: '#f3e8ff', colors: ['#d8b4fe','#9333ea','#7e22ce','#f472b6','#db2777','#c084fc'] },
+  { bg: '#fff8f1', colors: ['#fdba74','#c2410c','#7c2d12','#f59e0b','#b45309','#fb923c'] },
+  { bg: '#e3f2fd', colors: ['#42a5f5','#1565c0','#0d47a1','#26c6da','#00838f','#1e88e5'] },
+  { bg: '#fce4ec', colors: ['#f48fb1','#c2185b','#880e4f','#ff7043','#bf360c','#e91e63'] },
+  { bg: '#fefce8', colors: ['#fef08a','#ca8a04','#854d0e','#f97316','#ea580c','#fbbf24'] },
+  { bg: '#f9fbe7', colors: ['#d4e157','#689f38','#33691e','#ffca28','#f57f17','#aed581'] },
+];
+
+function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function shuffleArr(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+// Size ratios: index 0 = smallest, index 5 = largest
+// The slider multiplies the base cell size; at 120% the largest fills the cell well
+const baseRatios = [0.20, 0.34, 0.49, 0.63, 0.80, 1.00];
+const opacities  = [0.65, 0.68, 0.72, 0.75, 0.78, 0.82];
+
+let sizeScale = 120;
+let cellData  = [];
+
+const grid      = document.getElementById('grid');
+const slider    = document.getElementById('sizeSlider');
+const sizeValEl = document.getElementById('sizeVal');
+
+function buildGrid() {
+  grid.innerHTML = '';
+  cellData = [];
+
+  for (let i = 0; i < 24; i++) {
+    const pal    = rand(palettes);
+    const glyph  = rand(glyphs);
+    // Each layer gets a random z-index from a shuffled [0..5]
+    const zOrder = shuffleArr([0,1,2,3,4,5]);
+    // Shuffle which color maps to which layer
+    const colors = shuffleArr(pal.colors);
+
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.style.background = pal.bg;
+
+    const spans = [];
+    for (let j = 0; j < 6; j++) {
+      const span = document.createElement('span');
+      span.textContent   = glyph;
+      span.style.zIndex  = zOrder[j];
+      span.style.color   = colors[j];
+      span.style.opacity = opacities[j];
+      span.dataset.ratio = baseRatios[j];
+      cell.appendChild(span);
+      spans.push(span);
+    }
+
+    grid.appendChild(cell);
+    cellData.push({ spans });
+  }
+
+  sizeFonts();
+}
+
+function sizeFonts() {
+  if (!cellData.length) return;
+  const firstCell = grid.querySelector('.cell');
+  if (!firstCell) return;
+  const cellW = firstCell.offsetWidth;
+  const cellH = firstCell.offsetHeight;
+  const base  = Math.min(cellW, cellH) * (sizeScale / 100);
+
+  cellData.forEach(({ spans }) => {
+    spans.forEach(span => {
+      span.style.fontSize = (base * parseFloat(span.dataset.ratio)).toFixed(1) + 'px';
+    });
+  });
+}
+
+slider.addEventListener('input', () => {
+  sizeScale = parseInt(slider.value);
+  sizeValEl.textContent = sizeScale + '%';
+  sizeFonts();
+});
+
+document.getElementById('shuffleBtn').addEventListener('click', buildGrid);
+
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(sizeFonts, 60);
+});
+
+buildGrid();
+</script>
+</body>
+</html>

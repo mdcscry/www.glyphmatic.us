@@ -1,0 +1,471 @@
+{
+  "family": "tilings-patterns-grids",
+  "title": "Tilings / Patterns / Grids",
+  "count": 15,
+  "screenshots": 15,
+  "source_areas": {
+    "2025_exp/html_experiments": 15
+  },
+  "future_insert_candidate": "Tilings / Patterns",
+  "entries": [
+    {
+      "id": "2025-exp-html-experiments-squares-v1-html",
+      "title": "Perfect Squares",
+      "path": "2025_exp/html_experiments/squares_v1.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "square",
+      "sequence_hint": 1,
+      "tags": [
+        "dom",
+        "tilings-patterns-grids"
+      ],
+      "libraries": [
+        "dom"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-squares-v1.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: dom",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Perfect Squares — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: dom, tilings-patterns-grids."
+    },
+    {
+      "id": "2025-exp-html-experiments-squares-v2-html",
+      "title": "Perfect Squares",
+      "path": "2025_exp/html_experiments/squares_v2.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "square",
+      "sequence_hint": 2,
+      "tags": [
+        "dom",
+        "tilings-patterns-grids"
+      ],
+      "libraries": [
+        "dom"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-squares-v2.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: dom",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Perfect Squares — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: dom, tilings-patterns-grids."
+    },
+    {
+      "id": "2025-exp-html-experiments-grid2-truchet-var1-html",
+      "title": "Seamless Truchet Tiles",
+      "path": "2025_exp/html_experiments/grid2-truchet_var1.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "truchet",
+      "sequence_hint": 2,
+      "tags": [
+        "css",
+        "tilings-patterns-grids",
+        "truchet"
+      ],
+      "libraries": [
+        "css"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-grid2-truchet-var1.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: css",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Seamless Truchet Tiles — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: css, tilings-patterns-grids, truchet."
+    },
+    {
+      "id": "2025-exp-html-experiments-grid3-truchet-var2-html",
+      "title": "Hypnotic Truchet",
+      "path": "2025_exp/html_experiments/grid3-truchet_var2.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "truchet",
+      "sequence_hint": 3,
+      "tags": [
+        "css",
+        "glyph-data",
+        "tilings-patterns-grids",
+        "truchet"
+      ],
+      "libraries": [
+        "css"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": true,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-grid3-truchet-var2.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: css · signals: glyph data",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Hypnotic Truchet — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: css, glyph-data, tilings-patterns-grids, truchet."
+    },
+    {
+      "id": "2025-exp-html-experiments-grid4-truchet-var3-html",
+      "title": "Truchet Tile Engine",
+      "path": "2025_exp/html_experiments/grid4-truchet_var3.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "truchet",
+      "sequence_hint": 4,
+      "tags": [
+        "css",
+        "glyph-data",
+        "tilings-patterns-grids",
+        "truchet"
+      ],
+      "libraries": [
+        "css"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": true,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-grid4-truchet-var3.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: css · signals: glyph data",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Truchet Tile Engine — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: css, glyph-data, tilings-patterns-grids, truchet."
+    },
+    {
+      "id": "2025-exp-html-experiments-grid5-truchet-var4-html",
+      "title": "Truchet Tile Engine - Final",
+      "path": "2025_exp/html_experiments/grid5_truchet_var4.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "truchet",
+      "sequence_hint": 5,
+      "tags": [
+        "css",
+        "tilings-patterns-grids",
+        "truchet"
+      ],
+      "libraries": [
+        "css"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-grid5-truchet-var4.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: css",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Truchet Tile Engine - Final — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: css, tilings-patterns-grids, truchet."
+    },
+    {
+      "id": "2025-exp-html-experiments-brick-tiling-html",
+      "title": "Brick Tiling",
+      "path": "2025_exp/html_experiments/brick_tiling.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "brick",
+      "sequence_hint": null,
+      "tags": [
+        "brick",
+        "canvas",
+        "glyph-data",
+        "tilings-patterns-grids"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": true,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-brick-tiling.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: canvas · signals: glyph data",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Brick Tiling — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: brick, canvas, glyph-data, tilings-patterns-grids."
+    },
+    {
+      "id": "2025-exp-html-experiments-brick-tiling-clump-html",
+      "title": "Brick Tiling Clump",
+      "path": "2025_exp/html_experiments/brick_tiling_clump.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "brick",
+      "sequence_hint": null,
+      "tags": [
+        "brick",
+        "canvas",
+        "glyph-data",
+        "tilings-patterns-grids"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": true,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-brick-tiling-clump.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: canvas · signals: glyph data",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Brick Tiling Clump — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: brick, canvas, glyph-data, tilings-patterns-grids."
+    },
+    {
+      "id": "2025-exp-html-experiments-herringbone-tiling-html",
+      "title": "Herringbone Tiling",
+      "path": "2025_exp/html_experiments/herringbone_tiling.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "herringbone",
+      "sequence_hint": null,
+      "tags": [
+        "canvas",
+        "glyph-data",
+        "herringbone",
+        "tilings-patterns-grids"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": true,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-herringbone-tiling.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: canvas · signals: glyph data",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Herringbone Tiling — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: canvas, glyph-data, herringbone, tilings-patterns-grids."
+    },
+    {
+      "id": "2025-exp-html-experiments-hexagonal-tiling-html",
+      "title": "Hexagonal Tiling",
+      "path": "2025_exp/html_experiments/hexagonal_tiling.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "hex",
+      "sequence_hint": null,
+      "tags": [
+        "canvas",
+        "glyph-data",
+        "hexagonal",
+        "tilings-patterns-grids"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": true,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-hexagonal-tiling.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: canvas · signals: glyph data",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Hexagonal Tiling — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: canvas, glyph-data, hexagonal, tilings-patterns-grids."
+    },
+    {
+      "id": "2025-exp-html-experiments-islamic-tiling-html",
+      "title": "Islamic Tiling",
+      "path": "2025_exp/html_experiments/islamic_tiling.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "islamic",
+      "sequence_hint": null,
+      "tags": [
+        "canvas",
+        "glyph-data",
+        "islamic",
+        "tilings-patterns-grids"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": true,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-islamic-tiling.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: canvas · signals: glyph data",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Islamic Tiling — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: canvas, glyph-data, islamic, tilings-patterns-grids."
+    },
+    {
+      "id": "2025-exp-html-experiments-pentagon-tiling-html",
+      "title": "Pentagon Tiling",
+      "path": "2025_exp/html_experiments/pentagon_tiling.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "pentagon",
+      "sequence_hint": null,
+      "tags": [
+        "canvas",
+        "glyph-data",
+        "pentagon",
+        "tilings-patterns-grids"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": true,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-pentagon-tiling.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: canvas · signals: glyph data",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Pentagon Tiling — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: canvas, glyph-data, pentagon, tilings-patterns-grids."
+    },
+    {
+      "id": "2025-exp-html-experiments-square-tiling-html",
+      "title": "Square Tiling",
+      "path": "2025_exp/html_experiments/square_tiling.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "square",
+      "sequence_hint": null,
+      "tags": [
+        "canvas",
+        "glyph-data",
+        "square",
+        "tilings-patterns-grids"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": true,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-square-tiling.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: canvas · signals: glyph data",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Square Tiling — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: canvas, glyph-data, square, tilings-patterns-grids."
+    },
+    {
+      "id": "2025-exp-html-experiments-grid-truchet-html",
+      "title": "Living Truchet Tiles",
+      "path": "2025_exp/html_experiments/grid-truchet.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "truchet",
+      "sequence_hint": null,
+      "tags": [
+        "css",
+        "tilings-patterns-grids",
+        "truchet"
+      ],
+      "libraries": [
+        "css"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-grid-truchet.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: css",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Living Truchet Tiles — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: css, tilings-patterns-grids, truchet."
+    },
+    {
+      "id": "2025-exp-html-experiments-xmas-gen-html",
+      "title": "Christmas Tiling",
+      "path": "2025_exp/html_experiments/xmas_gen.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "xmas",
+      "sequence_hint": null,
+      "tags": [
+        "css",
+        "d3",
+        "tilings-patterns-grids",
+        "xmas"
+      ],
+      "libraries": [
+        "css",
+        "d3"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-xmas-gen.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: css, d3",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Christmas Tiling — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: css, d3, tilings-patterns-grids, xmas."
+    }
+  ]
+}

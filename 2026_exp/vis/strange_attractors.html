@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Strange Attractors</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    background: #050608;
+    color: #e8e8ec;
+    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+  }
+  #canvas-wrap {
+    position: fixed; inset: 0;
+  }
+  canvas { display: block; }
+  .panel {
+    position: fixed;
+    top: 16px; left: 16px;
+    background: rgba(15, 17, 22, 0.78);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 14px 16px;
+    min-width: 240px;
+    z-index: 10;
+    font-size: 13px;
+  }
+  .panel h1 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+    color: #b8bcc6;
+  }
+  label {
+    display: block;
+    font-size: 11px;
+    color: #8a8f99;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 10px 0 4px;
+  }
+  select, button {
+    appearance: none;
+    width: 100%;
+    background: #1a1d24;
+    color: #e8e8ec;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease;
+  }
+  select:hover, button:hover {
+    background: #232730;
+    border-color: rgba(255,255,255,0.18);
+  }
+  button { margin-top: 8px; }
+  .info {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 11px;
+    color: #6f7480;
+    line-height: 1.5;
+  }
+  .info b { color: #a8acb6; font-weight: 500; }
+  .hint {
+    position: fixed;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    pointer-events: none;
+    z-index: 5;
+  }
+</style>
+</head>
+<body>
+<div id="canvas-wrap"></div>
+
+<div class="panel">
+  <h1>Strange Attractors</h1>
+  <label for="attractor">System</label>
+  <select id="attractor"></select>
+  <button id="reset">Reset particles</button>
+  <div class="info" id="info"></div>
+</div>
+
+<div class="hint">drag to rotate · scroll to zoom</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const OrbitControls = THREE.OrbitControls;
+
+// ---------- Attractor definitions ----------
+// Each attractor specifies:
+//   name, params (display string), f(x,y,z) -> [dx,dy,dz],
+//   dt (integration step), seedRange (initial particle scatter radius),
+//   centerOffset (bring the figure to origin), scale (uniform scale to fit
+//   in view), camDist (initial camera distance), trailLen (per-particle
+//   trail length).
+// Canonical parameter values match the source page.
+
+const ATTRACTORS = {
+  lorenz: {
+    name: 'Lorenz',
+    params: 'σ=10, ρ=28, β=8/3',
+    f: (x, y, z) => {
+      const s = 10, r = 28, b = 8 / 3;
+      return [s * (y - x), x * (r - z) - y, x * y - b * z];
+    },
+    dt: 0.005,
+    seed: () => [(Math.random() - 0.5) * 30,
+                 (Math.random() - 0.5) * 30,
+                 20 + (Math.random() - 0.5) * 30],
+    center: [0, 0, 25],
+    scale: 0.6,
+    camDist: 90,
+    trailLen: 220,
+  },
+
+  rossler: {
+    name: 'Rössler',
+    params: 'a=0.2, b=0.2, c=5.7',
+    f: (x, y, z) => {
+      const a = 0.2, b = 0.2, c = 5.7;
+      return [-(y + z), x + a * y, b + z * (x - c)];
+    },
+    dt: 0.02,
+    seed: () => [(Math.random() - 0.5) * 20,
+                 (Math.random() - 0.5) * 20,
+                 (Math.random() - 0.5) * 8],
+    center: [0, 0, 0],
+    scale: 1.4,
+    camDist: 70,
+    trailLen: 260,
+  },
+
+  thomas: {
+    name: 'Thomas',
+    params: 'b=0.208186',
+    f: (x, y, z) => {
+      const b = 0.208186;
+      return [Math.sin(y) - b * x, Math.sin(z) - b * y, Math.sin(x) - b * z];
+    },
+    dt: 0.05,
+    seed: () => [(Math.random() - 0.5) * 10,
+                 (Math.random() - 0.5) * 10,
+                 (Math.random() - 0.5) * 10],
+    center: [0, 0, 0],
+    scale: 4,
+    camDist: 50,
+    trailLen: 300,
+  },
+
+  aizawa: {
+    name: 'Langford (Aizawa)',
+    params: 'a=0.95, b=0.7, c=0.6, d=3.5, e=0.25, f=0.1',
+    f: (x, y, z) => {
+      const a = 0.95, b = 0.7, c = 0.6, d = 3.5, e = 0.25, ff = 0.1;
+      return [
+        (z - b) * x - d * y,
+        d * x + (z - b) * y,
+        c + a * z - (z * z * z) / 3 - (x * x + y * y) * (1 + e * z) + ff * z * x * x * x
+      ];
+    },
+    dt: 0.01,
+    seed: () => [(Math.random() - 0.5) * 1.5,
+                 (Math.random() - 0.5) * 1.5,
+                 (Math.random() - 0.5) * 1.5],
+    center: [0, 0, 0],
+    scale: 9,
+    camDist: 30,
+    trailLen: 260,
+  },
+
+  dadras: {
+    name: 'Dadras',
+    params: 'a=3, b=2.7, c=1.7, d=2, e=9',
+    f: (x, y, z) => {
+      const a = 3, b = 2.7, c = 1.7, d = 2, e = 9;
+      return [y - a * x + b * y * z, c * y - x * z + z, d * x * y - e * z];
+    },
+    dt: 0.01,
+    seed: () => [(Math.random() - 0.5) * 5,
+                 (Math.random() - 0.5) * 5,
+                 (Math.random() - 0.5) * 5],
+    center: [0, 0, 0],
+    scale: 2,
+    camDist: 60,
+    trailLen: 260,
+  },
+
+  chen: {
+    name: 'Chen',
+    params: 'α=5, β=-10, δ=-0.38',
+    f: (x, y, z) => {
+      const a = 5, b = -10, d = -0.38;
+      return [a * x - y * z, b * y + x * z, d * z + (x * y) / 3];
+    },
+    dt: 0.002,
+    seed: () => [(Math.random() - 0.5) * 30,
+                 (Math.random() - 0.5) * 30,
+                 (Math.random() - 0.5) * 30],
+    center: [0, 0, 0],
+    scale: 1.1,
+    camDist: 70,
+    trailLen: 280,
+  },
+
+  lorenz83: {
+    name: 'Lorenz 83',
+    params: 'a=0.95, b=7.91, f=4.83, g=4.66',
+    f: (x, y, z) => {
+      const a = 0.95, b = 7.91, ff = 4.83, g = 4.66;
+      return [
+        -a * x - y * y - z * z + a * ff,
+        -y + x * y - b * x * z + g,
+        -z + b * x * y + x * z
+      ];
+    },
+    dt: 0.01,
+    seed: () => [(Math.random() - 0.5) * 4 + 1,
+                 (Math.random() - 0.5) * 4,
+                 (Math.random() - 0.5) * 4],
+    center: [1.5, 0, 0],
+    scale: 4,
+    camDist: 50,
+    trailLen: 280,
+  },
+
+  halvorsen: {
+    name: 'Halvorsen',
+    params: 'a=1.89',
+    f: (x, y, z) => {
+      const a = 1.89;
+      return [-a * x - 4 * y - 4 * z - y * y,
+              -a * y - 4 * z - 4 * x - z * z,
+              -a * z - 4 * x - 4 * y - x * x];
+    },
+    dt: 0.005,
+    seed: () => [(Math.random() - 0.5) * 6,
+                 (Math.random() - 0.5) * 6,
+                 (Math.random() - 0.5) * 6],
+    center: [-3, -3, -3],
+    scale: 2.5,
+    camDist: 50,
+    trailLen: 260,
+  },
+
+  rabinovich: {
+    name: 'Rabinovich-Fabrikant',
+    params: 'α=0.14, γ=0.10',
+    f: (x, y, z) => {
+      const a = 0.14, g = 0.10;
+      return [y * (z - 1 + x * x) + g * x,
+              x * (3 * z + 1 - x * x) + g * y,
+              -2 * z * (a + x * y)];
+    },
+    dt: 0.02,
+    seed: () => [(Math.random() - 0.5) * 2 - 0.5,
+                 (Math.random() - 0.5) * 2,
+                 (Math.random() - 0.5) * 1.5 + 0.3],
+    center: [0, 0, 0.5],
+    scale: 6,
+    camDist: 50,
+    trailLen: 280,
+  },
+
+  tscus: {
+    name: 'Three-Scroll Unified',
+    params: 'a=32.48, b=45.84, c=1.18, d=0.13, e=0.57, f=14.7',
+    f: (x, y, z) => {
+      const a = 32.48, b = 45.84, c = 1.18, d = 0.13, e = 0.57, ff = 14.7;
+      return [a * (y - x) + d * x * z,
+              b * x - x * z + ff * y,
+              c * z + x * y - e * x * x];
+    },
+    dt: 0.0008,
+    seed: () => [(Math.random() - 0.5) * 8,
+                 (Math.random() - 0.5) * 8,
+                 (Math.random() - 0.5) * 8 + 30],
+    center: [0, 0, 50],
+    scale: 0.18,
+    camDist: 80,
+    trailLen: 280,
+  },
+
+  sprott: {
+    name: 'Sprott',
+    params: 'a=2.07, b=1.79',
+    f: (x, y, z) => {
+      const a = 2.07, b = 1.79;
+      return [y + a * x * y + x * z,
+              1 - b * x * x + y * z,
+              x - x * x - y * y];
+    },
+    dt: 0.01,
+    seed: () => [(Math.random() - 0.5) * 2,
+                 (Math.random() - 0.5) * 2,
+                 (Math.random() - 0.5) * 2],
+    center: [0, 0, 0],
+    scale: 7,
+    camDist: 60,
+    trailLen: 280,
+  },
+
+  fourwing: {
+    name: 'Four-Wing (Wang-Sun)',
+    params: 'a=0.2, b=0.01, c=-0.4',
+    f: (x, y, z) => {
+      const a = 0.2, b = 0.01, c = -0.4;
+      return [a * x + y * z, b * x + c * y - x * z, -z - x * y];
+    },
+    dt: 0.03,
+    seed: () => [(Math.random() - 0.5) * 4,
+                 (Math.random() - 0.5) * 4,
+                 (Math.random() - 0.5) * 4],
+    center: [0, 0, 0],
+    scale: 6,
+    camDist: 40,
+    trailLen: 300,
+  },
+};
+
+// ---------- RK4 step ----------
+function rk4Step(f, x, y, z, dt) {
+  const k1 = f(x, y, z);
+  const k2 = f(x + 0.5 * dt * k1[0], y + 0.5 * dt * k1[1], z + 0.5 * dt * k1[2]);
+  const k3 = f(x + 0.5 * dt * k2[0], y + 0.5 * dt * k2[1], z + 0.5 * dt * k2[2]);
+  const k4 = f(x + dt * k3[0],       y + dt * k3[1],       z + dt * k3[2]);
+  return [
+    x + (dt / 6) * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]),
+    y + (dt / 6) * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]),
+    z + (dt / 6) * (k1[2] + 2 * k2[2] + 2 * k3[2] + k4[2]),
+  ];
+}
+
+// Build a small radial-gradient sprite texture for soft point heads
+function makePointSprite() {
+  const size = 64;
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const g = c.getContext('2d');
+  const grad = g.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  grad.addColorStop(0,    'rgba(255,255,255,1)');
+  grad.addColorStop(0.25, 'rgba(255,255,255,0.55)');
+  grad.addColorStop(0.6,  'rgba(255,255,255,0.12)');
+  grad.addColorStop(1,    'rgba(255,255,255,0)');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, size, size);
+  const tex = new THREE.CanvasTexture(c);
+  return tex;
+}
+const pointSprite = makePointSprite();
+
+// ---------- Three.js setup ----------
+const wrap = document.getElementById('canvas-wrap');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050608);
+scene.fog = new THREE.FogExp2(0x050608, 0.012);
+
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
+camera.position.set(60, 30, 60);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+wrap.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.rotateSpeed = 0.6;
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ---------- Particle system ----------
+const N_PARTICLES = 250;
+const STEPS_PER_FRAME = 4;
+const WARMUP_STEPS = 400;  // discard initial transient before rendering
+
+let particles = [];   // [{x,y,z, hue}]
+let trails = [];      // for each particle, an array of past world-space positions
+let current = null;   // current attractor key
+
+let lineMesh = null;
+let pointsMesh = null;
+
+function disposeMeshes() {
+  if (lineMesh) {
+    scene.remove(lineMesh);
+    lineMesh.geometry.dispose();
+    lineMesh.material.dispose();
+    lineMesh = null;
+  }
+  if (pointsMesh) {
+    scene.remove(pointsMesh);
+    pointsMesh.geometry.dispose();
+    pointsMesh.material.dispose();
+    pointsMesh = null;
+  }
+}
+
+function setupAttractor(key) {
+  current = key;
+  const a = ATTRACTORS[key];
+
+  disposeMeshes();
+
+  // Initialize particles
+  particles = [];
+  trails = [];
+  for (let i = 0; i < N_PARTICLES; i++) {
+    const [x, y, z] = a.seed();
+    const hue = Math.random();
+    particles.push({ x, y, z, hue });
+    trails.push([]);
+  }
+
+  // Warm up: integrate forward to skip the initial transient and let
+  // particles settle onto the attractor before any frames render.
+  // Each particle gets a different warmup duration so even strongly
+  // contracting attractors (Halvorsen, Sprott) end up with particles
+  // distributed along the attractor's orbit instead of all bunched up
+  // at one phase. We compute warmup in "time units" (steps * dt) so
+  // attractors with very small dt (Chen, TSCUS) still get fully warmed.
+  const baseTime = 8;        // base warmup time in model time units
+  const extraTime = 30;      // up to this much extra, randomized per particle
+  const baseSteps = Math.max(200, Math.floor(baseTime / a.dt));
+  const extraSteps = Math.max(200, Math.floor(extraTime / a.dt));
+  for (let i = 0; i < particles.length; i++) {
+    const p = particles[i];
+    const steps = baseSteps + Math.floor(Math.random() * extraSteps);
+    for (let s = 0; s < steps; s++) {
+      const [nx, ny, nz] = rk4Step(a.f, p.x, p.y, p.z, a.dt);
+      if (!isFinite(nx) || !isFinite(ny) || !isFinite(nz) ||
+          Math.hypot(nx, ny, nz) > 1e4) {
+        const [sx, sy, sz] = a.seed();
+        p.x = sx; p.y = sy; p.z = sz;
+        continue;
+      }
+      p.x = nx; p.y = ny; p.z = nz;
+    }
+  }
+  // Prefill each particle's trail with its current position so trails
+  // appear instantly and have proper fade gradient.
+  for (let i = 0; i < particles.length; i++) {
+    const [wx, wy, wz] = world(a, particles[i]);
+    for (let k = 0; k < 12; k++) {
+      trails[i].push(wx, wy, wz);
+    }
+  }
+
+  // Lines geometry: each particle contributes (trailLen-1) segments,
+  // i.e. 2*(trailLen-1) vertices. We allocate the max buffer up front
+  // and update it as trails fill.
+  const totalVerts = N_PARTICLES * (a.trailLen - 1) * 2;
+  const positions = new Float32Array(totalVerts * 3);
+  const colors    = new Float32Array(totalVerts * 3);
+
+  const lineGeom = new THREE.BufferGeometry();
+  lineGeom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  lineGeom.setAttribute('color',    new THREE.BufferAttribute(colors, 3));
+  lineGeom.setDrawRange(0, 0);
+
+  const lineMat = new THREE.LineBasicMaterial({
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.85,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+
+  lineMesh = new THREE.LineSegments(lineGeom, lineMat);
+  scene.add(lineMesh);
+
+  // Points at the heads of particles
+  const ptPos = new Float32Array(N_PARTICLES * 3);
+  const ptCol = new Float32Array(N_PARTICLES * 3);
+  const ptGeom = new THREE.BufferGeometry();
+  ptGeom.setAttribute('position', new THREE.BufferAttribute(ptPos, 3));
+  ptGeom.setAttribute('color',    new THREE.BufferAttribute(ptCol, 3));
+
+  const ptMat = new THREE.PointsMaterial({
+    size: 0.6,
+    map: pointSprite,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.9,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    sizeAttenuation: true,
+  });
+
+  pointsMesh = new THREE.Points(ptGeom, ptMat);
+  scene.add(pointsMesh);
+
+  // Camera
+  const d = a.camDist;
+  camera.position.set(d * 0.9, d * 0.5, d * 0.9);
+  controls.target.set(0, 0, 0);
+  controls.update();
+
+  // Info panel
+  document.getElementById('info').innerHTML =
+    `<b>${a.name}</b><br>${a.params}`;
+}
+
+function world(a, p) {
+  // map model-space (x,y,z) to scene-space (x', y', z') using center/scale.
+  // We center on the attractor's center and apply uniform scale.
+  return [
+    (p.x - a.center[0]) * a.scale,
+    (p.y - a.center[1]) * a.scale,
+    (p.z - a.center[2]) * a.scale,
+  ];
+}
+
+function hslToRgb(h, s, l) {
+  // returns [r,g,b] in 0..1
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const hh = h * 6;
+  const x = c * (1 - Math.abs((hh % 2) - 1));
+  let r=0,g=0,b=0;
+  if (hh < 1)      { r=c; g=x; b=0; }
+  else if (hh < 2) { r=x; g=c; b=0; }
+  else if (hh < 3) { r=0; g=c; b=x; }
+  else if (hh < 4) { r=0; g=x; b=c; }
+  else if (hh < 5) { r=x; g=0; b=c; }
+  else             { r=c; g=0; b=x; }
+  const m = l - c / 2;
+  return [r + m, g + m, b + m];
+}
+
+function step() {
+  if (!current) return;
+  const a = ATTRACTORS[current];
+
+  // integrate
+  for (let s = 0; s < STEPS_PER_FRAME; s++) {
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      const [nx, ny, nz] = rk4Step(a.f, p.x, p.y, p.z, a.dt);
+      // guard against blowups
+      if (!isFinite(nx) || !isFinite(ny) || !isFinite(nz) ||
+          Math.hypot(nx, ny, nz) > 1e4) {
+        const [sx, sy, sz] = a.seed();
+        p.x = sx; p.y = sy; p.z = sz;
+        // clear trail so we don't draw a streak from old to new position
+        const wxyz = world(a, p);
+        trails[i].length = 0;
+        for (let k = 0; k < 12; k++) {
+          trails[i].push(wxyz[0], wxyz[1], wxyz[2]);
+        }
+        continue;
+      }
+      p.x = nx; p.y = ny; p.z = nz;
+
+      const [wx, wy, wz] = world(a, p);
+      trails[i].push(wx, wy, wz);
+      if (trails[i].length > a.trailLen * 3) {
+        trails[i].splice(0, 3);
+      }
+    }
+  }
+
+  // rebuild line vertex buffer
+  const linePositions = lineMesh.geometry.attributes.position.array;
+  const lineColors    = lineMesh.geometry.attributes.color.array;
+  let vi = 0;
+  for (let i = 0; i < particles.length; i++) {
+    const t = trails[i];
+    const len = t.length / 3;
+    if (len < 2) continue;
+    const [r, g, b] = hslToRgb(particles[i].hue, 0.7, 0.55);
+    for (let k = 0; k < len - 1; k++) {
+      const fade = (k + 1) / len; // newer end brighter
+      const fadeNext = (k + 2) / len;
+      // segment k -> k+1
+      linePositions[vi * 3]     = t[k * 3];
+      linePositions[vi * 3 + 1] = t[k * 3 + 1];
+      linePositions[vi * 3 + 2] = t[k * 3 + 2];
+      lineColors[vi * 3]     = r * fade;
+      lineColors[vi * 3 + 1] = g * fade;
+      lineColors[vi * 3 + 2] = b * fade;
+      vi++;
+      linePositions[vi * 3]     = t[(k + 1) * 3];
+      linePositions[vi * 3 + 1] = t[(k + 1) * 3 + 1];
+      linePositions[vi * 3 + 2] = t[(k + 1) * 3 + 2];
+      lineColors[vi * 3]     = r * fadeNext;
+      lineColors[vi * 3 + 1] = g * fadeNext;
+      lineColors[vi * 3 + 2] = b * fadeNext;
+      vi++;
+    }
+  }
+  lineMesh.geometry.attributes.position.needsUpdate = true;
+  lineMesh.geometry.attributes.color.needsUpdate = true;
+  lineMesh.geometry.setDrawRange(0, vi);
+
+  // update point heads
+  const ptPos = pointsMesh.geometry.attributes.position.array;
+  const ptCol = pointsMesh.geometry.attributes.color.array;
+  for (let i = 0; i < particles.length; i++) {
+    const [wx, wy, wz] = world(a, particles[i]);
+    ptPos[i * 3] = wx;
+    ptPos[i * 3 + 1] = wy;
+    ptPos[i * 3 + 2] = wz;
+    const [r, g, b] = hslToRgb(particles[i].hue, 0.8, 0.7);
+    ptCol[i * 3] = r;
+    ptCol[i * 3 + 1] = g;
+    ptCol[i * 3 + 2] = b;
+  }
+  pointsMesh.geometry.attributes.position.needsUpdate = true;
+  pointsMesh.geometry.attributes.color.needsUpdate = true;
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  step();
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+// ---------- UI ----------
+const sel = document.getElementById('attractor');
+for (const [key, a] of Object.entries(ATTRACTORS)) {
+  const opt = document.createElement('option');
+  opt.value = key;
+  opt.textContent = a.name;
+  sel.appendChild(opt);
+}
+sel.value = 'lorenz';
+sel.addEventListener('change', () => setupAttractor(sel.value));
+
+document.getElementById('reset').addEventListener('click', () => {
+  setupAttractor(current);
+});
+
+setupAttractor('lorenz');
+animate();
+</script>
+</body>
+</html>

@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Strange Attractors — Grid</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    background: #050608;
+    color: #e8e8ec;
+    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+  }
+  .grid {
+    position: fixed; inset: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1px;
+    background: #1a1c22;
+  }
+  .cell {
+    position: relative;
+    background: #050608;
+    overflow: hidden;
+  }
+  .cell canvas { display: block; }
+  .label {
+    position: absolute;
+    top: 12px; left: 14px;
+    font-size: 11px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    pointer-events: none;
+    font-weight: 500;
+    z-index: 2;
+  }
+  .label .params {
+    display: block;
+    margin-top: 3px;
+    font-size: 9px;
+    letter-spacing: 0.4px;
+    color: rgba(255,255,255,0.3);
+    text-transform: none;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  .toolbar {
+    position: fixed;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+  }
+  .toolbar button {
+    appearance: none;
+    background: rgba(15, 17, 22, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #e8e8ec;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font: inherit;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+  }
+  .toolbar button:hover {
+    background: rgba(35, 39, 48, 0.9);
+    border-color: rgba(255,255,255,0.18);
+  }
+  .toolbar button:active { transform: translateY(1px); }
+  .hint {
+    position: fixed;
+    top: 14px; right: 16px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    pointer-events: none;
+    z-index: 5;
+    text-align: right;
+  }
+</style>
+</head>
+<body>
+
+<div class="grid" id="grid">
+  <div class="cell" data-idx="0"></div>
+  <div class="cell" data-idx="1"></div>
+  <div class="cell" data-idx="2"></div>
+  <div class="cell" data-idx="3"></div>
+</div>
+
+<div class="toolbar">
+  <button id="shuffle">Shuffle all</button>
+</div>
+
+<div class="hint">drag to rotate · scroll to zoom · click a cell to swap</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const OrbitControls = THREE.OrbitControls;
+
+// ---------- Attractors ----------
+const ATTRACTORS = {
+  lorenz: {
+    name: 'Lorenz', params: 'σ=10, ρ=28, β=8/3',
+    f: (x, y, z) => { const s=10,r=28,b=8/3; return [s*(y-x), x*(r-z)-y, x*y-b*z]; },
+    dt: 0.005,
+    seed: () => [(Math.random()-0.5)*30, (Math.random()-0.5)*30, 20+(Math.random()-0.5)*30],
+    center: [0,0,25], scale: 0.6, camDist: 90, trailLen: 220,
+  },
+  rossler: {
+    name: 'Rössler', params: 'a=0.2, b=0.2, c=5.7',
+    f: (x, y, z) => { const a=0.2,b=0.2,c=5.7; return [-(y+z), x+a*y, b+z*(x-c)]; },
+    dt: 0.02,
+    seed: () => [(Math.random()-0.5)*20, (Math.random()-0.5)*20, (Math.random()-0.5)*8],
+    center: [0,0,0], scale: 1.4, camDist: 70, trailLen: 260,
+  },
+  thomas: {
+    name: 'Thomas', params: 'b=0.208186',
+    f: (x, y, z) => { const b=0.208186; return [Math.sin(y)-b*x, Math.sin(z)-b*y, Math.sin(x)-b*z]; },
+    dt: 0.05,
+    seed: () => [(Math.random()-0.5)*10, (Math.random()-0.5)*10, (Math.random()-0.5)*10],
+    center: [0,0,0], scale: 4, camDist: 50, trailLen: 300,
+  },
+  aizawa: {
+    name: 'Langford (Aizawa)', params: 'a=0.95, b=0.7, c=0.6, d=3.5, e=0.25, f=0.1',
+    f: (x, y, z) => {
+      const a=0.95,b=0.7,c=0.6,d=3.5,e=0.25,ff=0.1;
+      return [(z-b)*x-d*y, d*x+(z-b)*y, c+a*z-(z*z*z)/3-(x*x+y*y)*(1+e*z)+ff*z*x*x*x];
+    },
+    dt: 0.01,
+    seed: () => [(Math.random()-0.5)*1.5, (Math.random()-0.5)*1.5, (Math.random()-0.5)*1.5],
+    center: [0,0,0], scale: 9, camDist: 30, trailLen: 260,
+  },
+  dadras: {
+    name: 'Dadras', params: 'a=3, b=2.7, c=1.7, d=2, e=9',
+    f: (x, y, z) => { const a=3,b=2.7,c=1.7,d=2,e=9; return [y-a*x+b*y*z, c*y-x*z+z, d*x*y-e*z]; },
+    dt: 0.01,
+    seed: () => [(Math.random()-0.5)*5, (Math.random()-0.5)*5, (Math.random()-0.5)*5],
+    center: [0,0,0], scale: 2, camDist: 60, trailLen: 260,
+  },
+  chen: {
+    name: 'Chen', params: 'α=5, β=-10, δ=-0.38',
+    f: (x, y, z) => { const a=5,b=-10,d=-0.38; return [a*x-y*z, b*y+x*z, d*z+(x*y)/3]; },
+    dt: 0.002,
+    seed: () => [(Math.random()-0.5)*30, (Math.random()-0.5)*30, (Math.random()-0.5)*30],
+    center: [0,0,0], scale: 1.1, camDist: 70, trailLen: 280,
+  },
+  lorenz83: {
+    name: 'Lorenz 83', params: 'a=0.95, b=7.91, f=4.83, g=4.66',
+    f: (x, y, z) => {
+      const a=0.95,b=7.91,ff=4.83,g=4.66;
+      return [-a*x-y*y-z*z+a*ff, -y+x*y-b*x*z+g, -z+b*x*y+x*z];
+    },
+    dt: 0.01,
+    seed: () => [(Math.random()-0.5)*4+1, (Math.random()-0.5)*4, (Math.random()-0.5)*4],
+    center: [1.5,0,0], scale: 4, camDist: 50, trailLen: 280,
+  },
+  halvorsen: {
+    name: 'Halvorsen', params: 'a=1.89',
+    f: (x, y, z) => { const a=1.89; return [-a*x-4*y-4*z-y*y, -a*y-4*z-4*x-z*z, -a*z-4*x-4*y-x*x]; },
+    dt: 0.005,
+    seed: () => [(Math.random()-0.5)*6, (Math.random()-0.5)*6, (Math.random()-0.5)*6],
+    center: [-3,-3,-3], scale: 2.5, camDist: 50, trailLen: 260,
+  },
+  rabinovich: {
+    name: 'Rabinovich-Fabrikant', params: 'α=0.14, γ=0.10',
+    f: (x, y, z) => { const a=0.14,g=0.10; return [y*(z-1+x*x)+g*x, x*(3*z+1-x*x)+g*y, -2*z*(a+x*y)]; },
+    dt: 0.02,
+    seed: () => [(Math.random()-0.5)*2-0.5, (Math.random()-0.5)*2, (Math.random()-0.5)*1.5+0.3],
+    center: [0,0,0.5], scale: 6, camDist: 50, trailLen: 280,
+  },
+  tscus: {
+    name: 'Three-Scroll Unified', params: 'a=32.48, b=45.84, c=1.18, d=0.13, e=0.57, f=14.7',
+    f: (x, y, z) => {
+      const a=32.48,b=45.84,c=1.18,d=0.13,e=0.57,ff=14.7;
+      return [a*(y-x)+d*x*z, b*x-x*z+ff*y, c*z+x*y-e*x*x];
+    },
+    dt: 0.0008,
+    seed: () => [(Math.random()-0.5)*8, (Math.random()-0.5)*8, (Math.random()-0.5)*8+30],
+    center: [0,0,50], scale: 0.18, camDist: 80, trailLen: 280,
+  },
+  sprott: {
+    name: 'Sprott', params: 'a=2.07, b=1.79',
+    f: (x, y, z) => { const a=2.07,b=1.79; return [y+a*x*y+x*z, 1-b*x*x+y*z, x-x*x-y*y]; },
+    dt: 0.01,
+    seed: () => [(Math.random()-0.5)*2, (Math.random()-0.5)*2, (Math.random()-0.5)*2],
+    center: [0,0,0], scale: 7, camDist: 60, trailLen: 280,
+  },
+  fourwing: {
+    name: 'Four-Wing (Wang-Sun)', params: 'a=0.2, b=0.01, c=-0.4',
+    f: (x, y, z) => { const a=0.2,b=0.01,c=-0.4; return [a*x+y*z, b*x+c*y-x*z, -z-x*y]; },
+    dt: 0.03,
+    seed: () => [(Math.random()-0.5)*4, (Math.random()-0.5)*4, (Math.random()-0.5)*4],
+    center: [0,0,0], scale: 6, camDist: 40, trailLen: 300,
+  },
+};
+
+const KEYS = Object.keys(ATTRACTORS);
+
+// ---------- math helpers ----------
+function rk4(f, x, y, z, dt) {
+  const k1 = f(x, y, z);
+  const k2 = f(x + 0.5*dt*k1[0], y + 0.5*dt*k1[1], z + 0.5*dt*k1[2]);
+  const k3 = f(x + 0.5*dt*k2[0], y + 0.5*dt*k2[1], z + 0.5*dt*k2[2]);
+  const k4 = f(x + dt*k3[0],     y + dt*k3[1],     z + dt*k3[2]);
+  return [
+    x + (dt/6)*(k1[0]+2*k2[0]+2*k3[0]+k4[0]),
+    y + (dt/6)*(k1[1]+2*k2[1]+2*k3[1]+k4[1]),
+    z + (dt/6)*(k1[2]+2*k2[2]+2*k3[2]+k4[2]),
+  ];
+}
+
+function hslToRgb(h, s, l) {
+  const c = (1 - Math.abs(2*l - 1)) * s;
+  const hh = h * 6;
+  const x = c * (1 - Math.abs((hh%2) - 1));
+  let r=0,g=0,b=0;
+  if (hh<1)      { r=c; g=x; b=0; }
+  else if (hh<2) { r=x; g=c; b=0; }
+  else if (hh<3) { r=0; g=c; b=x; }
+  else if (hh<4) { r=0; g=x; b=c; }
+  else if (hh<5) { r=x; g=0; b=c; }
+  else           { r=c; g=0; b=x; }
+  const m = l - c/2;
+  return [r+m, g+m, b+m];
+}
+
+// shared point sprite for all renderers
+function makePointSprite() {
+  const size = 64;
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const g = c.getContext('2d');
+  const grad = g.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+  grad.addColorStop(0,    'rgba(255,255,255,1)');
+  grad.addColorStop(0.25, 'rgba(255,255,255,0.55)');
+  grad.addColorStop(0.6,  'rgba(255,255,255,0.12)');
+  grad.addColorStop(1,    'rgba(255,255,255,0)');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, size, size);
+  return new THREE.CanvasTexture(c);
+}
+const POINT_SPRITE = makePointSprite();
+
+// ---------- Cell ----------
+// One self-contained attractor view bound to a DOM container.
+const N_PARTICLES = 180;       // smaller per cell since we have 4
+const STEPS_PER_FRAME = 4;
+
+class AttractorCell {
+  constructor(container) {
+    this.container = container;
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0x050608);
+    this.scene.fog = new THREE.FogExp2(0x050608, 0.012);
+
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    this.camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 2000);
+
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setSize(w, h);
+    container.appendChild(this.renderer.domElement);
+
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.08;
+    this.controls.rotateSpeed = 0.6;
+
+    this.label = document.createElement('div');
+    this.label.className = 'label';
+    container.appendChild(this.label);
+
+    this.lineMesh = null;
+    this.pointsMesh = null;
+    this.particles = [];
+    this.trails = [];
+    this.current = null;
+  }
+
+  resize() {
+    const w = this.container.clientWidth;
+    const h = this.container.clientHeight;
+    this.camera.aspect = w / h;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(w, h);
+  }
+
+  disposeMeshes() {
+    if (this.lineMesh) {
+      this.scene.remove(this.lineMesh);
+      this.lineMesh.geometry.dispose();
+      this.lineMesh.material.dispose();
+      this.lineMesh = null;
+    }
+    if (this.pointsMesh) {
+      this.scene.remove(this.pointsMesh);
+      this.pointsMesh.geometry.dispose();
+      this.pointsMesh.material.dispose();
+      this.pointsMesh = null;
+    }
+  }
+
+  setAttractor(key) {
+    this.current = key;
+    const a = ATTRACTORS[key];
+    this.disposeMeshes();
+
+    // init particles
+    this.particles = [];
+    this.trails = [];
+    for (let i = 0; i < N_PARTICLES; i++) {
+      const [x, y, z] = a.seed();
+      this.particles.push({ x, y, z, hue: Math.random() });
+      this.trails.push([]);
+    }
+
+    // warm up — per-particle randomized so the orbit is filled out
+    const baseTime = 8;
+    const extraTime = 30;
+    const baseSteps = Math.max(200, Math.floor(baseTime / a.dt));
+    const extraSteps = Math.max(200, Math.floor(extraTime / a.dt));
+    for (let i = 0; i < this.particles.length; i++) {
+      const p = this.particles[i];
+      const steps = baseSteps + Math.floor(Math.random() * extraSteps);
+      for (let s = 0; s < steps; s++) {
+        const [nx, ny, nz] = rk4(a.f, p.x, p.y, p.z, a.dt);
+        if (!isFinite(nx) || !isFinite(ny) || !isFinite(nz) ||
+            Math.hypot(nx, ny, nz) > 1e4) {
+          const [sx, sy, sz] = a.seed();
+          p.x = sx; p.y = sy; p.z = sz;
+          continue;
+        }
+        p.x = nx; p.y = ny; p.z = nz;
+      }
+    }
+    // prefill trails
+    for (let i = 0; i < this.particles.length; i++) {
+      const w = this.world(a, this.particles[i]);
+      for (let k = 0; k < 12; k++) {
+        this.trails[i].push(w[0], w[1], w[2]);
+      }
+    }
+
+    // line geometry
+    const totalVerts = N_PARTICLES * (a.trailLen - 1) * 2;
+    const positions = new Float32Array(totalVerts * 3);
+    const colors    = new Float32Array(totalVerts * 3);
+    const lineGeom = new THREE.BufferGeometry();
+    lineGeom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    lineGeom.setAttribute('color',    new THREE.BufferAttribute(colors, 3));
+    lineGeom.setDrawRange(0, 0);
+    const lineMat = new THREE.LineBasicMaterial({
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    this.lineMesh = new THREE.LineSegments(lineGeom, lineMat);
+    this.scene.add(this.lineMesh);
+
+    // points
+    const ptPos = new Float32Array(N_PARTICLES * 3);
+    const ptCol = new Float32Array(N_PARTICLES * 3);
+    const ptGeom = new THREE.BufferGeometry();
+    ptGeom.setAttribute('position', new THREE.BufferAttribute(ptPos, 3));
+    ptGeom.setAttribute('color',    new THREE.BufferAttribute(ptCol, 3));
+    const ptMat = new THREE.PointsMaterial({
+      size: 0.6,
+      map: POINT_SPRITE,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.9,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      sizeAttenuation: true,
+    });
+    this.pointsMesh = new THREE.Points(ptGeom, ptMat);
+    this.scene.add(this.pointsMesh);
+
+    // Compute a bounding sphere from the warmed-up particle positions
+    // and use that to pick a centered orbit target plus a framed
+    // camera distance. This prevents off-center / cropped views.
+    const wpos = this.particles.map(p => this.world(a, p));
+    let cx = 0, cy = 0, cz = 0;
+    for (const w of wpos) { cx += w[0]; cy += w[1]; cz += w[2]; }
+    cx /= wpos.length; cy /= wpos.length; cz /= wpos.length;
+    let rmax = 0;
+    for (const w of wpos) {
+      const dx = w[0]-cx, dy = w[1]-cy, dz = w[2]-cz;
+      const r = Math.sqrt(dx*dx + dy*dy + dz*dz);
+      if (r > rmax) rmax = r;
+    }
+    // Distance to fit the sphere in view of a 50° fov, with padding
+    const fov = 50 * Math.PI / 180;
+    const dist = rmax / Math.tan(fov / 2) * 1.4;
+
+    // camera placement — slight elevation and an azimuth offset per cell
+    const angle = Math.random() * Math.PI * 2;
+    this.camera.position.set(
+      cx + dist * 0.85 * Math.cos(angle),
+      cy + dist * 0.45,
+      cz + dist * 0.85 * Math.sin(angle)
+    );
+    this.controls.target.set(cx, cy, cz);
+    this.controls.update();
+
+    // label
+    this.label.innerHTML = `${a.name}<span class="params">${a.params}</span>`;
+  }
+
+  world(a, p) {
+    return [
+      (p.x - a.center[0]) * a.scale,
+      (p.y - a.center[1]) * a.scale,
+      (p.z - a.center[2]) * a.scale,
+    ];
+  }
+
+  step() {
+    if (!this.current) return;
+    const a = ATTRACTORS[this.current];
+
+    for (let s = 0; s < STEPS_PER_FRAME; s++) {
+      for (let i = 0; i < this.particles.length; i++) {
+        const p = this.particles[i];
+        const [nx, ny, nz] = rk4(a.f, p.x, p.y, p.z, a.dt);
+        if (!isFinite(nx) || !isFinite(ny) || !isFinite(nz) ||
+            Math.hypot(nx, ny, nz) > 1e4) {
+          const [sx, sy, sz] = a.seed();
+          p.x = sx; p.y = sy; p.z = sz;
+          const w = this.world(a, p);
+          this.trails[i].length = 0;
+          for (let k = 0; k < 12; k++) {
+            this.trails[i].push(w[0], w[1], w[2]);
+          }
+          continue;
+        }
+        p.x = nx; p.y = ny; p.z = nz;
+        const w = this.world(a, p);
+        this.trails[i].push(w[0], w[1], w[2]);
+        if (this.trails[i].length > a.trailLen * 3) {
+          this.trails[i].splice(0, 3);
+        }
+      }
+    }
+
+    // rebuild line buffer
+    const linePositions = this.lineMesh.geometry.attributes.position.array;
+    const lineColors    = this.lineMesh.geometry.attributes.color.array;
+    let vi = 0;
+    for (let i = 0; i < this.particles.length; i++) {
+      const t = this.trails[i];
+      const len = t.length / 3;
+      if (len < 2) continue;
+      const [r, g, b] = hslToRgb(this.particles[i].hue, 0.7, 0.55);
+      for (let k = 0; k < len - 1; k++) {
+        const fade = (k + 1) / len;
+        const fadeNext = (k + 2) / len;
+        linePositions[vi*3]   = t[k*3];
+        linePositions[vi*3+1] = t[k*3+1];
+        linePositions[vi*3+2] = t[k*3+2];
+        lineColors[vi*3]   = r*fade;
+        lineColors[vi*3+1] = g*fade;
+        lineColors[vi*3+2] = b*fade;
+        vi++;
+        linePositions[vi*3]   = t[(k+1)*3];
+        linePositions[vi*3+1] = t[(k+1)*3+1];
+        linePositions[vi*3+2] = t[(k+1)*3+2];
+        lineColors[vi*3]   = r*fadeNext;
+        lineColors[vi*3+1] = g*fadeNext;
+        lineColors[vi*3+2] = b*fadeNext;
+        vi++;
+      }
+    }
+    this.lineMesh.geometry.attributes.position.needsUpdate = true;
+    this.lineMesh.geometry.attributes.color.needsUpdate = true;
+    this.lineMesh.geometry.setDrawRange(0, vi);
+
+    // points
+    const ptPos = this.pointsMesh.geometry.attributes.position.array;
+    const ptCol = this.pointsMesh.geometry.attributes.color.array;
+    for (let i = 0; i < this.particles.length; i++) {
+      const w = this.world(a, this.particles[i]);
+      ptPos[i*3]   = w[0];
+      ptPos[i*3+1] = w[1];
+      ptPos[i*3+2] = w[2];
+      const [r, g, b] = hslToRgb(this.particles[i].hue, 0.8, 0.7);
+      ptCol[i*3]   = r;
+      ptCol[i*3+1] = g;
+      ptCol[i*3+2] = b;
+    }
+    this.pointsMesh.geometry.attributes.position.needsUpdate = true;
+    this.pointsMesh.geometry.attributes.color.needsUpdate = true;
+  }
+
+  render() {
+    this.controls.update();
+    this.renderer.render(this.scene, this.camera);
+  }
+}
+
+// ---------- bootstrap 4 cells ----------
+function pickRandomKey(excludeArr = []) {
+  const pool = KEYS.filter(k => !excludeArr.includes(k));
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+const cellEls = Array.from(document.querySelectorAll('.cell'));
+const cells = cellEls.map(el => new AttractorCell(el));
+
+function shuffleAll() {
+  // pick 4 distinct attractors so the grid feels varied
+  const used = [];
+  for (const cell of cells) {
+    const k = pickRandomKey(used);
+    used.push(k);
+    cell.setAttractor(k);
+  }
+}
+
+cellEls.forEach((el, i) => {
+  el.addEventListener('click', (e) => {
+    // Only swap if the click landed on the canvas surface (not on a UI element)
+    // and wasn't a drag — but OrbitControls captures drags, so simple clicks
+    // bubble up here. We use a small heuristic: mousedown vs mouseup positions.
+  });
+});
+
+// click-to-swap with drag-distance check
+cellEls.forEach((el, i) => {
+  let down = null;
+  el.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY }; });
+  el.addEventListener('pointerup', e => {
+    if (!down) return;
+    const dx = e.clientX - down.x;
+    const dy = e.clientY - down.y;
+    down = null;
+    if (dx*dx + dy*dy > 16) return; // it was a drag
+    const used = cells.filter((_, j) => j !== i).map(c => c.current);
+    cells[i].setAttractor(pickRandomKey(used));
+  });
+});
+
+document.getElementById('shuffle').addEventListener('click', shuffleAll);
+
+window.addEventListener('resize', () => {
+  cells.forEach(c => c.resize());
+});
+
+shuffleAll();
+
+function tick() {
+  requestAnimationFrame(tick);
+  for (const c of cells) {
+    c.step();
+    c.render();
+  }
+}
+tick();
+</script>
+</body>
+</html>

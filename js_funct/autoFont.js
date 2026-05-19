@@ -10,6 +10,7 @@
         importSheet: null,
         familySheet: null,
         faceSheet: null,
+        _loadedFonts: new Set(),
         
         // Initialize style sheets
         init: function() {
@@ -40,15 +41,17 @@
         
         // Attach Google Font
         attachGoogleFont: function(font) {
-            console.log('we are in attachGooglefont')
+            if (AutoFont._loadedFonts.has(font)) return;
+            AutoFont._loadedFonts.add(font);
             const fontFormatted = font.replace(/ /g, '+');
             const rule = `@import url(https://fonts.googleapis.com/css?family=${fontFormatted});`;
-            console.log('Loading Google Font:', font, '→', rule);
             AutoFont.importSheet.insertRule(rule, AutoFont.importSheet.cssRules.length);
         },
         
         // Attach local font
         attachLocalFont: function(font, directory = 'tff') {
+            if (AutoFont._loadedFonts.has(font)) return;
+            AutoFont._loadedFonts.add(font);
                 // console.log('attachLocalFont called');
                 // console.log('this:', this);
                 // console.log('this.faceSheet:', this.faceSheet);

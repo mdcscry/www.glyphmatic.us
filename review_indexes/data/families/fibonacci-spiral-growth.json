@@ -1,0 +1,70 @@
+{
+  "family": "fibonacci-spiral-growth",
+  "title": "Fibonacci / Spiral / Growth",
+  "count": 2,
+  "screenshots": 2,
+  "source_areas": {
+    "2025_exp/html_experiments": 2
+  },
+  "future_insert_candidate": "Fibonacci / Spiral",
+  "entries": [
+    {
+      "id": "2025-exp-html-experiments-primes-v1-html",
+      "title": "Primes",
+      "path": "2025_exp/html_experiments/primes_v1.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "fibonacci-spiral-growth",
+      "family_title": "Fibonacci / Spiral / Growth",
+      "subfamily": "primes",
+      "sequence_hint": 1,
+      "tags": [
+        "dom",
+        "fibonacci-spiral-growth"
+      ],
+      "libraries": [
+        "dom"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-primes-v1.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Fibonacci / Spiral",
+      "notes": "2025_exp/html_experiments · libraries: dom",
+      "upgrade_notes": "Good candidate for grouped flavors with stronger palette and glyph-function integration.",
+      "summary": "Primes — 2025_exp/html_experiments; grouped under Fibonacci / Spiral / Growth. Signals: dom, fibonacci-spiral-growth."
+    },
+    {
+      "id": "2025-exp-html-experiments-primes-v2-html",
+      "title": "Primes",
+      "path": "2025_exp/html_experiments/primes_v2.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "fibonacci-spiral-growth",
+      "family_title": "Fibonacci / Spiral / Growth",
+      "subfamily": "primes",
+      "sequence_hint": 2,
+      "tags": [
+        "dom",
+        "fibonacci-spiral-growth"
+      ],
+      "libraries": [
+        "dom"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-primes-v2.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Fibonacci / Spiral",
+      "notes": "2025_exp/html_experiments · libraries: dom",
+      "upgrade_notes": "Good candidate for grouped flavors with stronger palette and glyph-function integration.",
+      "summary": "Primes — 2025_exp/html_experiments; grouped under Fibonacci / Spiral / Growth. Signals: dom, fibonacci-spiral-growth."
+    }
+  ]
+}

@@ -540,7 +540,7 @@
             name: 'Kusama — Infinity Rooms',
             artist: 'Yayoi Kusama',
             school: 'Avant-Garde',
-            ref: 'Infinity Mirror Room—Phalli's Field (1965)',
+            ref: 'Infinity Mirror Room—Phalli\'s Field (1965)',
             bg: '#080808',
             colors: [
                 '#E81850',   // hot pink
