@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game of Life — 2×2</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;background:#0d0d0d;font-family:system-ui,sans-serif;overflow:hidden}
+  #controls{display:flex;gap:8px;padding:10px 14px;align-items:center;flex-wrap:wrap}
+  button{font-size:12px;padding:5px 13px;cursor:pointer;border-radius:6px;border:1px solid #444;background:#1a1a1a;color:#ccc}
+  button:hover{background:#2a2a2a}
+  select{font-size:12px;padding:5px 9px;border-radius:6px;border:1px solid #444;background:#1a1a1a;color:#ccc}
+  #grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3px;width:100vw}
+  .cell{position:relative;overflow:hidden;background:#0d0d0d}
+  canvas{display:block}
+</style>
+</head>
+<body>
+
+<div id="controls">
+  <select id="palSel">
+    <option value="coral">Coral</option>
+    <option value="electric">Electric blue</option>
+    <option value="gold">Gold</option>
+    <option value="mint">Mint</option>
+    <option value="violet">Violet</option>
+    <option value="crimson">Crimson</option>
+    <option value="cyan">Cyan</option>
+  </select>
+  <button id="palBtn">Change palette</button>
+  <button id="regenBtn">Restart</button>
+  <button id="pauseBtn">Pause</button>
+  <select id="speedSel">
+    <option value="50">Fast</option>
+    <option value="120" selected>Medium</option>
+    <option value="250">Slow</option>
+  </select>
+</div>
+<div id="grid"></div>
+
+<script>
+const PALS={
+  coral:   {dead:'#0d0004',live:'#FF6B6B',aged:'#FF8E53',trail:'#5a1010'},
+  electric:{dead:'#00050f',live:'#4CC9F0',aged:'#4361EE',trail:'#071535'},
+  gold:    {dead:'#0a0800',live:'#F4A261',aged:'#E9C46A',trail:'#3a2800'},
+  mint:    {dead:'#00100d',live:'#2EC4B6',aged:'#80ED99',trail:'#013d30'},
+  violet:  {dead:'#080012',live:'#C77DFF',aged:'#9B5DE5',trail:'#2a0055'},
+  crimson: {dead:'#0d0008',live:'#E63946',aged:'#FF006E',trail:'#3a0018'},
+  cyan:    {dead:'#000f12',live:'#00F5D4',aged:'#00BBF9',trail:'#003d45'},
+};
+
+// Each quadrant gets a different shape renderer
+const SHAPES=[
+  {name:'circle',    char:'●', draw:(ctx,x,y,s,col)=>{ ctx.fillStyle=col; ctx.beginPath(); ctx.arc(x+s/2,y+s/2,s/2-0.5,0,Math.PI*2); ctx.fill(); }},
+  {name:'square',    char:'■', draw:(ctx,x,y,s,col)=>{ ctx.fillStyle=col; ctx.fillRect(x+0.5,y+0.5,s-1,s-1); }},
+  {name:'diamond',   char:'◆', draw:(ctx,x,y,s,col)=>{ ctx.fillStyle=col; const h=s/2; ctx.beginPath(); ctx.moveTo(x+h,y); ctx.lineTo(x+s,y+h); ctx.lineTo(x+h,y+s); ctx.lineTo(x,y+h); ctx.closePath(); ctx.fill(); }},
+  {name:'triangle',  char:'▲', draw:(ctx,x,y,s,col)=>{ ctx.fillStyle=col; ctx.beginPath(); ctx.moveTo(x+s/2,y+0.5); ctx.lineTo(x+s-0.5,y+s-0.5); ctx.lineTo(x+0.5,y+s-0.5); ctx.closePath(); ctx.fill(); }},
+];
+
+const CONFIGS=[
+  {density:0.28, seeds:'random'},
+  {density:0.52, seeds:'random'},
+  {density:0.36, seeds:'structured'},
+  {density:0.44, seeds:'noise'},
+];
+
+let paused=false;
+let interval=120;
+let sims=[];
+let rafId=null;
+let lastTime=0;
+
+function getPal(){return PALS[document.getElementById('palSel').value];}
+
+function hexToRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+function lerp(c1,c2,t){return c1.map((v,i)=>Math.round(v+(c2[i]-v)*t));}
+function rgbStr(c){return`rgb(${c[0]},${c[1]},${c[2]})`;}
+
+class Life{
+  constructor(canvas,cfg,shape,pal){
+    this.canvas=canvas;
+    this.ctx=canvas.getContext('2d');
+    this.cfg=cfg;
+    this.shape=shape;
+    this.pal=pal;
+    this.cols=0;this.rows=0;
+    this.setup();
+    this.init();
+  }
+
+  setup(){
+    const W=this.canvas.width;
+    const H=this.canvas.height;
+    this.cell=Math.max(4,Math.floor(Math.min(W,H)/72));
+    this.cols=Math.floor(W/this.cell);
+    this.rows=Math.floor(H/this.cell);
+  }
+
+  init(){
+    const {cols,rows,cfg}=this;
+    const n=cols*rows;
+    this.grid=new Uint8Array(n);
+    this.next=new Uint8Array(n);
+    this.age=new Float32Array(n);
+    this.gen=0;
+
+    if(cfg.seeds==='structured'){
+      for(let i=0;i<n;i++) this.grid[i]=Math.random()<cfg.density*0.4?1:0;
+      const glider=[[0,1],[1,2],[2,0],[2,1],[2,2]];
+      for(let g=0;g<10;g++){
+        const ox=Math.floor(Math.random()*(cols-12))+6;
+        const oy=Math.floor(Math.random()*(rows-12))+6;
+        glider.forEach(([dx,dy])=>{
+          const idx=(oy+dy)*cols+(ox+dx);
+          if(idx>=0&&idx<n) this.grid[idx]=1;
+        });
+      }
+    } else if(cfg.seeds==='noise'){
+      for(let y=0;y<rows;y++){
+        for(let x=0;x<cols;x++){
+          const v=Math.sin(x*0.31)*Math.cos(y*0.27)+Math.sin(x*0.17+y*0.19)*0.8;
+          this.grid[y*cols+x]=(v+Math.random()*1.0)>0.9?1:0;
+        }
+      }
+    } else {
+      for(let i=0;i<n;i++) this.grid[i]=Math.random()<cfg.density?1:0;
+    }
+    this.age.fill(0);
+  }
+
+  idx(x,y){
+    const {cols,rows}=this;
+    return((y+rows)%rows)*cols+((x+cols)%cols);
+  }
+
+  step(){
+    const {cols,rows,grid,next,age}=this;
+    for(let y=0;y<rows;y++){
+      for(let x=0;x<cols;x++){
+        let n=0;
+        for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){
+          if(dx===0&&dy===0) continue;
+          n+=grid[this.idx(x+dx,y+dy)];
+        }
+        const i=this.idx(x,y);
+        const alive=grid[i];
+        next[i]=(alive&&(n===2||n===3))||(!alive&&n===3)?1:0;
+        if(next[i]) age[i]=Math.min(age[i]+0.05,1);
+        else age[i]=Math.max(age[i]-0.1,0);
+      }
+    }
+    const tmp=this.grid;
+    this.grid=this.next;
+    this.next=tmp;
+    this.gen++;
+  }
+
+  draw(){
+    const {ctx,cols,rows,cell,grid,age,pal,shape,canvas}=this;
+    const W=canvas.width,H=canvas.height;
+    const dead=hexToRgb(pal.dead);
+    const live=hexToRgb(pal.live);
+    const aged=hexToRgb(pal.aged);
+    const trail=hexToRgb(pal.trail);
+
+    ctx.fillStyle=pal.dead;
+    ctx.fillRect(0,0,W,H);
+
+    for(let y=0;y<rows;y++){
+      for(let x=0;x<cols;x++){
+        const i=y*cols+x;
+        const a=age[i];
+        if(grid[i]===1){
+          const col=rgbStr(lerp(live,aged,Math.min(a*1.8,1)));
+          shape.draw(ctx,x*cell,y*cell,cell,col);
+        } else if(a>0.02){
+          const col=rgbStr(lerp(dead,trail,a));
+          shape.draw(ctx,x*cell,y*cell,cell,col);
+        }
+      }
+    }
+  }
+
+  setPal(pal){this.pal=pal;}
+}
+
+function buildGrid(){
+  if(rafId) cancelAnimationFrame(rafId);
+  const grid=document.getElementById('grid');
+  grid.innerHTML='';
+  const ctrlH=document.getElementById('controls').offsetHeight;
+  const cellW=Math.floor((window.innerWidth-3)/2);
+  const cellH=Math.floor((window.innerHeight-ctrlH-3)/2);
+  grid.style.height=(cellH*2+3)+'px';
+  sims=[];
+  const pal=getPal();
+
+  CONFIGS.forEach((cfg,i)=>{
+    const div=document.createElement('div');
+    div.className='cell';
+    div.style.width=cellW+'px';
+    div.style.height=cellH+'px';
+    const canvas=document.createElement('canvas');
+    canvas.width=cellW;
+    canvas.height=cellH;
+    div.appendChild(canvas);
+    grid.appendChild(div);
+    sims.push(new Life(canvas,cfg,SHAPES[i],pal));
+    sims[i].draw();
+  });
+
+  rafId=requestAnimationFrame(loop);
+}
+
+function loop(ts){
+  rafId=requestAnimationFrame(loop);
+  if(paused) return;
+  if(ts-lastTime<interval) return;
+  lastTime=ts;
+  sims.forEach(s=>{s.step();s.draw();});
+}
+
+document.getElementById('palBtn').addEventListener('click',()=>{
+  const sel=document.getElementById('palSel');
+  sel.selectedIndex=(sel.selectedIndex+1)%Object.keys(PALS).length;
+  const pal=getPal();
+  sims.forEach(s=>s.setPal(pal));
+});
+
+document.getElementById('regenBtn').addEventListener('click',()=>{
+  const pal=getPal();
+  sims.forEach(s=>{s.pal=pal;s.init();s.draw();});
+});
+
+document.getElementById('pauseBtn').addEventListener('click',()=>{
+  paused=!paused;
+  document.getElementById('pauseBtn').textContent=paused?'Resume':'Pause';
+});
+
+document.getElementById('speedSel').addEventListener('change',e=>{interval=+e.target.value;});
+
+window.addEventListener('resize',buildGrid);
+buildGrid();
+</script>
+</body>
+</html>
