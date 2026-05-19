@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Albers study — mirrored nested brackets</title>
+<style>
+  :root {
+    --bg: #efe9d9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+  .wrap {
+    width: 100%;
+    max-width: 720px;
+  }
+  .controls {
+    display: flex;
+    gap: 8px;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: #fff;
+    color: #1f1e1d;
+    border: 0.5px solid rgba(0,0,0,0.12);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button:hover { background: #f6f3ea; }
+  button:active { transform: scale(0.98); }
+  .stage {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    background: var(--bg);
+  }
+  svg { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="controls">
+    <button id="reroll-noise">Re-shuffle paint texture</button>
+  </div>
+  <div class="stage">
+    <svg id="canvas" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+</div>
+
+<script>
+(function() {
+  const svg = document.getElementById('canvas');
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  // Albers-ish color analysis from the source:
+  const COLORS = {
+    paper:   '#efe9d9',  // cream paper background
+    magenta: '#c2317d',  // left field
+    red:     '#dc3a26',  // right field
+    chartreuse: '#bcc637', // yellow-green bars
+    babyBlue: '#7fb6c5'   // pale blue bars
+  };
+
+  function el(name, attrs) {
+    const e = document.createElementNS(SVG_NS, name);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  // Generate a wobbly path for a rectangle's edge — mimics gouache/oil pastel
+  // by jittering the four sides outward and inward slightly.
+  function paintedRect(x, y, w, h, jitter, segments) {
+    // Walk around the rectangle, perturbing each point by a small amount
+    // perpendicular to the edge.
+    segments = segments || 18;
+    jitter = jitter == null ? 6 : jitter;
+    const points = [];
+
+    function jit() { return (Math.random() - 0.5) * 2 * jitter; }
+
+    // Top edge (left to right), perturb in y
+    for (let i = 0; i <= segments; i++) {
+      const t = i / segments;
+      points.push([x + t * w, y + jit()]);
+    }
+    // Right edge (top to bottom), perturb in x
+    for (let i = 1; i <= segments; i++) {
+      const t = i / segments;
+      points.push([x + w + jit(), y + t * h]);
+    }
+    // Bottom edge (right to left), perturb in y
+    for (let i = 1; i <= segments; i++) {
+      const t = i / segments;
+      points.push([x + w - t * w, y + h + jit()]);
+    }
+    // Left edge (bottom to top), perturb in x
+    for (let i = 1; i < segments; i++) {
+      const t = i / segments;
+      points.push([x + jit(), y + h - t * h]);
+    }
+
+    let d = 'M ' + points[0][0] + ' ' + points[0][1];
+    for (let i = 1; i < points.length; i++) {
+      d += ' L ' + points[i][0] + ' ' + points[i][1];
+    }
+    d += ' Z';
+    return d;
+  }
+
+  function build() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    // Outer paper margin — leave some cream visible around the edges
+    const paperMargin = 70;
+    const paintedInset = paperMargin;
+
+    // Two halves: left (magenta) and right (red), with a tiny gap around center
+    const W = 1000, H = 1000;
+    const centerGap = 4; // very thin vertical gap of paper between the two fields
+    const leftX = paintedInset;
+    const leftY = paintedInset;
+    const leftW = (W / 2) - paintedInset - centerGap / 2;
+    const leftH = H - 2 * paintedInset;
+    const rightX = (W / 2) + centerGap / 2;
+    const rightY = paintedInset;
+    const rightW = (W / 2) - paintedInset - centerGap / 2;
+    const rightH = H - 2 * paintedInset;
+
+    // Left field — magenta, with strong painterly edges (jitter higher than inner shapes)
+    svg.appendChild(el('path', {
+      d: paintedRect(leftX, leftY, leftW, leftH, 14, 28),
+      fill: COLORS.magenta
+    }));
+    // Right field — red
+    svg.appendChild(el('path', {
+      d: paintedRect(rightX, rightY, rightW, rightH, 14, 28),
+      fill: COLORS.red
+    }));
+
+    // ===== Left side: nested DOWNWARD-opening brackets =====
+    // The bars extend below their nominal bottom — they "fall off" the bottom edge
+    // because they actually go past the field. To match the source, the bars
+    // start near the upper-middle of the field and extend down past where the field ends.
+    //
+    // Three nested brackets, each shorter at the top (so they nest like square brackets
+    // opening downward — i.e. closed at top, open at bottom).
+    // 
+    // Looking at the source again:
+    //   - Outermost (yellow-green): widest, starts highest
+    //   - Middle (blue): narrower, starts lower (top edge below the green's top)
+    //   - Innermost (yellow-green): narrowest, starts lower still
+    // All extend below the field's bottom edge.
+    //
+    // The asymmetry: bars don't share a center horizontally; they're slightly offset.
+    
+    const leftCx = leftX + leftW * 0.50;
+    
+    // Bar dimensions — bars are vertical rectangles
+    // Outer bar
+    const bar1W = leftW * 0.42;
+    const bar1H = leftH * 0.85;
+    const bar1X = leftCx - bar1W / 2;
+    const bar1Y = leftY + leftH * 0.12;
+    
+    // Middle bar (blue)
+    const bar2W = bar1W * 0.55;
+    const bar2H = leftH * 0.78;
+    const bar2X = leftCx - bar2W / 2 + bar1W * 0.04; // slight offset right
+    const bar2Y = leftY + leftH * 0.18;
+    
+    // Inner bar (chartreuse)
+    const bar3W = bar2W * 0.36;
+    const bar3H = leftH * 0.71;
+    const bar3X = leftCx - bar3W / 2 + bar1W * 0.02;
+    const bar3Y = leftY + leftH * 0.25;
+
+    svg.appendChild(el('path', { d: paintedRect(bar1X, bar1Y, bar1W, bar1H, 4, 14), fill: COLORS.chartreuse }));
+    svg.appendChild(el('path', { d: paintedRect(bar2X, bar2Y, bar2W, bar2H, 4, 14), fill: COLORS.babyBlue }));
+    svg.appendChild(el('path', { d: paintedRect(bar3X, bar3Y, bar3W, bar3H, 4, 14), fill: COLORS.chartreuse }));
+
+    // ===== Right side: nested UPWARD-opening brackets, mirrored =====
+    // Same idea but flipped vertically AND with blue/chartreuse swapped at outer/middle
+    // (matches the source's color alternation).
+    
+    const rightCx = rightX + rightW * 0.50;
+    
+    // Outer bar (blue) — extends ABOVE the field
+    const rbar1W = rightW * 0.42;
+    const rbar1H = rightH * 0.85;
+    const rbar1X = rightCx - rbar1W / 2;
+    // Bottom of bar is at rightY + rightH * (1 - 0.12), top is at bottom - rbar1H
+    const rbar1Bottom = rightY + rightH * 0.88;
+    const rbar1Y = rbar1Bottom - rbar1H;
+    
+    // Middle bar (chartreuse)
+    const rbar2W = rbar1W * 0.55;
+    const rbar2H = rightH * 0.78;
+    const rbar2X = rightCx - rbar2W / 2 - rbar1W * 0.04; // slight offset left (mirror)
+    const rbar2Bottom = rightY + rightH * 0.82;
+    const rbar2Y = rbar2Bottom - rbar2H;
+    
+    // Inner bar (blue)
+    const rbar3W = rbar2W * 0.36;
+    const rbar3H = rightH * 0.71;
+    const rbar3X = rightCx - rbar3W / 2 - rbar1W * 0.02;
+    const rbar3Bottom = rightY + rightH * 0.75;
+    const rbar3Y = rbar3Bottom - rbar3H;
+
+    svg.appendChild(el('path', { d: paintedRect(rbar1X, rbar1Y, rbar1W, rbar1H, 4, 14), fill: COLORS.babyBlue }));
+    svg.appendChild(el('path', { d: paintedRect(rbar2X, rbar2Y, rbar2W, rbar2H, 4, 14), fill: COLORS.chartreuse }));
+    svg.appendChild(el('path', { d: paintedRect(rbar3X, rbar3Y, rbar3W, rbar3H, 4, 14), fill: COLORS.babyBlue }));
+  }
+
+  document.getElementById('reroll-noise').addEventListener('click', build);
+
+  build();
+})();
+</script>
+</body>
+</html>
