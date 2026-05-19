@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spiral circle pack grid</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;background:#0d0d0d;font-family:system-ui,sans-serif}
+  #controls{display:flex;gap:8px;padding:12px 16px;flex-wrap:wrap;align-items:center}
+  button{font-size:12px;padding:6px 14px;cursor:pointer;border-radius:6px;border:1px solid #444;background:#1a1a1a;color:#ccc}
+  button:hover{background:#2a2a2a}
+  select{font-size:12px;padding:6px 10px;border-radius:6px;border:1px solid #444;background:#1a1a1a;color:#ccc}
+  #stage{display:block;width:100vw}
+</style>
+</head>
+<body>
+<div id="controls">
+  <select id="palSel">
+    <option value="coral">Coral</option>
+    <option value="electric">Electric blue</option>
+    <option value="gold">Gold</option>
+    <option value="mint">Mint</option>
+    <option value="violet">Violet</option>
+    <option value="crimson">Crimson</option>
+    <option value="cyan">Cyan</option>
+  </select>
+  <button id="palBtn">Change palette</button>
+  <button id="regenBtn">Regenerate</button>
+</div>
+<canvas id="stage"></canvas>
+
+<script>
+const PALS={
+  coral:   {a:'#FF6B6B',b:'#FF8E53',bg:'#0d0d0d'},
+  electric:{a:'#4CC9F0',b:'#4361EE',bg:'#0a0a12'},
+  gold:    {a:'#F4A261',b:'#E9C46A',bg:'#0d0b00'},
+  mint:    {a:'#2EC4B6',b:'#80ED99',bg:'#020d0b'},
+  violet:  {a:'#C77DFF',b:'#7B2FBE',bg:'#0a0010'},
+  crimson: {a:'#E63946',b:'#FF006E',bg:'#0d0005'},
+  cyan:    {a:'#00F5D4',b:'#00BBF9',bg:'#000d10'},
+};
+
+const COLS=6,ROWS=6,GAP=3,MIN_R=3;
+
+function rnd(a,b){return a+Math.random()*(b-a);}
+function rndInt(a,b){return Math.floor(rnd(a,b+1));}
+function hexToRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+function lerp(c1,c2,t){return c1.map((v,i)=>Math.round(v+(c2[i]-v)*t));}
+function rgbStr(c){return`rgb(${c[0]},${c[1]},${c[2]})`;}
+function getPal(){return PALS[document.getElementById('palSel').value];}
+function safeArc(ctx,x,y,r){if(r>0)ctx.arc(x,y,r,0,Math.PI*2);}
+
+function packCircles(S,outerR){
+  const circles=[];
+  const cx=S/2,cy=S/2;
+  const count=rndInt(20,44);
+  let angle=0,dist=0,attempts=0;
+  while(circles.length<count && attempts<count*80){
+    attempts++;
+    angle+=0.48;
+    dist+=2.4/(2*Math.PI);
+    const px=cx+dist*Math.cos(angle);
+    const py=cy+dist*Math.sin(angle);
+    const fromEdge=outerR-Math.hypot(px-cx,py-cy);
+    if(fromEdge<MIN_R)continue;
+    const maxR=Math.min(fromEdge, rnd(MIN_R, Math.max(MIN_R+1, outerR*0.44)));
+    let r=maxR;
+    for(const c of circles){
+      const d=Math.hypot(px-c.x,py-c.y)-c.r;
+      if(d<r)r=d;
+    }
+    r=Math.min(r,maxR)-1;
+    if(r<MIN_R)continue;
+    circles.push({x:px,y:py,r});
+  }
+  return circles;
+}
+
+function drawSpiral(ctx,cx,cy,r,ca,cb,seed,spacing){
+  if(r<=0)return;
+  const turns=r/spacing;
+  const totalAngle=turns*Math.PI*2;
+  const steps=Math.max(1,Math.ceil(totalAngle*6));
+  const startAngle=seed*Math.PI*2;
+  const lineW=Math.max(0.4,r*0.022);
+  ctx.save();
+  ctx.beginPath();
+  if(r>0)ctx.arc(cx,cy,r,0,Math.PI*2);
+  ctx.clip();
+  for(let i=0;i<steps;i++){
+    const t0=i/steps,t1=(i+1)/steps;
+    const a0=startAngle+t0*totalAngle,a1=startAngle+t1*totalAngle;
+    const r0=t0*r,r1=t1*r;
+    ctx.beginPath();
+    ctx.moveTo(cx+r0*Math.cos(a0),cy+r0*Math.sin(a0));
+    ctx.lineTo(cx+r1*Math.cos(a1),cy+r1*Math.sin(a1));
+    ctx.strokeStyle=rgbStr(lerp(ca,cb,(t0+t1)/2));
+    ctx.lineWidth=lineW;
+    ctx.lineCap='round';
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawCell(ctx,ox,oy,S,pal){
+  const outerR=Math.floor(S/2)-1;
+  if(outerR<=0)return;
+  const cx=ox+S/2,cy=oy+S/2;
+  const ca=hexToRgb(pal.a),cb=hexToRgb(pal.b);
+  const spacing=rnd(1.8,4.2);
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx,cy,outerR,0,Math.PI*2);
+  ctx.fillStyle=pal.bg;
+  ctx.fill();
+  ctx.clip();
+
+  const circles=packCircles(S,outerR);
+  circles.sort((a,b)=>b.r-a.r);
+
+  circles.forEach(c=>{
+    if(c.r<=0)return;
+    const useDark=Math.random()>0.28;
+    const wcx=ox+c.x,wcy=oy+c.y;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(wcx,wcy,c.r,0,Math.PI*2);
+    ctx.fillStyle=useDark?pal.bg:'#ffffff';
+    ctx.fill();
+    ctx.restore();
+    drawSpiral(ctx,wcx,wcy,c.r,ca,useDark?cb:[18,18,18],Math.random(),spacing);
+    ctx.beginPath();
+    ctx.arc(wcx,wcy,c.r,0,Math.PI*2);
+    ctx.strokeStyle='rgba(255,255,255,0.06)';
+    ctx.lineWidth=0.5;
+    ctx.stroke();
+  });
+
+  ctx.restore();
+}
+
+let rafId=null;
+function render(){
+  if(rafId)cancelAnimationFrame(rafId);
+  const pal=getPal();
+  const W=window.innerWidth;
+  const cellSize=Math.floor((W-(COLS-1)*GAP)/COLS);
+  const H=cellSize*ROWS+(ROWS-1)*GAP;
+  const stage=document.getElementById('stage');
+  stage.width=W;
+  stage.height=H;
+  stage.style.height=H+'px';
+  const ctx=stage.getContext('2d');
+  ctx.fillStyle=pal.bg;
+  ctx.fillRect(0,0,W,H);
+
+  let i=0;
+  function drawNext(){
+    if(i>=ROWS*COLS)return;
+    const col=i%COLS,row=Math.floor(i/COLS);
+    const ox=col*(cellSize+GAP),oy=row*(cellSize+GAP);
+    try{drawCell(ctx,ox,oy,cellSize,pal);}catch(e){console.warn('cell err',e);}
+    i++;
+    rafId=requestAnimationFrame(drawNext);
+  }
+  drawNext();
+}
+
+document.getElementById('palBtn').addEventListener('click',()=>{
+  const sel=document.getElementById('palSel');
+  sel.selectedIndex=(sel.selectedIndex+1)%Object.keys(PALS).length;
+  render();
+});
+document.getElementById('regenBtn').addEventListener('click',render);
+document.getElementById('palSel').addEventListener('change',render);
+window.addEventListener('resize',render);
+
+render();
+</script>
+</body>
+</html>

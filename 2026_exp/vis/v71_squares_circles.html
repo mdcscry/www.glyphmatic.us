@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Squares and Circles</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #888; display: flex; align-items: center; justify-content: center; }
+  canvas { display: block; }
+  #ui { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 100; display: flex; gap: 12px; }
+  button { background: rgba(0,0,0,0.2); border: 1px solid rgba(0,0,0,0.4); color: #fff; font-family: monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 8px 20px; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <button onclick="regenerate()">↺ Regenerate</button>
+  <button onclick="newColors()">↺ Colors</button>
+</div>
+<script>
+var canvas = document.getElementById('c');
+var ctx = canvas.getContext('2d');
+
+var SCHEMES = [
+  { L: ['#f5a060','#e07840','#c85030','#b03820','#982010'],
+    R: ['#cc1a00','#dd2a10','#ee3a20','#ff4a30','#ff6040'] },
+  { L: ['#aaccff','#88aaee','#6688cc','#4466aa','#224488'],
+    R: ['#112266','#223388','#3344aa','#4455cc','#5566ee'] },
+  { L: ['#aaeebb','#77cc88','#44aa66','#228844','#116622'],
+    R: ['#004422','#006633','#008844','#00aa55','#00cc66'] },
+  { L: ['#ffaacc','#ee88aa','#cc6688','#aa4466','#882244'],
+    R: ['#660033','#880044','#aa0055','#cc2266','#ee4488'] },
+  { L: ['#fff4aa','#ffe077','#ffcc44','#ffb822','#ffa400'],
+    R: ['#cc8800','#dd9900','#eeaa00','#ffbb00','#ffcc22'] },
+];
+
+var current = SCHEMES[0];
+var N = 9; // 4-6 pairs = 8-12 layers, start at 9
+var shrink = 0.78;
+
+/* ── Draw left half of a shape clipped to left of center ── */
+function drawLeftHalf(isCircle, cx, cy, size, color) {
+  ctx.save();
+  // Clip to left half
+  ctx.beginPath();
+  ctx.rect(0, 0, cx, canvas.height);
+  ctx.clip();
+  ctx.fillStyle = color;
+  if (isCircle) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, size/2, 0, Math.PI*2);
+    ctx.fill();
+  } else {
+    ctx.fillRect(cx - size/2, cy - size/2, size, size);
+  }
+  ctx.restore();
+}
+
+/* ── Draw right half of a shape clipped to right of center ── */
+function drawRightHalf(isCircle, cx, cy, size, color) {
+  ctx.save();
+  // Clip to right half
+  ctx.beginPath();
+  ctx.rect(cx, 0, canvas.width - cx, canvas.height);
+  ctx.clip();
+  ctx.fillStyle = color;
+  if (isCircle) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, size/2, 0, Math.PI*2);
+    ctx.fill();
+  } else {
+    ctx.fillRect(cx - size/2, cy - size/2, size, size);
+  }
+  ctx.restore();
+}
+
+function render() {
+  var S  = Math.min(canvas.width, canvas.height) * 0.92;
+  var cx = canvas.width/2, cy = canvas.height/2;
+
+  ctx.fillStyle = '#888';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Proper nesting:
+  // Square side = S
+  // Circle diameter = S (circle touches square edges)
+  // Next square inscribed in circle: side = diameter * sqrt(2)/2 = S * sqrt(2)/2
+  // So each square→circle→square shrinks by sqrt(2)/2 ≈ 0.7071 per PAIR
+
+  var size = S;
+  for (var i = 0; i < N; i++) {
+    var isCircle = (i % 2 === 1);
+    // All squares same color, all circles same color — no transparency
+    var colL = isCircle ? current.L[1] : current.L[0];
+    var colR = isCircle ? current.R[1] : current.R[0];
+
+    drawLeftHalf (isCircle, cx, cy, size, colL);
+    drawRightHalf(isCircle, cx, cy, size, colR);
+
+    if (!isCircle) {
+      // square → circle: diameter = square side, so circle size stays same
+      // (no size change, next shape is circle with same size)
+    } else {
+      // circle → square: inscribed square side = diameter * sqrt(2)/2
+      size = size * Math.sqrt(2) / 2;
+    }
+  }
+}
+
+function regenerate() {
+  current = SCHEMES[Math.floor(Math.random()*SCHEMES.length)];
+  N       = (4 + Math.floor(Math.random()*3)) * 2 + 1; // 4-6 pairs
+  shrink  = 0.72 + Math.random()*0.12;
+  render();
+}
+
+function newColors() {
+  current = SCHEMES[Math.floor(Math.random()*SCHEMES.length)];
+  render();
+}
+
+function resize() {
+  var S = Math.min(window.innerWidth, window.innerHeight) * 0.96;
+  canvas.width  = S;
+  canvas.height = S;
+  render();
+}
+
+window.addEventListener('resize', resize);
+resize();
+</script>
+</body>
+</html>

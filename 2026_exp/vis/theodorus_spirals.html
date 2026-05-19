@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spiral of Theodorus — 3×3 Grid</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Rajdhani:wght@300;400;600&display=swap');
+
+  :root {
+    --bg: #0a0a12;
+    --panel: #10101e;
+    --border: #1e1e3a;
+    --accent: #c8a96e;
+    --btn-glow: rgba(200,169,110,0.35);
+    --gap: 18px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: #ddd;
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 20px 40px;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(80,40,130,0.18) 0%, transparent 70%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.02) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.02) 40px);
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  header h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1rem, 3.5vw, 1.8rem);
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-shadow: 0 0 30px rgba(200,169,110,0.5);
+    margin-bottom: 4px;
+  }
+  header p {
+    font-size: 0.85rem;
+    color: #666;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+
+  .controls {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  button {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 11px 28px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.2s, background 0.2s, box-shadow 0.2s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+    z-index: 0;
+  }
+  button:hover::before { transform: scaleX(1); }
+  button:hover { color: #0a0a12; box-shadow: 0 0 24px var(--btn-glow); }
+  button span { position: relative; z-index: 1; }
+  button:active { transform: scale(0.97); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gap);
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .cell {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5), inset 0 0 40px rgba(255,255,255,0.01);
+    transition: box-shadow 0.3s;
+  }
+  .cell:hover {
+    box-shadow: 0 4px 32px rgba(200,169,110,0.18), inset 0 0 40px rgba(255,255,255,0.02);
+    border-color: rgba(200,169,110,0.3);
+  }
+
+  .cell svg {
+    width: 90%;
+    height: 90%;
+    transition: transform 0.7s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  footer {
+    margin-top: 32px;
+    font-size: 0.72rem;
+    color: #333;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Spiral of Theodorus</h1>
+  <p>Construction &amp; Properties · 3 × 3 Array</p>
+</header>
+
+<div class="controls">
+  <button id="btn-rotate" onclick="rotate()"><span>⟳ Rotate</span></button>
+  <button id="btn-color"  onclick="recolor()"><span>◈ Recolor</span></button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>Theodorus of Cyrene · c. 465 – 398 BC</footer>
+
+<script>
+// ─── Config ────────────────────────────────────────────────────────────────
+const NUM_TRIANGLES = 17;   // how many triangles per spiral
+const CELL_COUNT    = 9;
+
+// ─── State ─────────────────────────────────────────────────────────────────
+let currentRotation = 0;    // degrees, shared across all spirals
+let palettes = [];          // one palette array per cell
+
+// ─── Palette factory ───────────────────────────────────────────────────────
+function randomPalette(n) {
+  // Pick a random hue base and generate n spread colours
+  const strategies = [
+    () => { // analogous
+      const h = Math.random() * 360;
+      return Array.from({length:n}, (_,i) =>
+        `hsl(${(h + i*22 + Math.random()*12) % 360},${70+Math.random()*25}%,${45+Math.random()*25}%)`);
+    },
+    () => { // triadic
+      const h = Math.random() * 360;
+      return Array.from({length:n}, (_,i) =>
+        `hsl(${(h + [0,120,240][i%3] + Math.random()*30) % 360},${65+Math.random()*30}%,${40+Math.random()*30}%)`);
+    },
+    () => { // neon on dark
+      return Array.from({length:n}, () =>
+        `hsl(${Math.random()*360},100%,${55+Math.random()*20}%)`);
+    },
+    () => { // warm–cool split
+      const warm = Math.random() * 60;        // 0–60
+      const cool = 180 + Math.random() * 100; // 180–280
+      return Array.from({length:n}, (_,i) =>
+        `hsl(${i%2===0 ? warm : cool},${75+Math.random()*20}%,${45+Math.random()*25}%)`);
+    },
+    () => { // earthy
+      return Array.from({length:n}, () =>
+        `hsl(${20+Math.random()*60},${40+Math.random()*40}%,${35+Math.random()*35}%)`);
+    },
+  ];
+  return strategies[Math.floor(Math.random()*strategies.length)]();
+}
+
+// ─── Geometry ──────────────────────────────────────────────────────────────
+// Returns array of triangle vertex-pair arrays [[cx,cy],[ax,ay],[bx,by]]
+function buildSpiral(cx, cy) {
+  // First triangle: right-angle at origin, legs = 1 unit
+  const scale = 60; // pixels per unit
+  const triangles = [];
+
+  // We accumulate the outer vertex as we go
+  let angle = 0;             // current angle of the hypotenuse
+  let r = 1;                 // current hypotenuse length (√1 initially)
+
+  // Vertices of first triangle
+  // origin O, A along +x at 1, B at (1,1) — then we'll center it
+  let Ax = 1, Ay = 0;
+  let Bx = 1, By = 1;
+  angle = Math.atan2(By - 0, Bx - 0); // atan2(1,1) = π/4
+
+  // Reset — build properly
+  // Origin = (0,0)
+  // Triangle k has: O, prev outer vertex, new outer vertex
+  // outer[k] = (√(k+1) * cos(θ_k), √(k+1) * sin(θ_k))
+  // θ_0 = 0 → outer[0] = (1,0)
+  // Each step: new outer = outer[k] rotated so that leg of length 1 is perpendicular to hypotenuse
+
+  const outer = [[1, 0]]; // outer[0]
+  let theta = 0;
+
+  for (let k = 0; k < NUM_TRIANGLES; k++) {
+    const r_k   = Math.sqrt(k + 1);   // hypotenuse going in
+    const r_k1  = Math.sqrt(k + 2);   // new hypotenuse
+    // angle of new outer vertex
+    const dTheta = Math.atan2(1, r_k);
+    theta += dTheta;
+    outer.push([r_k1 * Math.cos(theta), r_k1 * Math.sin(theta)]);
+  }
+
+  // Build triangle list: O, outer[k], outer[k+1]
+  for (let k = 0; k < NUM_TRIANGLES; k++) {
+    triangles.push([
+      [0, 0],
+      outer[k],
+      outer[k + 1]
+    ]);
+  }
+
+  // Find bounding box to center
+  const allX = outer.map(p=>p[0]);
+  const allY = outer.map(p=>p[1]);
+  const minX = Math.min(0,...allX), maxX = Math.max(0,...allX);
+  const minY = Math.min(0,...allY), maxY = Math.max(0,...allY);
+  const W = maxX - minX, H = maxY - minY;
+  // We'll let the SVG viewBox handle this
+
+  return { triangles, minX, minY, W, H };
+}
+
+// ─── SVG builder ───────────────────────────────────────────────────────────
+function buildSVG(cellIdx) {
+  const { triangles, minX, minY, W, H } = buildSpiral();
+  const pad = 0.4;
+  const vbX = minX - pad, vbY = minY - pad;
+  const vbW = W + pad*2, vbH = H + pad*2;
+  const palette = palettes[cellIdx];
+
+  let paths = '';
+  triangles.forEach((tri, i) => {
+    const pts = tri.map(([x,y]) => `${x},${y}`).join(' ');
+    const fill = palette[i % palette.length];
+    paths += `<polygon points="${pts}" fill="${fill}" stroke="rgba(0,0,0,0.35)" stroke-width="0.025" opacity="0.92"/>`;
+  });
+
+  return `<svg viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg"
+    style="transform:rotate(${currentRotation}deg);transition:transform 0.7s cubic-bezier(0.4,0,0.2,1)"
+    data-cell="${cellIdx}">
+    ${paths}
+  </svg>`;
+}
+
+// ─── Init ──────────────────────────────────────────────────────────────────
+function init() {
+  palettes = Array.from({length: CELL_COUNT}, () => randomPalette(NUM_TRIANGLES));
+
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  for (let i = 0; i < CELL_COUNT; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.innerHTML = buildSVG(i);
+    grid.appendChild(cell);
+  }
+}
+
+// ─── Rotate ────────────────────────────────────────────────────────────────
+function rotate() {
+  currentRotation = (currentRotation + 45) % 360;
+  document.querySelectorAll('.cell svg').forEach(svg => {
+    svg.style.transform = `rotate(${currentRotation}deg)`;
+  });
+}
+
+// ─── Recolor ───────────────────────────────────────────────────────────────
+function recolor() {
+  palettes = Array.from({length: CELL_COUNT}, () => randomPalette(NUM_TRIANGLES));
+  const svgs = document.querySelectorAll('.cell svg');
+  svgs.forEach((svg, cellIdx) => {
+    const polys = svg.querySelectorAll('polygon');
+    const palette = palettes[cellIdx];
+    polys.forEach((poly, i) => {
+      const newFill = palette[i % palette.length];
+      poly.style.transition = 'fill 0.5s ease';
+      poly.setAttribute('fill', newFill);
+    });
+  });
+}
+
+// ─── Boot ───────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

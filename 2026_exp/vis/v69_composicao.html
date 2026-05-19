@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Composição</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; }
+  canvas { display: block; position: fixed; inset: 0; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 100; display: flex; gap: 12px;
+  }
+  button { background: rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.3); color: #111; font-family: monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 8px 20px; cursor: pointer; }
+  button:hover { background: rgba(0,0,0,0.25); }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <button onclick="regenerate()">↺ Regenerate</button>
+</div>
+<script>
+var canvas = document.getElementById('c');
+var ctx = canvas.getContext('2d');
+
+/* ── Color schemes ── */
+var SCHEMES = [
+  { bg:'#3a9a2a', colors:['#cc2222','#c85a00','#d4a800','#f0e8a0','#7a1a1a','#cc6644','#f0c840'] },
+  { bg:'#1a3a8a', colors:['#f0c840','#e84040','#f0e8a0','#88ccff','#cc4488','#ff8844','#ffffff'] },
+  { bg:'#1a1a1a', colors:['#f0c840','#e84040','#88ddaa','#ff8844','#aaddff','#cc88ff','#ffffff'] },
+  { bg:'#8a1a1a', colors:['#f0c840','#f0e8a0','#ffaa44','#88ccaa','#ffddaa','#ffffff','#ffcc00'] },
+  { bg:'#f5f0e8', colors:['#cc2222','#3a7a2a','#c85a00','#1a3a8a','#7a1a1a','#c85a88','#333'] },
+  { bg:'#2a1a3a', colors:['#f0c840','#ff6688','#88ffcc','#ff8844','#aabbff','#ff44aa','#ffffff'] },
+];
+var current = SCHEMES[0];
+
+/* ── Unicode glyphs — math operators and geometric shapes ── */
+var GLYPHS = [
+  // Mathematical operators — weighted heavily like lines in the painting
+  '+','×','−','÷','=','≠',
+  '∀','∃','∇','∂','∫','∏','∑',
+  '∞','√','≈','≡','≤','≥',
+  // Geometric shapes
+  '▲','▼','▶','◀','△','▽',
+  '■','□','▪','▫',
+  '◆','◇','●','○',
+  '⊕','⊗','⊙','⊖',
+  // Arrows
+  '←','↑','→','↓',
+  '⇐','⇒','⇑','⇓',
+  // Misc math
+  '⋅','•','◦','⁃','—','―',
+];
+
+function drawShape(type, cx, cy, size, color) {
+  ctx.fillStyle = color;
+  ctx.font = 'bold ' + Math.round(size) + 'px serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(type, cx, cy);
+}
+
+function bbox(type, cx, cy, size) {
+  ctx.font = 'bold ' + Math.round(size) + 'px serif';
+  var w = ctx.measureText(type).width;
+  return { x:cx-w/2, y:cy-size/2, w:w, h:size };
+}
+
+/* ── Place shapes without overlap ── */
+function buildComposition(W, H) {
+  var items = [];
+  var occupied = [];
+  var pad = 10;
+  // Random spread — sometimes tight (0.25), sometimes loose (0.48)
+  var spread = 0.22 + Math.random() * 0.28;
+
+  function overlaps(b) {
+    for (var i=0; i<occupied.length; i++) {
+      var o = occupied[i];
+      if (b.x < o.x+o.w+pad && b.x+b.w+pad > o.x && b.y < o.y+o.h+pad && b.y+b.h+pad > o.y) return true;
+    }
+    return false;
+  }
+
+  var n = 35 + Math.floor(Math.random()*25);
+
+  // Zipf sizes
+  for (var i=0; i<n; i++) {
+    var rank = i+1;
+    var freq = Math.pow(1/rank, 0.55);
+    var maxS = Math.min(W,H) * 0.16;
+    var minS = Math.min(W,H) * 0.02;
+    var size = minS + freq * (maxS-minS);
+
+    var type  = GLYPHS[Math.floor(Math.random()*GLYPHS.length)];
+    var color = current.colors[Math.floor(Math.random()*current.colors.length)];
+
+    // Archimedean spiral with random spread and 0/90 degree rotation
+    var rot = Math.random() < 0.35 ? Math.PI/2 : 0;
+    var placed = false;
+    var angle = Math.random() * Math.PI * 2;
+    var radius = 0;
+    for (var attempt=0; attempt<800; attempt++) {
+      angle  += 0.4 + Math.random()*0.3;
+      radius += 1.2;
+      var cx = W/2 + Math.cos(angle) * radius;
+      var cy = H/2 + Math.sin(angle) * radius * 0.85;
+      if (radius > Math.min(W,H) * spread) break;
+      var b  = bbox(type, cx, cy, size);
+      if (!overlaps(b)) {
+        items.push({ type:type, cx:cx, cy:cy, size:size, color:color, rot:rot });
+        occupied.push(b);
+        placed = true;
+        break;
+      }
+    }
+  }
+  return items;
+}
+
+var items = [];
+
+function render() {
+  var W = canvas.width, H = canvas.height;
+  ctx.fillStyle = current.bg;
+  ctx.fillRect(0, 0, W, H);
+  items.forEach(function(it) {
+    ctx.save();
+    ctx.translate(it.cx, it.cy);
+    ctx.rotate(it.rot || 0);
+    ctx.translate(-it.cx, -it.cy);
+    drawShape(it.type, it.cx, it.cy, it.size, it.color);
+    ctx.restore();
+  });
+}
+
+function regenerate() {
+  current = SCHEMES[Math.floor(Math.random()*SCHEMES.length)];
+  items = buildComposition(canvas.width, canvas.height);
+  render();
+}
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  items = buildComposition(canvas.width, canvas.height);
+  render();
+}
+
+window.addEventListener('resize', resize);
+resize();
+</script>
+</body>
+</html>

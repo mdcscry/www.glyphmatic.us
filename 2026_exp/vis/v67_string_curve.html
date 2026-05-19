@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>String Art Curve</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #1a1a1a; display: flex; align-items: center; justify-content: center; }
+  canvas { display: block; }
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 16px; align-items: center; z-index: 100;
+  }
+  button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; font-family: monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 8px 20px; cursor: pointer; }
+  label { font-family: monospace; font-size: 11px; color: #ccc; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <button onclick="regenerate()">↺ Regenerate</button>
+  <label>Lines: <input type="range" min="5" max="60" step="1" value="24" id="nSlider" oninput="render()"> <span id="nLbl">24</span></label>
+  <label>Line width: <input type="range" min="0.5" max="5" step="0.5" value="1.5" id="wSlider" oninput="render()"> <span id="wLbl">1.5</span></label>
+  <label>Curve: <input type="range" min="0.2" max="5" step="0.1" value="1.4" id="kSlider" oninput="render()"> <span id="kLbl">1.4</span></label>
+  <label>Power: <input type="range" min="0.3" max="2" step="0.05" value="0.7" id="pSlider" oninput="render()"> <span id="pLbl">0.7</span></label>
+</div>
+<script>
+var canvas = document.getElementById('c');
+var ctx    = canvas.getContext('2d');
+var bgColor   = '#0a0a0a';
+var lineColor = '#f0ece0';
+
+var COLORS = [
+  { bg:'#0a0a0a',   line:'#f0ece0' },
+  { bg:'#f5f0eb',   line:'#1a1a1a' },
+  { bg:'#0a0a1e',   line:'#88aaff' },
+  { bg:'#0a1e0a',   line:'#88ffaa' },
+  { bg:'#1e0a0a',   line:'#ff8888' },
+  { bg:'#1a0a1e',   line:'#dd88ff' },
+];
+var currentColors = COLORS[0];
+
+function render() {
+  var n = parseInt(document.getElementById('nSlider').value);
+  var lw = parseFloat(document.getElementById('wSlider').value);
+  document.getElementById('nLbl').textContent = n;
+  document.getElementById('wLbl').textContent = lw;
+
+  var W = canvas.width, H = canvas.height;
+  var size = Math.min(W, H) * 0.82;
+  var ox = (W - size) / 2;
+  var oy = (H - size) / 2;
+
+  ctx.fillStyle = currentColors.bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // 7px contrasting border around the square
+  ctx.strokeStyle = currentColors.line;
+  ctx.lineWidth = 7;
+  ctx.strokeRect(ox, oy, size, size);
+
+  // Draw the square
+  ctx.strokeStyle = currentColors.line;
+  ctx.lineWidth = lw;
+
+  /* ── String art parabola envelope ──────────────────────
+     For each set, we have N evenly spaced points on two edges.
+     Line i connects point i on edge A to point (N-i) on edge B.
+     This creates a parabolic envelope.
+
+     Set 1: top edge (left→right) to left edge (top→bottom)
+             creates curve in top-left corner
+
+     Set 2: bottom edge (right→left) to right edge (bottom→top)
+             mirror of set 1, creates curve in bottom-right corner
+
+     Together they form the diagonal pattern in the image.
+  ── */
+
+  // Exponential spacing with low k — starts slow, opens gradually
+  // k=1.2 gives gentle opening, k=3 gives dramatic fan
+  function fiboSpacing(n) {
+    var k = parseFloat(document.getElementById("kSlider").value);
+    var p = parseFloat(document.getElementById("pSlider").value);
+    document.getElementById("kLbl").textContent = k.toFixed(1);
+    document.getElementById("pLbl").textContent = p.toFixed(2);
+    var pts = [];
+    for (var i = 1; i < n; i++) {
+      var t = (Math.exp(i/n * k) - 1) / (Math.exp(k) - 1);
+      t = Math.pow(t, p);  // p<1 spreads top more, p>1 bunches top more
+      pts.push(t);
+    }
+    return pts;
+  }
+
+  function drawSet(ax0,ay0, ax1,ay1, bx0,by0, bx1,by1) {
+    var tA = fiboSpacing(n);
+    var tB = fiboSpacing(n).slice().reverse();
+
+    for (var i = 1; i < n; i++) {
+      var ax = ax0 + (ax1-ax0)*tA[i];
+      var ay = ay0 + (ay1-ay0)*tA[i];
+      var bx = bx0 + (bx1-bx0)*tB[i];
+      var by = by0 + (by1-by0)*tB[i];
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+    }
+  }
+
+  // Lines go from left edge to right edge
+  // Left edge: points bunched at top, spread at bottom
+  // Right edge: points spread at top, bunched at bottom (reversed)
+  // This creates the diagonal sweep illusion
+
+  drawSet(
+    ox,      oy,        ox,      oy+size,   // left edge: top to bottom
+    ox+size, oy+size,   ox+size, oy         // right edge: bottom to top
+  );
+}
+
+function regenerate() {
+  currentColors = COLORS[Math.floor(Math.random() * COLORS.length)];
+  render();
+}
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  render();
+}
+
+window.addEventListener('resize', resize);
+resize();
+</script>
+</body>
+</html>

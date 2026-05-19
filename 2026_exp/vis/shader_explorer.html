@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shader Explorer</title>
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8e8f0;
+    --text2: #9090a8;
+    --text3: #5a5a72;
+    --accent: #7c6af7;
+    --accent2: #4ecdc4;
+    --warn: #f0a04b;
+    --success: #5cc87a;
+    --danger: #e85d6a;
+    --mono: 'JetBrains Mono', 'Fira Mono', 'Cascadia Code', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', system-ui, sans-serif; overflow: hidden; }
+
+  #app { display: grid; grid-template-columns: 1fr 380px; grid-template-rows: 44px 1fr 200px; height: 100vh; }
+
+  /* Header */
+  #header {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; gap: 16px;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  #header h1 { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text2); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .shader-tabs { display: flex; gap: 2px; margin-left: auto; }
+  .stab {
+    padding: 4px 14px; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer;
+    border: 1px solid transparent; color: var(--text2); background: transparent; transition: all 0.15s;
+  }
+  .stab:hover { color: var(--text); background: var(--surface2); }
+  .stab.active { color: var(--accent); border-color: var(--accent); background: rgba(124,106,247,0.1); }
+  .badge { font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .badge-v { background: rgba(78,205,196,0.15); color: var(--accent2); }
+  .badge-f { background: rgba(124,106,247,0.15); color: var(--accent); }
+
+  /* Canvas panel */
+  #canvas-panel {
+    position: relative;
+    background: #000;
+    overflow: hidden;
+  }
+  #gl-canvas { display: block; width: 100%; height: 100%; }
+
+  /* Overlay stats */
+  #stats {
+    position: absolute; top: 12px; left: 12px;
+    display: flex; gap: 8px;
+  }
+  .stat-pill {
+    font-family: var(--mono); font-size: 10px;
+    padding: 3px 8px; border-radius: 3px;
+    background: rgba(0,0,0,0.7); color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .stat-pill span { color: var(--accent2); }
+
+  /* Controls panel */
+  #controls {
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 16px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .ctrl-section { display: flex; flex-direction: column; gap: 8px; }
+  .ctrl-label {
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--text3);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+  .ctrl-row { display: flex; align-items: center; gap: 10px; }
+  .ctrl-name { font-size: 12px; color: var(--text2); min-width: 90px; font-family: var(--mono); }
+  input[type=range] {
+    flex: 1; height: 3px; -webkit-appearance: none; appearance: none;
+    background: var(--surface2); border-radius: 2px; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%;
+    background: var(--accent); cursor: pointer;
+    box-shadow: 0 0 0 2px rgba(124,106,247,0.3);
+  }
+  .ctrl-val { font-family: var(--mono); font-size: 11px; color: var(--accent2); min-width: 42px; text-align: right; }
+
+  .toggle-row { display: flex; gap: 4px; flex-wrap: wrap; }
+  .toggle-btn {
+    padding: 4px 10px; font-size: 11px; border-radius: 4px; cursor: pointer;
+    border: 1px solid var(--border); color: var(--text2); background: transparent;
+    font-family: var(--mono); transition: all 0.15s;
+  }
+  .toggle-btn:hover { border-color: var(--border2); color: var(--text); }
+  .toggle-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(124,106,247,0.12); }
+
+  /* Code panel */
+  #code-panel {
+    grid-column: 1 / -1;
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr;
+    border-top: 1px solid var(--border);
+    overflow: hidden;
+  }
+  #error-bar { grid-column: 1 / -1; }
+  .code-pane {
+    display: flex; flex-direction: column;
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .code-pane:last-child { border-right: none; }
+  .code-header {
+    display: flex; align-items: center; gap: 8px; padding: 6px 14px;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    font-size: 11px; color: var(--text2);
+  }
+  .code-header strong { color: var(--text); font-family: var(--mono); font-size: 12px; }
+  .code-body {
+    flex: 1; overflow: auto; position: relative;
+    font-family: var(--mono); font-size: 11.5px; line-height: 1.65;
+    padding: 12px 16px;
+    background: #0a0a0d;
+    white-space: pre;
+    color: #c9c9e0;
+  }
+  /* Syntax highlight classes */
+  .kw { color: #c792ea; }
+  .ty { color: #82aaff; }
+  .fn { color: #82e0ff; }
+  .va { color: #f07178; }
+  .nu { color: #f78c6c; }
+  .cm { color: #4a4a6a; font-style: italic; }
+  .op { color: #89ddff; }
+  .hi { background: rgba(124,106,247,0.2); border-radius: 2px; }
+
+  /* Error bar */
+  #error-bar {
+    display: none; grid-column: 1 / -1;
+    background: rgba(232,93,106,0.12); border-top: 1px solid rgba(232,93,106,0.3);
+    color: var(--danger); font-family: var(--mono); font-size: 11px;
+    padding: 6px 16px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  /* Annotations */
+  .annotation {
+    position: absolute; pointer-events: none;
+    font-size: 10px; font-family: var(--mono); color: var(--text2);
+    background: rgba(0,0,0,0.7); padding: 2px 6px; border-radius: 3px;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+</head>
+<body>
+<div id="app">
+  <div id="header">
+    <div class="dot"></div>
+    <h1>Shader Explorer</h1>
+    <div class="shader-tabs">
+      <button class="stab active" onclick="setPreset('waves')">Waves</button>
+      <button class="stab" onclick="setPreset('mandelbrot')">Mandelbrot</button>
+      <button class="stab" onclick="setPreset('voronoi')">Voronoi</button>
+      <button class="stab" onclick="setPreset('sdf')">SDF Lighting</button>
+      <button class="stab" onclick="setPreset('rgb')">RGB Split</button>
+      <button class="stab" onclick="setPreset('noise')">Noise</button>
+    </div>
+  </div>
+
+  <div id="canvas-panel">
+    <canvas id="gl-canvas"></canvas>
+    <div id="stats">
+      <div class="stat-pill">FPS <span id="fps-val">60</span></div>
+      <div class="stat-pill">t <span id="time-val">0.00</span>s</div>
+      <div class="stat-pill">mouse <span id="mouse-val">0,0</span></div>
+    </div>
+  </div>
+
+  <div id="controls">
+    <div class="ctrl-section">
+      <div class="ctrl-label">Uniforms</div>
+      <div class="ctrl-row">
+        <span class="ctrl-name">u_speed</span>
+        <input type="range" id="u_speed" min="0" max="3" step="0.01" value="1.0">
+        <span class="ctrl-val" id="u_speed_val">1.00</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-name">u_scale</span>
+        <input type="range" id="u_scale" min="0.1" max="10" step="0.1" value="3.0">
+        <span class="ctrl-val" id="u_scale_val">3.0</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-name">u_param1</span>
+        <input type="range" id="u_param1" min="0" max="1" step="0.01" value="0.5">
+        <span class="ctrl-val" id="u_param1_val">0.50</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-name">u_param2</span>
+        <input type="range" id="u_param2" min="0" max="1" step="0.01" value="0.5">
+        <span class="ctrl-val" id="u_param2_val">0.50</span>
+      </div>
+    </div>
+
+    <div class="ctrl-section">
+      <div class="ctrl-label">Color</div>
+      <div class="ctrl-row">
+        <span class="ctrl-name">hue shift</span>
+        <input type="range" id="u_hue" min="0" max="6.28" step="0.01" value="0">
+        <span class="ctrl-val" id="u_hue_val">0.00</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-name">saturation</span>
+        <input type="range" id="u_sat" min="0" max="2" step="0.01" value="1.0">
+        <span class="ctrl-val" id="u_sat_val">1.00</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-name">brightness</span>
+        <input type="range" id="u_bri" min="0" max="2" step="0.01" value="1.0">
+        <span class="ctrl-val" id="u_bri_val">1.00</span>
+      </div>
+    </div>
+
+    <div class="ctrl-section">
+      <div class="ctrl-label">Geometry</div>
+      <div class="ctrl-row">
+        <span class="ctrl-name">distort X</span>
+        <input type="range" id="u_dx" min="-2" max="2" step="0.01" value="0">
+        <span class="ctrl-val" id="u_dx_val">0.00</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-name">distort Y</span>
+        <input type="range" id="u_dy" min="-2" max="2" step="0.01" value="0">
+        <span class="ctrl-val" id="u_dy_val">0.00</span>
+      </div>
+    </div>
+
+    <div class="ctrl-section">
+      <div class="ctrl-label">Flags</div>
+      <div class="toggle-row">
+        <button class="toggle-btn active" id="flag_pause" onclick="toggleFlag('pause')">pause</button>
+        <button class="toggle-btn" id="flag_invert" onclick="toggleFlag('invert')">invert</button>
+        <button class="toggle-btn" id="flag_grayscale" onclick="toggleFlag('grayscale')">grayscale</button>
+        <button class="toggle-btn active" id="flag_mouse" onclick="toggleFlag('mouse')">mouse</button>
+      </div>
+    </div>
+
+    <div class="ctrl-section">
+      <div class="ctrl-label">Degrees of Freedom</div>
+      <div style="font-size: 11px; color: var(--text3); line-height: 1.6;">
+        <div style="margin-bottom:6px; color: var(--text2); font-family: var(--mono);">Vertex shader:</div>
+        <div>· gl_Position (clip space)</div>
+        <div>· v_uv (pass-through UV)</div>
+        <div style="margin-top:8px; margin-bottom:6px; color: var(--text2); font-family: var(--mono);">Fragment shader:</div>
+        <div>· gl_FragColor (RGBA output)</div>
+        <div>· u_time, u_resolution</div>
+        <div>· u_mouse (normalized)</div>
+        <div>· u_* (your uniforms)</div>
+        <div style="margin-top:8px; margin-bottom:6px; color: var(--text2); font-family: var(--mono);">Built-in functions:</div>
+        <div>· sin, cos, fract, mod</div>
+        <div>· mix, smoothstep, clamp</div>
+        <div>· dot, cross, normalize</div>
+        <div>· length, distance, pow</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="code-panel">
+    <div id="error-bar" style="display:none; grid-column:1/-1; background:rgba(232,93,106,0.12); border-bottom:1px solid rgba(232,93,106,0.3); color:var(--danger); font-family:var(--mono); font-size:11px; padding:6px 16px; white-space:pre-wrap;"></div>
+    <div class="code-pane">
+      <div class="code-header">
+        <span class="badge badge-v">VERT</span>
+        <strong>vertex.glsl</strong>
+        <span style="margin-left:auto; font-size:10px; color:var(--text3)">runs per vertex · 4 vertices</span>
+      </div>
+      <div class="code-body" id="vert-display"></div>
+    </div>
+    <div class="code-pane">
+      <div class="code-header">
+        <span class="badge badge-f">FRAG</span>
+        <strong>fragment.glsl</strong>
+        <span style="margin-left:auto; font-size:10px; color:var(--text3)">runs per pixel · <span id="pixel-count">-</span></span>
+      </div>
+      <div class="code-body" id="frag-display"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const VERT_SRC = `attribute vec2 a_position;
+varying   vec2 v_uv;
+
+void main() {
+  v_uv        = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+
+const PRESETS = {
+waves: {
+label: 'Waves',
+src: `precision mediump float;
+
+varying vec2 v_uv;
+
+uniform float u_time;
+uniform float u_speed;
+uniform float u_scale;
+uniform float u_param1;
+uniform float u_param2;
+uniform float u_hue;
+uniform float u_sat;
+uniform float u_bri;
+uniform float u_dx;
+uniform float u_dy;
+uniform vec2  u_resolution;
+uniform vec2  u_mouse;
+uniform int   u_invert;
+uniform int   u_grayscale;
+uniform int   u_mouse_enabled;
+
+vec3 hsv2rgb(vec3 c) {
+  vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
+void main() {
+  vec2 uv = v_uv * u_scale;
+  uv.x   += u_dx;
+  uv.y   += u_dy;
+
+  float t = u_time * u_speed;
+
+  // Mouse influence
+  vec2 m = u_mouse;
+  float mDist = length(v_uv - m) * float(u_mouse_enabled);
+
+  float wave1 = sin(uv.x * 6.28 + t + uv.y * u_param1 * 8.0);
+  float wave2 = sin(uv.y * 6.28 * u_param2 * 4.0 - t * 0.7 + mDist * 4.0);
+  float wave3 = cos((uv.x + uv.y) * 4.0 + t * 1.3);
+
+  float v = (wave1 + wave2 + wave3) / 3.0;
+  v = v * 0.5 + 0.5;
+
+  float hue = fract(v + u_hue / 6.28);
+  vec3  col = hsv2rgb(vec3(hue, u_sat, u_bri * v));
+
+  if (u_grayscale == 1) {
+    float g = dot(col, vec3(0.299, 0.587, 0.114));
+    col = vec3(g);
+  }
+  if (u_invert == 1) col = 1.0 - col;
+
+  gl_FragColor = vec4(col, 1.0);
+}`
+},
+
+mandelbrot: {
+label: 'Mandelbrot',
+src: `precision mediump float;
+
+varying vec2 v_uv;
+
+uniform float u_time;
+uniform float u_speed;
+uniform float u_scale;
+uniform float u_param1;
+uniform float u_param2;
+uniform float u_hue;
+uniform float u_sat;
+uniform float u_bri;
+uniform float u_dx;
+uniform float u_dy;
+uniform vec2  u_resolution;
+uniform vec2  u_mouse;
+uniform int   u_invert;
+uniform int   u_grayscale;
+uniform int   u_mouse_enabled;
+
+vec3 palette(float t) {
+  vec3 a = vec3(0.5);
+  vec3 b = vec3(0.5);
+  vec3 c = vec3(1.0, 1.0, 0.5);
+  vec3 d = vec3(0.0, 0.33, 0.67);
+  return a + b * cos(6.28318 * (c * t + d));
+}
+
+void main() {
+  // Center and scale
+  vec2 uv = v_uv - 0.5;
+  uv.x *= u_resolution.x / u_resolution.y;
+
+  float zoom  = 2.5 / u_scale;
+  float cx    = u_dx * 1.5 - 0.5;
+  float cy    = u_dy * 1.5;
+  vec2  c     = uv * zoom + vec2(cx, cy);
+
+  // Animate zoom with time
+  float tpulse = sin(u_time * u_speed * 0.2) * 0.0001;
+  c += tpulse;
+
+  vec2  z     = vec2(0.0);
+  float iter  = 0.0;
+  float maxIt = 80.0 + u_param1 * 200.0;
+
+  for (float i = 0.0; i < 280.0; i++) {
+    if (i >= maxIt) break;
+    z = vec2(z.x*z.x - z.y*z.y, 2.0*z.x*z.y) + c;
+    if (dot(z, z) > 4.0) { iter = i; break; }
+    iter = i;
+  }
+
+  float smooth_iter = iter - log2(log2(dot(z,z))) + 4.0;
+  float t = smooth_iter / maxIt;
+  t = pow(t, u_param2 * 2.0 + 0.1);
+
+  vec3 col = palette(t + u_hue / 6.28);
+  col *= u_bri;
+  col  = mix(col, col * col, 1.0 - u_sat);
+
+  if (dot(z,z) <= 4.0) col = vec3(0.0);
+
+  if (u_grayscale == 1) {
+    float g = dot(col, vec3(0.299, 0.587, 0.114));
+    col = vec3(g);
+  }
+  if (u_invert == 1) col = 1.0 - col;
+
+  gl_FragColor = vec4(col, 1.0);
+}`
+},
+
+voronoi: {
+label: 'Voronoi',
+src: `precision mediump float;
+
+varying vec2 v_uv;
+
+uniform float u_time;
+uniform float u_speed;
+uniform float u_scale;
+uniform float u_param1;
+uniform float u_param2;
+uniform float u_hue;
+uniform float u_sat;
+uniform float u_bri;
+uniform float u_dx;
+uniform float u_dy;
+uniform vec2  u_resolution;
+uniform vec2  u_mouse;
+uniform int   u_invert;
+uniform int   u_grayscale;
+uniform int   u_mouse_enabled;
+
+vec2 hash2(vec2 p) {
+  p = vec2(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)));
+  return fract(sin(p) * 43758.5453123);
+}
+
+vec3 voronoi(vec2 uv) {
+  vec2 i = floor(uv);
+  vec2 f = fract(uv);
+  float d1 = 8.0, d2 = 8.0;
+  vec2 cell;
+
+  for (int y = -1; y <= 1; y++) {
+    for (int x = -1; x <= 1; x++) {
+      vec2 n  = vec2(float(x), float(y));
+      vec2 h  = hash2(i + n);
+      vec2 pt = n + h * 0.5 + 0.5 * sin(u_time * u_speed + 6.28318 * h);
+      float d = length(pt - f);
+      if (d < d1) { d2 = d1; d1 = d; cell = h; }
+      else if (d < d2) { d2 = d; }
+    }
+  }
+  return vec3(d1, d2, d2 - d1);
+}
+
+vec3 hsv2rgb(vec3 c) {
+  vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
+void main() {
+  vec2 uv = v_uv * u_scale;
+  uv += vec2(u_dx, u_dy);
+
+  vec2 m = u_mouse * u_scale * float(u_mouse_enabled);
+  vec2 pull = normalize(uv - m + 0.001) * 0.3 * u_param2 * float(u_mouse_enabled);
+  uv += pull;
+
+  vec3 vor = voronoi(uv);
+
+  float edge = smoothstep(0.0, u_param1 * 0.15 + 0.01, vor.z);
+  float hue  = fract(vor.x * 3.7 + u_hue / 6.28);
+  vec3  col  = hsv2rgb(vec3(hue, u_sat, u_bri * (0.3 + vor.y)));
+  col *= edge;
+
+  if (u_grayscale == 1) {
+    float g = dot(col, vec3(0.299, 0.587, 0.114));
+    col = vec3(g);
+  }
+  if (u_invert == 1) col = 1.0 - col;
+  gl_FragColor = vec4(col, 1.0);
+}`
+},
+
+sdf: {
+label: 'SDF Lighting',
+src: `precision mediump float;
+
+varying vec2 v_uv;
+
+uniform float u_time;
+uniform float u_speed;
+uniform float u_scale;
+uniform float u_param1;
+uniform float u_param2;
+uniform float u_hue;
+uniform float u_sat;
+uniform float u_bri;
+uniform float u_dx;
+uniform float u_dy;
+uniform vec2  u_resolution;
+uniform vec2  u_mouse;
+uniform int   u_invert;
+uniform int   u_grayscale;
+uniform int   u_mouse_enabled;
+
+float sdCircle(vec2 p, float r) { return length(p) - r; }
+float sdBox(vec2 p, vec2 b) {
+  vec2 d = abs(p) - b;
+  return length(max(d,0.0)) + min(max(d.x,d.y),0.0);
+}
+float sdLine(vec2 p, vec2 a, vec2 b) {
+  vec2 pa = p-a, ba = b-a;
+  float h = clamp(dot(pa,ba)/dot(ba,ba), 0.0, 1.0);
+  return length(pa - ba*h);
+}
+float smin(float a, float b, float k) {
+  float h = clamp(0.5+0.5*(b-a)/k, 0.0, 1.0);
+  return mix(b, a, h) - k*h*(1.0-h);
+}
+
+vec3 hsv2rgb(vec3 c) {
+  vec4 K = vec4(1.0,2.0/3.0,1.0/3.0,3.0);
+  vec3 p = abs(fract(c.xxx+K.xyz)*6.0-K.www);
+  return c.z*mix(K.xxx,clamp(p-K.xxx,0.0,1.0),c.y);
+}
+
+void main() {
+  vec2 uv = (v_uv - 0.5) * u_scale;
+  uv.x   *= u_resolution.x / u_resolution.y;
+  uv += vec2(u_dx, u_dy) * 0.5;
+
+  float t = u_time * u_speed;
+
+  // Animated SDFs
+  vec2  p1  = vec2(sin(t) * 0.3, cos(t * 0.7) * 0.2);
+  float d1  = sdCircle(uv - p1, 0.15 + u_param1 * 0.2);
+
+  vec2  p2  = vec2(cos(t * 1.3) * 0.25, sin(t * 0.9) * 0.25);
+  float d2  = sdBox(uv - p2, vec2(0.1 + u_param2 * 0.15));
+
+  // Smooth blend
+  float d   = smin(d1, d2, 0.08);
+
+  // Mouse light
+  vec2  lp  = mix(vec2(0.3, 0.3), u_mouse - 0.5, float(u_mouse_enabled));
+  lp.x *= u_resolution.x / u_resolution.y;
+  float ld  = length(uv - lp * u_scale * 0.5);
+  float li  = 0.08 / (ld * ld + 0.01);
+
+  // Shade
+  float fill  = smoothstep(0.01, -0.01, d);
+  float edge  = smoothstep(0.06,  0.0,  abs(d));
+  float glow  = exp(-max(d,0.0) * 6.0);
+
+  vec3 baseCol = hsv2rgb(vec3(u_hue/6.28 + 0.5, u_sat, u_bri * 0.8));
+  vec3 edgeCol = hsv2rgb(vec3(u_hue/6.28 + 0.15, u_sat * 0.6, u_bri));
+  vec3 glowCol = hsv2rgb(vec3(u_hue/6.28 + 0.3, 1.0, u_bri * li));
+
+  vec3 col = vec3(0.05) + glowCol;
+  col = mix(col, edgeCol, edge);
+  col = mix(col, baseCol, fill * 0.8 + li * 0.3);
+
+  if (u_grayscale == 1) {
+    float g = dot(col, vec3(0.299,0.587,0.114));
+    col = vec3(g);
+  }
+  if (u_invert == 1) col = 1.0 - col;
+  gl_FragColor = vec4(col, 1.0);
+}`
+},
+
+rgb: {
+label: 'RGB Split',
+src: `precision mediump float;
+
+varying vec2 v_uv;
+
+uniform float u_time;
+uniform float u_speed;
+uniform float u_scale;
+uniform float u_param1;
+uniform float u_param2;
+uniform float u_hue;
+uniform float u_sat;
+uniform float u_bri;
+uniform float u_dx;
+uniform float u_dy;
+uniform vec2  u_resolution;
+uniform vec2  u_mouse;
+uniform int   u_invert;
+uniform int   u_grayscale;
+uniform int   u_mouse_enabled;
+
+float hash(vec2 p) {
+  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+}
+
+float noise(vec2 p) {
+  vec2 i = floor(p); vec2 f = fract(p);
+  vec2 u = f*f*(3.0-2.0*f);
+  return mix(mix(hash(i), hash(i+vec2(1,0)),u.x),
+             mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)),u.x), u.y);
+}
+
+void main() {
+  vec2 uv = v_uv;
+  float t = u_time * u_speed;
+
+  float chromatic = u_param1 * 0.04;
+  float glitch    = u_param2;
+
+  // Mouse-driven offset
+  vec2 mo = (u_mouse - 0.5) * float(u_mouse_enabled) * 0.05;
+
+  // Glitch scanlines
+  float scanY = floor(uv.y * u_scale * 8.0) / (u_scale * 8.0);
+  float glitchAmt = step(1.0 - glitch * 0.3, hash(vec2(scanY, floor(t * 8.0))));
+  float offsetX = (hash(vec2(scanY, t)) - 0.5) * glitchAmt * 0.1;
+
+  vec2 uvR = uv + vec2( chromatic + offsetX + mo.x + u_dx*0.1, mo.y + u_dy*0.1);
+  vec2 uvG = uv + vec2( offsetX,                                mo.y + u_dy*0.1);
+  vec2 uvB = uv + vec2(-chromatic + offsetX - mo.x + u_dx*0.1, mo.y + u_dy*0.1);
+
+  // Base pattern (nested noise)
+  float n0R = noise(uvR * u_scale * 2.0 + t * 0.5);
+  float n0G = noise(uvG * u_scale * 2.0 + t * 0.5 + 1.7);
+  float n0B = noise(uvB * u_scale * 2.0 + t * 0.5 + 3.4);
+  float n1R = noise(uvR * u_scale * 4.0 - t * 0.3);
+  float n1G = noise(uvG * u_scale * 4.0 - t * 0.3 + 2.1);
+  float n1B = noise(uvB * u_scale * 4.0 - t * 0.3 + 4.2);
+
+  float r = mix(n0R, n1R, 0.5);
+  float g = mix(n0G, n1G, 0.5);
+  float b = mix(n0B, n1B, 0.5);
+
+  // Hue rotation
+  float hRot = u_hue;
+  vec3 col = vec3(
+    r * cos(hRot) - g * sin(hRot),
+    r * sin(hRot) + g * cos(hRot),
+    b
+  );
+  col = clamp(col * u_bri, 0.0, 1.0);
+  col = mix(vec3(dot(col, vec3(0.333))), col, u_sat);
+
+  if (u_grayscale == 1) {
+    float gv = dot(col, vec3(0.299, 0.587, 0.114));
+    col = vec3(gv);
+  }
+  if (u_invert == 1) col = 1.0 - col;
+  gl_FragColor = vec4(col, 1.0);
+}`
+},
+
+noise: {
+label: 'Noise',
+src: `precision mediump float;
+
+varying vec2 v_uv;
+
+uniform float u_time;
+uniform float u_speed;
+uniform float u_scale;
+uniform float u_param1;
+uniform float u_param2;
+uniform float u_hue;
+uniform float u_sat;
+uniform float u_bri;
+uniform float u_dx;
+uniform float u_dy;
+uniform vec2  u_resolution;
+uniform vec2  u_mouse;
+uniform int   u_invert;
+uniform int   u_grayscale;
+uniform int   u_mouse_enabled;
+
+vec2 hash2(vec2 p) {
+  p = vec2(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)));
+  return fract(sin(p)*43758.5453);
+}
+float hash(vec2 p) { return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+
+float vnoise(vec2 p) {
+  vec2 i = floor(p); vec2 f = fract(p);
+  vec2 u = f*f*f*(f*(f*6.0-15.0)+10.0);
+  float a = hash(i), b = hash(i+vec2(1,0));
+  float c = hash(i+vec2(0,1)), d = hash(i+vec2(1,1));
+  return mix(mix(a,b,u.x), mix(c,d,u.x), u.y);
+}
+
+float fbm(vec2 p, int oct) {
+  float v=0.0, amp=0.5, freq=1.0;
+  for (int i=0; i<8; i++) {
+    if (i >= oct) break;
+    v += amp * vnoise(p * freq);
+    amp  *= 0.5;
+    freq *= 2.0;
+  }
+  return v;
+}
+
+vec3 hsv2rgb(vec3 c) {
+  vec4 K=vec4(1.0,2.0/3.0,1.0/3.0,3.0);
+  vec3 p=abs(fract(c.xxx+K.xyz)*6.0-K.www);
+  return c.z*mix(K.xxx,clamp(p-K.xxx,0.0,1.0),c.y);
+}
+
+void main() {
+  vec2 uv  = v_uv * u_scale + vec2(u_dx, u_dy);
+  float t  = u_time * u_speed * 0.1;
+  int  oct = 1 + int(u_param1 * 7.0);
+
+  // Domain warp: feed fbm into itself
+  float warp = u_param2 * 3.0;
+  vec2 q = vec2(fbm(uv + t,             oct),
+                fbm(uv + vec2(5.2,1.3)+ t, oct));
+  vec2 r = vec2(fbm(uv + warp*q + vec2(1.7,9.2) + t, oct),
+                fbm(uv + warp*q + vec2(8.3,2.8) + t, oct));
+  float f = fbm(uv + warp*r, oct);
+
+  // Mouse warp
+  vec2 m = u_mouse * u_scale;
+  float md = exp(-length(uv - m) * 1.5) * float(u_mouse_enabled);
+  f = mix(f, 1.0 - f, md * 0.5);
+
+  vec3 col = hsv2rgb(vec3(fract(f * 2.0 + u_hue/6.28), u_sat, f * u_bri));
+
+  if (u_grayscale == 1) {
+    float g = dot(col, vec3(0.299,0.587,0.114));
+    col = vec3(g);
+  }
+  if (u_invert == 1) col = 1.0 - col;
+  gl_FragColor = vec4(col, 1.0);
+}`
+}
+};
+
+// State
+let gl, program, canvas;
+let raf, then = 0, elapsed = 0, frameCount = 0, fpsTimer = 0;
+let mouse = [0.5, 0.5];
+let flags = { pause: false, invert: false, grayscale: false, mouse: true };
+let uniforms = {};
+let currentPreset = 'waves';
+
+function initGL() {
+  canvas = document.getElementById('gl-canvas');
+  gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) { alert('WebGL not supported'); return; }
+
+  // Full-screen quad
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+
+  resize();
+  window.addEventListener('resize', resize);
+
+  canvas.addEventListener('mousemove', e => {
+    const r = canvas.getBoundingClientRect();
+    mouse = [(e.clientX - r.left) / r.width, 1.0 - (e.clientY - r.top) / r.height];
+    document.getElementById('mouse-val').textContent = mouse[0].toFixed(2)+','+mouse[1].toFixed(2);
+  });
+
+  setPreset(currentPreset);
+  setupControls();
+  raf = requestAnimationFrame(frame);
+}
+
+function resize() {
+  const panel = canvas.parentElement;
+  canvas.width  = panel.clientWidth  * devicePixelRatio;
+  canvas.height = panel.clientHeight * devicePixelRatio;
+  if (gl) gl.viewport(0, 0, canvas.width, canvas.height);
+  document.getElementById('pixel-count').textContent =
+    (canvas.width * canvas.height / 1000).toFixed(0) + 'k px/frame';
+}
+
+function compileShader(src, type) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  const eb = document.getElementById('error-bar');
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+    const err = gl.getShaderInfoLog(s);
+    if (eb) { eb.style.display = 'block'; eb.textContent = err; }
+    gl.deleteShader(s);
+    return null;
+  }
+  if (eb) eb.style.display = 'none';
+  return s;
+}
+
+function buildProgram(fragSrc) {
+  const vs = compileShader(VERT_SRC, gl.VERTEX_SHADER);
+  const fs = compileShader(fragSrc, gl.FRAGMENT_SHADER);
+  if (!vs || !fs) return null;
+  const p = gl.createProgram();
+  gl.attachShader(p, vs); gl.attachShader(p, fs);
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) { return null; }
+  return p;
+}
+
+function setPreset(name) {
+  currentPreset = name;
+  document.querySelectorAll('.stab').forEach(b => b.classList.toggle('active', b.textContent === PRESETS[name].label));
+
+  if (program) gl.deleteProgram(program);
+  program = buildProgram(PRESETS[name].src);
+  if (!program) return;
+  gl.useProgram(program);
+
+  // Cache uniform locations
+  const uNames = ['u_time','u_resolution','u_speed','u_scale','u_param1','u_param2',
+                   'u_hue','u_sat','u_bri','u_dx','u_dy','u_mouse',
+                   'u_invert','u_grayscale','u_mouse_enabled'];
+  uniforms = {};
+  uNames.forEach(n => { uniforms[n] = gl.getUniformLocation(program, n); });
+
+  // Vertex attrib
+  const pos = gl.getAttribLocation(program, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+
+  // Display highlighted shader code
+  displayCode('vert-display', VERT_SRC);
+  displayCode('frag-display', PRESETS[name].src);
+}
+
+function getVal(id) { return parseFloat(document.getElementById(id).value); }
+
+function frame(now) {
+  raf = requestAnimationFrame(frame);
+  const dt = (now - then) / 1000;
+  then = now;
+
+  if (!flags.pause) elapsed += dt;
+
+  frameCount++;
+  fpsTimer += dt;
+  if (fpsTimer >= 0.5) {
+    document.getElementById('fps-val').textContent = Math.round(frameCount / fpsTimer);
+    document.getElementById('time-val').textContent = elapsed.toFixed(2);
+    frameCount = 0; fpsTimer = 0;
+  }
+
+  if (!program) return;
+  gl.useProgram(program);
+
+  gl.uniform1f(uniforms.u_time,       elapsed);
+  gl.uniform2f(uniforms.u_resolution, canvas.width, canvas.height);
+  gl.uniform1f(uniforms.u_speed,      getVal('u_speed'));
+  gl.uniform1f(uniforms.u_scale,      getVal('u_scale'));
+  gl.uniform1f(uniforms.u_param1,     getVal('u_param1'));
+  gl.uniform1f(uniforms.u_param2,     getVal('u_param2'));
+  gl.uniform1f(uniforms.u_hue,        getVal('u_hue'));
+  gl.uniform1f(uniforms.u_sat,        getVal('u_sat'));
+  gl.uniform1f(uniforms.u_bri,        getVal('u_bri'));
+  gl.uniform1f(uniforms.u_dx,         getVal('u_dx'));
+  gl.uniform1f(uniforms.u_dy,         getVal('u_dy'));
+  gl.uniform2f(uniforms.u_mouse,      mouse[0], mouse[1]);
+  gl.uniform1i(uniforms.u_invert,     flags.invert ? 1 : 0);
+  gl.uniform1i(uniforms.u_grayscale,  flags.grayscale ? 1 : 0);
+  gl.uniform1i(uniforms.u_mouse_enabled, flags.mouse ? 1 : 0);
+
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+function setupControls() {
+  const sliders = ['u_speed','u_scale','u_param1','u_param2','u_hue','u_sat','u_bri','u_dx','u_dy'];
+  sliders.forEach(id => {
+    const el = document.getElementById(id);
+    const out = document.getElementById(id+'_val');
+    const update = () => { out.textContent = parseFloat(el.value).toFixed(2); };
+    el.addEventListener('input', update);
+    update();
+  });
+}
+
+function toggleFlag(name) {
+  flags[name] = !flags[name];
+  document.getElementById('flag_'+name).classList.toggle('active', flags[name]);
+}
+
+// Syntax highlighting
+const KEYWORDS = new Set(['void','float','vec2','vec3','vec4','int','bool','uniform','varying','attribute','precision','mediump','highp','lowp','in','out','inout','return','if','else','for','break','continue','discard']);
+const BUILTINS = new Set(['sin','cos','tan','asin','acos','atan','exp','log','sqrt','abs','sign','floor','ceil','fract','mod','min','max','clamp','mix','smoothstep','step','length','distance','dot','cross','normalize','reflect','refract','pow','log2','exp2','texture2D','gl_FragColor','gl_Position','gl_FragCoord']);
+
+function highlightGLSL(src) {
+  return src
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/(\/\/[^\n]*)/g, '<span class="cm">$1</span>')
+    .replace(/\b(\d+\.\d*|\d*\.\d+|\d+)\b/g, '<span class="nu">$1</span>')
+    .replace(/\b([A-Za-z_][A-Za-z0-9_]*)\b/g, (m) => {
+      if (KEYWORDS.has(m)) return `<span class="kw">${m}</span>`;
+      if (BUILTINS.has(m)) return `<span class="fn">${m}</span>`;
+      return m;
+    });
+}
+
+function displayCode(id, src) {
+  document.getElementById(id).innerHTML = highlightGLSL(src);
+}
+
+window.setPreset = setPreset;
+window.toggleFlag = toggleFlag;
+
+window.addEventListener('load', initGL);
+</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stacked Squares</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%;
+    background: #f5f5f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  #container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8vw;
+    width: 100%;
+  }
+
+  .col {
+    display: flex;
+    flex-direction: column;
+    width: 22vmin;
+  }
+
+  .square {
+    width: 22vmin;
+    height: 22vmin;
+    background: var(--sq-color);
+  }
+
+  #ui {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 100; display: flex; gap: 12px;
+  }
+  button {
+    background: rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.25);
+    color: #333; font-family: monospace; font-size: 11px; letter-spacing: .12em;
+    text-transform: uppercase; padding: 8px 20px; cursor: pointer;
+  }
+  button:hover { background: rgba(0,0,0,0.15); }
+</style>
+</head>
+<body>
+<div id="container"></div>
+<div id="ui">
+  <button onclick="regenerate()">↺ Regenerate</button>
+  <button onclick="newColors()">↺ Colors</button>
+</div>
+<script>
+// bg = root color, border = root + a little white mixed in
+// Each pair: bg is the base, border is bg lightened by ~40 RGB points
+function makePairs(borders) {
+  return borders.map(function(border) {
+    function adj(hex, d) {
+      hex = hex.replace('#','');
+      var r=Math.max(0,Math.min(255,parseInt(hex.slice(0,2),16)+d));
+      var g=Math.max(0,Math.min(255,parseInt(hex.slice(2,4),16)+d));
+      var b=Math.max(0,Math.min(255,parseInt(hex.slice(4,6),16)+d));
+      return 'rgb('+r+','+g+','+b+')';
+    }
+    return { border: border, bg: adj(border, 100) };
+  });
+}
+
+// Border is the root color, bg = border + white (lighter)
+var COLOR_PAIRS = makePairs(['#7a7870','#887860','#505870','#406040','#704040','#606060','#606040','#604820','#304050','#503040']);
+
+var current = COLOR_PAIRS[0];
+
+function hexToRgb(hex) {
+  hex = hex.replace('#','');
+  return [parseInt(hex.slice(0,2),16), parseInt(hex.slice(2,4),16), parseInt(hex.slice(4,6),16)];
+}
+
+function randomVariation(hex, amount) {
+  var rgb = hexToRgb(hex);
+  var r = Math.max(0, Math.min(255, rgb[0] + Math.floor((Math.random()-0.5)*amount*2)));
+  var g = Math.max(0, Math.min(255, rgb[1] + Math.floor((Math.random()-0.5)*amount*2)));
+  var b = Math.max(0, Math.min(255, rgb[2] + Math.floor((Math.random()-0.5)*amount*2)));
+  return 'rgb('+r+','+g+','+b+')';
+}
+
+function build() {
+  var container = document.getElementById('container');
+  container.innerHTML = '';
+  document.body.style.background = current.bg;
+
+  var borderColor = current.border;
+
+  // Random gray for squares — same across all 9 squares this render
+  var g = Math.floor(Math.random() * 80);
+  var sqColor = 'rgb(' + g + ',' + g + ',' + g + ')';
+
+  for (var col = 0; col < 3; col++) {
+    var colDiv = document.createElement('div');
+    colDiv.className = 'col';
+
+    for (var row = 0; row < 3; row++) {
+      var sq = document.createElement('div');
+      sq.className = 'square';
+
+      sq.style.background = sqColor;
+
+      // Border between squares: always top (except first)
+      var bt = row > 0 ? '3px solid ' + borderColor : 'none';
+      // Side borders: random left and right independently
+      var bl = Math.random() < 0.3 ? '5px solid ' + borderColor : 'none';
+      var br = Math.random() < 0.3 ? '5px solid ' + borderColor : 'none';
+
+      sq.style.borderTop    = bt;
+      sq.style.borderBottom = 'none';
+      sq.style.borderLeft   = bl;
+      sq.style.borderRight  = br;
+
+      colDiv.appendChild(sq);
+    }
+
+    container.appendChild(colDiv);
+  }
+}
+
+function regenerate() {
+  current = COLOR_PAIRS[Math.floor(Math.random() * COLOR_PAIRS.length)];
+  build();
+}
+
+function newColors() {
+  current = COLOR_PAIRS[Math.floor(Math.random() * COLOR_PAIRS.length)];
+  build();
+}
+
+build();
+</script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hex Treemap Art</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#f5f5f3;font-family:system-ui,sans-serif;padding:24px}
+  h1{font-size:15px;font-weight:500;color:#444;margin-bottom:14px;letter-spacing:0.02em}
+  #controls{display:flex;gap:8px;padding-bottom:16px;flex-wrap:wrap;align-items:center}
+  button{font-size:12px;padding:6px 14px;cursor:pointer;border-radius:6px;border:1px solid #ccc;background:#fff;color:#333;transition:background .15s}
+  button:hover{background:#eee}
+  select{font-size:12px;padding:6px 10px;border-radius:6px;border:1px solid #ccc;background:#fff;color:#333}
+  #grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;max-width:700px}
+  .cell{width:100%;aspect-ratio:1}
+  .cell svg{display:block;width:100%;height:100%}
+</style>
+</head>
+<body>
+<h1>Hexagonal treemap art</h1>
+<div id="controls">
+  <select id="palSel">
+    <option value="vivid">Vivid</option>
+    <option value="pastel">Pastel</option>
+    <option value="earth">Earth tones</option>
+    <option value="neon">Neon</option>
+    <option value="ocean">Ocean</option>
+    <option value="sunset">Sunset</option>
+    <option value="mono">Monochrome</option>
+    <option value="random">Random mix</option>
+  </select>
+  <button id="palBtn">Change palette</button>
+  <button id="regenBtn">Regenerate</button>
+</div>
+<div id="grid"></div>
+
+<script>
+const PALS={
+  vivid:['#E63946','#F4A261','#2A9D8F','#457B9D','#E9C46A','#6A0572','#F77F00','#4CC9F0','#80B918','#C77DFF'],
+  pastel:['#FFB3BA','#FFDFBA','#FFFFBA','#BAFFC9','#BAE1FF','#E8BAFF','#FFBAEC','#C9F0FF','#D4F0A0','#FFDAC1'],
+  earth:['#A0522D','#8B6914','#CD853F','#DEB887','#6B8E23','#556B2F','#8B4513','#BC8A5F','#4A7C59','#C19A6B'],
+  neon:['#FF0080','#00FFFF','#FF6600','#00FF44','#FF00FF','#FFFF00','#00BFFF','#FF4500','#7FFF00','#FF1493'],
+  ocean:['#003049','#0A6E9A','#1B9AAA','#06D6A0','#118AB2','#48CAE4','#90E0EF','#0077B6','#00B4D8','#023E8A'],
+  sunset:['#FF6B6B','#FF8E53','#FFC300','#FF5733','#C70039','#FFA07A','#FF7043','#FF4081','#E040FB','#FF6F00'],
+  mono:['#111','#333','#555','#777','#999','#aaa','#bbb','#ccc','#ddd','#eee'],
+  random:null
+};
+const ALL=Object.values(PALS).filter(Boolean).flat();
+
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=0|Math.random()*(i+1);[r[i],r[j]]=[r[j],r[i]];}return r;}
+function rnd(a,b){return a+Math.random()*(b-a);}
+
+function getPal(){
+  const v=document.getElementById('palSel').value;
+  return v==='random'?shuffle(ALL).slice(0,10):PALS[v];
+}
+
+function hexPts(cx,cy,r){
+  return Array.from({length:6},(_,i)=>{
+    const a=Math.PI/3*i-Math.PI/6;
+    return[cx+r*Math.cos(a),cy+r*Math.sin(a)];
+  });
+}
+
+function clipPoly(poly,ax,ay,bx,by){
+  const side=p=>(bx-ax)*(p[1]-ay)-(by-ay)*(p[0]-ax);
+  const inter=(a,b)=>{
+    const da=side(a),db=side(b),t=da/(da-db);
+    return[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+  };
+  let out=[];
+  for(let i=0;i<poly.length;i++){
+    const c=poly[i],n=poly[(i+1)%poly.length];
+    const sc=side(c)>=0,sn=side(n)>=0;
+    if(sc)out.push(c);
+    if(sc!==sn)out.push(inter(c,n));
+  }
+  return out;
+}
+
+function clipToHex(poly,hpts){
+  let r=poly;
+  for(let i=0;i<hpts.length;i++){
+    const a=hpts[i],b=hpts[(i+1)%hpts.length];
+    r=clipPoly(r,a[0],a[1],b[0],b[1]);
+    if(!r.length)return[];
+  }
+  return r;
+}
+
+function voronoiInHex(seeds,hpts){
+  return seeds.map((_,si)=>{
+    let poly=[...hpts];
+    for(let sj=0;sj<seeds.length;sj++){
+      if(si===sj)continue;
+      const ax=(seeds[si][0]+seeds[sj][0])/2,ay=(seeds[si][1]+seeds[sj][1])/2;
+      const dx=seeds[sj][0]-seeds[si][0],dy=seeds[sj][1]-seeds[si][1];
+      const bx=ax+dy,by=ay-dx;
+      poly=clipPoly(poly,ax,ay,bx,by);
+      if(!poly.length)break;
+    }
+    return clipToHex(poly,hpts);
+  });
+}
+
+function makeHexSVG(pal){
+  const S=200,cx=S/2,cy=S/2,r=S*0.47;
+  const hpts=hexPts(cx,cy,r);
+  const nSeeds=Math.floor(rnd(4,11));
+  const seeds=Array.from({length:nSeeds},()=>{
+    const a=Math.random()*Math.PI*2,d=Math.random()*r*0.85;
+    return[cx+d*Math.cos(a),cy+d*Math.sin(a)];
+  });
+  const cells=voronoiInHex(seeds,hpts).filter(p=>p.length>2);
+  const colors=shuffle(pal);
+  let paths='';
+  cells.forEach((poly,i)=>{
+    const pts=poly.map(p=>p.map(v=>v.toFixed(2)).join(',')).join(' ');
+    paths+=`<polygon points="${pts}" fill="${colors[i%colors.length]}" stroke="#fff" stroke-width="1.2"/>`;
+  });
+  const id='h'+Math.random().toString(36).slice(2,8);
+  const hp=hpts.map((p,i)=>(i?'L':'M')+p[0].toFixed(2)+' '+p[1].toFixed(2)).join(' ')+'Z';
+  return`<svg viewBox="0 0 ${S} ${S}" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="${id}"><path d="${hp}"/></clipPath></defs><g clip-path="url(#${id})">${paths}</g><path d="${hp}" fill="none" stroke="#fff" stroke-width="1.5"/></svg>`;
+}
+
+function render(){
+  const pal=getPal();
+  const grid=document.getElementById('grid');
+  grid.innerHTML='';
+  for(let i=0;i<25;i++){
+    const div=document.createElement('div');
+    div.className='cell';
+    div.innerHTML=makeHexSVG(pal);
+    grid.appendChild(div);
+  }
+}
+
+document.getElementById('palBtn').addEventListener('click',()=>{
+  const sel=document.getElementById('palSel');
+  const keys=Object.keys(PALS);
+  sel.selectedIndex=(sel.selectedIndex+1)%keys.length;
+  render();
+});
+document.getElementById('regenBtn').addEventListener('click',render);
+document.getElementById('palSel').addEventListener('change',render);
+
+render();
+</script>
+</body>
+</html>

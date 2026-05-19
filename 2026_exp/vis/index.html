@@ -1,639 +1,555 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generative Viz Library</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;600&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>outerfit — Your AI Wardrobe Stylist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink:      #0A0A0F;
+      --ink2:     #12121A;
+      --slate:    #1E1E2A;
+      --mist:     #2A2A38;
+      --silver:   #9090A8;
+      --ghost:    #C8C8D8;
+      --white:    #F4F2EE;
+      --accent:   #C8A882;
+      --accent2:  #8B6E52;
+      --glow:     rgba(200,168,130,0.12);
+    }
 
-  :root {
-    --bg: #07060e;
-    --surface: #0f0e1a;
-    --border: rgba(255,255,255,0.07);
-    --text: rgba(255,255,255,0.85);
-    --muted: rgba(255,255,255,0.35);
-    --accent: #7c6cfc;
-  }
+    html { scroll-behavior: smooth; }
 
-  html, body {
-    width: 100%; min-height: 100%;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 300;
-  }
+    body {
+      background: var(--ink);
+      color: var(--white);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-  header {
-    padding: 56px 48px 32px;
-    border-bottom: 1px solid var(--border);
-  }
+    /* ── Noise texture overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.6;
+    }
 
-  header h1 {
-    font-family: 'DM Mono', monospace;
-    font-size: clamp(18px, 2.5vw, 30px);
-    font-weight: 400;
-    letter-spacing: 0.06em;
-    color: var(--text);
-  }
+    /* ── Ambient glow ── */
+    .ambient {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,168,130,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      top: -200px;
+      right: -200px;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
 
-  header p {
-    margin-top: 8px;
-    font-size: 13px;
-    color: var(--muted);
-    letter-spacing: 0.04em;
-  }
+    .ambient-2 {
+      position: fixed;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139,110,82,0.05) 0%, transparent 70%);
+      pointer-events: none;
+      bottom: -100px;
+      left: -100px;
+      animation: drift 18s ease-in-out infinite alternate-reverse;
+    }
 
-  .section-label {
-    padding: 32px 48px 12px;
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--muted);
-    text-transform: uppercase;
-    border-bottom: 1px solid var(--border);
-  }
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(40px, 60px) scale(1.1); }
+    }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border-top: 1px solid var(--border);
-  }
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 28px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(to bottom, rgba(10,10,15,0.9) 0%, transparent 100%);
+      backdrop-filter: blur(8px);
+    }
 
-  .card {
-    background: var(--bg);
-    padding: 28px 32px;
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    transition: background 0.15s;
-    position: relative;
-    overflow: hidden;
-  }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      color: var(--white);
+      text-decoration: none;
+    }
 
-  .card:hover {
-    background: var(--surface);
-  }
+    .nav-logo span {
+      color: var(--accent);
+    }
 
-  .card:hover .arrow {
-    opacity: 1;
-    transform: translateX(0);
-  }
+    .nav-link {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--silver);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
 
-  .card-tag {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.18em;
-    color: var(--accent);
-    text-transform: uppercase;
-  }
+    .nav-link:hover { color: var(--accent); }
 
-  .card-title {
-    font-size: 15px;
-    font-weight: 400;
-    color: var(--text);
-    line-height: 1.3;
-  }
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+    }
 
-  .card-desc {
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.6;
-  }
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.2s;
+    }
 
-  .arrow {
-    position: absolute;
-    top: 28px;
-    right: 28px;
-    font-size: 16px;
-    color: var(--accent);
-    opacity: 0;
-    transform: translateX(-6px);
-    transition: opacity 0.15s, transform 0.15s;
-  }
+    .hero-title {
+      font-size: clamp(56px, 10vw, 120px);
+      font-weight: 300;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.4s;
+    }
 
-  footer {
-    padding: 32px 48px;
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.12em;
-    border-top: 1px solid var(--border);
-  }
-</style>
+    .hero-title em {
+      font-style: italic;
+      color: var(--accent);
+      font-weight: 300;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(16px, 2.5vw, 22px);
+      font-weight: 300;
+      line-height: 1.6;
+      color: var(--ghost);
+      max-width: 560px;
+      margin-bottom: 64px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.6s;
+    }
+
+    /* ── Invite form ── */
+    .invite-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 420px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.8s;
+    }
+
+    .form-row {
+      display: flex;
+      width: 100%;
+      border: 1px solid rgba(200,168,130,0.25);
+      border-radius: 2px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.03);
+      transition: border-color 0.2s;
+    }
+
+    .form-row:focus-within {
+      border-color: rgba(200,168,130,0.6);
+    }
+
+    .form-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 16px 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      color: var(--white);
+      min-width: 0;
+    }
+
+    .form-input::placeholder {
+      color: var(--silver);
+      opacity: 0.6;
+    }
+
+    .form-btn {
+      background: var(--accent);
+      border: none;
+      cursor: pointer;
+      padding: 16px 24px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink);
+      font-weight: 400;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .form-btn:hover { background: #D4B896; }
+    .form-btn:active { transform: scale(0.98); }
+
+    .form-note {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--silver);
+      opacity: 0.6;
+      text-align: center;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(200,168,130,0.2), transparent);
+    }
+
+    /* ── Features ── */
+    .features {
+      padding: 100px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .feature {
+      background: var(--ink2);
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease, background 0.3s;
+    }
+
+    .feature:hover {
+      background: var(--slate);
+    }
+
+    .feature::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(200,168,130,0.3), transparent);
+    }
+
+    .feature.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .feature-number {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      margin-bottom: 32px;
+      display: block;
+    }
+
+    .feature-title {
+      font-size: 28px;
+      font-weight: 300;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .feature-title em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .feature-body {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--silver);
+    }
+
+    /* ── Manifesto ── */
+    .manifesto {
+      padding: 100px 24px;
+      text-align: center;
+    }
+
+    .manifesto-inner {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .manifesto-quote {
+      font-size: clamp(24px, 4vw, 40px);
+      font-weight: 300;
+      line-height: 1.4;
+      font-style: italic;
+      color: var(--ghost);
+      margin-bottom: 32px;
+    }
+
+    .manifesto-quote strong {
+      font-style: normal;
+      font-weight: 400;
+      color: var(--white);
+    }
+
+    .manifesto-attr {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--silver);
+      opacity: 0.5;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .footer-logo {
+      font-size: 18px;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      color: var(--silver);
+    }
+
+    .footer-logo span { color: var(--accent); }
+
+    .footer-meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--silver);
+      opacity: 0.4;
+      text-align: right;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Success state ── */
+    .success-msg {
+      display: none;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-align: center;
+      padding: 16px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      nav { padding: 20px 24px; }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 2px;
+      }
+
+      .feature { padding: 40px 28px; }
+
+      footer {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+        padding: 32px 24px;
+      }
+
+      .footer-meta { text-align: center; }
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <h1>Generative Viz Library</h1>
-  <p>A collection of generative data visualization experiments — built in one session.</p>
-</header>
-
-<div class="section-label">Streaming &amp; Time Series</div>
-<div class="grid">
-
-  <a class="card" href="top10_generative_art.html" target="_blank">
-    <span class="card-tag">Plotly</span>
-    <div class="card-title">Top 10 Generative Art</div>
-    <div class="card-desc">Bump chart with fat spline lines, random palettes, slow animation.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v3_d3_streamlines_smooth.html" target="_blank">
-    <span class="card-tag">D3 · v3</span>
-    <div class="card-title">Streamlines — Smooth</div>
-    <div class="card-desc">Wiggle-offset streaming line chart, fat strokes, D3 easeLinear scroll.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="top10_streamlines.html" target="_blank">
-    <span class="card-tag">D3</span>
-    <div class="card-title">Streamlines — Spindly</div>
-    <div class="card-desc">Thin midline spines of a stacked streamgraph scrolling endlessly.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v5_d3_endless_stream.html" target="_blank">
-    <span class="card-tag">D3 · v5</span>
-    <div class="card-title">Endless Stream</div>
-    <div class="card-desc">Fixed-lane streamgraph — lines stay in position, thickness breathes.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v6_streaming_bump_chart.html" target="_blank">
-    <span class="card-tag">D3 · v6</span>
-    <div class="card-title">Streaming Bump Chart</div>
-    <div class="card-desc">Rank lines scroll left to right, past data frozen, new points glide in.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v19_denselines.html" target="_blank">
-    <span class="card-tag">Canvas · v19</span>
-    <div class="card-title">DenseLines</div>
-    <div class="card-desc">1000 arc-length-normalized time series rendered as a density heatmap.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Time Curves</div>
-<div class="grid">
-
-  <a class="card" href="v17_time_curves_segments.html" target="_blank">
-    <span class="card-tag">D3 · v17</span>
-    <div class="card-title">Time Curves — Segments</div>
-    <div class="card-desc">MDS-projected distance matrices, colored line segments, 3×3 grid.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v18_time_curves_bezier.html" target="_blank">
-    <span class="card-tag">D3 · v18</span>
-    <div class="card-title">Time Curves — Bezier</div>
-    <div class="card-desc">Thick Catmull-Rom beziers, gradated light→dark, colored outlined nodes.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Network &amp; Graph</div>
-<div class="grid">
-
-  <a class="card" href="v7_generative_sankey.html" target="_blank">
-    <span class="card-tag">D3 · v7</span>
-    <div class="card-title">Generative Sankey</div>
-    <div class="card-desc">Random layered DAGs, 3–6 layers, random flow weights, fade-in entrance.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v11_chord_grid.html" target="_blank">
-    <span class="card-tag">D3 · v11</span>
-    <div class="card-title">Chord Grid — 3×3</div>
-    <div class="card-desc">Nine chord diagrams, shared palette, different random flow matrices.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v20_biofabric_single.html" target="_blank">
-    <span class="card-tag">Canvas · v20</span>
-    <div class="card-title">BioFabric — Single</div>
-    <div class="card-desc">Nodes as horizontal lines, edges as vertical columns. BFS layout.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v21_biofabric_grid.html" target="_blank">
-    <span class="card-tag">Canvas · v21</span>
-    <div class="card-title">BioFabric — 2×2 Grid</div>
-    <div class="card-desc">Four BioFabric networks, shared cycling color palette, black background.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v22_edge_bundling_grid.html" target="_blank">
-    <span class="card-tag">Canvas · v22</span>
-    <div class="card-title">Edge Bundling Grid</div>
-    <div class="card-desc">Compound graph — beziers route through cell centroids, power-law hubs.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Distribution &amp; Statistical</div>
-<div class="grid">
-
-  <a class="card" href="v8_beeswarm_single.html" target="_blank">
-    <span class="card-tag">D3 · v8</span>
-    <div class="card-title">Beeswarm — Single</div>
-    <div class="card-desc">One row, random distributions, bounce-in animation, 20s auto-refresh.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v9_beeswarm_rows.html" target="_blank">
-    <span class="card-tag">D3 · v9</span>
-    <div class="card-title">Beeswarm — 3 Rows</div>
-    <div class="card-desc">Three independent swarm rows each on their own random timer.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v10_likert_wall.html" target="_blank">
-    <span class="card-tag">D3 · v10</span>
-    <div class="card-title">Likert Wall</div>
-    <div class="card-desc">Full-page diverging Likert bars, pixel-perfect fill, no gaps, no black.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Hierarchical</div>
-<div class="grid">
-
-  <a class="card" href="v14_circlepack_flat.html" target="_blank">
-    <span class="card-tag">D3 · v14</span>
-    <div class="card-title">Circle Pack — Flat</div>
-    <div class="card-desc">3×3 grid, flat solid fills, ghosted parent shells, bounce animation.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v15_circlepack_flat_borders.html" target="_blank">
-    <span class="card-tag">D3 · v15</span>
-    <div class="card-title">Circle Pack — Bordered</div>
-    <div class="card-desc">v14 with contrasting borders — dark fill, bright ring, white inner highlight.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v12_circlepack_glowing_orbs.html" target="_blank">
-    <span class="card-tag">D3 · v12</span>
-    <div class="card-title">Circle Pack — Glowing Orbs</div>
-    <div class="card-desc">Radial gradients, feGaussianBlur bloom, specular highlights. Dark bg.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v13_circlepack_borders.html" target="_blank">
-    <span class="card-tag">D3 · v13</span>
-    <div class="card-title">Circle Pack — Glowing Borders</div>
-    <div class="card-desc">Dark fill, glowing colored stroke border, specular highlight layer.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v16_treemap_grid.html" target="_blank">
-    <span class="card-tag">D3 · v16</span>
-    <div class="card-title">Treemap — 5×5 Grid</div>
-    <div class="card-desc">25 treemaps, random tiling algorithms, dark group backgrounds, stagger in.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Field &amp; Spatial</div>
-<div class="grid">
-
-  <a class="card" href="v23_contours_grid.html" target="_blank">
-    <span class="card-tag">D3 · v23</span>
-    <div class="card-title">Contours — 5×5 Grid</div>
-    <div class="card-desc">Gaussian mixture scalar fields, 16 iso-contour levels, 10 color schemes.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v24_radar_grid.html" target="_blank">
-    <span class="card-tag">D3 · v24</span>
-    <div class="card-title">Radar — 5×5 Grid</div>
-    <div class="card-desc">Rounded cardinal-closed spider charts, no labels, no gridlines, glowing strokes.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-
-<div class="section-label">Generative Art &amp; Texture</div>
-<div class="grid">
-
-  <a class="card" href="v27_watercolor.html" target="_blank">
-    <span class="card-tag">Canvas · v27</span>
-    <div class="card-title">Watercolor</div>
-    <div class="card-desc">Tyler Hobbs recursive polygon deformation — 50–80 transparent layers, shadowBlur edge bleed, radial gradient bloom, paper grain.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Part-to-Whole &amp; Proportion</div>
-<div class="grid">
-
-  <a class="card" href="v28_marimekko.html" target="_blank">
-    <span class="card-tag">D3 · v28</span>
-    <div class="card-title">Marimekko — 3×6 Grid</div>
-    <div class="card-desc">18 independent Marimekko charts, zero gaps, filling the full viewport as one unified composition. Random column widths and segment heights per chart.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Optimization Landscapes</div>
-<div class="grid">
-
-  <a class="card" href="v25_optimization_landscapes.html" target="_blank">
-    <span class="card-tag">D3 · v25</span>
-    <div class="card-title">Optimization Test Functions</div>
-    <div class="card-desc">25 real functions — Rastrigin, Ackley, Eggholder, Himmelblau, Rosenbrock, Schaffer, and 19 more — as contour landscapes. Random domain perturbation each render.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Barcode &amp; Distribution</div>
-<div class="grid">
-
-  <a class="card" href="v26_barcode_grid.html" target="_blank">
-    <span class="card-tag">D3 · v26</span>
-    <div class="card-title">Barcode — 6×6 Grid</div>
-    <div class="card-desc">36 barcode charts — vertical tick marks per data point, 2–6 colored rows, opacity fades at extremes, random distributions per cell.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-
-<div class="section-label">Graph &amp; Network</div>
-<div class="grid">
-
-  <a class="card" href="v29_optimal_substructure.html" target="_blank">
-    <span class="card-tag">D3 · v29</span>
-    <div class="card-title">Optimal Substructure — 3×3</div>
-    <div class="card-desc">Dynamic programming graphs — Dijkstra shortest path, bold optimal line, sinusoidal subpath edges, distance-weighted stroke widths.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Ridgeline</div>
-<div class="grid">
-
-  <a class="card" href="v30_ridgeline_grid.html" target="_blank">
-    <span class="card-tag">D3 · v30</span>
-    <div class="card-title">Ridgeline — 3×3 Grid</div>
-    <div class="card-desc">9 independent KDE ridgeline plots, overlapping density curves, random distributions, Joy Division aesthetic.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v31_ridgeline_full.html" target="_blank">
-    <span class="card-tag">D3 · v31</span>
-    <div class="card-title">Ridgeline — Full Viewport</div>
-    <div class="card-desc">Single full-screen ridgeline, 14–23 lumpy gaussian-mixture ridges, occluding layers, capped peaks.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Warped &amp; Projected</div>
-<div class="grid">
-
-  <a class="card" href="v32_custom_projections.html" target="_blank">
-    <span class="card-tag">D3 · v32</span>
-    <div class="card-title">Custom Cartesian Projections — 4×4</div>
-    <div class="card-desc">Regular grids warped through custom math transforms — swirl, fisheye, Möbius, spiral, hyperbolic, polynomial and more.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v33_function_contours.html" target="_blank">
-    <span class="card-tag">D3 · v33</span>
-    <div class="card-title">Function Contours — 5×5</div>
-    <div class="card-desc">25 math functions as iso-contour lines — sin×cos, interference, ripple, saddle, hyperbolic, recursive compositions. Lines only, no fill.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Perlin Noise</div>
-<div class="grid">
-
-  <a class="card" href="v34_perlin_noise.html" target="_blank">
-    <span class="card-tag">Canvas · v34</span>
-    <div class="card-title">Improved Perlin Noise</div>
-    <div class="card-desc">Faithful implementation of Perlin 2002 — fade 6t⁵-15t⁴+10t³, cube-edge gradients, fBm. 6 modes: domain warp, marble, wood, turbulence, color, curl.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v35_perlin_glyphs.html" target="_blank">
-    <span class="card-tag">Canvas · v35</span>
-    <div class="card-title">Perlin Noise + Latin Glyphs</div>
-    <div class="card-desc">v34 with randomized Latin capital glyphs tiled edge to edge using overlay composite — letters interact with the noise field.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-
-<div class="section-label">Function Contour Color</div>
-<div class="grid">
-
-  <a class="card" href="v36_sincos_contour.html" target="_blank">
-    <span class="card-tag">Canvas · v36</span>
-    <div class="card-title">sin(x)cos(y) Contour</div>
-    <div class="card-desc">Pixel-exact diverging color field with faint iso-contour lines. Cycles through 8 math functions. Matches Observable Plot's function contour aesthetic.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v37_contour_blocks.html" target="_blank">
-    <span class="card-tag">Canvas · v37</span>
-    <div class="card-title">Contour + Block Elements</div>
-    <div class="card-desc">Diverging color contour field with thousands of Unicode block elements (▀▄█▁▂▃▌▍▎) tiling the viewport. Random color pairs, 7 functions.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-
-<div class="section-label">Voronoi &amp; Delaunay</div>
-<div class="grid">
-
-  <a class="card" href="v45_voronoi_circles.html" target="_blank">
-    <span class="card-tag">D3 · v45</span>
-    <div class="card-title">Voronoi Circles — 5×5</div>
-    <div class="card-desc">5×5 circles each clipped and filled with a Voronoi diagram. 8–29 random sites, 5 distribution modes, cycling color palettes.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v46_delaunay_links.html" target="_blank">
-    <span class="card-tag">D3 · v46</span>
-    <div class="card-title">Delaunay Links — 5×5</div>
-    <div class="card-desc">Delaunay triangulation meshes — random point distributions, colored edges and nodes, 5 layout modes per cell.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v47_delaunay_glyphs.html" target="_blank">
-    <span class="card-tag">D3 · v47</span>
-    <div class="card-title">Delaunay + Latin Glyphs</div>
-    <div class="card-desc">Delaunay mesh with a continuous full-viewport Latin capital glyph grid overlaid on top in the node color.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Population Pyramids</div>
-<div class="grid">
-
-  <a class="card" href="v42_population_pyramids.html" target="_blank">
-    <span class="card-tag">D3 · v42</span>
-    <div class="card-title">Population Pyramids — Bar — 10×10</div>
-    <div class="card-desc">100 mirrored horizontal bar chart pyramids, 5 shape archetypes, two-color pairs.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v43_population_areas.html" target="_blank">
-    <span class="card-tag">D3 · v43</span>
-    <div class="card-title">Population Pyramids — Area — 10×10</div>
-    <div class="card-desc">Smooth CatmullRom area chart pyramids, continuous silhouette, bright outer stroke.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Vega-Lite</div>
-<div class="grid">
-
-  <a class="card" href="v40_comet_grid.html" target="_blank">
-    <span class="card-tag">Vega-Lite · v40</span>
-    <div class="card-title">Comet Chart — 5×5</div>
-    <div class="card-desc">Trail mark comet charts — tapered lines showing change between two states. Diverging color scales, random data.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v41_lasagna.html" target="_blank">
-    <span class="card-tag">Vega-Lite · v41</span>
-    <div class="card-title">Lasagna Plot</div>
-    <div class="card-desc">Full-viewport dense time-series heatmap — 10 rows × 600 time steps, 18 color schemes, random walk data.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Watercolor &amp; Generative</div>
-<div class="grid">
-
-  <a class="card" href="v38_perlin_square.html" target="_blank">
-    <span class="card-tag">Canvas · v38</span>
-    <div class="card-title">Perlin Square</div>
-    <div class="card-desc">Domain-warped Perlin noise inside a squircle SDF with iridescent rim lighting. Dark metallic aesthetic.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v39_perlin_square_circles.html" target="_blank">
-    <span class="card-tag">Canvas · v39</span>
-    <div class="card-title">Perlin Square + Circles</div>
-    <div class="card-desc">v38 with amber circle/half-circle grid overlay tiling the viewport.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-
-<div class="section-label">Circular & Radial</div>
-<div class="grid">
-
-  <a class="card" href="v48_circular_heatmaps.html" target="_blank">
-    <span class="card-tag">D3 · v48</span>
-    <div class="card-title">Circular Heatmaps — 5×5</div>
-    <div class="card-desc">circlize-inspired concentric ring heatmaps. 4–10 rings, 6–19 sectors, 8 diverging color schemes, 5 data patterns.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Triangulation</div>
-<div class="grid">
-
-  <a class="card" href="v49_triplot.html" target="_blank">
-    <span class="card-tag">D3 · v49</span>
-    <div class="card-title">Triplot — 5×5</div>
-    <div class="card-desc">matplotlib-style Delaunay triplot — triangles colored by math function at centroid. 8 functions, 17 dark color schemes.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Hatch Patterns</div>
-<div class="grid">
-
-  <a class="card" href="v50_hatch_patterns.html" target="_blank">
-    <span class="card-tag">SVG · v50</span>
-    <div class="card-title">Hatch Patterns — 100 Squares</div>
-    <div class="card-desc">matplotlib hatch style reference — 20 SVG hatch patterns across 100 black and white squares.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v51_hatch_color.html" target="_blank">
-    <span class="card-tag">SVG · v51</span>
-    <div class="card-title">Hatch — Color Accent</div>
-    <div class="card-desc">Hatch patterns with ~15% colored hatch lines and ~5% white hatch on color background.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v52_hatch_accent.html" target="_blank">
-    <span class="card-tag">SVG · v52</span>
-    <div class="card-title">Hatch — Three Tier</div>
-    <div class="card-desc">80% black/white, 15% colored hatch on white, 5% white hatch on color. Single accent color per render.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Neural & Statistical</div>
-<div class="grid">
-
-  <a class="card" href="v53_hinton.html" target="_blank">
-    <span class="card-tag">D3 · v53</span>
-    <div class="card-title">Hinton Diagram</div>
-    <div class="card-desc">Full viewport Hinton diagram — square size encodes magnitude, white/black encodes sign. Three-tier color accent treatment.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<div class="section-label">Recursive & Fractal</div>
-<div class="grid">
-
-  <a class="card" href="v54_square_limit.html" target="_blank">
-    <span class="card-tag">Canvas · v54</span>
-    <div class="card-title">Square Limit</div>
-    <div class="card-desc">Henderson 1982 functional geometry — recursive fish tessellation using picture combinators. Depth 4–7, random palettes.</div>
-    <span class="arrow">→</span>
-  </a>
-
-  <a class="card" href="v55_dragon_curves.html" target="_blank">
-    <span class="card-tag">Canvas · v55</span>
-    <div class="card-title">Dragon Curves — 5×5</div>
-    <div class="card-desc">25 dragon curves with randomized fold sequences — same iteration per render, different shapes per cell. 2 alternating colors each.</div>
-    <span class="arrow">→</span>
-  </a>
-
-</div>
-
-<footer>
-  Generated in one session &mdash; Director of Data &mdash; 2026
-</footer>
+  <div class="ambient"></div>
+  <div class="ambient-2"></div>
+
+  <!-- Nav -->
+  <nav>
+    <a href="/" class="nav-logo">outer<span>fit</span></a>
+    <a href="mailto:hello@outerfit.net" class="nav-link">hello@outerfit.net</a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <p class="hero-eyebrow">Early Access — Invite Only</p>
+    <h1 class="hero-title">
+      Stop staring<br />
+      at your <em>closet.</em>
+    </h1>
+    <p class="hero-subtitle">
+      outerfit is an AI stylist that tells you what to wear — every day,
+      for every occasion, from the clothes you already own.
+    </p>
+
+    <form class="invite-form" id="inviteForm">
+      <div class="form-row">
+        <input
+          class="form-input"
+          type="text"
+          id="inviteCode"
+          placeholder="Enter your invite code"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button class="form-btn" type="submit">Enter</button>
+      </div>
+      <p class="form-note">Have an invite code? Enter it above to create your account.</p>
+      <p class="success-msg" id="successMsg">✓ Redirecting you to your account...</p>
+    </form>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Features -->
+  <section class="features">
+    <div class="features-grid">
+
+      <div class="feature" data-delay="0">
+        <span class="feature-number">01 — Daily Outfit</span>
+        <h2 class="feature-title">It knows your<br /><em>wardrobe.</em></h2>
+        <p class="feature-body">
+          Photograph your clothes once. outerfit's vision AI analyses every item —
+          colour, fabric, silhouette, fit. From that moment, it knows exactly
+          what you own and how it all works together.
+        </p>
+      </div>
+
+      <div class="feature" data-delay="150">
+        <span class="feature-number">02 — Learns Your Taste</span>
+        <h2 class="feature-title">Gets better<br /><em>every day.</em></h2>
+        <p class="feature-body">
+          Every thumbs up and thumbs down trains a personal model — yours alone.
+          After a month, outerfit knows your taste better than most people
+          who know you. Month six is nothing like day one.
+        </p>
+      </div>
+
+      <div class="feature" data-delay="300">
+        <span class="feature-number">03 — Weather + Occasion</span>
+        <h2 class="feature-title">Dressed for<br /><em>the day.</em></h2>
+        <p class="feature-body">
+          outerfit checks the forecast and knows your plans. Date night,
+          job interview, Tuesday in February — every suggestion is built
+          for what's actually happening, not a generic style profile.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Manifesto -->
+  <section class="manifesto">
+    <div class="manifesto-inner">
+      <p class="manifesto-quote">
+        "A personal stylist used to cost <strong>$200 an hour.</strong>
+        Now it lives in your pocket and already knows
+        everything in your wardrobe."
+      </p>
+      <p class="manifesto-attr">outerfit — Arvada, Colorado — Est. 2026</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-logo">outer<span>fit</span></div>
+    <div class="footer-meta">
+      outerfit.net<br />
+      © 2026 Outerfit LLC<br />
+      Arvada, Colorado
+    </div>
+  </footer>
+
+  <script>
+    // ── Scroll reveal for features ──
+    const features = document.querySelectorAll('.feature')
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const delay = entry.target.dataset.delay || 0
+          setTimeout(() => entry.target.classList.add('visible'), parseInt(delay))
+          observer.unobserve(entry.target)
+        }
+      })
+    }, { threshold: 0.15 })
+    features.forEach(f => observer.observe(f))
+
+    // ── Invite form ──
+    document.getElementById('inviteForm').addEventListener('submit', function(e) {
+      e.preventDefault()
+      const code = document.getElementById('inviteCode').value.trim()
+      if (!code) return
+
+      const btn = this.querySelector('.form-btn')
+      btn.textContent = '...'
+      btn.disabled = true
+
+      // Redirect to registration with invite code
+      setTimeout(() => {
+        const encoded = encodeURIComponent(code)
+        window.location.href = `/join?invite=${encoded}`
+      }, 600)
+    })
+  </script>
 
 </body>
 </html>
