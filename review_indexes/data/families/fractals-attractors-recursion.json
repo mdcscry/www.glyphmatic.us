@@ -1,0 +1,131 @@
+{
+  "family": "fractals-attractors-recursion",
+  "title": "Fractals / Attractors / Recursion",
+  "count": 4,
+  "screenshots": 4,
+  "source_areas": {
+    "2026_exp/vis": 4
+  },
+  "future_insert_candidate": "Recursive / Dynamical",
+  "entries": [
+    {
+      "id": "2026-exp-vis-v54-square-limit-html",
+      "title": "Square Limit",
+      "path": "2026_exp/vis/v54_square_limit.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "fractals-attractors-recursion",
+      "family_title": "Fractals / Attractors / Recursion",
+      "subfamily": "square",
+      "sequence_hint": 54,
+      "tags": [
+        "canvas",
+        "fractals-attractors-recursion",
+        "square"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v54-square-limit.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Recursive / Dynamical",
+      "notes": "2026_exp/vis · libraries: canvas",
+      "upgrade_notes": "Strong math-family candidate; likely deserves grouped flavor navigation before insert formalization.",
+      "summary": "Square Limit — 2026_exp/vis; grouped under Fractals / Attractors / Recursion. Signals: canvas, fractals-attractors-recursion, square."
+    },
+    {
+      "id": "2026-exp-vis-v55-dragon-curves-html",
+      "title": "Dragon Curves",
+      "path": "2026_exp/vis/v55_dragon_curves.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "fractals-attractors-recursion",
+      "family_title": "Fractals / Attractors / Recursion",
+      "subfamily": "dragon",
+      "sequence_hint": 55,
+      "tags": [
+        "canvas",
+        "fractals-attractors-recursion"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v55-dragon-curves.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Recursive / Dynamical",
+      "notes": "2026_exp/vis · libraries: canvas",
+      "upgrade_notes": "Strong math-family candidate; likely deserves grouped flavor navigation before insert formalization.",
+      "summary": "Dragon Curves — 2026_exp/vis; grouped under Fractals / Attractors / Recursion. Signals: canvas, fractals-attractors-recursion."
+    },
+    {
+      "id": "2026-exp-vis-strange-attractors-html",
+      "title": "Strange Attractors",
+      "path": "2026_exp/vis/strange_attractors.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "fractals-attractors-recursion",
+      "family_title": "Fractals / Attractors / Recursion",
+      "subfamily": "attractor",
+      "sequence_hint": null,
+      "tags": [
+        "canvas",
+        "fractals-attractors-recursion"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-strange-attractors.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Recursive / Dynamical",
+      "notes": "2026_exp/vis · libraries: canvas",
+      "upgrade_notes": "Strong math-family candidate; likely deserves grouped flavor navigation before insert formalization.",
+      "summary": "Strange Attractors — 2026_exp/vis; grouped under Fractals / Attractors / Recursion. Signals: canvas, fractals-attractors-recursion."
+    },
+    {
+      "id": "2026-exp-vis-strange-attractors-grid-html",
+      "title": "Strange Attractors — Grid",
+      "path": "2026_exp/vis/strange_attractors_grid.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "fractals-attractors-recursion",
+      "family_title": "Fractals / Attractors / Recursion",
+      "subfamily": "attractor",
+      "sequence_hint": null,
+      "tags": [
+        "canvas",
+        "css",
+        "fractals-attractors-recursion"
+      ],
+      "libraries": [
+        "canvas",
+        "css"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-strange-attractors-grid.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Recursive / Dynamical",
+      "notes": "2026_exp/vis · libraries: canvas, css",
+      "upgrade_notes": "Strong math-family candidate; likely deserves grouped flavor navigation before insert formalization.",
+      "summary": "Strange Attractors — Grid — 2026_exp/vis; grouped under Fractals / Attractors / Recursion. Signals: canvas, css, fractals-attractors-recursion."
+    }
+  ]
+}

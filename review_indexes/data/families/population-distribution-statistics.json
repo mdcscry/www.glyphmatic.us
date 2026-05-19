@@ -1,0 +1,330 @@
+{
+  "family": "population-distribution-statistics",
+  "title": "Population / Distribution / Statistics",
+  "count": 10,
+  "screenshots": 10,
+  "source_areas": {
+    "2026_exp/vis": 10
+  },
+  "future_insert_candidate": "Population / Distribution",
+  "entries": [
+    {
+      "id": "2026-exp-vis-v8-beeswarm-single-html",
+      "title": "Beeswarm",
+      "path": "2026_exp/vis/v8_beeswarm_single.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "population-distribution-statistics",
+      "family_title": "Population / Distribution / Statistics",
+      "subfamily": "beeswarm",
+      "sequence_hint": 8,
+      "tags": [
+        "beeswarm",
+        "d3",
+        "population-distribution-statistics",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v8-beeswarm-single.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Population / Distribution",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Potential stats-family insert; unify animation and palette behavior across flavors.",
+      "summary": "Beeswarm — 2026_exp/vis; grouped under Population / Distribution / Statistics. Signals: beeswarm, d3, population-distribution-statistics, svg."
+    },
+    {
+      "id": "2026-exp-vis-v9-beeswarm-rows-html",
+      "title": "Beeswarm Rows",
+      "path": "2026_exp/vis/v9_beeswarm_rows.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "population-distribution-statistics",
+      "family_title": "Population / Distribution / Statistics",
+      "subfamily": "beeswarm",
+      "sequence_hint": 9,
+      "tags": [
+        "beeswarm",
+        "d3",
+        "population-distribution-statistics",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v9-beeswarm-rows.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Population / Distribution",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Potential stats-family insert; unify animation and palette behavior across flavors.",
+      "summary": "Beeswarm Rows — 2026_exp/vis; grouped under Population / Distribution / Statistics. Signals: beeswarm, d3, population-distribution-statistics, svg."
+    },
+    {
+      "id": "2026-exp-vis-v10-likert-wall-html",
+      "title": "Likert Wall",
+      "path": "2026_exp/vis/v10_likert_wall.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "population-distribution-statistics",
+      "family_title": "Population / Distribution / Statistics",
+      "subfamily": "likert",
+      "sequence_hint": 10,
+      "tags": [
+        "d3",
+        "likert",
+        "population-distribution-statistics",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v10-likert-wall.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Population / Distribution",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Potential stats-family insert; unify animation and palette behavior across flavors.",
+      "summary": "Likert Wall — 2026_exp/vis; grouped under Population / Distribution / Statistics. Signals: d3, likert, population-distribution-statistics, svg."
+    },
+    {
+      "id": "2026-exp-vis-v24-radar-grid-html",
+      "title": "Radar Grid",
+      "path": "2026_exp/vis/v24_radar_grid.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "population-distribution-statistics",
+      "family_title": "Population / Distribution / Statistics",
+      "subfamily": "radar",
+      "sequence_hint": 24,
+      "tags": [
+        "d3",
+        "population-distribution-statistics",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v24-radar-grid.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Population / Distribution",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Potential stats-family insert; unify animation and palette behavior across flavors.",
+      "summary": "Radar Grid — 2026_exp/vis; grouped under Population / Distribution / Statistics. Signals: d3, population-distribution-statistics, svg."
+    },
+    {
+      "id": "2026-exp-vis-v26-barcode-grid-html",
+      "title": "Barcode Grid",
+      "path": "2026_exp/vis/v26_barcode_grid.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "population-distribution-statistics",
+      "family_title": "Population / Distribution / Statistics",
+      "subfamily": "barcode",
+      "sequence_hint": 26,
+      "tags": [
+        "barcode",
+        "d3",
+        "population-distribution-statistics",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v26-barcode-grid.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Population / Distribution",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Potential stats-family insert; unify animation and palette behavior across flavors.",
+      "summary": "Barcode Grid — 2026_exp/vis; grouped under Population / Distribution / Statistics. Signals: barcode, d3, population-distribution-statistics, svg."
+    },
+    {
+      "id": "2026-exp-vis-v28-marimekko-html",
+      "title": "Marimekko",
+      "path": "2026_exp/vis/v28_marimekko.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "population-distribution-statistics",
+      "family_title": "Population / Distribution / Statistics",
+      "subfamily": "marimekko",
+      "sequence_hint": 28,
+      "tags": [
+        "d3",
+        "population-distribution-statistics",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v28-marimekko.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Population / Distribution",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Potential stats-family insert; unify animation and palette behavior across flavors.",
+      "summary": "Marimekko — 2026_exp/vis; grouped under Population / Distribution / Statistics. Signals: d3, population-distribution-statistics, svg."
+    },
+    {
+      "id": "2026-exp-vis-v42-population-pyramids-html",
+      "title": "Population Pyramids",
+      "path": "2026_exp/vis/v42_population_pyramids.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "population-distribution-statistics",
+      "family_title": "Population / Distribution / Statistics",
+      "subfamily": "population",
+      "sequence_hint": 42,
+      "tags": [
+        "d3",
+        "population",
+        "population-distribution-statistics",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v42-population-pyramids.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Population / Distribution",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Potential stats-family insert; unify animation and palette behavior across flavors.",
+      "summary": "Population Pyramids — 2026_exp/vis; grouped under Population / Distribution / Statistics. Signals: d3, population, population-distribution-statistics, svg."
+    },
+    {
+      "id": "2026-exp-vis-v43-population-areas-html",
+      "title": "Population Pyramids Rounded",
+      "path": "2026_exp/vis/v43_population_areas.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "population-distribution-statistics",
+      "family_title": "Population / Distribution / Statistics",
+      "subfamily": "population",
+      "sequence_hint": 43,
+      "tags": [
+        "d3",
+        "population",
+        "population-distribution-statistics",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v43-population-areas.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Population / Distribution",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Potential stats-family insert; unify animation and palette behavior across flavors.",
+      "summary": "Population Pyramids Rounded — 2026_exp/vis; grouped under Population / Distribution / Statistics. Signals: d3, population, population-distribution-statistics, svg."
+    },
+    {
+      "id": "2026-exp-vis-v44-population-areas-html",
+      "title": "Population Area Pyramids",
+      "path": "2026_exp/vis/v44_population_areas.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "population-distribution-statistics",
+      "family_title": "Population / Distribution / Statistics",
+      "subfamily": "population",
+      "sequence_hint": 44,
+      "tags": [
+        "d3",
+        "population",
+        "population-distribution-statistics",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v44-population-areas.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Population / Distribution",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Potential stats-family insert; unify animation and palette behavior across flavors.",
+      "summary": "Population Area Pyramids — 2026_exp/vis; grouped under Population / Distribution / Statistics. Signals: d3, population, population-distribution-statistics, svg."
+    },
+    {
+      "id": "2026-exp-vis-v53-hinton-html",
+      "title": "Hinton",
+      "path": "2026_exp/vis/v53_hinton.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "population-distribution-statistics",
+      "family_title": "Population / Distribution / Statistics",
+      "subfamily": "hinton",
+      "sequence_hint": 53,
+      "tags": [
+        "d3",
+        "hinton",
+        "population-distribution-statistics",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v53-hinton.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Population / Distribution",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Potential stats-family insert; unify animation and palette behavior across flavors.",
+      "summary": "Hinton — 2026_exp/vis; grouped under Population / Distribution / Statistics. Signals: d3, hinton, population-distribution-statistics, svg."
+    }
+  ]
+}

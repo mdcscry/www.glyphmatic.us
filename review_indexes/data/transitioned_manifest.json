@@ -1,0 +1,552 @@
+{
+  "generated_at": "2026-05-19T11:21:02.402534+00:00",
+  "count": 16,
+  "summary": [
+    {
+      "insert": 25,
+      "label": "Rectangle Tiling",
+      "count": 2
+    },
+    {
+      "insert": 31,
+      "label": "Fibonacci Spirals",
+      "count": 5
+    },
+    {
+      "insert": 37,
+      "label": "Field / Contour / Noise",
+      "count": 9
+    }
+  ],
+  "entries": [
+    {
+      "id": "2026-exp-vis-v23-contours-grid-html",
+      "title": "Contours",
+      "path": "2026_exp/vis/v23_contours_grid.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "fields-contours-noise",
+      "family_title": "Fields / Contours / Noise",
+      "subfamily": "contour",
+      "sequence_hint": 23,
+      "tags": [
+        "d3",
+        "fields-contours-noise",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v23-contours-grid.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Field / Contour / Noise",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Already adjacent to insert37 logic; extend family review with palette-mode and glyph-overlay notes.",
+      "summary": "Contours — 2026_exp/vis; grouped under Fields / Contours / Noise. Signals: d3, fields-contours-noise, svg.",
+      "transitioned_to_insert": 37,
+      "transitioned_to_label": "Field / Contour / Noise"
+    },
+    {
+      "id": "2026-exp-vis-v25-optimization-landscapes-html",
+      "title": "Optimization Landscapes",
+      "path": "2026_exp/vis/v25_optimization_landscapes.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "fields-contours-noise",
+      "family_title": "Fields / Contours / Noise",
+      "subfamily": "optimization",
+      "sequence_hint": 25,
+      "tags": [
+        "d3",
+        "fields-contours-noise",
+        "optimization",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v25-optimization-landscapes.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Field / Contour / Noise",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Already adjacent to insert37 logic; extend family review with palette-mode and glyph-overlay notes.",
+      "summary": "Optimization Landscapes — 2026_exp/vis; grouped under Fields / Contours / Noise. Signals: d3, fields-contours-noise, optimization, svg.",
+      "transitioned_to_insert": 37,
+      "transitioned_to_label": "Field / Contour / Noise"
+    },
+    {
+      "id": "2026-exp-vis-v33-function-contours-html",
+      "title": "Function Contours",
+      "path": "2026_exp/vis/v33_function_contours.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "fields-contours-noise",
+      "family_title": "Fields / Contours / Noise",
+      "subfamily": "contour",
+      "sequence_hint": 33,
+      "tags": [
+        "d3",
+        "fields-contours-noise",
+        "function",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v33-function-contours.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Field / Contour / Noise",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Already adjacent to insert37 logic; extend family review with palette-mode and glyph-overlay notes.",
+      "summary": "Function Contours — 2026_exp/vis; grouped under Fields / Contours / Noise. Signals: d3, fields-contours-noise, function, svg.",
+      "transitioned_to_insert": 37,
+      "transitioned_to_label": "Field / Contour / Noise"
+    },
+    {
+      "id": "2026-exp-vis-v34-perlin-noise-html",
+      "title": "Perlin Noise",
+      "path": "2026_exp/vis/v34_perlin_noise.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "fields-contours-noise",
+      "family_title": "Fields / Contours / Noise",
+      "subfamily": "perlin",
+      "sequence_hint": 34,
+      "tags": [
+        "canvas",
+        "fields-contours-noise",
+        "noise",
+        "perlin"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v34-perlin-noise.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Field / Contour / Noise",
+      "notes": "2026_exp/vis · libraries: canvas",
+      "upgrade_notes": "Already adjacent to insert37 logic; extend family review with palette-mode and glyph-overlay notes.",
+      "summary": "Perlin Noise — 2026_exp/vis; grouped under Fields / Contours / Noise. Signals: canvas, fields-contours-noise, noise, perlin.",
+      "transitioned_to_insert": 37,
+      "transitioned_to_label": "Field / Contour / Noise"
+    },
+    {
+      "id": "2026-exp-vis-v35-perlin-glyphs-html",
+      "title": "Perlin Noise",
+      "path": "2026_exp/vis/v35_perlin_glyphs.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "glyph-grids-systems",
+      "family_title": "Glyph Grids / Systems",
+      "subfamily": "glyph",
+      "sequence_hint": 35,
+      "tags": [
+        "canvas",
+        "glyph-data",
+        "glyph-grids-systems",
+        "noise",
+        "perlin"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": true,
+      "screenshot_path": "screenshots/2026-exp-vis-v35-perlin-glyphs.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Glyph Systems",
+      "notes": "2026_exp/vis · libraries: canvas · signals: glyph data",
+      "upgrade_notes": "Prime place for glyph-block expansion, AutoFont trials, and palette/glyph system formalization.",
+      "summary": "Perlin Noise — 2026_exp/vis; grouped under Glyph Grids / Systems. Signals: canvas, glyph-data, glyph-grids-systems, noise.",
+      "transitioned_to_insert": 37,
+      "transitioned_to_label": "Field / Contour / Noise"
+    },
+    {
+      "id": "2026-exp-vis-v36-sincos-contour-html",
+      "title": "sin(x)cos(y)",
+      "path": "2026_exp/vis/v36_sincos_contour.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "fields-contours-noise",
+      "family_title": "Fields / Contours / Noise",
+      "subfamily": "contour",
+      "sequence_hint": 36,
+      "tags": [
+        "canvas",
+        "contour",
+        "d3",
+        "fields-contours-noise"
+      ],
+      "libraries": [
+        "canvas",
+        "d3"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v36-sincos-contour.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Field / Contour / Noise",
+      "notes": "2026_exp/vis · libraries: canvas, d3",
+      "upgrade_notes": "Already adjacent to insert37 logic; extend family review with palette-mode and glyph-overlay notes.",
+      "summary": "sin(x)cos(y) — 2026_exp/vis; grouped under Fields / Contours / Noise. Signals: canvas, contour, d3, fields-contours-noise.",
+      "transitioned_to_insert": 37,
+      "transitioned_to_label": "Field / Contour / Noise"
+    },
+    {
+      "id": "2026-exp-vis-v37-contour-blocks-html",
+      "title": "Contour Blocks",
+      "path": "2026_exp/vis/v37_contour_blocks.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "fields-contours-noise",
+      "family_title": "Fields / Contours / Noise",
+      "subfamily": "contour",
+      "sequence_hint": 37,
+      "tags": [
+        "canvas",
+        "contour",
+        "d3",
+        "fields-contours-noise"
+      ],
+      "libraries": [
+        "canvas",
+        "d3"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v37-contour-blocks.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Field / Contour / Noise",
+      "notes": "2026_exp/vis · libraries: canvas, d3",
+      "upgrade_notes": "Already adjacent to insert37 logic; extend family review with palette-mode and glyph-overlay notes.",
+      "summary": "Contour Blocks — 2026_exp/vis; grouped under Fields / Contours / Noise. Signals: canvas, contour, d3, fields-contours-noise.",
+      "transitioned_to_insert": 37,
+      "transitioned_to_label": "Field / Contour / Noise"
+    },
+    {
+      "id": "2026-exp-vis-v38-perlin-square-html",
+      "title": "Perlin Square",
+      "path": "2026_exp/vis/v38_perlin_square.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "fields-contours-noise",
+      "family_title": "Fields / Contours / Noise",
+      "subfamily": "perlin",
+      "sequence_hint": 38,
+      "tags": [
+        "canvas",
+        "fields-contours-noise",
+        "perlin",
+        "square"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v38-perlin-square.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Field / Contour / Noise",
+      "notes": "2026_exp/vis · libraries: canvas",
+      "upgrade_notes": "Already adjacent to insert37 logic; extend family review with palette-mode and glyph-overlay notes.",
+      "summary": "Perlin Square — 2026_exp/vis; grouped under Fields / Contours / Noise. Signals: canvas, fields-contours-noise, perlin, square.",
+      "transitioned_to_insert": 37,
+      "transitioned_to_label": "Field / Contour / Noise"
+    },
+    {
+      "id": "2026-exp-vis-v39-perlin-square-circles-html",
+      "title": "Perlin Square",
+      "path": "2026_exp/vis/v39_perlin_square_circles.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "fields-contours-noise",
+      "family_title": "Fields / Contours / Noise",
+      "subfamily": "perlin",
+      "sequence_hint": 39,
+      "tags": [
+        "canvas",
+        "fields-contours-noise",
+        "perlin",
+        "square"
+      ],
+      "libraries": [
+        "canvas"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v39-perlin-square-circles.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Field / Contour / Noise",
+      "notes": "2026_exp/vis · libraries: canvas",
+      "upgrade_notes": "Already adjacent to insert37 logic; extend family review with palette-mode and glyph-overlay notes.",
+      "summary": "Perlin Square — 2026_exp/vis; grouped under Fields / Contours / Noise. Signals: canvas, fields-contours-noise, perlin, square.",
+      "transitioned_to_insert": 37,
+      "transitioned_to_label": "Field / Contour / Noise"
+    },
+    {
+      "id": "2025-exp-html-experiments-fibonacci-study-0-html",
+      "title": "Fibonacci",
+      "path": "2025_exp/html_experiments/fibonacci_study_0.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "fibonacci-spiral-growth",
+      "family_title": "Fibonacci / Spiral / Growth",
+      "subfamily": "fibonacci",
+      "sequence_hint": 0,
+      "tags": [
+        "dom",
+        "fibonacci",
+        "fibonacci-spiral-growth"
+      ],
+      "libraries": [
+        "dom"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-fibonacci-study-0.png",
+      "screenshot_exists": true,
+      "status": "prototype",
+      "future_insert_candidate": "Fibonacci / Spiral",
+      "notes": "2025_exp/html_experiments · libraries: dom",
+      "upgrade_notes": "Good candidate for grouped flavors with stronger palette and glyph-function integration.",
+      "summary": "Fibonacci — 2025_exp/html_experiments; grouped under Fibonacci / Spiral / Growth. Signals: dom, fibonacci, fibonacci-spiral-growth.",
+      "transitioned_to_insert": 31,
+      "transitioned_to_label": "Fibonacci Spirals"
+    },
+    {
+      "id": "2025-exp-html-experiments-fibonacci-study-1-html",
+      "title": "Fibonacci",
+      "path": "2025_exp/html_experiments/fibonacci_study_1.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "fibonacci-spiral-growth",
+      "family_title": "Fibonacci / Spiral / Growth",
+      "subfamily": "fibonacci",
+      "sequence_hint": 1,
+      "tags": [
+        "dom",
+        "fibonacci",
+        "fibonacci-spiral-growth"
+      ],
+      "libraries": [
+        "dom"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-fibonacci-study-1.png",
+      "screenshot_exists": true,
+      "status": "prototype",
+      "future_insert_candidate": "Fibonacci / Spiral",
+      "notes": "2025_exp/html_experiments · libraries: dom",
+      "upgrade_notes": "Good candidate for grouped flavors with stronger palette and glyph-function integration.",
+      "summary": "Fibonacci — 2025_exp/html_experiments; grouped under Fibonacci / Spiral / Growth. Signals: dom, fibonacci, fibonacci-spiral-growth.",
+      "transitioned_to_insert": 31,
+      "transitioned_to_label": "Fibonacci Spirals"
+    },
+    {
+      "id": "2025-exp-html-experiments-fibonacci-study-2-html",
+      "title": "Fibonacci",
+      "path": "2025_exp/html_experiments/fibonacci_study_2.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "fibonacci-spiral-growth",
+      "family_title": "Fibonacci / Spiral / Growth",
+      "subfamily": "fibonacci",
+      "sequence_hint": 2,
+      "tags": [
+        "dom",
+        "fibonacci",
+        "fibonacci-spiral-growth"
+      ],
+      "libraries": [
+        "dom"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-fibonacci-study-2.png",
+      "screenshot_exists": true,
+      "status": "prototype",
+      "future_insert_candidate": "Fibonacci / Spiral",
+      "notes": "2025_exp/html_experiments · libraries: dom",
+      "upgrade_notes": "Good candidate for grouped flavors with stronger palette and glyph-function integration.",
+      "summary": "Fibonacci — 2025_exp/html_experiments; grouped under Fibonacci / Spiral / Growth. Signals: dom, fibonacci, fibonacci-spiral-growth.",
+      "transitioned_to_insert": 31,
+      "transitioned_to_label": "Fibonacci Spirals"
+    },
+    {
+      "id": "2025-exp-html-experiments-rectangle-tiling-html",
+      "title": "Rectangle Tiling",
+      "path": "2025_exp/html_experiments/rectangle_tiling.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "rectangle",
+      "sequence_hint": null,
+      "tags": [
+        "canvas",
+        "css",
+        "glyph-data",
+        "rectangle",
+        "tilings-patterns-grids"
+      ],
+      "libraries": [
+        "canvas",
+        "css"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": true,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-rectangle-tiling.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: canvas, css · signals: glyph data",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Rectangle Tiling — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: canvas, css, glyph-data, rectangle.",
+      "transitioned_to_insert": 25,
+      "transitioned_to_label": "Rectangle Tiling"
+    },
+    {
+      "id": "2025-exp-html-experiments-rectangle-tiling-lines-html",
+      "title": "Rectangle Tiling Lines",
+      "path": "2025_exp/html_experiments/rectangle_tiling_lines.html",
+      "source_area": "2025_exp/html_experiments",
+      "year_bucket": "2025",
+      "family": "tilings-patterns-grids",
+      "family_title": "Tilings / Patterns / Grids",
+      "subfamily": "rectangle",
+      "sequence_hint": null,
+      "tags": [
+        "css",
+        "rectangle",
+        "tilings-patterns-grids"
+      ],
+      "libraries": [
+        "css"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2025-exp-html-experiments-rectangle-tiling-lines.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Tilings / Patterns",
+      "notes": "2025_exp/html_experiments · libraries: css",
+      "upgrade_notes": "Very likely to benefit from shared randomization, palette systems, and optional glyph-block overlays.",
+      "summary": "Rectangle Tiling Lines — 2025_exp/html_experiments; grouped under Tilings / Patterns / Grids. Signals: css, rectangle, tilings-patterns-grids.",
+      "transitioned_to_insert": 25,
+      "transitioned_to_label": "Rectangle Tiling"
+    },
+    {
+      "id": "2025-exp-fibonacci-v1-html",
+      "title": "Fibonacci",
+      "path": "2025_exp/fibonacci_v1.html",
+      "source_area": "2025_exp",
+      "year_bucket": "2025",
+      "family": "fibonacci-spiral-growth",
+      "family_title": "Fibonacci / Spiral / Growth",
+      "subfamily": "fibonacci",
+      "sequence_hint": 1,
+      "tags": [
+        "dom",
+        "fibonacci",
+        "fibonacci-spiral-growth"
+      ],
+      "libraries": [
+        "dom"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2025-exp-fibonacci-v1.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Fibonacci / Spiral",
+      "notes": "2025_exp · libraries: dom",
+      "upgrade_notes": "Good candidate for grouped flavors with stronger palette and glyph-function integration.",
+      "summary": "Fibonacci — 2025_exp; grouped under Fibonacci / Spiral / Growth. Signals: dom, fibonacci, fibonacci-spiral-growth.",
+      "transitioned_to_insert": 31,
+      "transitioned_to_label": "Fibonacci Spirals"
+    },
+    {
+      "id": "2025-exp-fibonacci-v2-html",
+      "title": "Fibonacci",
+      "path": "2025_exp/fibonacci_v2.html",
+      "source_area": "2025_exp",
+      "year_bucket": "2025",
+      "family": "fibonacci-spiral-growth",
+      "family_title": "Fibonacci / Spiral / Growth",
+      "subfamily": "fibonacci",
+      "sequence_hint": 2,
+      "tags": [
+        "dom",
+        "fibonacci",
+        "fibonacci-spiral-growth"
+      ],
+      "libraries": [
+        "dom"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2025-exp-fibonacci-v2.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Fibonacci / Spiral",
+      "notes": "2025_exp · libraries: dom",
+      "upgrade_notes": "Good candidate for grouped flavors with stronger palette and glyph-function integration.",
+      "summary": "Fibonacci — 2025_exp; grouped under Fibonacci / Spiral / Growth. Signals: dom, fibonacci, fibonacci-spiral-growth.",
+      "transitioned_to_insert": 31,
+      "transitioned_to_label": "Fibonacci Spirals"
+    }
+  ]
+}

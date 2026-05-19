@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>25 carrés</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    width: 100vw; height: 100vh;
+    background: #ece8df;
+    color: #1a1a1a;
+    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+  }
+  .stage {
+    position: fixed; inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .canvas {
+    position: relative;
+    width: min(85vmin, 900px);
+    height: min(85vmin, 900px);
+    background: #fff;
+  }
+  .square {
+    position: absolute;
+    transform-origin: center;
+    will-change: transform;
+    mix-blend-mode: multiply;
+  }
+  .credit {
+    position: fixed;
+    bottom: 16px;
+    left: 22px;
+    font-size: 11px;
+    color: rgba(0,0,0,0.45);
+    letter-spacing: 0.3px;
+    font-style: italic;
+  }
+  .credit b { font-style: normal; font-weight: 500; color: rgba(0,0,0,0.7); }
+  .toolbar {
+    position: fixed;
+    bottom: 18px;
+    right: 22px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+  }
+  .toolbar button {
+    appearance: none;
+    background: rgba(20, 20, 20, 0.9);
+    color: #ece8df;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 999px;
+    padding: 9px 18px;
+    font: inherit;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.12s ease, transform 0.08s ease;
+  }
+  .toolbar button:hover { background: rgba(40, 40, 40, 0.95); }
+  .toolbar button:active { transform: translateY(1px); }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="canvas" id="canvas"></div>
+</div>
+
+<div class="credit">After <b>Vera Molnár</b>, <i>25 carrés</i> (1990)</div>
+
+<div class="toolbar">
+  <button id="btnPalette">Change palette</button>
+  <button id="btnRerender">Rerender</button>
+</div>
+
+<script>
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+  // Three colors per render, all derived from one root hue:
+  //   color1 = root at full saturation (mid-bright)
+  //   color2 = same hue, mixed strongly toward white (light tint)
+  //   accent = near-black with a tiny bit of the hue
+  //   bg     = near-white tinted toward root, occasionally near-black
+  function generatePalette() {
+    const hue = Math.random() * 360;
+    const sat = 65 + Math.random() * 25;                    // 65–90%
+    const light1 = 42 + Math.random() * 14;                 // 42–56%
+    const color1 = `hsl(${hue} ${sat}% ${light1}%)`;
+    // Color 2: same hue, white added — high lightness, lower saturation.
+    const light2 = 72 + Math.random() * 12;                 // 72–84%
+    const color2 = `hsl(${hue} ${sat * 0.55}% ${light2}%)`;
+    // Accent: near-black with a whisper of the hue.
+    const accent = `hsl(${hue} 20% ${5 + Math.random() * 6}%)`;
+    // Background: near-white tinted toward root. (Always near-white because
+    // multiply blend mode needs a white-ish base to read like ink on paper.)
+    const bg = `hsl(${hue} ${5 + Math.random() * 10}% ${92 + Math.random() * 5}%)`;
+    return { color1, color2, accent, bg };
+  }
+
+  // Build state for 25 squares. Each has:
+  //   row, col (its slot in the 5x5 grid)
+  //   colorTier ('dominant' or 'accent') — which color it draws from
+  //   accentIdx (which accent if any)
+  //   dx, dy: small positional jitter (fraction of cell size)
+  //   rotate: small rotation in degrees
+  //   sizeJitter: small scale variation (fraction)
+  //   z: stacking order so some overlap above others
+  function buildSquares() {
+    // 25 base squares — one per grid slot, always color1 or color2.
+    const base = [];
+    for (let i = 0; i < 25; i++) {
+      base.push({
+        row: Math.floor(i / 5),
+        col: i % 5,
+        tone: Math.random() < 0.7 ? 1 : 2,   // bias toward tone 1
+        dx: rand(-0.12, 0.12),
+        dy: rand(-0.12, 0.12),
+        z: Math.floor(Math.random() * 25),
+      });
+    }
+    // 4–7 accent (near-black) squares overlaid on top of the base grid.
+    // They sit at random grid slots with their own jitter, but they do
+    // NOT replace the base square underneath — they're a separate layer.
+    const nAccents = 4 + Math.floor(Math.random() * 4);
+    const accents = [];
+    const used = new Set();
+    while (accents.length < nAccents) {
+      const slot = Math.floor(Math.random() * 25);
+      if (used.has(slot)) continue;
+      used.add(slot);
+      accents.push({
+        row: Math.floor(slot / 5),
+        col: slot % 5,
+        dx: rand(-0.12, 0.12),
+        dy: rand(-0.12, 0.12),
+      });
+    }
+    return { base, accents };
+  }
+
+  let squares = buildSquares();
+  let palette = generatePalette();
+
+  function render() {
+    const canvas = document.getElementById('canvas');
+    document.body.style.background = palette.bg;
+    canvas.style.background = palette.bg;
+    canvas.innerHTML = '';
+
+    const N = 5;
+    const cs = canvas.clientWidth;
+    const cell = cs / N;
+    const sq = cell * 0.92;
+
+    function placeSquare(row, col, dx, dy, color, z) {
+      const slotCx = (col + 0.5) * cell;
+      const slotCy = (row + 0.5) * cell;
+      const x = slotCx + dx * cell - sq / 2;
+      const y = slotCy + dy * cell - sq / 2;
+      const el = document.createElement('div');
+      el.className = 'square';
+      el.style.left = x.toFixed(2) + 'px';
+      el.style.top = y.toFixed(2) + 'px';
+      el.style.width = sq.toFixed(2) + 'px';
+      el.style.height = sq.toFixed(2) + 'px';
+      el.style.background = color;
+      el.style.zIndex = z;
+      canvas.appendChild(el);
+    }
+
+    // Layer 1: base grid (every slot, color1 or color2)
+    for (const s of squares.base) {
+      placeSquare(s.row, s.col, s.dx, s.dy,
+                  s.tone === 1 ? palette.color1 : palette.color2,
+                  s.z);
+    }
+    // Layer 2: accent overlays on top (zIndex above everything in the base layer)
+    for (const a of squares.accents) {
+      placeSquare(a.row, a.col, a.dx, a.dy, palette.accent, 100);
+    }
+  }
+
+  document.getElementById('btnPalette').addEventListener('click', () => {
+    palette = generatePalette();
+    render();
+  });
+  document.getElementById('btnRerender').addEventListener('click', () => {
+    squares = buildSquares();
+    render();
+  });
+
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(render, 100);
+  });
+
+  requestAnimationFrame(() => requestAnimationFrame(render));
+</script>
+</body>
+</html>

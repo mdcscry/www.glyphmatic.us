@@ -85,6 +85,7 @@ insertArray[33] = ['none', 'The Generator']; // insert33.js loads its own data
 insertArray[34] = ['none', 'Artist Grid']; // insert34.js loads its own palette data
 insertArray[35] = ['none', 'Flags Fun']; // insert35.js loads its own country data
 insertArray[36] = ['none', 'Numbers Systems']; // insert36.js loads its own data
+insertArray[37] = ['none', 'Field / Contour / Noise']; // insert37.js loads its own data
 
 console.log('Insert array length:', insertArray.length);
 
@@ -231,10 +232,21 @@ document.body.style.margin = '0px';
  * Wait for letters to load, then load insert
  */
 function jsWaitLetters() {
+    const currentInsert = insertArray[insertArrayRnd];
+    const currentDependency = currentInsert && currentInsert[0];
+    const directory = (insertArrayRnd <= 12) ? 'insert_js_2013' : 'insert_js_2025';
+
+    if (currentDependency === 'none') {
+        const script1 = document.createElement('script');
+        script1.src = './' + directory + '/insert' + insertArrayRnd + '.js';
+        document.getElementsByTagName('body')[0].appendChild(script1);
+        console.log(`No glyph dependency required — loaded ${directory}/insert${insertArrayRnd}.js immediately`);
+        return;
+    }
+
     if (typeof msucdArraySignal == "undefined") {
         window.setTimeout(jsWaitLetters, 100);
     } else {
-        const directory = (insertArrayRnd <= 12) ? 'insert_js_2013' : 'insert_js_2025';
         const script1 = document.createElement('script');
         script1.src = './' + directory + '/insert' + insertArrayRnd + '.js';
         document.getElementsByTagName('body')[0].appendChild(script1);

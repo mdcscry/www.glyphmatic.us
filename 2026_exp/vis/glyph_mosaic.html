@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glyph Mosaic</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1a24;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'EB Garamond', serif;
+    gap: 20px;
+    padding: 24px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 7px;
+    width: min(95vw, 960px);
+    aspect-ratio: 6 / 4;
+  }
+
+  .cell {
+    position: relative;
+    border-radius: 11px;
+    overflow: hidden;
+  }
+
+  .cell span {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1;
+    user-select: none;
+    mix-blend-mode: multiply;
+    white-space: nowrap;
+    display: block;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  button {
+    font-family: 'EB Garamond', serif;
+    font-size: 17px;
+    letter-spacing: 0.08em;
+    padding: 9px 28px;
+    background: transparent;
+    color: #ddd6fe;
+    border: 1px solid rgba(200,180,255,0.3);
+    border-radius: 40px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  button:hover {
+    background: rgba(200,180,255,0.08);
+    border-color: rgba(200,180,255,0.55);
+  }
+  button:active { transform: scale(0.97); }
+
+  .slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(200,180,255,0.5);
+    font-size: 15px;
+    letter-spacing: 0.06em;
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 150px;
+    height: 3px;
+    background: rgba(200,180,255,0.2);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px; height: 15px;
+    border-radius: 50%;
+    background: #ddd6fe;
+    cursor: pointer;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 15px; height: 15px;
+    border-radius: 50%;
+    background: #ddd6fe;
+    border: none;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="grid" id="grid"></div>
+
+<div class="controls">
+  <button id="shuffleBtn">⟳ &thinsp;Shuffle</button>
+  <button id="colorBtn">◑ &thinsp;Recolor</button>
+  <div class="slider-wrap">
+    <span style="font-style:italic;opacity:0.5">size</span>
+    <input type="range" id="sizeSlider" min="50" max="220" value="120" step="1">
+    <span id="sizeVal" style="min-width:40px;color:#ddd6fe;font-size:16px;">120%</span>
+  </div>
+</div>
+
+<script>
+// ── Glyph pool: only glyphs with crossing strokes or enclosed counters ────────
+const glyphPool = [
+  // Greek
+  'Ω','Σ','Φ','Ψ','Λ','Θ','Ξ','Π','Δ','Γ',
+  // Letterlike / Math
+  'ℵ','ℜ','ℤ','ℭ','ℍ','℘','∮','⊗','⊕','∇','⊞','⊻','≜','∐',
+  // Cyrillic — chosen for stroke complexity
+  'Ж','Ч','Ш','Щ','Э','Я','Ф','Ю','Ц','Б','Д',
+  // Armenian
+  'Ա','Բ','Զ','Թ','Ժ','Ծ','Կ','Հ','Ձ','Ղ','Ճ','Փ','Ք',
+  // Coptic
+  'Ⲁ','Ⲅ','Ⲋ','Ⲏ','Ⲑ','Ⲕ','Ⲙ','Ⲛ','Ⲝ','Ⲡ','Ⲫ','Ⲭ','Ⲯ','Ⲱ',
+  // Runic — geometric but closed forms
+  'ᚨ','ᚢ','ᚦ','ᚱ','ᚷ','ᚹ','ᛇ','ᛈ','ᛉ','ᛊ','ᛏ','ᛚ','ᛜ','ᛞ','ᛟ',
+];
+
+// ── Palettes: bg + 6 glyph colors. All light backgrounds only. ───────────────
+const palettes = [
+  { bg:'#f0e6ff', colors:['#c084fc','#a855f7','#7c3aed','#ec4899','#f59e0b','#10b981'] },
+  { bg:'#e0f2fe', colors:['#38bdf8','#0284c7','#1d4ed8','#7dd3fc','#0ea5e9','#3b82f6'] },
+  { bg:'#fef3c7', colors:['#f59e0b','#d97706','#b45309','#f97316','#ef4444','#dc2626'] },
+  { bg:'#dcfce7', colors:['#4ade80','#16a34a','#15803d','#22d3ee','#0891b2','#0369a1'] },
+  { bg:'#ffe4e6', colors:['#fb7185','#e11d48','#be123c','#f97316','#ea580c','#ec4899'] },
+  { bg:'#e0e7ff', colors:['#818cf8','#4f46e5','#3730a3','#7c3aed','#6d28d9','#06b6d4'] },
+  { bg:'#fdf4ff', colors:['#e879f9','#c026d3','#a21caf','#db2777','#f43f5e','#9333ea'] },
+  { bg:'#fff7ed', colors:['#fb923c','#ea580c','#c2410c','#eab308','#d97706','#ca8a04'] },
+  { bg:'#f0fdf4', colors:['#86efac','#22c55e','#15803d','#14b8a6','#0d9488','#0f766e'] },
+  { bg:'#fef9c3', colors:['#fde047','#ca8a04','#a16207','#f97316','#fb923c','#f59e0b'] },
+  { bg:'#f5f3ff', colors:['#a78bfa','#7c3aed','#6d28d9','#ec4899','#be185d','#8b5cf6'] },
+  { bg:'#ecfdf5', colors:['#34d399','#059669','#047857','#0ea5e9','#0369a1','#4f46e5'] },
+  { bg:'#fff1f2', colors:['#fda4af','#e11d48','#9f1239','#f97316','#c2410c','#be185d'] },
+  { bg:'#eff6ff', colors:['#93c5fd','#2563eb','#1d4ed8','#06b6d4','#0891b2','#0284c7'] },
+  { bg:'#f0fdfa', colors:['#5eead4','#0d9488','#0f766e','#818cf8','#4f46e5','#7c3aed'] },
+  { bg:'#fdf2f8', colors:['#f0abfc','#c026d3','#86198f','#ec4899','#db2777','#e11d48'] },
+  { bg:'#fce4ec', colors:['#f48fb1','#c2185b','#880e4f','#ff7043','#bf360c','#e64a19'] },
+  { bg:'#e3f2fd', colors:['#42a5f5','#1565c0','#0d47a1','#26c6da','#00838f','#00695c'] },
+  { bg:'#fefce8', colors:['#fef08a','#ca8a04','#854d0e','#f97316','#ea580c','#dc2626'] },
+  { bg:'#f9fbe7', colors:['#d4e157','#689f38','#33691e','#ffca28','#f57f17','#ef6c00'] },
+  { bg:'#f3e8ff', colors:['#d8b4fe','#9333ea','#7e22ce','#f472b6','#db2777','#be185d'] },
+  { bg:'#fff8f1', colors:['#fdba74','#c2410c','#7c2d12','#f59e0b','#b45309','#92400e'] },
+  { bg:'#f1f5f9', colors:['#94a3b8','#475569','#1e293b','#6366f1','#4f46e5','#4338ca'] },
+  { bg:'#e8f5e9', colors:['#66bb6a','#2e7d32','#1b5e20','#26c6da','#00838f','#00695c'] },
+];
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const rand       = arr => arr[Math.floor(Math.random() * arr.length)];
+const shuffleArr = arr => [...arr].sort(() => Math.random() - 0.5);
+
+const baseRatios = [0.20, 0.34, 0.49, 0.63, 0.80, 1.00];
+const opacities  = [0.65, 0.68, 0.72, 0.75, 0.78, 0.82];
+
+let sizeScale = 120;
+let cellData  = [];
+let currentPalette = null;
+
+const grid      = document.getElementById('grid');
+const slider    = document.getElementById('sizeSlider');
+const sizeValEl = document.getElementById('sizeVal');
+
+// ── Build: pick ONE palette, ONE bg, new glyphs ───────────────────────────────
+function buildGrid() {
+  grid.innerHTML = '';
+  cellData = [];
+
+  currentPalette = rand(palettes);
+
+  for (let i = 0; i < 24; i++) {
+    const glyph  = rand(glyphPool);
+    const zOrder = shuffleArr([0,1,2,3,4,5]);
+    const colors = shuffleArr(currentPalette.colors);
+
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.style.background = currentPalette.bg;
+
+    const spans = [];
+    for (let j = 0; j < 6; j++) {
+      const span = document.createElement('span');
+      span.textContent   = glyph;
+      span.style.zIndex  = zOrder[j];
+      span.style.color   = colors[j];
+      span.style.opacity = opacities[j];
+      span.dataset.ratio = baseRatios[j];
+      cell.appendChild(span);
+      spans.push(span);
+    }
+
+    grid.appendChild(cell);
+    cellData.push({ cell, spans });
+  }
+
+  sizeFonts();
+}
+
+// ── Recolor: new palette, same bg tone philosophy, keep glyphs ────────────────
+function recolor() {
+  currentPalette = rand(palettes);
+
+  cellData.forEach(({ cell, spans }) => {
+    const zOrder = shuffleArr([0,1,2,3,4,5]);
+    const colors = shuffleArr(currentPalette.colors);
+
+    cell.style.background = currentPalette.bg;
+    spans.forEach((span, j) => {
+      span.style.zIndex = zOrder[j];
+      span.style.color  = colors[j];
+    });
+  });
+}
+
+// ── Sizing ────────────────────────────────────────────────────────────────────
+function sizeFonts() {
+  if (!cellData.length) return;
+  const firstCell = grid.querySelector('.cell');
+  if (!firstCell) return;
+  const base = Math.min(firstCell.offsetWidth, firstCell.offsetHeight) * (sizeScale / 100);
+  cellData.forEach(({ spans }) => {
+    spans.forEach(span => {
+      span.style.fontSize = (base * parseFloat(span.dataset.ratio)).toFixed(1) + 'px';
+    });
+  });
+}
+
+slider.addEventListener('input', () => {
+  sizeScale = parseInt(slider.value);
+  sizeValEl.textContent = sizeScale + '%';
+  sizeFonts();
+});
+
+document.getElementById('shuffleBtn').addEventListener('click', buildGrid);
+document.getElementById('colorBtn').addEventListener('click', recolor);
+
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(sizeFonts, 60);
+});
+
+buildGrid();
+</script>
+</body>
+</html>

@@ -1,0 +1,419 @@
+{
+  "family": "stream-time-density",
+  "title": "Stream / Time / Density",
+  "count": 13,
+  "screenshots": 13,
+  "source_areas": {
+    "2026_exp/vis": 13
+  },
+  "future_insert_candidate": "Stream / Time / Density",
+  "entries": [
+    {
+      "id": "2026-exp-vis-v3-d3-streamlines-smooth-html",
+      "title": "Streamgraph Lines",
+      "path": "2026_exp/vis/v3_d3_streamlines_smooth.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "stream-time-density",
+      "family_title": "Stream / Time / Density",
+      "subfamily": "stream",
+      "sequence_hint": 3,
+      "tags": [
+        "d3",
+        "stream-time-density",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v3-d3-streamlines-smooth.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Stream / Time / Density",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Randomize palette systems more aggressively; unify regeneration / timing controls; consider insert-family flavor mapping.",
+      "summary": "Streamgraph Lines — 2026_exp/vis; grouped under Stream / Time / Density. Signals: d3, stream-time-density, svg."
+    },
+    {
+      "id": "2026-exp-vis-v5-d3-endless-stream-html",
+      "title": "Endless Stream",
+      "path": "2026_exp/vis/v5_d3_endless_stream.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "stream-time-density",
+      "family_title": "Stream / Time / Density",
+      "subfamily": "stream",
+      "sequence_hint": 5,
+      "tags": [
+        "d3",
+        "stream",
+        "stream-time-density",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v5-d3-endless-stream.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Stream / Time / Density",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Randomize palette systems more aggressively; unify regeneration / timing controls; consider insert-family flavor mapping.",
+      "summary": "Endless Stream — 2026_exp/vis; grouped under Stream / Time / Density. Signals: d3, stream, stream-time-density, svg."
+    },
+    {
+      "id": "2026-exp-vis-v6-streaming-bump-chart-html",
+      "title": "Streaming Bump Chart",
+      "path": "2026_exp/vis/v6_streaming_bump_chart.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "stream-time-density",
+      "family_title": "Stream / Time / Density",
+      "subfamily": "stream",
+      "sequence_hint": 6,
+      "tags": [
+        "d3",
+        "stream-time-density",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v6-streaming-bump-chart.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Stream / Time / Density",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Randomize palette systems more aggressively; unify regeneration / timing controls; consider insert-family flavor mapping.",
+      "summary": "Streaming Bump Chart — 2026_exp/vis; grouped under Stream / Time / Density. Signals: d3, stream-time-density, svg."
+    },
+    {
+      "id": "2026-exp-vis-top10-streamlines-html",
+      "title": "Streamgraph Lines",
+      "path": "2026_exp/vis/top10_streamlines.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "stream-time-density",
+      "family_title": "Stream / Time / Density",
+      "subfamily": "stream",
+      "sequence_hint": 10,
+      "tags": [
+        "d3",
+        "stream-time-density",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-top10-streamlines.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Stream / Time / Density",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Randomize palette systems more aggressively; unify regeneration / timing controls; consider insert-family flavor mapping.",
+      "summary": "Streamgraph Lines — 2026_exp/vis; grouped under Stream / Time / Density. Signals: d3, stream-time-density, svg."
+    },
+    {
+      "id": "2026-exp-vis-top10-generative-art-html",
+      "title": "Top 10 Generative Art",
+      "path": "2026_exp/vis/top10_generative_art.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "stream-time-density",
+      "family_title": "Stream / Time / Density",
+      "subfamily": "top10",
+      "sequence_hint": 10,
+      "tags": [
+        "plotly",
+        "react",
+        "stream-time-density"
+      ],
+      "libraries": [
+        "plotly",
+        "react"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-top10-generative-art.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Stream / Time / Density",
+      "notes": "2026_exp/vis · libraries: plotly, react",
+      "upgrade_notes": "Randomize palette systems more aggressively; unify regeneration / timing controls; consider insert-family flavor mapping.",
+      "summary": "Top 10 Generative Art — 2026_exp/vis; grouped under Stream / Time / Density. Signals: plotly, react, stream-time-density."
+    },
+    {
+      "id": "2026-exp-vis-v17-time-curves-html",
+      "title": "Time Curves",
+      "path": "2026_exp/vis/v17_time_curves.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "stream-time-density",
+      "family_title": "Stream / Time / Density",
+      "subfamily": "time",
+      "sequence_hint": 17,
+      "tags": [
+        "d3",
+        "stream-time-density",
+        "svg",
+        "time"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v17-time-curves.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Stream / Time / Density",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Randomize palette systems more aggressively; unify regeneration / timing controls; consider insert-family flavor mapping.",
+      "summary": "Time Curves — 2026_exp/vis; grouped under Stream / Time / Density. Signals: d3, stream-time-density, svg, time."
+    },
+    {
+      "id": "2026-exp-vis-v17-time-curves-segments-html",
+      "title": "Time Curves",
+      "path": "2026_exp/vis/v17_time_curves_segments.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "stream-time-density",
+      "family_title": "Stream / Time / Density",
+      "subfamily": "time",
+      "sequence_hint": 17,
+      "tags": [
+        "d3",
+        "stream-time-density",
+        "svg",
+        "time"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v17-time-curves-segments.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Stream / Time / Density",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Randomize palette systems more aggressively; unify regeneration / timing controls; consider insert-family flavor mapping.",
+      "summary": "Time Curves — 2026_exp/vis; grouped under Stream / Time / Density. Signals: d3, stream-time-density, svg, time."
+    },
+    {
+      "id": "2026-exp-vis-v18-time-curves-bezier-html",
+      "title": "Time Curves",
+      "path": "2026_exp/vis/v18_time_curves_bezier.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "stream-time-density",
+      "family_title": "Stream / Time / Density",
+      "subfamily": "time",
+      "sequence_hint": 18,
+      "tags": [
+        "d3",
+        "stream-time-density",
+        "svg",
+        "time"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v18-time-curves-bezier.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Stream / Time / Density",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Randomize palette systems more aggressively; unify regeneration / timing controls; consider insert-family flavor mapping.",
+      "summary": "Time Curves — 2026_exp/vis; grouped under Stream / Time / Density. Signals: d3, stream-time-density, svg, time."
+    },
+    {
+      "id": "2026-exp-vis-v19-denselines-html",
+      "title": "DenseLines",
+      "path": "2026_exp/vis/v19_denselines.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "stream-time-density",
+      "family_title": "Stream / Time / Density",
+      "subfamily": "denseline",
+      "sequence_hint": 19,
+      "tags": [
+        "canvas",
+        "d3",
+        "stream-time-density"
+      ],
+      "libraries": [
+        "canvas",
+        "d3"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v19-denselines.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Stream / Time / Density",
+      "notes": "2026_exp/vis · libraries: canvas, d3",
+      "upgrade_notes": "Randomize palette systems more aggressively; unify regeneration / timing controls; consider insert-family flavor mapping.",
+      "summary": "DenseLines — 2026_exp/vis; grouped under Stream / Time / Density. Signals: canvas, d3, stream-time-density."
+    },
+    {
+      "id": "2026-exp-vis-v30-ridgeline-grid-html",
+      "title": "Ridgeline Grid",
+      "path": "2026_exp/vis/v30_ridgeline_grid.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "stream-time-density",
+      "family_title": "Stream / Time / Density",
+      "subfamily": "ridge",
+      "sequence_hint": 30,
+      "tags": [
+        "d3",
+        "stream-time-density",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v30-ridgeline-grid.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Stream / Time / Density",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Randomize palette systems more aggressively; unify regeneration / timing controls; consider insert-family flavor mapping.",
+      "summary": "Ridgeline Grid — 2026_exp/vis; grouped under Stream / Time / Density. Signals: d3, stream-time-density, svg."
+    },
+    {
+      "id": "2026-exp-vis-v31-ridgeline-full-html",
+      "title": "Ridgeline",
+      "path": "2026_exp/vis/v31_ridgeline_full.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "stream-time-density",
+      "family_title": "Stream / Time / Density",
+      "subfamily": "ridge",
+      "sequence_hint": 31,
+      "tags": [
+        "d3",
+        "stream-time-density",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v31-ridgeline-full.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Stream / Time / Density",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Randomize palette systems more aggressively; unify regeneration / timing controls; consider insert-family flavor mapping.",
+      "summary": "Ridgeline — 2026_exp/vis; grouped under Stream / Time / Density. Signals: d3, stream-time-density, svg."
+    },
+    {
+      "id": "2026-exp-vis-v40-comet-grid-html",
+      "title": "Comet Grid",
+      "path": "2026_exp/vis/v40_comet_grid.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "stream-time-density",
+      "family_title": "Stream / Time / Density",
+      "subfamily": "v40",
+      "sequence_hint": 40,
+      "tags": [
+        "css",
+        "stream-time-density",
+        "vega"
+      ],
+      "libraries": [
+        "css",
+        "vega"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v40-comet-grid.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Stream / Time / Density",
+      "notes": "2026_exp/vis · libraries: css, vega",
+      "upgrade_notes": "Randomize palette systems more aggressively; unify regeneration / timing controls; consider insert-family flavor mapping.",
+      "summary": "Comet Grid — 2026_exp/vis; grouped under Stream / Time / Density. Signals: css, stream-time-density, vega."
+    },
+    {
+      "id": "2026-exp-vis-v41-lasagna-html",
+      "title": "Lasagna",
+      "path": "2026_exp/vis/v41_lasagna.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "stream-time-density",
+      "family_title": "Stream / Time / Density",
+      "subfamily": "v41",
+      "sequence_hint": 41,
+      "tags": [
+        "canvas",
+        "stream-time-density",
+        "vega"
+      ],
+      "libraries": [
+        "canvas",
+        "vega"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v41-lasagna.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Stream / Time / Density",
+      "notes": "2026_exp/vis · libraries: canvas, vega",
+      "upgrade_notes": "Randomize palette systems more aggressively; unify regeneration / timing controls; consider insert-family flavor mapping.",
+      "summary": "Lasagna — 2026_exp/vis; grouped under Stream / Time / Density. Signals: canvas, stream-time-density, vega."
+    }
+  ]
+}

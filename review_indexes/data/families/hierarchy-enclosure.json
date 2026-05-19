@@ -1,0 +1,204 @@
+{
+  "family": "hierarchy-enclosure",
+  "title": "Hierarchy / Enclosure",
+  "count": 6,
+  "screenshots": 6,
+  "source_areas": {
+    "2026_exp/vis": 6
+  },
+  "future_insert_candidate": "Hierarchy / Circlepack",
+  "entries": [
+    {
+      "id": "2026-exp-vis-v12-circlepack-glowing-orbs-html",
+      "title": "Glowing Orbs",
+      "path": "2026_exp/vis/v12_circlepack_glowing_orbs.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "hierarchy-enclosure",
+      "family_title": "Hierarchy / Enclosure",
+      "subfamily": "circlepack",
+      "sequence_hint": 12,
+      "tags": [
+        "circlepack",
+        "d3",
+        "hierarchy-enclosure",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v12-circlepack-glowing-orbs.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Hierarchy / Circlepack",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Good insert-family candidate; unify circlepack/treemap flavors and palette/glow controls.",
+      "summary": "Glowing Orbs — 2026_exp/vis; grouped under Hierarchy / Enclosure. Signals: circlepack, d3, hierarchy-enclosure, svg."
+    },
+    {
+      "id": "2026-exp-vis-v12-circlepack-grid-html",
+      "title": "Glowing Orbs",
+      "path": "2026_exp/vis/v12_circlepack_grid.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "hierarchy-enclosure",
+      "family_title": "Hierarchy / Enclosure",
+      "subfamily": "circlepack",
+      "sequence_hint": 12,
+      "tags": [
+        "circlepack",
+        "d3",
+        "hierarchy-enclosure",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v12-circlepack-grid.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Hierarchy / Circlepack",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Good insert-family candidate; unify circlepack/treemap flavors and palette/glow controls.",
+      "summary": "Glowing Orbs — 2026_exp/vis; grouped under Hierarchy / Enclosure. Signals: circlepack, d3, hierarchy-enclosure, svg."
+    },
+    {
+      "id": "2026-exp-vis-v13-circlepack-borders-html",
+      "title": "Orb Borders",
+      "path": "2026_exp/vis/v13_circlepack_borders.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "hierarchy-enclosure",
+      "family_title": "Hierarchy / Enclosure",
+      "subfamily": "circlepack",
+      "sequence_hint": 13,
+      "tags": [
+        "circlepack",
+        "d3",
+        "hierarchy-enclosure",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v13-circlepack-borders.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Hierarchy / Circlepack",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Good insert-family candidate; unify circlepack/treemap flavors and palette/glow controls.",
+      "summary": "Orb Borders — 2026_exp/vis; grouped under Hierarchy / Enclosure. Signals: circlepack, d3, hierarchy-enclosure, svg."
+    },
+    {
+      "id": "2026-exp-vis-v14-circlepack-flat-html",
+      "title": "Circle Pack Flat",
+      "path": "2026_exp/vis/v14_circlepack_flat.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "hierarchy-enclosure",
+      "family_title": "Hierarchy / Enclosure",
+      "subfamily": "circlepack",
+      "sequence_hint": 14,
+      "tags": [
+        "circlepack",
+        "d3",
+        "hierarchy-enclosure",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v14-circlepack-flat.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Hierarchy / Circlepack",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Good insert-family candidate; unify circlepack/treemap flavors and palette/glow controls.",
+      "summary": "Circle Pack Flat — 2026_exp/vis; grouped under Hierarchy / Enclosure. Signals: circlepack, d3, hierarchy-enclosure, svg."
+    },
+    {
+      "id": "2026-exp-vis-v15-circlepack-flat-borders-html",
+      "title": "Circle Pack Flat Borders",
+      "path": "2026_exp/vis/v15_circlepack_flat_borders.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "hierarchy-enclosure",
+      "family_title": "Hierarchy / Enclosure",
+      "subfamily": "circlepack",
+      "sequence_hint": 15,
+      "tags": [
+        "circlepack",
+        "d3",
+        "hierarchy-enclosure",
+        "svg"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v15-circlepack-flat-borders.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Hierarchy / Circlepack",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Good insert-family candidate; unify circlepack/treemap flavors and palette/glow controls.",
+      "summary": "Circle Pack Flat Borders — 2026_exp/vis; grouped under Hierarchy / Enclosure. Signals: circlepack, d3, hierarchy-enclosure, svg."
+    },
+    {
+      "id": "2026-exp-vis-v16-treemap-grid-html",
+      "title": "Treemap Grid",
+      "path": "2026_exp/vis/v16_treemap_grid.html",
+      "source_area": "2026_exp/vis",
+      "year_bucket": "2026",
+      "family": "hierarchy-enclosure",
+      "family_title": "Hierarchy / Enclosure",
+      "subfamily": "treemap",
+      "sequence_hint": 16,
+      "tags": [
+        "d3",
+        "hierarchy-enclosure",
+        "svg",
+        "treemap"
+      ],
+      "libraries": [
+        "d3",
+        "svg"
+      ],
+      "uses_autofont": false,
+      "uses_artist_palette": false,
+      "uses_colorpalette": false,
+      "uses_glyph_data": false,
+      "screenshot_path": "screenshots/2026-exp-vis-v16-treemap-grid.png",
+      "screenshot_exists": true,
+      "status": "candidate",
+      "future_insert_candidate": "Hierarchy / Circlepack",
+      "notes": "2026_exp/vis · libraries: d3, svg",
+      "upgrade_notes": "Good insert-family candidate; unify circlepack/treemap flavors and palette/glow controls.",
+      "summary": "Treemap Grid — 2026_exp/vis; grouped under Hierarchy / Enclosure. Signals: d3, hierarchy-enclosure, svg, treemap."
+    }
+  ]
+}

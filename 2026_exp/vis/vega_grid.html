@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Vector Grid</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    width: 100vw; height: 100vh;
+    background: #000;
+    color: #e8e8ec;
+    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+  }
+  .grid {
+    position: fixed; inset: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 1px;
+    background: #1a1c22;
+  }
+  .cell {
+    position: relative;
+    background: #000;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cell canvas { max-width: 100%; max-height: 100%; display: block; }
+  .toolbar {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+  }
+  .toolbar button {
+    appearance: none;
+    background: rgba(15, 17, 22, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #e8e8ec;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 999px;
+    padding: 9px 18px;
+    font: inherit;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+  }
+  .toolbar button:hover {
+    background: rgba(35, 39, 48, 0.95);
+    border-color: rgba(255,255,255,0.25);
+  }
+  .toolbar button:active { transform: translateY(1px); }
+</style>
+</head>
+<body>
+
+<div class="grid" id="grid"></div>
+
+<div class="toolbar">
+  <button id="btnPalette">Change palette</button>
+  <button id="btnShapes">Change shapes</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vega@6"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@6"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>
+
+<script>
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+  const SCHEMES = [
+    'rainbow', 'sinebow',
+    'viridis', 'plasma', 'magma', 'inferno', 'turbo', 'cividis',
+    'spectral', 'redyellowblue', 'redyellowgreen',
+    'brownbluegreen', 'pinkyellowgreen', 'purplegreen',
+    'blueorange', 'purpleorange', 'redblue',
+  ];
+
+  const CUSTOM_PALETTES = [
+    ['#0a0033', '#3b0f6f', '#a02c5d', '#f56b3a', '#ffd166', '#fff8ad'],     // sunset
+    ['#0d0221', '#5a189a', '#e500a4', '#ff5c8a', '#ffcc00', '#7ef9ff'],     // neon dream
+    ['#001233', '#0353a4', '#33a1c9', '#ffba08', '#dc2f02', '#9d0208'],     // ice and fire
+    ['#0b132b', '#1c2541', '#3a506b', '#5bc0be', '#6fffe9', '#cfffe5'],     // forest at night
+    ['#1a0b00', '#5e1a00', '#a8431f', '#e98a36', '#f6c453', '#fff7d6'],     // copper bloom
+    ['#001219', '#005f73', '#94d2bd', '#ee9b00', '#ca6702', '#9b2226'],     // electric coral
+    ['#03071e', '#9d0208', '#dc2f02', '#f48c06', '#ffba08', '#faf3dd'],     // candy pop
+    ['#03045e', '#0077b6', '#00b4d8', '#90e0ef', '#caf0f8', '#ffffff'],     // deep sea
+    ['#10002b', '#240046', '#5a189a', '#9d4edd', '#c77dff', '#e0aaff'],     // ultraviolet
+    ['#1d1d1f', '#f44336', '#ffeb3b', '#1976d2', '#ffffff', '#1d1d1f'],     // bauhaus
+    ['#5f0f40', '#9a031e', '#fb8b24', '#e36414', '#0f4c5c', '#283d3b'],     // vapor
+    ['#000814', '#001d3d', '#003566', '#ffc300', '#ffd60a', '#ffffff'],     // chrome
+    ['#264653', '#2a9d8f', '#e9c46a', '#f4a261', '#e76f51', '#fefae0'],     // botanical
+  ];
+
+  function pickPalette() {
+    if (Math.random() < 0.45) return { kind: 'scheme', value: pick(SCHEMES) };
+    return { kind: 'custom', value: pick(CUSTOM_PALETTES) };
+  }
+
+  const MARK_VARIANTS = [
+    { mark: { type: 'point', shape: 'wedge', filled: true },                          angleRange: [180, 540], sizeMax: 500 },
+    { mark: { type: 'point', shape: 'arrow', filled: true },                          angleRange: [0, 360],   sizeMax: 500 },
+    { mark: { type: 'point', shape: 'stroke', strokeWidth: 1.5 },                     angleRange: [0, 360],   sizeMax: 700 },
+    { mark: { type: 'point', shape: 'stroke', strokeWidth: 3 },                       angleRange: [0, 360],   sizeMax: 800 },
+    { mark: { type: 'point', shape: 'triangle-up', filled: true },                    angleRange: [180, 540], sizeMax: 350 },
+    { mark: { type: 'point', shape: 'triangle', filled: true },                       angleRange: [180, 540], sizeMax: 350 },
+    { mark: { type: 'point', shape: 'cross', filled: true },                          angleRange: [0, 360],   sizeMax: 400 },
+    { mark: { type: 'point', shape: 'diamond', filled: true },                        angleRange: [0, 360],   sizeMax: 350 },
+    { mark: { type: 'point', shape: 'square', filled: true },                         angleRange: [0, 360],   sizeMax: 300 },
+    { mark: { type: 'point', shape: 'circle', filled: true },                         angleRange: [0, 360],   sizeMax: 250 },
+    { mark: { type: 'point', shape: 'circle', filled: false, strokeWidth: 1.5 },      angleRange: [0, 360],   sizeMax: 350 },
+    { mark: { type: 'text', text: '➤', fontSize: 14 },                                angleRange: [0, 360],   sizeMax: 400 },
+    { mark: { type: 'text', text: '↑', fontSize: 14, fontWeight: 'bold' },            angleRange: [180, 540], sizeMax: 400 },
+    { mark: { type: 'text', text: '▲', fontSize: 14 },                                angleRange: [180, 540], sizeMax: 400 },
+    { mark: { type: 'text', text: '✦', fontSize: 14 },                                angleRange: [0, 360],   sizeMax: 400 },
+    { mark: { type: 'text', text: '✺', fontSize: 14 },                                angleRange: [0, 360],   sizeMax: 500 },
+    { mark: { type: 'text', text: '❋', fontSize: 14 },                                angleRange: [0, 360],   sizeMax: 500 },
+    { mark: { type: 'text', text: '✿', fontSize: 14 },                                angleRange: [0, 360],   sizeMax: 500 },
+    { mark: { type: 'text', text: '✱', fontSize: 14 },                                angleRange: [0, 360],   sizeMax: 500 },
+    { mark: { type: 'text', text: '•', fontSize: 18, fontWeight: 'bold' },            angleRange: [0, 360],   sizeMax: 600 },
+    { mark: { type: 'text', text: '/', fontSize: 14, fontWeight: 'bold' },            angleRange: [0, 360],   sizeMax: 500 },
+    { mark: { type: 'text', text: '━', fontSize: 16 },                                angleRange: [0, 360],   sizeMax: 600 },
+    { mark: { type: 'text', text: '◆', fontSize: 14 },                                angleRange: [0, 360],   sizeMax: 400 },
+  ];
+
+  const PROJECTIONS = [
+    { type: 'equalEarth' },
+    { type: 'naturalEarth1' },
+    { type: 'mercator' },
+    { type: 'orthographic',
+      rotate: () => [Math.random()*360 - 180, Math.random()*60 - 30, 0] },
+    { type: 'azimuthalEqualArea',
+      rotate: () => [Math.random()*360 - 180, Math.random()*60 - 30, 0] },
+    { type: 'conicEqualArea',
+      parallels: () => [10 + Math.random()*30, 40 + Math.random()*30] },
+    { type: 'conicConformal',
+      parallels: () => [10 + Math.random()*30, 40 + Math.random()*30] },
+    { type: 'conicEquidistant',
+      parallels: () => [10 + Math.random()*30, 40 + Math.random()*30] },
+    { type: 'equirectangular' },
+  ];
+
+  function pickProjection() {
+    const p = pick(PROJECTIONS);
+    const out = { type: p.type };
+    if (p.rotate) out.rotate = p.rotate();
+    if (p.parallels) out.parallels = p.parallels();
+    return out;
+  }
+
+  function generateWindField() {
+    const cols = 50 + Math.floor(Math.random() * 40);
+    const rows = 38 + Math.floor(Math.random() * 32);
+    const lonMin = -180 + Math.random() * 40;
+    const lonMax = lonMin + 80 + Math.random() * 100;
+    const latMin = -70 + Math.random() * 30;
+    const latMax = latMin + 50 + Math.random() * 50;
+
+    const mode = pick(['centers', 'centers', 'sinusoidal', 'braided', 'spiral', 'double-rotation', 'shockwave']);
+    let fieldFn;
+
+    if (mode === 'centers') {
+      const n = 3 + Math.floor(Math.random() * 5);
+      const centers = [];
+      for (let i = 0; i < n; i++) {
+        centers.push({
+          cx: lonMin + Math.random() * (lonMax - lonMin),
+          cy: latMin + Math.random() * (latMax - latMin),
+          kind: pick(['vortex', 'vortex', 'source', 'sink', 'saddle']),
+          sign: Math.random() < 0.5 ? -1 : 1,
+          strength: 0.5 + Math.random() * 1.5,
+          falloff: 8 + Math.random() * 30,
+        });
+      }
+      fieldFn = (lon, lat) => {
+        let vx = 0, vy = 0;
+        for (const c of centers) {
+          const dx = lon - c.cx, dy = lat - c.cy;
+          const r2 = dx*dx + dy*dy;
+          const w = Math.exp(-r2 / (c.falloff * c.falloff));
+          if (c.kind === 'vortex')      { vx += -c.sign*dy*w*c.strength; vy +=  c.sign*dx*w*c.strength; }
+          else if (c.kind === 'source') { vx += dx*w*c.strength;          vy += dy*w*c.strength; }
+          else if (c.kind === 'sink')   { vx += -dx*w*c.strength;         vy += -dy*w*c.strength; }
+          else if (c.kind === 'saddle') { vx +=  dx*w*c.strength*c.sign;  vy += -dy*w*c.strength*c.sign; }
+        }
+        return [vx, vy];
+      };
+    } else if (mode === 'sinusoidal') {
+      const a = 0.04 + Math.random()*0.08;
+      const b = 0.04 + Math.random()*0.08;
+      const phaseA = Math.random()*Math.PI*2;
+      const phaseB = Math.random()*Math.PI*2;
+      fieldFn = (lon, lat) => [
+        Math.sin(lon*a + phaseA) * Math.cos(lat*b + phaseB),
+        Math.cos(lon*a + phaseA) * Math.sin(lat*b + phaseB),
+      ];
+    } else if (mode === 'braided') {
+      const f1 = 0.05 + Math.random()*0.05;
+      const f2 = 0.08 + Math.random()*0.06;
+      const phase = Math.random()*Math.PI*2;
+      fieldFn = (lon, lat) => [
+        Math.sin(lat*f1 + phase) + 0.5*Math.cos(lat*f2),
+        Math.cos(lon*f1) - 0.4*Math.sin(lon*f2 + phase),
+      ];
+    } else if (mode === 'spiral') {
+      const cx = lonMin + (lonMax - lonMin) * (0.3 + Math.random()*0.4);
+      const cy = latMin + (latMax - latMin) * (0.3 + Math.random()*0.4);
+      const sign = Math.random() < 0.5 ? -1 : 1;
+      const tightness = 0.05 + Math.random() * 0.15;
+      fieldFn = (lon, lat) => {
+        const dx = lon - cx, dy = lat - cy;
+        const r = Math.hypot(dx, dy);
+        const angle = Math.atan2(dy, dx) + sign*tightness*r;
+        return [Math.cos(angle), Math.sin(angle)];
+      };
+    } else if (mode === 'double-rotation') {
+      const cx1 = lonMin + (lonMax - lonMin) * 0.3;
+      const cy1 = latMin + (latMax - latMin) * 0.5;
+      const cx2 = lonMin + (lonMax - lonMin) * 0.7;
+      const cy2 = latMin + (latMax - latMin) * 0.5;
+      const falloff = 30 + Math.random()*20;
+      fieldFn = (lon, lat) => {
+        const dx1 = lon - cx1, dy1 = lat - cy1;
+        const dx2 = lon - cx2, dy2 = lat - cy2;
+        const w1 = Math.exp(-(dx1*dx1+dy1*dy1)/(falloff*falloff));
+        const w2 = Math.exp(-(dx2*dx2+dy2*dy2)/(falloff*falloff));
+        return [-dy1*w1 + dy2*w2, dx1*w1 - dx2*w2];
+      };
+    } else if (mode === 'shockwave') {
+      const cx = lonMin + (lonMax - lonMin) * (0.2 + Math.random()*0.6);
+      const cy = latMin + (latMax - latMin) * (0.2 + Math.random()*0.6);
+      const freq = 0.15 + Math.random()*0.15;
+      fieldFn = (lon, lat) => {
+        const dx = lon - cx, dy = lat - cy;
+        const r = Math.hypot(dx, dy) + 0.001;
+        const phase = Math.sin(r*freq);
+        return [(dx/r)*phase, (dy/r)*phase];
+      };
+    }
+
+    const out = [];
+    for (let j = 0; j < rows; j++) {
+      const lat = latMin + ((latMax - latMin) * j) / (rows - 1);
+      for (let i = 0; i < cols; i++) {
+        const lon = lonMin + ((lonMax - lonMin) * i) / (cols - 1);
+        const [vx, vy] = fieldFn(lon, lat);
+        let dir = (Math.atan2(vy, vx) * 180) / Math.PI;
+        dir = (dir + 360) % 360;
+        const speed = Math.hypot(vx, vy);
+        out.push({ longitude: lon, latitude: lat, dir, speed });
+      }
+    }
+    return out;
+  }
+
+  // build 25 cells
+  const gridEl = document.getElementById('grid');
+  for (let i = 0; i < 25; i++) {
+    const d = document.createElement('div');
+    d.className = 'cell';
+    d.dataset.idx = i;
+    gridEl.appendChild(d);
+  }
+
+  // ---------- per-cell state ----------
+  // Each cell remembers its own variant (mark + projection + data) so
+  // we can swap palettes without re-rolling shapes, and vice versa.
+  const cellEls = Array.from(document.querySelectorAll('.cell'));
+  const cellState = cellEls.map(() => ({
+    variant: pick(MARK_VARIANTS),
+    projection: pickProjection(),
+    data: generateWindField(),
+  }));
+
+  let currentPalette = pickPalette();
+
+  function renderCell(idx) {
+    const state = cellState[idx];
+    const el = cellEls[idx];
+    const w = el.clientWidth;
+    const h = el.clientHeight;
+
+    const colorScale = { domain: [0, 360] };
+    if (currentPalette.kind === 'scheme') colorScale.scheme = currentPalette.value;
+    else colorScale.range = currentPalette.value;
+
+    const spec = {
+      $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
+      width: w,
+      height: h,
+      autosize: { type: 'fit', contains: 'padding' },
+      data: { values: state.data },
+      projection: state.projection,
+      mark: state.variant.mark,
+      encoding: {
+        longitude: { field: 'longitude', type: 'quantitative' },
+        latitude:  { field: 'latitude',  type: 'quantitative' },
+        color: {
+          field: 'dir', type: 'quantitative',
+          scale: colorScale, legend: null,
+        },
+        angle: {
+          field: 'dir', type: 'quantitative',
+          scale: { domain: [0, 360], range: state.variant.angleRange },
+        },
+        size: {
+          field: 'speed', type: 'quantitative',
+          scale: { rangeMax: state.variant.sizeMax }, legend: null,
+        },
+      },
+      config: {
+        aria: false,
+        background: '#000',
+        view: { step: 10, fill: '#000', stroke: null },
+        padding: 0,
+      },
+    };
+
+    vegaEmbed(el, spec, { actions: false, renderer: 'canvas' })
+      .catch(err => { console.error(err); });
+  }
+
+  function renderAll() {
+    for (let i = 0; i < cellEls.length; i++) renderCell(i);
+  }
+
+  document.getElementById('btnPalette').addEventListener('click', () => {
+    currentPalette = pickPalette();
+    renderAll();
+  });
+
+  document.getElementById('btnShapes').addEventListener('click', () => {
+    for (const s of cellState) {
+      s.variant = pick(MARK_VARIANTS);
+      s.projection = pickProjection();
+      s.data = generateWindField();
+    }
+    renderAll();
+  });
+
+  // Re-render on resize so the canvases fit the new cell sizes.
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(renderAll, 200);
+  });
+
+  renderAll();
+</script>
+</body>
+</html>

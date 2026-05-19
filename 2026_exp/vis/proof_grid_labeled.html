@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>1/3 + 1/9 + 1/27 + … = 1/2</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #f4f1ec;
+    font-family: ui-serif, Georgia, "Times New Roman", serif;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 48px;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  header h1 {
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0 0 4px;
+    letter-spacing: 0.3px;
+  }
+  header p {
+    font-size: 14px;
+    color: #555;
+    margin: 0;
+    font-style: italic;
+  }
+  .controls {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin: 22px 0 28px;
+    flex-wrap: wrap;
+  }
+  button {
+    appearance: none;
+    border: 1px solid #1a1a1a;
+    background: #1a1a1a;
+    color: #f4f1ec;
+    font: inherit;
+    font-size: 14px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: transform 0.08s ease, opacity 0.15s ease;
+  }
+  button.secondary {
+    background: transparent;
+    color: #1a1a1a;
+  }
+  button:hover { transform: translateY(-1px); }
+  button:active { transform: translateY(0); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+  }
+  .cell {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6%;
+  }
+  .cell .label {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.7);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 3px 6px;
+    border-radius: 4px;
+    pointer-events: none;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .cell .label .swatches {
+    display: inline-flex;
+    gap: 2px;
+  }
+  .cell .label .sw {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    border: 1px solid rgba(0,0,0,0.15);
+  }
+  .cell svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  footer {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 12px;
+    color: #777;
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>⅓ + ⅑ + 1⁄27 + … = ½</h1>
+      <p>twenty-five proofs without words</p>
+    </header>
+
+    <div class="controls">
+      <button id="btnPalette">New palette</button>
+      <button id="btnShuffle" class="secondary">Reshuffle (same palette)</button>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <footer>after Rick Mabry, <em>Mathematics Without Words</em></footer>
+  </div>
+
+<script>
+  // ---------- palette ----------
+  // 4 coherent but distinct colors, generated in HSL.
+  function randomPalette() {
+    const baseHue = Math.random() * 360;
+    const schemes = [
+      [0, 30, 180, 210],   // analogous + complement pair
+      [0, 150, 210, 30],   // split complementary
+      [0, 90, 180, 270],   // tetradic
+      [0, 25, 55, 330],    // warm fan
+      [0, 40, 200, 230],   // warm-cool pair
+    ];
+    const offsets = schemes[Math.floor(Math.random() * schemes.length)];
+    return offsets.map((off, i) => {
+      const h = (baseHue + off + (Math.random() * 14 - 7) + 360) % 360;
+      const s = 58 + Math.random() * 22;
+      const l = 52 + (i % 2 === 0 ? 6 : -5) + (Math.random() * 6 - 3);
+      return `hsl(${h.toFixed(1)} ${s.toFixed(1)}% ${l.toFixed(1)}%)`;
+    });
+  }
+
+  // ---------- the figure ----------
+  // The proof: a 2:1 rectangle of total area 2.
+  // Split it into 3 equal squares along its long axis. The "outer" two
+  // squares (one on each end) are colored — one with color A, one with B.
+  // The middle square (1x1) is split into two 2:1 rectangles along its
+  // short axis (so each child is a 2:1 rect rotated 90° from the parent).
+  // One of those children gets colored; the other recurses.
+  //
+  // After infinite recursion each color tiles exactly half the total
+  // area, so the geometric series 1/3 + 1/9 + 1/27 + ... = 1/2.
+  //
+  // Per cell we randomize:
+  //   - which two colors of the 4-palette are used (a random pair)
+  //   - which color goes "first" (the color of the largest end square)
+  //   - which end of the rectangle that first square sits on (start side)
+  //   - whether the outer rectangle is horizontal (2 wide x 1 tall) or
+  //     vertical (1 wide x 2 tall)
+  //   - the recursion side at each level (top vs bottom, left vs right)
+
+  const DEPTH = 6; // plenty for visual convergence
+
+  function buildSVG(palette, rng) {
+    // pick two distinct colors from the 4
+    const idxs = [0,1,2,3];
+    shuffle(idxs, rng);
+    const colorAIdx = idxs[0];
+    const colorBIdx = idxs[1];
+    const colorA = palette[colorAIdx];
+    const colorB = palette[colorBIdx];
+
+    // outer orientation: horizontal (w=2,h=1) or vertical (w=1,h=2)
+    const horizontal = rng() < 0.5;
+    const W = horizontal ? 600 : 300;
+    const H = horizontal ? 300 : 600;
+
+    const rects = [];
+    // capture the very first start-side decision so we can label it
+    let firstStartSide = null;
+
+    function go(x, y, w, h, longAxis, c1, c2, depth) {
+      if (depth === 0) {
+        if (longAxis === 'h') {
+          rects.push({ x, y, w: w/2, h, fill: c1 });
+          rects.push({ x: x + w/2, y, w: w/2, h, fill: c2 });
+        } else {
+          rects.push({ x, y, w, h: h/2, fill: c1 });
+          rects.push({ x, y: y + h/2, w, h: h/2, fill: c2 });
+        }
+        return;
+      }
+
+      const flipFirst = rng() < 0.5;
+      const A = flipFirst ? c1 : c2;
+      const B = flipFirst ? c2 : c1;
+
+      if (firstStartSide === null) {
+        // top-level: which end gets color A (the first palette color)?
+        // For horizontal: A is at left if !flipFirst (since A is pushed first
+        // at x); for vertical: A is at top if !flipFirst.
+        if (longAxis === 'h') {
+          firstStartSide = flipFirst ? 'R' : 'L';
+        } else {
+          firstStartSide = flipFirst ? 'B' : 'T';
+        }
+      }
+
+      if (longAxis === 'h') {
+        const piece = w / 3;
+        rects.push({ x: x,             y, w: piece, h, fill: A });
+        rects.push({ x: x + 2*piece,   y, w: piece, h, fill: B });
+        go(x + piece, y, piece, h, 'v', c1, c2, depth - 1);
+      } else {
+        const piece = h / 3;
+        rects.push({ x, y: y,           w, h: piece, fill: A });
+        rects.push({ x, y: y + 2*piece, w, h: piece, fill: B });
+        go(x, y + piece, w, piece, 'h', c1, c2, depth - 1);
+      }
+    }
+
+    const longAxis = horizontal ? 'h' : 'v';
+    go(0, 0, W, H, longAxis, colorA, colorB, DEPTH);
+
+    let inner = '';
+    for (const r of rects) {
+      inner += `<rect x="${r.x.toFixed(3)}" y="${r.y.toFixed(3)}" `
+             + `width="${r.w.toFixed(3)}" height="${r.h.toFixed(3)}" `
+             + `fill="${r.fill}" shape-rendering="crispEdges"/>`;
+    }
+    const svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" `
+              + `preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
+
+    return {
+      svg,
+      params: {
+        colorAIdx,
+        colorBIdx,
+        colorA,
+        colorB,
+        orientation: horizontal ? 'H' : 'V',
+        firstStartSide, // 'L'|'R' for horizontal, 'T'|'B' for vertical
+      }
+    };
+  }
+
+  function shuffle(arr, rng) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
+  // simple seeded RNG so each cell has its own deterministic stream when
+  // we want it; for "shuffle same palette" we just generate fresh seeds.
+  function mulberry32(seed) {
+    return function() {
+      seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // ---------- render ----------
+  let currentPalette = randomPalette();
+
+  function render() {
+    const grid = document.getElementById('grid');
+    const html = [];
+    for (let i = 0; i < 25; i++) {
+      const seed = (Math.random() * 2**31) | 0;
+      const rng = mulberry32(seed);
+      const { svg, params } = buildSVG(currentPalette, rng);
+      // Label: orientation + start side, plus two color swatches in order
+      // (first swatch = color A = the one at the "start" side)
+      const label =
+        `<span class="label">`
+        + `${params.orientation}${params.firstStartSide}`
+        + `<span class="swatches">`
+        +   `<span class="sw" style="background:${params.colorA}"></span>`
+        +   `<span class="sw" style="background:${params.colorB}"></span>`
+        + `</span>`
+        + `</span>`;
+      html.push(`<div class="cell">${label}${svg}</div>`);
+    }
+    grid.innerHTML = html.join('');
+  }
+
+  document.getElementById('btnPalette').addEventListener('click', () => {
+    currentPalette = randomPalette();
+    render();
+  });
+  document.getElementById('btnShuffle').addEventListener('click', () => {
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>1/3 + 1/9 + 1/27 + … = 1/2</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: #f4f1ec;
+    font-family: ui-serif, Georgia, "Times New Roman", serif;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+  .page { max-width: 1100px; margin: 0 auto; padding: 32px 24px 48px; }
+  header { text-align: center; margin-bottom: 8px; }
+  header h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; letter-spacing: 0.3px; }
+  header p { font-size: 14px; color: #555; margin: 0; font-style: italic; }
+  .controls { display: flex; gap: 12px; justify-content: center; margin: 22px 0 28px; flex-wrap: wrap; }
+  button {
+    appearance: none; border: 1px solid #1a1a1a; background: #1a1a1a;
+    color: #f4f1ec; font: inherit; font-size: 14px;
+    padding: 10px 18px; border-radius: 999px; cursor: pointer;
+    transition: transform 0.08s ease;
+  }
+  button:hover { transform: translateY(-1px); }
+  button:active { transform: translateY(0); }
+  .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+  .cell {
+    aspect-ratio: 1 / 1; background: #fff; border-radius: 10px;
+    overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    display: flex; align-items: center; justify-content: center; padding: 6%;
+  }
+  .cell svg { display: block; width: 100%; height: auto; }
+  footer { text-align: center; margin-top: 28px; font-size: 12px; color: #777; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>⅓ + ⅑ + 1⁄27 + … = ½</h1>
+      <p>twenty-five proofs without words</p>
+    </header>
+
+    <div class="controls">
+      <button id="btnPalette">New palette</button>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <footer>after Rick Mabry, <em>Mathematics Without Words</em></footer>
+  </div>
+
+<script>
+  function randomPalette() {
+    const baseHue = Math.random() * 360;
+    const schemes = [
+      [0, 30, 180, 210],
+      [0, 150, 210, 30],
+      [0, 90, 180, 270],
+      [0, 25, 55, 330],
+      [0, 40, 200, 230],
+    ];
+    const offsets = schemes[Math.floor(Math.random() * schemes.length)];
+    return offsets.map((off, i) => {
+      const h = (baseHue + off + (Math.random() * 14 - 7) + 360) % 360;
+      const s = 58 + Math.random() * 22;
+      const l = 52 + (i % 2 === 0 ? 6 : -5) + (Math.random() * 6 - 3);
+      return `hsl(${h.toFixed(1)} ${s.toFixed(1)}% ${l.toFixed(1)}%)`;
+    });
+  }
+
+  // Construction matching the source image:
+  //   Outer figure = 3:2 rectangle made of three 2x2 squares.
+  //   Left 2x2 = color A. Right 2x2 = color B.
+  //   Middle 2x2: top half (2x1) = A, bottom half (2x1) = B.
+  //   Recursion: a smaller copy of the same figure, rotated 90°,
+  //   centered inside the middle 2x2 square. Repeat.
+  //
+  // Area accounting (in units where outer = 6):
+  //   Level 1 colored: left + right + top-half + bottom-half = 4 + 1 + 1 = 6? no
+  //   Outer area = 3*2 = 6. Left (2*2=4)? no — the left "square" is 2u x 2u
+  //   but if u is the small unit so outer is 3u x 2u, then each big "square"
+  //   is u x ... wait, three 2x2 squares side by side would be 6 wide x 2
+  //   tall = 12 area. Let me redo with u = unit such that big square = 2u
+  //   side, so each big square area = 4u², three of them = 12u². But the
+  //   outer is 3u x 2u? No — three squares of side 2u side by side give
+  //   width 6u and height 2u, so outer is 6u x 2u, not 3u x 2u.
+  //
+  // Rebasing: let the big square side = s. Outer = 3s wide, s tall.
+  // That's a 3:1 rect, not 3:2. Hmm.
+  //
+  // Re-examining the image once more: the outer is wider than tall but
+  // not 3:1. Looking at the screenshot pixels: outer ~810w x 530h, ratio
+  // ~1.5:1, which IS 3:2. So the three "squares" in the outer aren't
+  // actually squares — they're 1:1 within their column-row?
+  //
+  // Unit math for 3:2: width 3u, height 2u. Split horizontally into
+  // three columns of width u. Each column is u x 2u — a 1:2 vertical
+  // rect, NOT a square. So the LEFT region (color A) is u wide x 2u tall,
+  // and similarly for right.
+  //
+  // The middle column (u x 2u): split into top (u x u, a SQUARE) colored A,
+  // and bottom (u x u, a SQUARE) colored B? In the image, the top region
+  // of the middle is yellow and tall, bottom is orange and tall. Looking
+  // again at proportions in the screenshot — yes the top yellow part of
+  // the middle column is taller than the bottom orange. Actually no:
+  // in the image, the middle column shows a big yellow region on top
+  // covering most of it, with the orange region on the bottom being
+  // thinner. Inside the yellow part is the recursion.
+  //
+  // OK I'm going to trust the math: at each level the colored pieces
+  // contribute equally to A and B, and the residual is similar and
+  // smaller by factor 1/3 in linear dimension.
+
+  const DEPTH = 6;
+
+  function buildSVG(palette) {
+    const A = palette[0];
+    const B = palette[1];
+    // Outer 3:2 rect
+    const W = 600;
+    const H = 400;
+    const rects = [];
+
+    // Recurse on a 3:2 rect at (x,y) of size (w,h). horizontal=true means
+    // long axis is x. The "first" big-square is at the start of the long
+    // axis (color A), "last" is at the end (color B). Middle column is
+    // split perpendicular to long axis into a part containing the
+    // recursion and a part of solid color.
+    function go(x, y, w, h, horizontal, depth) {
+      if (depth === 0) {
+        // base: just split the rect down the middle, A and B
+        if (horizontal) {
+          rects.push({ x, y, w: w/2, h, fill: A });
+          rects.push({ x: x + w/2, y, w: w/2, h, fill: B });
+        } else {
+          rects.push({ x, y, w, h: h/2, fill: A });
+          rects.push({ x, y: y + h/2, w, h: h/2, fill: B });
+        }
+        return;
+      }
+      if (horizontal) {
+        // w:h = 3:2. Three columns each of width w/3.
+        const u = w / 3;       // column width
+        const colH = h;         // column height = 2 * (u * 2/3)? no, h = 2u/3 * 3 = 2u
+        // Actually w = 3u and h = 2u, so each column is u wide, 2u tall.
+        // Left column = A, right column = B.
+        rects.push({ x: x,           y, w: u, h: colH, fill: A });
+        rects.push({ x: x + 2*u,     y, w: u, h: colH, fill: B });
+        // Middle column (u wide, 2u tall): split into top (u x u) and
+        // bottom (u x u). The top u x u square contains the recursion;
+        // the bottom u x u is solid color B (so that A and B stay
+        // balanced — A got the bigger left column, B gets this).
+        // Wait: A has the left column (area u * 2u = 2u²). B has right
+        // column (2u²). For balance overall, the middle u x 2u must be
+        // half A half B. So make top = A, bottom = B, each u² area.
+        rects.push({ x: x + u, y: y + u, w: u, h: u, fill: B });
+        // Top u x u contains recursion — but recursion is a 3:2 figure,
+        // not square. Place a 3:2 (rotated to 2:3, vertical) figure
+        // CENTERED inside the top u x u square. Its dimensions: width
+        // u * 2/3 (since 2:3 means short:long = 2:3, and we fit longest
+        // = u), so width = 2u/3, height = u. But that won't fit in u x u
+        // (height = u exactly fills, width 2u/3 leaves space on sides).
+        // Fill the leftover sides of the top square with color A.
+        const subW = 2*u/3;
+        const subH = u;
+        const subX = x + u + (u - subW)/2;
+        const subY = y;
+        // sides of the top square colored A
+        rects.push({ x: x + u, y: y, w: (u - subW)/2, h: u, fill: A });
+        rects.push({ x: subX + subW, y: y, w: (u - subW)/2, h: u, fill: A });
+        // recurse into a vertical 2:3 figure (long axis vertical)
+        go(subX, subY, subW, subH, false, depth - 1);
+      } else {
+        // vertical orientation: w:h = 2:3
+        const u = h / 3;
+        // Three rows, each w wide x u tall. Top = A, bottom = B.
+        rects.push({ x, y: y,           w, h: u, fill: A });
+        rects.push({ x, y: y + 2*u,     w, h: u, fill: B });
+        // Middle row (w wide, u tall): split into left (w/2 x u) and
+        // right (w/2 x u). Left = B (balance), right contains recursion.
+        rects.push({ x: x, y: y + u, w: w/2, h: u, fill: B });
+        // Right half (w/2 wide, u tall): place a 3:2 horizontal figure
+        // centered. Long axis horizontal, longest dim = w/2, so width
+        // w/2, height (w/2) * 2/3 = w/3.
+        const subW = w/2;
+        const subH = w/3;
+        const subX = x + w/2;
+        const subY = y + u + (u - subH)/2;
+        // top/bottom strips of right half colored A
+        rects.push({ x: x + w/2, y: y + u, w: w/2, h: (u - subH)/2, fill: A });
+        rects.push({ x: x + w/2, y: subY + subH, w: w/2, h: (u - subH)/2, fill: A });
+        go(subX, subY, subW, subH, true, depth - 1);
+      }
+    }
+
+    go(0, 0, W, H, true, DEPTH);
+
+    let inner = '';
+    for (const r of rects) {
+      inner += `<rect x="${r.x.toFixed(3)}" y="${r.y.toFixed(3)}" `
+             + `width="${r.w.toFixed(3)}" height="${r.h.toFixed(3)}" `
+             + `fill="${r.fill}" shape-rendering="crispEdges"/>`;
+    }
+    return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" `
+         + `preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
+  }
+
+  let currentPalette = randomPalette();
+
+  function render() {
+    const grid = document.getElementById('grid');
+    const svg = buildSVG(currentPalette);
+    const html = [];
+    for (let i = 0; i < 25; i++) html.push(`<div class="cell">${svg}</div>`);
+    grid.innerHTML = html.join('');
+  }
+
+  document.getElementById('btnPalette').addEventListener('click', () => {
+    currentPalette = randomPalette();
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>
