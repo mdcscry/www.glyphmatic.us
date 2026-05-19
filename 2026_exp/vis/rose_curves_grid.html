@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rose curves — r = cos(kθ)</title>
+<style>
+  :root {
+    --bg: #f7f5ef;
+    --fg: #1f1e1d;
+    --muted: #6b6a66;
+    --border: rgba(0,0,0,0.12);
+    --surface: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wrap { width: 100%; max-width: 900px; }
+  header { margin: 0 0 20px; }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; font-variant-numeric: tabular-nums; }
+  .subtitle { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: var(--surface);
+    color: var(--fg);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button:hover { background: #efece4; }
+  button:active { transform: scale(0.98); }
+  .slider-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .slider-group label { font-variant-caps: all-small-caps; letter-spacing: 0.05em; }
+  .slider-group input[type="range"] {
+    width: 140px;
+    accent-color: var(--fg);
+  }
+  .slider-group #max-nd-out {
+    font-variant-numeric: tabular-nums;
+    color: var(--fg);
+    font-weight: 500;
+    min-width: 18px;
+    text-align: right;
+  }
+  .slider-group .count {
+    font-variant-numeric: tabular-nums;
+    padding-left: 8px;
+    border-left: 0.5px solid var(--border);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .tile {
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+  .tile canvas { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>r = cos(kθ),  k = n/d</h1>
+    <p class="subtitle">20 rose curves at random rational frequencies.</p>
+  </header>
+
+  <div class="controls">
+    <button id="reroll-curves">New curves</button>
+    <button id="reroll-palettes">New palettes</button>
+    <div class="slider-group">
+      <label for="max-nd">max n,d</label>
+      <input type="range" id="max-nd" min="3" max="30" value="15" step="1" />
+      <span id="max-nd-out">15</span>
+      <span class="count" id="catalog-count">— curves</span>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+(function() {
+  const gridEl = document.getElementById('grid');
+  const ROWS = 4, COLS = 5;
+  const TOTAL = ROWS * COLS;
+
+  // Each palette: { bg, line }
+  const palettes = [
+    { name: 'paper',     bg: '#f1efe8', line: '#1a1a1a' },
+    { name: 'noir',      bg: '#1a1a1a', line: '#f0e8d0' },
+    { name: 'midnight',  bg: '#042c53', line: '#85b7eb' },
+    { name: 'ember',     bg: '#1a0a05', line: '#d85a30' },
+    { name: 'iris',      bg: '#26215c', line: '#cecbf6' },
+    { name: 'forest',    bg: '#173404', line: '#c0dd97' },
+    { name: 'rose',      bg: '#fbeaf0', line: '#4b1528' },
+    { name: 'amber',     bg: '#412402', line: '#fac775' },
+    { name: 'teal',      bg: '#04342c', line: '#9fe1cb' },
+    { name: 'oxblood',   bg: '#501313', line: '#f7c1c1' },
+    { name: 'plum',      bg: '#cecbf6', line: '#26215c' },
+    { name: 'mint',      bg: '#9fe1cb', line: '#04342c' },
+    { name: 'coral',     bg: '#faece7', line: '#993c1d' },
+    { name: 'wine',      bg: '#4b1528', line: '#f4c0d1' },
+    { name: 'sand',      bg: '#fac775', line: '#412402' },
+    { name: 'sky',       bg: '#e6f1fb', line: '#0c447c' },
+    { name: 'olive',     bg: '#27500a', line: '#eaf3de' },
+    { name: 'crimson',   bg: '#fafaf5', line: '#a32d2d' },
+    { name: 'graphite',  bg: '#d3d1c7', line: '#2c2c2a' },
+    { name: 'dusk',      bg: '#1a163d', line: '#7f77dd' }
+  ];
+
+  // ===== Math =====
+  // Greatest common divisor for reducing n/d
+  function gcd(a, b) {
+    a = Math.abs(a); b = Math.abs(b);
+    while (b > 0) { [a, b] = [b, a % b]; }
+    return a;
+  }
+
+  // Build the full set of unique (n, d) curves: coprime pairs in 1..maxND.
+  // Two pairs (n,d) and (n',d') give the same curve iff they reduce to the
+  // same lowest terms, so the unique curve set is exactly the coprime pairs.
+  // The slider controls maxND at runtime.
+  let maxND = 15;
+  let ALL_PAIRS = [];
+
+  function buildAllUniquePairs() {
+    const pairs = [];
+    for (let n = 1; n <= maxND; n++) {
+      for (let d = 1; d <= maxND; d++) {
+        if (gcd(n, d) === 1) pairs.push({ n, d });
+      }
+    }
+    return pairs;
+  }
+  ALL_PAIRS = buildAllUniquePairs();
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // Sample `count` (n, d) pairs. If the catalog is smaller than count,
+  // we fill remaining slots by reshuffling and continuing — so every tile
+  // gets a curve, and at small MAX_ND values some curves repeat but with
+  // different palettes per tile (so they look distinct).
+  function sampleUniquePairs(count) {
+    const result = [];
+    while (result.length < count) {
+      const remaining = count - result.length;
+      const batch = shuffle(ALL_PAIRS).slice(0, Math.min(remaining, ALL_PAIRS.length));
+      result.push(...batch);
+    }
+    return result;
+  }
+
+  /**
+   * Generate points along r = cos((n/d) * theta).
+   * The curve closes after theta sweeps from 0 to:
+   *   - π·d if n·d is odd (curve closes after d half-rotations)
+   *   - 2π·d if n·d is even (need full d rotations)
+   * We always sweep 2π·d to be safe — the curve traces over itself
+   * if it would have closed earlier, which is fine visually.
+   */
+  function generatePoints(n, d, samples = 4000) {
+    const k = n / d;
+    const thetaMax = 2 * Math.PI * d;
+    const points = [];
+    for (let i = 0; i <= samples; i++) {
+      const theta = (i / samples) * thetaMax;
+      const r = Math.cos(k * theta);
+      // Convert (r, theta) to (x, y). Negative r is allowed — that places
+      // the point on the opposite side of the origin, which is the standard
+      // interpretation that produces all the petals correctly.
+      const x = r * Math.cos(theta);
+      const y = r * Math.sin(theta);
+      points.push({ x, y });
+    }
+    return points;
+  }
+
+  // ===== Rendering =====
+  function renderTile(canvas, n, d, palette) {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(Math.floor(rect.width * dpr), 100);
+    const H = Math.max(Math.floor(rect.height * dpr), 100);
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = palette.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Generate enough samples to render dense ratios smoothly.
+    // Larger d means more rotations, so scale samples accordingly.
+    const samples = Math.min(20000, 1500 + d * 600);
+    const points = generatePoints(n, d, samples);
+
+    // Curve fits in [-1, 1] x [-1, 1]; scale to canvas with margin
+    const margin = Math.max(W * 0.08, 6 * dpr);
+    const scale = (Math.min(W, H) - 2 * margin) / 2;
+    const cx = W / 2;
+    const cy = H / 2;
+
+    ctx.strokeStyle = palette.line;
+    ctx.lineWidth = 1.0 * dpr;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    ctx.beginPath();
+    for (let i = 0; i < points.length; i++) {
+      const px = cx + points[i].x * scale;
+      const py = cy + points[i].y * scale;
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  }
+
+  // ===== State =====
+  let tiles = []; // { n, d }
+  let tilePalettes = [];
+
+  function regenerateTiles() {
+    tiles = sampleUniquePairs(TOTAL);
+  }
+
+  function pickPalettesNoAdjacent() {
+    const result = [];
+    const cols = COLS;
+    for (let i = 0; i < TOTAL; i++) {
+      const row = Math.floor(i / cols);
+      const col = i % cols;
+      const forbidden = new Set();
+      if (col > 0) forbidden.add(result[i - 1].name);
+      if (row > 0) forbidden.add(result[i - cols].name);
+      const candidates = palettes.filter(p => !forbidden.has(p.name));
+      result.push(candidates[Math.floor(Math.random() * candidates.length)]);
+    }
+    return result;
+  }
+
+  function build() {
+    gridEl.innerHTML = '';
+    for (let i = 0; i < TOTAL; i++) {
+      const tile = tiles[i];
+      const palette = tilePalettes[i];
+      const tileEl = document.createElement('div');
+      tileEl.className = 'tile';
+      tileEl.style.background = palette.bg;
+      const canvas = document.createElement('canvas');
+      tileEl.appendChild(canvas);
+      gridEl.appendChild(tileEl);
+      requestAnimationFrame(() => renderTile(canvas, tile.n, tile.d, palette));
+    }
+  }
+
+  function regenerateAll() {
+    regenerateTiles();
+    tilePalettes = pickPalettesNoAdjacent();
+  }
+
+  document.getElementById('reroll-curves').addEventListener('click', () => {
+    regenerateTiles();
+    build();
+  });
+  document.getElementById('reroll-palettes').addEventListener('click', () => {
+    tilePalettes = pickPalettesNoAdjacent();
+    build();
+  });
+
+  const maxNdSlider = document.getElementById('max-nd');
+  const maxNdOut = document.getElementById('max-nd-out');
+  const catalogCount = document.getElementById('catalog-count');
+
+  function updateCatalog(newMaxND) {
+    maxND = newMaxND;
+    maxNdOut.textContent = maxND;
+    ALL_PAIRS = buildAllUniquePairs();
+    catalogCount.textContent = `${ALL_PAIRS.length} curves`;
+  }
+
+  maxNdSlider.addEventListener('input', () => {
+    const v = parseInt(maxNdSlider.value);
+    updateCatalog(v);
+    regenerateTiles();
+    build();
+  });
+
+  // Initialize catalog count display
+  updateCatalog(parseInt(maxNdSlider.value));
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(build, 150);
+  });
+
+  regenerateAll();
+  build();
+})();
+</script>
+</body>
+</html>

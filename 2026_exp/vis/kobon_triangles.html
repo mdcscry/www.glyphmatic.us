@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kobon Triangles</title>
+<style>
+  :root {
+    --bg: #f7f5ef;
+    --fg: #1f1e1d;
+    --muted: #6b6a66;
+    --border: rgba(0,0,0,0.12);
+    --surface: #ffffff;
+    --accent: #993c1d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wrap { width: 100%; max-width: 720px; }
+  header { margin: 0 0 20px; }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: var(--surface);
+    color: var(--fg);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button:hover { background: #efece4; }
+  button:active { transform: scale(0.98); }
+  .k-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+  .k-input label { font-size: 12px; color: var(--muted); }
+  .k-input input {
+    width: 70px;
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 10px;
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--fg);
+  }
+  .stage {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 0 0 16px;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 0 0 16px;
+  }
+  .stat {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 4px;
+  }
+  .stat-value {
+    font-size: 20px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-value.accent { color: var(--accent); }
+  .stat-sub {
+    font-size: 11px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  #canvas-wrap {
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  canvas { display: block; width: 100%; height: 100%; }
+  footer {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  footer p { margin: 0 0 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Kobon triangles</h1>
+    <p class="subtitle">Random arrangements of k lines, with non-overlapping triangles highlighted. Posed by Kobon Fujimura, 1970 — still unsolved.</p>
+  </header>
+
+  <div class="controls">
+    <button id="reroll">New arrangement</button>
+    <button id="reroll-palette">New palette</button>
+    <div class="k-input">
+      <label for="k">k =</label>
+      <input type="number" id="k" min="3" max="40" value="9" />
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">This arrangement</div>
+        <div class="stat-value accent" id="stat-current">—</div>
+        <div class="stat-sub">non-overlapping triangles</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Known best</div>
+        <div class="stat-value" id="stat-best">—</div>
+        <div class="stat-sub" id="stat-best-sub">N(k)</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Tamura bound</div>
+        <div class="stat-value" id="stat-bound">—</div>
+        <div class="stat-sub">⌊k(k−2)/3⌋</div>
+      </div>
+    </div>
+    <div id="canvas-wrap">
+      <canvas id="canvas"></canvas>
+    </div>
+  </div>
+
+  <footer>
+    <p>Random line arrangements typically achieve far fewer triangles than the optimum. The known optima for many k values were found by hand (Wajnberg, Suzuki, Wood, Bartholdi) or by SAT solvers (Savchuk, 2025). Try k=31 to see how a random arrangement compares to the record of 299.</p>
+  </footer>
+</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const kInput = document.getElementById('k');
+  const statCurrent = document.getElementById('stat-current');
+  const statBest = document.getElementById('stat-best');
+  const statBestSub = document.getElementById('stat-best-sub');
+  const statBound = document.getElementById('stat-bound');
+
+  // Known best values N(k) from OEIS A006066, current as of 2025
+  // Format: [k, known_best, attribution]
+  const knownBest = {
+    3: [1, 'trivial'],
+    4: [2, 'trivial'],
+    5: [5, 'optimal'],
+    6: [7, 'optimal'],
+    7: [11, 'optimal'],
+    8: [15, 'optimal'],
+    9: [21, 'optimal'],
+    10: [25, 'best known'],
+    11: [32, 'optimal'],
+    12: [38, 'best known'],
+    13: [47, 'optimal'],
+    14: [53, 'best known'],
+    15: [65, 'optimal · Suzuki'],
+    16: [72, 'best known'],
+    17: [85, 'optimal'],
+    18: [93, 'best known'],
+    19: [107, 'optimal'],
+    20: [115, 'best known'],
+    21: [133, 'optimal'],
+    22: [143, 'best known'],
+    23: [161, 'optimal · Savchuk'],
+    24: [174, 'best known'],
+    25: [191, 'optimal'],
+    26: [206, 'best known'],
+    27: [225, 'optimal · Savchuk'],
+    28: [240, 'best known'],
+    29: [261, 'optimal'],
+    30: [278, 'best known'],
+    31: [299, 'optimal · Wood'],
+    32: [314, 'best known · Zarzuelo'],
+    33: [341, 'optimal · Bartholdi'],
+    34: [357, 'best known · Zarzuelo']
+  };
+
+  const palettes = [
+    { name: 'graphite',   bg: '#f1efe8', line: '#5f5e5a', tri: '#993c1d', triFill: 'rgba(216, 90, 48, 0.18)' },
+    { name: 'ink',        bg: '#fafaf5', line: '#2c2c2a', tri: '#185fa5', triFill: 'rgba(55, 138, 221, 0.18)' },
+    { name: 'forest',     bg: '#eaf3de', line: '#173404', tri: '#993c1d', triFill: 'rgba(216, 90, 48, 0.20)' },
+    { name: 'rose',       bg: '#fbeaf0', line: '#4b1528', tri: '#0f6e56', triFill: 'rgba(29, 158, 117, 0.18)' },
+    { name: 'midnight',   bg: '#042c53', line: '#85b7eb', tri: '#fac775', triFill: 'rgba(250, 199, 117, 0.20)' },
+    { name: 'amber',      bg: '#faeeda', line: '#412402', tri: '#185fa5', triFill: 'rgba(55, 138, 221, 0.18)' },
+    { name: 'iris',       bg: '#eeedfe', line: '#26215c', tri: '#993c1d', triFill: 'rgba(216, 90, 48, 0.18)' },
+    { name: 'noir',       bg: '#1a1a1a', line: '#9fa09a', tri: '#fac775', triFill: 'rgba(250, 199, 117, 0.18)' }
+  ];
+
+  let palette = palettes[0];
+
+  // ---- Geometry helpers ----
+  // Lines are stored as { a, b, c } satisfying ax + by + c = 0
+  // Generated as random pairs of points within a unit square, then converted
+
+  function randomLines(k) {
+    const lines = [];
+    for (let i = 0; i < k; i++) {
+      // Generate a random line by picking two random points well-separated
+      let x1, y1, x2, y2;
+      do {
+        x1 = Math.random();
+        y1 = Math.random();
+        x2 = Math.random();
+        y2 = Math.random();
+      } while (Math.hypot(x2 - x1, y2 - y1) < 0.3);
+      // ax + by + c = 0 with (a,b) = perpendicular to direction
+      const dx = x2 - x1, dy = y2 - y1;
+      const a = -dy, b = dx;
+      const c = -(a * x1 + b * y1);
+      // Normalize
+      const norm = Math.hypot(a, b);
+      lines.push({ a: a / norm, b: b / norm, c: c / norm });
+    }
+    return lines;
+  }
+
+  function intersect(L1, L2) {
+    // Solve { a1 x + b1 y = -c1, a2 x + b2 y = -c2 }
+    const det = L1.a * L2.b - L2.a * L1.b;
+    if (Math.abs(det) < 1e-10) return null; // parallel
+    const x = (-L1.c * L2.b + L2.c * L1.b) / det;
+    const y = (-L1.a * L2.c + L2.a * L1.c) / det;
+    return { x, y };
+  }
+
+  // Compute all pairwise intersections
+  function computeIntersections(lines) {
+    const k = lines.length;
+    // intersections[i][j] = point or null
+    const ints = Array.from({ length: k }, () => new Array(k).fill(null));
+    for (let i = 0; i < k; i++) {
+      for (let j = i + 1; j < k; j++) {
+        const p = intersect(lines[i], lines[j]);
+        ints[i][j] = p;
+        ints[j][i] = p;
+      }
+    }
+    return ints;
+  }
+
+  // For each line, get the sorted sequence of intersection points along it
+  function lineIntersectionOrder(lines, ints) {
+    const k = lines.length;
+    // For each line, list of {otherLineIdx, t} where t is parameter along the line
+    const orders = [];
+    for (let i = 0; i < k; i++) {
+      const L = lines[i];
+      // Direction along the line: perpendicular to (a,b) is (-b, a)
+      const dx = -L.b, dy = L.a;
+      // A point on the line: project origin onto line
+      const px = -L.a * L.c, py = -L.b * L.c;
+      const points = [];
+      for (let j = 0; j < k; j++) {
+        if (j === i) continue;
+        const p = ints[i][j];
+        if (!p) continue;
+        // Parameter t such that p = (px + t*dx, py + t*dy)
+        const t = (p.x - px) * dx + (p.y - py) * dy;
+        points.push({ idx: j, t, p });
+      }
+      points.sort((a, b) => a.t - b.t);
+      orders.push(points);
+    }
+    return orders;
+  }
+
+  // Determine if the triangle formed by lines (i, j, k) is a "Kobon triangle"
+  // (a non-overlapping triangle = no other line passes through its interior).
+  // Standard definition: the three lines form a triangle, and no other line
+  // crosses any of its three sides between the triangle's vertices.
+  function isKobonTriangle(i, j, k_, lines, ints, orders) {
+    const pij = ints[i][j];
+    const pik = ints[i][k_];
+    const pjk = ints[j][k_];
+    if (!pij || !pik || !pjk) return null;
+
+    // For a Kobon triangle, on each of the three lines, the segment between
+    // the two relevant vertices must not contain any other intersection point.
+    // i.e. on line i, between points pij and pik, no other intersection.
+    function clearBetween(lineIdx, vA, vB) {
+      const order = orders[lineIdx];
+      // Find positions of vA and vB by their "other line" index
+      // vA is the intersection of lineIdx with some line; we know which.
+      let posA = -1, posB = -1;
+      for (let m = 0; m < order.length; m++) {
+        if (order[m].idx === vA) posA = m;
+        if (order[m].idx === vB) posB = m;
+      }
+      if (posA < 0 || posB < 0) return false;
+      const lo = Math.min(posA, posB);
+      const hi = Math.max(posA, posB);
+      // Any intersection strictly between?
+      return hi - lo === 1; // adjacent means no line crosses between
+    }
+
+    // On line i: between pij (with j) and pik (with k_)
+    if (!clearBetween(i, j, k_)) return null;
+    if (!clearBetween(j, i, k_)) return null;
+    if (!clearBetween(k_, i, j)) return null;
+
+    return [pij, pik, pjk];
+  }
+
+  function findKobonTriangles(lines) {
+    const k = lines.length;
+    const ints = computeIntersections(lines);
+    const orders = lineIntersectionOrder(lines, ints);
+    const triangles = [];
+    for (let i = 0; i < k; i++) {
+      for (let j = i + 1; j < k; j++) {
+        for (let m = j + 1; m < k; m++) {
+          const tri = isKobonTriangle(i, j, m, lines, ints, orders);
+          if (tri) triangles.push(tri);
+        }
+      }
+    }
+    return { triangles, intersections: ints };
+  }
+
+  // ---- Rendering ----
+  function render(lines, triangles) {
+    // Match canvas resolution to its display size for crisp rendering
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const W = Math.floor(rect.width * dpr);
+    const H = Math.floor(rect.height * dpr);
+    canvas.width = W;
+    canvas.height = H;
+
+    ctx.fillStyle = palette.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // World coords are roughly [0,1] x [0,1] — extend lines beyond unit square for visual
+    // We render in a square viewport with a margin
+    const margin = 0.04;
+    const scale = Math.min(W, H) * (1 - 2 * margin);
+    const offsetX = (W - scale) / 2;
+    const offsetY = (H - scale) / 2;
+    function tx(x) { return offsetX + x * scale; }
+    function ty(y) { return offsetY + y * scale; }
+
+    // Fill triangles first (semi-transparent)
+    ctx.fillStyle = palette.triFill;
+    for (const tri of triangles) {
+      ctx.beginPath();
+      ctx.moveTo(tx(tri[0].x), ty(tri[0].y));
+      ctx.lineTo(tx(tri[1].x), ty(tri[1].y));
+      ctx.lineTo(tx(tri[2].x), ty(tri[2].y));
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Draw lines extending to viewport edges
+    ctx.strokeStyle = palette.line;
+    ctx.lineWidth = 1.0 * dpr;
+    ctx.lineCap = 'round';
+    for (const L of lines) {
+      // Find intersections of line with the bounding box [0,1] x [0,1] extended a bit
+      // Line: a*x + b*y + c = 0
+      // Use viewport coords [-0.1, 1.1] for a small bleed
+      const xMin = -0.05, xMax = 1.05, yMin = -0.05, yMax = 1.05;
+      const pts = [];
+      // Intersect with x = xMin and x = xMax
+      if (Math.abs(L.b) > 1e-10) {
+        let y = -(L.a * xMin + L.c) / L.b;
+        if (y >= yMin && y <= yMax) pts.push({ x: xMin, y });
+        y = -(L.a * xMax + L.c) / L.b;
+        if (y >= yMin && y <= yMax) pts.push({ x: xMax, y });
+      }
+      if (Math.abs(L.a) > 1e-10) {
+        let x = -(L.b * yMin + L.c) / L.a;
+        if (x >= xMin && x <= xMax) pts.push({ x, y: yMin });
+        x = -(L.b * yMax + L.c) / L.a;
+        if (x >= xMin && x <= xMax) pts.push({ x, y: yMax });
+      }
+      if (pts.length >= 2) {
+        ctx.beginPath();
+        ctx.moveTo(tx(pts[0].x), ty(pts[0].y));
+        ctx.lineTo(tx(pts[1].x), ty(pts[1].y));
+        ctx.stroke();
+      }
+    }
+
+    // Draw triangle outlines on top, in accent
+    ctx.strokeStyle = palette.tri;
+    ctx.lineWidth = 1.4 * dpr;
+    ctx.lineJoin = 'round';
+    for (const tri of triangles) {
+      ctx.beginPath();
+      ctx.moveTo(tx(tri[0].x), ty(tri[0].y));
+      ctx.lineTo(tx(tri[1].x), ty(tri[1].y));
+      ctx.lineTo(tx(tri[2].x), ty(tri[2].y));
+      ctx.closePath();
+      ctx.stroke();
+    }
+  }
+
+  function generate() {
+    let k = parseInt(kInput.value);
+    if (!Number.isFinite(k) || k < 3) k = 3;
+    if (k > 40) k = 40;
+    kInput.value = k;
+
+    const lines = randomLines(k);
+    const { triangles } = findKobonTriangles(lines);
+
+    // Update stats
+    statCurrent.textContent = triangles.length;
+
+    const best = knownBest[k];
+    if (best) {
+      statBest.textContent = best[0];
+      statBestSub.textContent = best[1];
+    } else {
+      statBest.textContent = '—';
+      statBestSub.textContent = 'unknown';
+    }
+
+    const bound = Math.floor(k * (k - 2) / 3);
+    statBound.textContent = bound;
+
+    render(lines, triangles);
+  }
+
+  function rerollPalette() {
+    let next = palette;
+    while (next.name === palette.name) {
+      next = palettes[Math.floor(Math.random() * palettes.length)];
+    }
+    palette = next;
+    generate();
+  }
+
+  document.getElementById('reroll').addEventListener('click', generate);
+  document.getElementById('reroll-palette').addEventListener('click', rerollPalette);
+  kInput.addEventListener('change', generate);
+  window.addEventListener('resize', () => {
+    // Re-render at new size with the same data — easier to just regenerate
+    generate();
+  });
+
+  generate();
+})();
+</script>
+</body>
+</html>

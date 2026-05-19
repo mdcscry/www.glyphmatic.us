@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sum of cubes — 50 panels</title>
+<style>
+  :root {
+    --bg: #f7f5ef;
+    --fg: #1f1e1d;
+    --muted: #6b6a66;
+    --border: rgba(0,0,0,0.12);
+    --surface: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wrap { width: 100%; max-width: 1100px; }
+  header { margin: 0 0 20px; }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; }
+  .subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+  }
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: var(--surface);
+    color: var(--fg);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button:hover { background: #efece4; }
+  button:active { transform: scale(0.98); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+  }
+  .tile {
+    aspect-ratio: 1 / 1;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .tile canvas { display: block; width: 100%; height: 100%; }
+  footer {
+    margin: 20px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>1³ + 2³ + 3³ + ··· + n³ = (1 + 2 + 3 + ··· + n)²</h1>
+    <p class="subtitle">Each panel: n nested gnomons of k×k squares tile a triangular-number-sized square. 50 random variations.</p>
+  </header>
+
+  <div class="controls">
+    <button id="reroll-n">New n values</button>
+    <button id="reroll-palettes">New palettes</button>
+    <button id="reroll-orientations">New orientations</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    Each k×k square in the kth gnomon contributes area k². There are k of them, so the kth gnomon has area k·k² = k³. Stacked together, n gnomons fill a square of side T(n) = 1+2+···+n, area T(n)². So Σk³ = T(n)².
+  </footer>
+</div>
+
+<script>
+(function() {
+  const gridEl = document.getElementById('grid');
+  const ROWS = 5;
+  const COLS = 10;
+
+  // Palettes — each palette has a base bg + a sequence of gnomon colors
+  // Gnomon colors are a ramp from light to dark (or vice versa)
+  const palettes = [
+    {
+      name: 'sunset',
+      bg: '#1a1a1a',
+      ramp: ['#FAEEDA', '#FAC775', '#EF9F27', '#D85A30', '#993C1D', '#712B13', '#4A1B0C', '#26215C'],
+      stroke: '#0a0a0a'
+    },
+    {
+      name: 'ocean',
+      bg: '#fafaf5',
+      ramp: ['#E6F1FB', '#B5D4F4', '#85B7EB', '#378ADD', '#185FA5', '#0C447C', '#042C53'],
+      stroke: '#fafaf5'
+    },
+    {
+      name: 'forest',
+      bg: '#173404',
+      ramp: ['#EAF3DE', '#C0DD97', '#97C459', '#639922', '#3B6D11', '#27500A'],
+      stroke: '#0a1a02'
+    },
+    {
+      name: 'rose',
+      bg: '#1a1a1a',
+      ramp: ['#FBEAF0', '#F4C0D1', '#ED93B1', '#D4537E', '#993556', '#72243E', '#4B1528'],
+      stroke: '#0a0a0a'
+    },
+    {
+      name: 'iris',
+      bg: '#26215c',
+      ramp: ['#EEEDFE', '#CECBF6', '#AFA9EC', '#7F77DD', '#534AB7', '#3C3489'],
+      stroke: '#1a163d'
+    },
+    {
+      name: 'graphite',
+      bg: '#fafaf5',
+      ramp: ['#F1EFE8', '#D3D1C7', '#B4B2A9', '#888780', '#5F5E5A', '#444441', '#2C2C2A'],
+      stroke: '#fafaf5'
+    },
+    {
+      name: 'teal',
+      bg: '#04342c',
+      ramp: ['#E1F5EE', '#9FE1CB', '#5DCAA5', '#1D9E75', '#0F6E56', '#085041'],
+      stroke: '#021a16'
+    },
+    {
+      name: 'ember',
+      bg: '#1a0a05',
+      ramp: ['#FAECE7', '#F5C4B3', '#F0997B', '#D85A30', '#993C1D', '#712B13'],
+      stroke: '#0a0302'
+    },
+    {
+      name: 'wine',
+      bg: '#fbeaf0',
+      ramp: ['#F7C1C1', '#F09595', '#E24B4A', '#A32D2D', '#791F1F', '#501313'],
+      stroke: '#fafaf5'
+    },
+    {
+      name: 'paper',
+      bg: '#fafaf5',
+      ramp: ['#26215C', '#3C3489', '#534AB7', '#7F77DD', '#AFA9EC', '#CECBF6'],
+      stroke: '#fafaf5'
+    },
+    {
+      name: 'noir',
+      bg: '#0a0a0a',
+      ramp: ['#444441', '#5F5E5A', '#888780', '#B4B2A9', '#D3D1C7', '#F1EFE8'],
+      stroke: '#000'
+    },
+    {
+      name: 'sage',
+      bg: '#27500a',
+      ramp: ['#04342C', '#085041', '#0F6E56', '#1D9E75', '#5DCAA5', '#9FE1CB', '#E1F5EE'],
+      stroke: '#0a1a02'
+    },
+    {
+      name: 'mustard',
+      bg: '#412402',
+      ramp: ['#FAEEDA', '#FAC775', '#EF9F27', '#BA7517', '#854F0B', '#633806'],
+      stroke: '#1a0e01'
+    },
+    {
+      name: 'plum',
+      bg: '#fafaf5',
+      ramp: ['#EEEDFE', '#CECBF6', '#AFA9EC', '#7F77DD', '#534AB7', '#3C3489', '#26215C'],
+      stroke: '#fafaf5'
+    },
+    {
+      name: 'coral',
+      bg: '#4A1B0C',
+      ramp: ['#FAECE7', '#F5C4B3', '#F0997B', '#D85A30', '#993C1D'],
+      stroke: '#1a0a05'
+    },
+    {
+      name: 'mint',
+      bg: '#fafaf5',
+      ramp: ['#E1F5EE', '#9FE1CB', '#5DCAA5', '#1D9E75', '#0F6E56', '#085041', '#04342C'],
+      stroke: '#fafaf5'
+    },
+    {
+      name: 'midnight',
+      bg: '#042C53',
+      ramp: ['#B5D4F4', '#85B7EB', '#378ADD', '#185FA5', '#0C447C'],
+      stroke: '#021629'
+    },
+    {
+      name: 'amber',
+      bg: '#fafaf5',
+      ramp: ['#FAEEDA', '#FAC775', '#EF9F27', '#BA7517', '#854F0B', '#633806', '#412402'],
+      stroke: '#fafaf5'
+    },
+    {
+      name: 'oxblood',
+      bg: '#501313',
+      ramp: ['#FCEBEB', '#F7C1C1', '#F09595', '#E24B4A', '#A32D2D', '#791F1F'],
+      stroke: '#2a0808'
+    },
+    {
+      name: 'lilac',
+      bg: '#3C3489',
+      ramp: ['#EEEDFE', '#CECBF6', '#AFA9EC', '#7F77DD', '#534AB7'],
+      stroke: '#1a163d'
+    }
+  ];
+
+  /**
+   * For a given n, build the gnomon tiling.
+   * Returns: { side, gnomons } where side = T(n) = 1+2+...+n
+   * and gnomons is an array of { k, squares: [{x, y}] } where each square
+   * is a k×k block at the given coordinates.
+   *
+   * Layout: nested gnomons in the bottom-right corner (orientation BR).
+   * The kth gnomon consists of k squares of size k×k that wrap around the
+   * outside of the (k-1)th tile in an L-shape.
+   *
+   * Specifically:
+   * - The 1×1 square sits at the top-left corner.
+   * - The k=2 gnomon: two 2×2 squares wrapping around, occupying positions
+   *   to the right of and below the previous (1×1) tile.
+   * - For each k, the gnomon occupies a strip of width k along the right
+   *   and bottom of the previous T(k-1) × T(k-1) square, except the corner.
+   *
+   * The arrangement of k squares of size k×k in a gnomon: ⌈k/2⌉ along the
+   * right side (top-to-bottom), ⌊k/2⌋ along the bottom (left-to-right),
+   * meeting at the bottom-right corner. For odd k, the middle square at
+   * the corner is shared. For even k, this forms an L exactly.
+   *
+   * The "overlap and gap" detail: for even k, the squares of side k overlap
+   * neighbors by k/2 on one side and leave a k/2 gap on the other —
+   * but both happen, and they cancel.
+   */
+  function buildGnomons(n) {
+    const gnomons = [];
+    // T(k) = k*(k+1)/2
+    function T(k) { return k * (k + 1) / 2; }
+
+    for (let k = 1; k <= n; k++) {
+      const squares = [];
+      // The previous square has side T(k-1). The new gnomon expands to side T(k) = T(k-1) + k.
+      // The gnomon occupies the L-shaped region: the rightmost k columns and bottom k rows
+      // of the new T(k) × T(k) square.
+      // It contains k squares of size k×k.
+      //
+      // Position of gnomon squares for the elegant proof:
+      //   - For k odd: place ⌈k/2⌉ squares along the right column, ⌊k/2⌋ along the bottom
+      //     row. The corner square is shared — placed at the bottom-right.
+      //     Actually for odd k, the construction places (k+1)/2 squares along one arm and
+      //     (k-1)/2 along the other, meeting at a corner square.
+      //   - For k even: the squares overlap in pairs by k/2 and leave gaps elsewhere,
+      //     but the overlaps and gaps cancel. We render them with no overlap by
+      //     showing exactly k squares placed corner-to-corner along the L.
+      //
+      // For simplicity and visual clarity, we use this exact construction:
+      // Place k squares of size k×k along an L-shape:
+      //   - First square at position (T(k-1), T(k-1)) — the corner
+      //   - Then squares walking up the right side and left along the bottom
+      //
+      // We'll place them using a half-step offset of k/2 for even k to show
+      // the "overlap and gap" cancellation pattern more faithfully:
+      // arm length total = T(k) = T(k-1) + k. The right arm has length T(k),
+      // and we fit k squares of size k along it via spacing of T(k)/k = (k+1)/2.
+      // For odd k, (k+1)/2 is an integer — squares fit perfectly without overlap.
+      // For even k, (k+1)/2 is a half-integer — squares overlap and leave gaps,
+      // but with the same area.
+      //
+      // For rendering purposes, we'll use integer placement that approximates
+      // the construction. This is the standard "k squares along the gnomon" view.
+      
+      // Right arm: ceil(k/2) squares
+      // Bottom arm: floor(k/2) squares (they share the corner if k odd; not if k even)
+      const rightCount = Math.ceil(k / 2);
+      const bottomCount = k - rightCount; // so total = k
+      
+      const Tprev = T(k - 1);
+      // Right arm: squares at x = Tprev (right column of width k), stacked top-to-bottom
+      // y positions: starting from 0, each square of size k tile down
+      // But total height available = T(k). With rightCount squares of size k, total height = rightCount * k.
+      // For odd k: rightCount = (k+1)/2, total = k(k+1)/2 = T(k). Perfect fit.
+      // For even k: rightCount = k/2, total = k²/2. T(k) = k(k+1)/2. Difference = k/2 — gap.
+      // For even k the half-step shift causes overlap+gap; we show it as cleanly stacked
+      // (which means the bottomCount = k/2 squares slot in; they overlap by k/2 on one side
+      // and leave k/2 on another).
+      
+      // Right arm placement
+      for (let i = 0; i < rightCount; i++) {
+        squares.push({
+          x: Tprev,
+          y: i * k,
+          size: k
+        });
+      }
+      // Bottom arm placement (excluding corner already covered if odd k)
+      // For odd k: rightCount squares fill the right side perfectly to T(k).
+      //   Bottom arm needs (k-1)/2 squares along the bottom, starting from x = Tprev - k
+      //   going left.
+      // For even k: bottomCount = k/2; we place them along the bottom.
+      const bottomY = T(k) - k; // top edge of bottom row
+      for (let i = 0; i < bottomCount; i++) {
+        squares.push({
+          x: Tprev - (i + 1) * k,
+          y: bottomY,
+          size: k
+        });
+      }
+      
+      gnomons.push({ k, squares });
+    }
+    return { side: T(n), gnomons };
+  }
+
+  // 4 orientations — flip the construction across diagonals
+  // The base construction has gnomons growing in the bottom-right.
+  // We flip x and/or y to put it in any of the 4 corners.
+  function transformSquares(gnomons, side, flipX, flipY) {
+    return gnomons.map(g => ({
+      k: g.k,
+      squares: g.squares.map(s => ({
+        x: flipX ? side - s.x - s.size : s.x,
+        y: flipY ? side - s.y - s.size : s.y,
+        size: s.size
+      }))
+    }));
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function renderTile(canvas, n, palette, flipX, flipY) {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(Math.floor(rect.width * dpr), 100);
+    const H = Math.max(Math.floor(rect.height * dpr), 100);
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = palette.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    const { side, gnomons } = buildGnomons(n);
+    const transformed = transformSquares(gnomons, side, flipX, flipY);
+
+    // Compute scale to fit with margin
+    const margin = Math.max(W * 0.04, 4 * dpr);
+    const avail = Math.min(W, H) - 2 * margin;
+    const cellSize = avail / side;
+    const offsetX = (W - cellSize * side) / 2;
+    const offsetY = (H - cellSize * side) / 2;
+
+    // Sort gnomons so larger ones draw first (smaller appear on top, mirroring the
+    // overlapping squares' visual layering — though our integer placement doesn't overlap,
+    // we want consistent z-order)
+    // Actually we want gnomons to render in order from k=1 (innermost, smallest) outward.
+    // Draw smallest first so larger squares cover any seam. Wait — actually the inner
+    // squares should NOT be covered. Let's draw in order k=1, 2, 3, ..., n with the
+    // largest on top. With non-overlapping placement, order doesn't matter — but for
+    // safety, draw smallest first.
+
+    const stroke = palette.stroke || palette.bg;
+    const strokeWidth = Math.max(0.5, cellSize * 0.04) * dpr;
+
+    // Color per gnomon: cycle through the ramp
+    const ramp = palette.ramp;
+    
+    for (let i = 0; i < transformed.length; i++) {
+      const g = transformed[i];
+      // Pick color: map gnomon index to ramp position
+      // For aesthetic variety, use index modulo ramp length, cycling
+      const colorIdx = (g.k - 1) % ramp.length;
+      ctx.fillStyle = ramp[colorIdx];
+      
+      for (const sq of g.squares) {
+        const px = offsetX + sq.x * cellSize;
+        const py = offsetY + sq.y * cellSize;
+        const ps = sq.size * cellSize;
+        ctx.fillRect(px, py, ps, ps);
+        // Subtle stroke to define square boundaries
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = strokeWidth;
+        ctx.strokeRect(px, py, ps, ps);
+      }
+    }
+  }
+
+  // ===== State =====
+  // Each tile gets: n, palette, orientation
+  let tiles = [];
+
+  function makeTile() {
+    // n between 4 and 9 — small enough to see details, large enough to feel rich
+    const n = 4 + Math.floor(Math.random() * 6);
+    const flipX = Math.random() < 0.5;
+    const flipY = Math.random() < 0.5;
+    return { n, flipX, flipY };
+  }
+
+  function pickPalettesForGrid() {
+    // Sample palettes such that adjacent tiles (in 10-col grid) don't share a palette
+    const result = [];
+    const cols = COLS;
+    for (let i = 0; i < ROWS * COLS; i++) {
+      const row = Math.floor(i / cols);
+      const col = i % cols;
+      const forbidden = new Set();
+      if (col > 0) forbidden.add(result[i - 1].name);
+      if (row > 0) forbidden.add(result[i - cols].name);
+      const candidates = palettes.filter(p => !forbidden.has(p.name));
+      result.push(candidates[Math.floor(Math.random() * candidates.length)]);
+    }
+    return result;
+  }
+
+  let tilePalettes = [];
+
+  function regenerateAll() {
+    tiles = Array.from({ length: ROWS * COLS }, makeTile);
+    tilePalettes = pickPalettesForGrid();
+  }
+
+  function build() {
+    gridEl.innerHTML = '';
+    for (let i = 0; i < ROWS * COLS; i++) {
+      const tile = tiles[i];
+      const palette = tilePalettes[i];
+      const tileEl = document.createElement('div');
+      tileEl.className = 'tile';
+      tileEl.style.background = palette.bg;
+      const canvas = document.createElement('canvas');
+      tileEl.appendChild(canvas);
+      gridEl.appendChild(tileEl);
+      requestAnimationFrame(() => renderTile(canvas, tile.n, palette, tile.flipX, tile.flipY));
+    }
+  }
+
+  document.getElementById('reroll-n').addEventListener('click', () => {
+    tiles = Array.from({ length: ROWS * COLS }, makeTile);
+    build();
+  });
+  document.getElementById('reroll-palettes').addEventListener('click', () => {
+    tilePalettes = pickPalettesForGrid();
+    build();
+  });
+  document.getElementById('reroll-orientations').addEventListener('click', () => {
+    tiles = tiles.map(t => ({
+      n: t.n,
+      flipX: Math.random() < 0.5,
+      flipY: Math.random() < 0.5
+    }));
+    build();
+  });
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(build, 150);
+  });
+
+  regenerateAll();
+  build();
+})();
+</script>
+</body>
+</html>

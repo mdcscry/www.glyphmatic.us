@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Albers studies — generative</title>
+<style>
+  :root { --bg: #efe9d9; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+  .wrap { width: 100%; max-width: 760px; }
+  .controls {
+    display: flex;
+    gap: 12px;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: #fff;
+    color: #1f1e1d;
+    border: 0.5px solid rgba(0,0,0,0.12);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button:hover { background: #f6f3ea; }
+  button:active { transform: scale(0.98); }
+  .stage {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+  }
+  svg { display: block; width: 100%; height: 100%; }
+  .slider-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 12px;
+    color: #6b6a66;
+  }
+  input[type="range"] { width: 80px; accent-color: #1f1e1d; }
+  .val { font-variant-numeric: tabular-nums; min-width: 30px; }
+  .palette-name {
+    font-size: 12px;
+    color: #6b6a66;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.05em;
+    margin-left: auto;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="controls">
+    <button id="reroll-shapes">New shapes</button>
+    <button id="reroll-palette">New palette</button>
+    <button id="reroll-everything">New everything</button>
+    <div class="slider-group">
+      <label>edge</label>
+      <input type="range" id="displacement" min="3" max="6" value="4" step="0.25"/>
+      <span class="val" id="displacement-val">4</span>
+    </div>
+    <div class="slider-group">
+      <label>grain</label>
+      <input type="range" id="grain" min="0.08" max="0.3" value="0.15" step="0.005"/>
+      <span class="val" id="grain-val">0.150</span>
+    </div>
+    <span class="palette-name" id="palette-name"></span>
+  </div>
+  <div class="stage" id="stage">
+    <svg id="canvas" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+</div>
+
+<script>
+(function() {
+  const svg = document.getElementById('canvas');
+  const stage = document.getElementById('stage');
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  // ===== Palettes =====
+  // Each palette: { name, paper, fieldA, fieldB, barA, barB }
+  // Fields are the two large background panels; bars are the two colors that
+  // alternate within the nested brackets. The Albers source had:
+  //   paper=cream, fieldA=magenta, fieldB=red, barA=chartreuse, barB=babyBlue
+  const palettes = [
+    { name: 'albers',     paper: '#efe9d9', fieldA: '#c2317d', fieldB: '#dc3a26', barA: '#bcc637', barB: '#7fb6c5' },
+    { name: 'sea',        paper: '#f1ede0', fieldA: '#1d6f8e', fieldB: '#0e3d52', barA: '#e8c547', barB: '#c2604c' },
+    { name: 'desert',     paper: '#f5ecd0', fieldA: '#c97c3e', fieldB: '#7a3328', barA: '#3e6e5a', barB: '#d9b366' },
+    { name: 'autumn',     paper: '#f0e8d0', fieldA: '#7a2e1f', fieldB: '#c47533', barA: '#3a5a2e', barB: '#dcc05a' },
+    { name: 'spring',     paper: '#f4f1e1', fieldA: '#c4546e', fieldB: '#3e7d4f', barA: '#e6b540', barB: '#7c92c4' },
+    { name: 'storm',      paper: '#ebe6d4', fieldA: '#3a4860', fieldB: '#7a4a5a', barA: '#c4a342', barB: '#a8b8a0' },
+    { name: 'orchard',    paper: '#f3edd6', fieldA: '#86332e', fieldB: '#3d6242', barA: '#e0a83a', barB: '#c47a4a' },
+    { name: 'twilight',   paper: '#ede4cc', fieldA: '#3d3680', fieldB: '#86365a', barA: '#dcb24a', barB: '#7ab4b8' },
+    { name: 'mineral',    paper: '#f0ecd6', fieldA: '#5a4a7a', fieldB: '#2e5a6a', barA: '#c4a23a', barB: '#d8927a' },
+    { name: 'meadow',     paper: '#f5ecd0', fieldA: '#5a8a3a', fieldB: '#2a4a3a', barA: '#e6c44a', barB: '#c45078' },
+    { name: 'sienna',     paper: '#ede1c4', fieldA: '#a04830', fieldB: '#4a2a1a', barA: '#d8a850', barB: '#7a8a64' },
+    { name: 'cobalt',     paper: '#ebe5d0', fieldA: '#1a4a8a', fieldB: '#0a2a5a', barA: '#e8c440', barB: '#c45a4a' },
+    { name: 'rose',       paper: '#f5ebe0', fieldA: '#b8385a', fieldB: '#7a1f3a', barA: '#5a8a64', barB: '#e6b56a' },
+    { name: 'olive',      paper: '#f0e8c8', fieldA: '#5a6a30', fieldB: '#3a4a1a', barA: '#d4a050', barB: '#a05a4a' },
+    { name: 'ember',      paper: '#ede1c0', fieldA: '#c43a1a', fieldB: '#7a1f0a', barA: '#e8b840', barB: '#3a6a7a' },
+    { name: 'iris',       paper: '#ede5e0', fieldA: '#5a3a8a', fieldB: '#2a1a5a', barA: '#d8a050', barB: '#a8c4a0' },
+    { name: 'cocoa',      paper: '#ede2c0', fieldA: '#6a3a1a', fieldB: '#3a1f0a', barA: '#d8b440', barB: '#9aa884' },
+    { name: 'thistle',    paper: '#f0e8d0', fieldA: '#7a4a8a', fieldB: '#4a2a5a', barA: '#c4d050', barB: '#e89a6a' }
+  ];
+
+  function pickPalette(excludeName) {
+    let p;
+    do { p = palettes[Math.floor(Math.random() * palettes.length)]; }
+    while (excludeName && p.name === excludeName);
+    return p;
+  }
+
+  // ===== SVG helpers =====
+  function el(name, attrs, children) {
+    const e = document.createElementNS(SVG_NS, name);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (children) for (const c of children) e.appendChild(c);
+    return e;
+  }
+
+  // ===== Filter (unchanged from v3) =====
+  function buildFilter(seed, edgeScale, mottleAmount, grainFreq) {
+    const defs = el('defs');
+    const f = el('filter', {
+      id: 'paint',
+      x: '-5%', y: '-5%', width: '110%', height: '110%',
+      filterUnits: 'objectBoundingBox'
+    });
+
+    f.appendChild(el('feTurbulence', {
+      type: 'fractalNoise',
+      baseFrequency: grainFreq,
+      numOctaves: '2',
+      seed: seed,
+      result: 'mottleNoise'
+    }));
+    f.appendChild(el('feComposite', {
+      in: 'SourceGraphic',
+      in2: 'mottleNoise',
+      operator: 'arithmetic',
+      k1: '0', k2: '1', k3: mottleAmount, k4: '0',
+      result: 'mottled'
+    }));
+    f.appendChild(el('feTurbulence', {
+      type: 'fractalNoise',
+      baseFrequency: '0.04 0.08',
+      numOctaves: '2',
+      seed: seed + 1,
+      result: 'edgeNoise'
+    }));
+    f.appendChild(el('feDisplacementMap', {
+      in: 'mottled',
+      in2: 'edgeNoise',
+      scale: edgeScale,
+      xChannelSelector: 'R',
+      yChannelSelector: 'G'
+    }));
+
+    defs.appendChild(f);
+    return defs;
+  }
+
+  // ===== Painted rectangle path =====
+  // Painted U-shape (bracket): rectangle with a notch cut out of one end.
+  // The notch direction is determined by `direction`: 'down' = notch in bottom,
+  // 'up' = notch in top.
+  // notchInsetFrac: how far in from each side the notch starts (0-0.5).
+  // capFrac: how thick the closed end's cap is, as a fraction of total height.
+  function paintedBracket(x, y, w, h, direction, notchInsetFrac, capFrac, jitter) {
+    jitter = jitter == null ? 1 : jitter;
+    const jit = () => (Math.random() - 0.5) * 2 * jitter;
+    const legW = w * notchInsetFrac;
+    const capH = h * capFrac;
+
+    // 8 corners of the U, in order
+    let pts;
+    if (direction === 'down') {
+      // Closed cap at top, notch in bottom
+      pts = [
+        [x, y],
+        [x + w, y],
+        [x + w, y + h],
+        [x + w - legW, y + h],
+        [x + w - legW, y + capH],
+        [x + legW, y + capH],
+        [x + legW, y + h],
+        [x, y + h]
+      ];
+    } else {
+      // Closed cap at bottom, notch in top
+      pts = [
+        [x, y],
+        [x + legW, y],
+        [x + legW, y + h - capH],
+        [x + w - legW, y + h - capH],
+        [x + w - legW, y],
+        [x + w, y],
+        [x + w, y + h],
+        [x, y + h]
+      ];
+    }
+
+    // Add jitter to each point and interpolate edges
+    let d = '';
+    for (let i = 0; i < pts.length; i++) {
+      const [px, py] = pts[i];
+      const jx = px + jit();
+      const jy = py + jit();
+      d += (i === 0 ? 'M ' : ' L ') + jx + ' ' + jy;
+    }
+    d += ' Z';
+    return d;
+  }
+
+  function paintedRect(x, y, w, h, jitter, segments) {
+    segments = segments || 10;
+    jitter = jitter == null ? 1.5 : jitter;
+    const points = [];
+    function jit() { return (Math.random() - 0.5) * 2 * jitter; }
+
+    for (let i = 0; i <= segments; i++) {
+      const t = i / segments;
+      points.push([x + t * w, y + jit()]);
+    }
+    for (let i = 1; i <= segments; i++) {
+      const t = i / segments;
+      points.push([x + w + jit(), y + t * h]);
+    }
+    for (let i = 1; i <= segments; i++) {
+      const t = i / segments;
+      points.push([x + w - t * w, y + h + jit()]);
+    }
+    for (let i = 1; i < segments; i++) {
+      const t = i / segments;
+      points.push([x + jit(), y + h - t * h]);
+    }
+
+    let d = 'M ' + points[0][0] + ' ' + points[0][1];
+    for (let i = 1; i < points.length; i++) {
+      d += ' L ' + points[i][0] + ' ' + points[i][1];
+    }
+    d += ' Z';
+    return d;
+  }
+
+  // ===== Shape configuration =====
+  // Each side gets:
+  //   - direction: 'down' (open at bottom) or 'up' (open at top)
+  //   - depth: number of nested bars (2 to 4)
+  //   - bar widths and heights as fractions
+  //   - per-bar horizontal offset jitter
+  //   - per-bar vertical inset progression
+  function randomSideConfig(sharedBaseInset, panelH) {
+    const direction = Math.random() < 0.5 ? 'down' : 'up';
+    const depth = 2 + Math.floor(Math.random() * 3); // 2, 3, or 4 bars
+
+    // Widths progress from outermost (largest) to innermost (smallest)
+    const widths = [0.42];
+    for (let i = 1; i < depth; i++) {
+      widths.push(widths[i-1] * (0.36 + Math.random() * 0.30));
+    }
+
+    // Closed-end inset: outer bar uses sharedBaseInset; inner bars are
+    // offset from the OUTER bar's closed edge by a tiny 0-5px variance.
+    // (Not cumulative — each inner bar is independently 0-5px from the outer.)
+    const closedOffsets = [0]; // outer bar has no offset from itself
+    for (let i = 1; i < depth; i++) {
+      closedOffsets.push(Math.random() * 5); // 0-5 px from outer's closed edge
+    }
+
+    // Horizontal offset per bar — small, alternating
+    const offsets = [0];
+    for (let i = 1; i < depth; i++) {
+      offsets.push((Math.random() - 0.5) * 0.10);
+    }
+
+    return { direction, depth, widths, sharedBaseInset, sharedOpenFrac: 0.96, closedOffsets, offsets, panelH };
+  }
+
+  function renderSide(x0, y0, w, h, config, colors, target) {
+    const cx = x0 + w * 0.50;
+
+    // Equal top and bottom margins — bar is truly centered in the panel.
+    const margin = h * config.sharedBaseInset;
+    const outerTop = y0 + margin;
+    const outerBottom = y0 + h - margin;
+
+    for (let i = 0; i < config.depth; i++) {
+      const barW = w * config.widths[i];
+      const barX = cx - barW / 2 + w * config.offsets[i];
+
+      // Each bar shorter than the previous, all centered vertically.
+      // Outer = full extent, middle = 90%, inner = 75%.
+      const fullH = outerBottom - outerTop;
+      const heightFactors = [1.0, 0.90, 0.75];
+      const factor = heightFactors[Math.min(i, heightFactors.length - 1)];
+      const barH = fullH * factor;
+      const barY = outerTop + (fullH - barH) / 2;
+
+      const fill = colors[i % 2];
+
+      if (i === 1) {
+        // Middle bar: U-shape with notch on the open end
+        target.appendChild(el('path', {
+          d: paintedBracket(barX, barY, barW, barH, config.direction, 0.30, 0.10, 1),
+          fill: fill
+        }));
+      } else {
+        target.appendChild(el('path', {
+          d: paintedRect(barX, barY, barW, barH, 1, 10),
+          fill: fill
+        }));
+      }
+    }
+  }
+
+  // ===== State =====
+  let currentPalette = palettes[0];
+  let leftConfig = null;
+  let rightConfig = null;
+
+  function regenerateShapes() {
+    // Shared base inset so both sides have their outermost bars at the same
+    // vertical distance from the panel edge. Inner bars are then nearly
+    // aligned to the outer (within 0-8px each).
+    const sharedBaseInset = 0.10 + Math.random() * 0.04;
+    // Pass actual panel height so step size can be expressed in pixels.
+    const panelH = 1000 - 2 * 70; // matches paperMargin in build()
+    leftConfig = randomSideConfig(sharedBaseInset, panelH);
+    rightConfig = randomSideConfig(sharedBaseInset, panelH);
+    // Make sure left and right have different directions for visual contrast
+    if (Math.random() < 0.7 && leftConfig.direction === rightConfig.direction) {
+      rightConfig.direction = leftConfig.direction === 'down' ? 'up' : 'down';
+    }
+  }
+
+  function build() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    const seed = Math.floor(Math.random() * 1000);
+    const edgeScale = parseFloat(document.getElementById('displacement').value);
+    const mottleAmount = 0.04 + Math.random() * 0.02; // random 0.04-0.06 per render
+    const grainFreq = parseFloat(document.getElementById('grain').value);
+
+    svg.appendChild(buildFilter(seed, edgeScale, mottleAmount, grainFreq));
+
+    const p = currentPalette;
+    document.getElementById('palette-name').textContent = p.name;
+    document.documentElement.style.setProperty('--bg', p.paper);
+    stage.style.background = p.paper;
+    document.body.style.background = p.paper;
+
+    // Plain paper background — no filter
+    svg.appendChild(el('rect', {
+      x: 0, y: 0, width: 1000, height: 1000, fill: p.paper
+    }));
+
+    const paintGroup = el('g', { filter: 'url(#paint)' });
+
+    const W = 1000, H = 1000;
+    const paperMargin = 70;
+    // Overlap the two panels by a few pixels at the center seam so the
+    // displacement filter and pre-jitter can't open a gap exposing the paper.
+    const centerOverlap = 12;
+    // Logical panel dimensions (for bar layout) — half the canvas, no overlap
+    const logicalW = (W / 2) - paperMargin;
+    // Visual field dimensions (for the colored rectangles) — extended past center
+    const leftFieldX = paperMargin;
+    const leftFieldY = paperMargin;
+    const leftFieldW = logicalW + centerOverlap;
+    const leftFieldH = H - 2 * paperMargin;
+    const rightFieldX = (W / 2) - centerOverlap;
+    const rightFieldY = paperMargin;
+    const rightFieldW = logicalW + centerOverlap;
+    const rightFieldH = H - 2 * paperMargin;
+    // Logical panel origins for bar placement (no overlap)
+    const leftPanelX = paperMargin;
+    const rightPanelX = W / 2;
+    const panelY = paperMargin;
+    const panelH = H - 2 * paperMargin;
+
+    // Two fields touching at the seam (with slight overlap to prevent gap)
+    paintGroup.appendChild(el('path', {
+      d: paintedRect(leftFieldX, leftFieldY, leftFieldW, leftFieldH, 3, 20),
+      fill: p.fieldA
+    }));
+    paintGroup.appendChild(el('path', {
+      d: paintedRect(rightFieldX, rightFieldY, rightFieldW, rightFieldH, 3, 20),
+      fill: p.fieldB
+    }));
+
+    // Render each side's nested brackets using LOGICAL panel dimensions
+    // (no overlap) so bars stay centered in their visual halves.
+    renderSide(leftPanelX, panelY, logicalW, panelH, leftConfig, [p.barA, p.barB], paintGroup);
+    renderSide(rightPanelX, panelY, logicalW, panelH, rightConfig, [p.barB, p.barA], paintGroup);
+
+    svg.appendChild(paintGroup);
+  }
+
+  // ===== Wire up controls =====
+  function bindSlider(id, valId, formatter) {
+    const slider = document.getElementById(id);
+    const val = document.getElementById(valId);
+    slider.addEventListener('input', () => {
+      val.textContent = formatter ? formatter(slider.value) : slider.value;
+      build();
+    });
+  }
+  bindSlider('displacement', 'displacement-val');
+  bindSlider('grain', 'grain-val', v => parseFloat(v).toFixed(3));
+
+  document.getElementById('reroll-shapes').addEventListener('click', () => {
+    regenerateShapes();
+    build();
+  });
+  document.getElementById('reroll-palette').addEventListener('click', () => {
+    currentPalette = pickPalette(currentPalette.name);
+    build();
+  });
+  document.getElementById('reroll-everything').addEventListener('click', () => {
+    currentPalette = pickPalette(currentPalette.name);
+    regenerateShapes();
+    build();
+  });
+
+  // Initial render
+  currentPalette = palettes[Math.floor(Math.random() * palettes.length)];
+  regenerateShapes();
+  build();
+})();
+</script>
+</body>
+</html>

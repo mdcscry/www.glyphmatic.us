@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>(2a+1)² = 8Tₐ + 1 — uniform field</title>
+<style>
+  :root {
+    --bg: #f7f5ef;
+    --fg: #1f1e1d;
+    --muted: #6b6a66;
+    --border: rgba(0,0,0,0.12);
+    --surface: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wrap { width: 100%; max-width: 1100px; }
+  header { margin: 0 0 20px; }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; font-variant-numeric: tabular-nums; }
+  .subtitle { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: var(--surface);
+    color: var(--fg);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button:hover { background: #efece4; }
+  button:active { transform: scale(0.98); }
+  .palette-name {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--muted);
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.05em;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 4px;
+  }
+  .tile {
+    aspect-ratio: 1 / 1;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .tile canvas { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>(2a+1)² = 8Tₐ + 1</h1>
+    <p class="subtitle">One palette, 40 densities, 40 random center accents.</p>
+  </header>
+
+  <div class="controls">
+    <button id="reroll-a">New a values</button>
+    <button id="reroll-palette">New palette</button>
+    <button id="reroll-centers">New centers</button>
+    <span class="palette-name" id="palette-name"></span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+(function() {
+  const gridEl = document.getElementById('grid');
+  const paletteNameEl = document.getElementById('palette-name');
+  const ROWS = 5, COLS = 8;
+  const TOTAL = ROWS * COLS;
+
+  // Single-palette mode: every tile uses the same { bg, c1, c2 }.
+  // Each tile gets a random center color drawn from a separate accent pool.
+  const palettes = [
+    { name: 'classic',     bg: '#f1efe8', c1: '#185fa5', c2: '#1a1a1a' },
+    { name: 'graphite',    bg: '#1a1a1a', c1: '#5f5e5a', c2: '#d3d1c7' },
+    { name: 'ink',         bg: '#fafaf5', c1: '#1a1a1a', c2: '#888780' },
+    { name: 'midnight',    bg: '#042c53', c1: '#185fa5', c2: '#b5d4f4' },
+    { name: 'ember',       bg: '#1a0a05', c1: '#993c1d', c2: '#f5c4b3' },
+    { name: 'iris',        bg: '#26215c', c1: '#534ab7', c2: '#cecbf6' },
+    { name: 'forest',      bg: '#173404', c1: '#3b6d11', c2: '#c0dd97' },
+    { name: 'rose',        bg: '#fbeaf0', c1: '#d4537e', c2: '#72243e' },
+    { name: 'amber',       bg: '#412402', c1: '#854f0b', c2: '#fac775' },
+    { name: 'teal',        bg: '#04342c', c1: '#0f6e56', c2: '#9fe1cb' },
+    { name: 'oxblood',     bg: '#501313', c1: '#a32d2d', c2: '#f7c1c1' },
+    { name: 'plum',        bg: '#fafaf5', c1: '#26215c', c2: '#afa9ec' },
+    { name: 'noir',        bg: '#0a0a0a', c1: '#444441', c2: '#b4b2a9' },
+    { name: 'mint',        bg: '#fafaf5', c1: '#0f6e56', c2: '#9fe1cb' },
+    { name: 'coral',       bg: '#4a1b0c', c1: '#993c1d', c2: '#f5c4b3' },
+    { name: 'wine',        bg: '#4b1528', c1: '#993556', c2: '#f4c0d1' },
+    { name: 'sand',        bg: '#fac775', c1: '#854f0b', c2: '#412402' },
+    { name: 'sky',         bg: '#fafaf5', c1: '#185fa5', c2: '#85b7eb' },
+    { name: 'olive',       bg: '#27500a', c1: '#173404', c2: '#97c459' },
+    { name: 'crimson',     bg: '#fafaf5', c1: '#a32d2d', c2: '#f09595' },
+    { name: 'paper-noir',  bg: '#fafaf5', c1: '#1a1a1a', c2: '#5f5e5a' },
+    { name: 'dusk',        bg: '#1a163d', c1: '#3c3489', c2: '#7f77dd' }
+  ];
+
+  // Accent pool — vibrant colors that pop against most palettes
+  const accents = [
+    '#d4537e', '#fac775', '#9fe1cb', '#185fa5', '#993c1d', '#534ab7',
+    '#1d9e75', '#d85a30', '#e24b4a', '#378add', '#ef9f27', '#7f77dd',
+    '#fafaf5', '#1a1a1a', '#3b6d11', '#a32d2d', '#26215c', '#04342c'
+  ];
+
+  // ===== Geometry =====
+  function buildPartition(a) {
+    const N = 2 * a + 1;
+    const grid = [];
+    for (let i = 0; i < N; i++) grid.push(new Int8Array(N));
+    const cx = a, cy = a;
+    for (let y = 0; y < N; y++) {
+      for (let x = 0; x < N; x++) {
+        if (x === cx && y === cy) {
+          grid[y][x] = -1;
+          continue;
+        }
+        const dx = x - cx;
+        const dy = y - cy;
+        const angle = Math.atan2(-dy, dx);
+        let normAngle = angle;
+        if (normAngle < 0) normAngle += 2 * Math.PI;
+        let wedge = Math.floor(normAngle / (Math.PI / 4));
+        if (wedge >= 8) wedge = 7;
+        grid[y][x] = wedge;
+      }
+    }
+    return { grid, N };
+  }
+
+  // ===== Rendering =====
+  function renderTile(canvas, a, palette, centerColor) {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(Math.floor(rect.width * dpr), 100);
+    const H = Math.max(Math.floor(rect.height * dpr), 100);
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = palette.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    const { grid, N } = buildPartition(a);
+
+    const margin = Math.max(W * 0.06, 4 * dpr);
+    const avail = Math.min(W, H) - 2 * margin;
+    const cellPitch = avail / N;
+    const gapRatio = 0.18;
+    const cellSize = cellPitch * (1 - gapRatio);
+    const cellPad = (cellPitch - cellSize) / 2;
+    const cornerRadius = cellSize * 0.18;
+
+    const offsetX = (W - cellPitch * N) / 2;
+    const offsetY = (H - cellPitch * N) / 2;
+
+    function colorForWedge(w) {
+      if (w === -1) return centerColor;
+      return (w % 2 === 0) ? palette.c1 : palette.c2;
+    }
+
+    function roundedRect(ctx, x, y, w, h, r) {
+      const rr = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + rr, y);
+      ctx.lineTo(x + w - rr, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + rr);
+      ctx.lineTo(x + w, y + h - rr);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+      ctx.lineTo(x + rr, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - rr);
+      ctx.lineTo(x, y + rr);
+      ctx.quadraticCurveTo(x, y, x + rr, y);
+      ctx.closePath();
+    }
+
+    for (let y = 0; y < N; y++) {
+      for (let x = 0; x < N; x++) {
+        const w = grid[y][x];
+        ctx.fillStyle = colorForWedge(w);
+        const px = offsetX + x * cellPitch + cellPad;
+        const py = offsetY + y * cellPitch + cellPad;
+        if (cellSize > 6) {
+          roundedRect(ctx, px, py, cellSize, cellSize, cornerRadius);
+          ctx.fill();
+        } else {
+          ctx.fillRect(px, py, cellSize, cellSize);
+        }
+      }
+    }
+  }
+
+  // ===== State =====
+  let tiles = []; // { a }
+  let centers = []; // accent color per tile
+  let currentPalette = palettes[0];
+
+  function makeTile() {
+    return { a: 3 + Math.floor(Math.random() * 7) }; // a from 3 to 9
+  }
+
+  function pickCenterColor(palette) {
+    // Avoid picking an accent that's too close to the palette's existing colors
+    const banned = new Set([palette.bg.toLowerCase(), palette.c1.toLowerCase(), palette.c2.toLowerCase()]);
+    const candidates = accents.filter(c => !banned.has(c.toLowerCase()));
+    return candidates[Math.floor(Math.random() * candidates.length)];
+  }
+
+  function regenerateCenters() {
+    centers = Array.from({ length: TOTAL }, () => pickCenterColor(currentPalette));
+  }
+
+  function build() {
+    gridEl.innerHTML = '';
+    paletteNameEl.textContent = currentPalette.name;
+    document.body.style.background = currentPalette.bg;
+    // Adjust text colors for legibility against the background
+    const isDarkBg = isDark(currentPalette.bg);
+    document.documentElement.style.setProperty('--fg', isDarkBg ? '#fafaf5' : '#1f1e1d');
+    document.documentElement.style.setProperty('--muted', isDarkBg ? '#9c9a93' : '#6b6a66');
+    document.documentElement.style.setProperty('--surface', isDarkBg ? '#2a2a28' : '#ffffff');
+    document.documentElement.style.setProperty('--border', isDarkBg ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.12)');
+
+    for (let i = 0; i < TOTAL; i++) {
+      const tile = tiles[i];
+      const tileEl = document.createElement('div');
+      tileEl.className = 'tile';
+      tileEl.style.background = currentPalette.bg;
+      const canvas = document.createElement('canvas');
+      tileEl.appendChild(canvas);
+      gridEl.appendChild(tileEl);
+      requestAnimationFrame(() => renderTile(canvas, tile.a, currentPalette, centers[i]));
+    }
+  }
+
+  function isDark(hex) {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.slice(0,2), 16);
+    const g = parseInt(h.slice(2,4), 16);
+    const b = parseInt(h.slice(4,6), 16);
+    const luma = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luma < 0.5;
+  }
+
+  function regenerateAll() {
+    tiles = Array.from({ length: TOTAL }, makeTile);
+    regenerateCenters();
+  }
+
+  document.getElementById('reroll-a').addEventListener('click', () => {
+    tiles = Array.from({ length: TOTAL }, makeTile);
+    build();
+  });
+  document.getElementById('reroll-palette').addEventListener('click', () => {
+    let next = currentPalette;
+    while (next.name === currentPalette.name) {
+      next = palettes[Math.floor(Math.random() * palettes.length)];
+    }
+    currentPalette = next;
+    regenerateCenters(); // re-pick centers since the palette changed
+    build();
+  });
+  document.getElementById('reroll-centers').addEventListener('click', () => {
+    regenerateCenters();
+    build();
+  });
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(build, 150);
+  });
+
+  // Pick a random starting palette
+  currentPalette = palettes[Math.floor(Math.random() * palettes.length)];
+  regenerateAll();
+  build();
+})();
+</script>
+</body>
+</html>

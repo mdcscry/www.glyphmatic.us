@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kobon Triangles — Grid</title>
+<style>
+  :root {
+    --bg: #f7f5ef;
+    --fg: #1f1e1d;
+    --muted: #6b6a66;
+    --border: rgba(0,0,0,0.12);
+    --surface: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wrap { width: 100%; max-width: 880px; }
+  header { margin: 0 0 20px; }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: var(--surface);
+    color: var(--fg);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button:hover { background: #efece4; }
+  button:active { transform: scale(0.98); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .tile {
+    aspect-ratio: 1 / 1;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+  .tile canvas { display: block; width: 100%; height: 100%; }
+  .tile-info {
+    position: absolute;
+    top: 8px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+  }
+  .tile-k {
+    font-weight: 500;
+    font-size: 13px;
+  }
+  .tile-stats {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+    opacity: 0.7;
+  }
+  footer {
+    margin: 20px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Kobon triangles — variations</h1>
+    <p class="subtitle">Six random arrangements at different k. Each tile shows triangles found / known optimum.</p>
+  </header>
+
+  <div class="controls">
+    <button id="reroll-arrangements">New arrangements</button>
+    <button id="reroll-palettes">New palettes</button>
+    <button id="reroll-k">New k values</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    Each arrangement is k random lines; triangles are highlighted where no other line crosses through the interior. The "found / best" label compares the random result to the known record N(k). Random arrangements rarely come close — that's the difficulty of the Kobon problem.
+  </footer>
+</div>
+
+<script>
+(function() {
+  const gridEl = document.getElementById('grid');
+
+  // Known optima (current as of 2025)
+  const knownBest = {
+    5: 5, 6: 7, 7: 11, 8: 15, 9: 21, 10: 25, 11: 32, 12: 38, 13: 47,
+    14: 53, 15: 65, 16: 72, 17: 85, 18: 93, 19: 107, 20: 115, 21: 133,
+    22: 143, 23: 161, 24: 174, 25: 191, 26: 206, 27: 225, 28: 240,
+    29: 261, 30: 278, 31: 299, 32: 314, 33: 341, 34: 357
+  };
+
+  const palettes = [
+    { name: 'graphite', bg: '#f1efe8', line: '#5f5e5a', tri: '#993c1d', triFill: 'rgba(216, 90, 48, 0.22)' },
+    { name: 'ink',      bg: '#fafaf5', line: '#2c2c2a', tri: '#185fa5', triFill: 'rgba(55, 138, 221, 0.22)' },
+    { name: 'forest',   bg: '#eaf3de', line: '#173404', tri: '#993c1d', triFill: 'rgba(216, 90, 48, 0.24)' },
+    { name: 'rose',     bg: '#fbeaf0', line: '#4b1528', tri: '#0f6e56', triFill: 'rgba(29, 158, 117, 0.22)' },
+    { name: 'midnight', bg: '#042c53', line: '#85b7eb', tri: '#fac775', triFill: 'rgba(250, 199, 117, 0.24)' },
+    { name: 'amber',    bg: '#faeeda', line: '#412402', tri: '#185fa5', triFill: 'rgba(55, 138, 221, 0.22)' },
+    { name: 'iris',     bg: '#eeedfe', line: '#26215c', tri: '#993c1d', triFill: 'rgba(216, 90, 48, 0.22)' },
+    { name: 'noir',     bg: '#1a1a1a', line: '#aeada6', tri: '#fac775', triFill: 'rgba(250, 199, 117, 0.20)' },
+    { name: 'teal',     bg: '#e1f5ee', line: '#04342c', tri: '#993c1d', triFill: 'rgba(216, 90, 48, 0.22)' },
+    { name: 'plum',     bg: '#3c3489', line: '#cecbf6', tri: '#fac775', triFill: 'rgba(250, 199, 117, 0.24)' },
+    { name: 'sand',     bg: '#fac775', line: '#412402', tri: '#26215c', triFill: 'rgba(60, 52, 137, 0.22)' },
+    { name: 'oxblood',  bg: '#501313', line: '#f7c1c1', tri: '#fac775', triFill: 'rgba(250, 199, 117, 0.24)' }
+  ];
+
+  // ---- Geometry ----
+  function randomLines(k) {
+    const lines = [];
+    for (let i = 0; i < k; i++) {
+      let x1, y1, x2, y2;
+      do {
+        x1 = Math.random();
+        y1 = Math.random();
+        x2 = Math.random();
+        y2 = Math.random();
+      } while (Math.hypot(x2 - x1, y2 - y1) < 0.3);
+      const dx = x2 - x1, dy = y2 - y1;
+      const a = -dy, b = dx;
+      const c = -(a * x1 + b * y1);
+      const norm = Math.hypot(a, b);
+      lines.push({ a: a / norm, b: b / norm, c: c / norm });
+    }
+    return lines;
+  }
+
+  function intersect(L1, L2) {
+    const det = L1.a * L2.b - L2.a * L1.b;
+    if (Math.abs(det) < 1e-10) return null;
+    const x = (-L1.c * L2.b + L2.c * L1.b) / det;
+    const y = (-L1.a * L2.c + L2.a * L1.c) / det;
+    return { x, y };
+  }
+
+  function computeIntersections(lines) {
+    const k = lines.length;
+    const ints = Array.from({ length: k }, () => new Array(k).fill(null));
+    for (let i = 0; i < k; i++) {
+      for (let j = i + 1; j < k; j++) {
+        const p = intersect(lines[i], lines[j]);
+        ints[i][j] = p;
+        ints[j][i] = p;
+      }
+    }
+    return ints;
+  }
+
+  function lineIntersectionOrder(lines, ints) {
+    const k = lines.length;
+    const orders = [];
+    for (let i = 0; i < k; i++) {
+      const L = lines[i];
+      const dx = -L.b, dy = L.a;
+      const px = -L.a * L.c, py = -L.b * L.c;
+      const points = [];
+      for (let j = 0; j < k; j++) {
+        if (j === i) continue;
+        const p = ints[i][j];
+        if (!p) continue;
+        const t = (p.x - px) * dx + (p.y - py) * dy;
+        points.push({ idx: j, t, p });
+      }
+      points.sort((a, b) => a.t - b.t);
+      // Build a quick lookup: idx -> position
+      const pos = {};
+      for (let m = 0; m < points.length; m++) pos[points[m].idx] = m;
+      orders.push({ points, pos });
+    }
+    return orders;
+  }
+
+  function findKobonTriangles(lines) {
+    const k = lines.length;
+    const ints = computeIntersections(lines);
+    const orders = lineIntersectionOrder(lines, ints);
+    const triangles = [];
+
+    function adjacent(lineIdx, vA, vB) {
+      const pos = orders[lineIdx].pos;
+      const pa = pos[vA], pb = pos[vB];
+      if (pa === undefined || pb === undefined) return false;
+      return Math.abs(pa - pb) === 1;
+    }
+
+    for (let i = 0; i < k; i++) {
+      for (let j = i + 1; j < k; j++) {
+        for (let m = j + 1; m < k; m++) {
+          const pij = ints[i][j], pim = ints[i][m], pjm = ints[j][m];
+          if (!pij || !pim || !pjm) continue;
+          if (!adjacent(i, j, m)) continue;
+          if (!adjacent(j, i, m)) continue;
+          if (!adjacent(m, i, j)) continue;
+          triangles.push([pij, pim, pjm]);
+        }
+      }
+    }
+    return triangles;
+  }
+
+  // ---- Rendering ----
+  function renderTile(canvas, lines, triangles, palette) {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(Math.floor(rect.width * dpr), 200);
+    const H = Math.max(Math.floor(rect.height * dpr), 200);
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = palette.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    const margin = 0.06;
+    const scale = Math.min(W, H) * (1 - 2 * margin);
+    const offsetX = (W - scale) / 2;
+    const offsetY = (H - scale) / 2;
+    const tx = x => offsetX + x * scale;
+    const ty = y => offsetY + y * scale;
+
+    // Triangle fills
+    ctx.fillStyle = palette.triFill;
+    for (const tri of triangles) {
+      ctx.beginPath();
+      ctx.moveTo(tx(tri[0].x), ty(tri[0].y));
+      ctx.lineTo(tx(tri[1].x), ty(tri[1].y));
+      ctx.lineTo(tx(tri[2].x), ty(tri[2].y));
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Lines (extended slightly past unit square)
+    ctx.strokeStyle = palette.line;
+    // Thinner lines for higher k so it doesn't get muddy
+    const k = lines.length;
+    const lineWidth = Math.max(0.6, 1.5 - k * 0.025) * dpr;
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = 'round';
+    const xMin = -0.05, xMax = 1.05, yMin = -0.05, yMax = 1.05;
+    for (const L of lines) {
+      const pts = [];
+      if (Math.abs(L.b) > 1e-10) {
+        let y = -(L.a * xMin + L.c) / L.b;
+        if (y >= yMin && y <= yMax) pts.push({ x: xMin, y });
+        y = -(L.a * xMax + L.c) / L.b;
+        if (y >= yMin && y <= yMax) pts.push({ x: xMax, y });
+      }
+      if (Math.abs(L.a) > 1e-10) {
+        let x = -(L.b * yMin + L.c) / L.a;
+        if (x >= xMin && x <= xMax) pts.push({ x, y: yMin });
+        x = -(L.b * yMax + L.c) / L.a;
+        if (x >= xMin && x <= xMax) pts.push({ x, y: yMax });
+      }
+      if (pts.length >= 2) {
+        ctx.beginPath();
+        ctx.moveTo(tx(pts[0].x), ty(pts[0].y));
+        ctx.lineTo(tx(pts[1].x), ty(pts[1].y));
+        ctx.stroke();
+      }
+    }
+
+    // Triangle outlines
+    ctx.strokeStyle = palette.tri;
+    ctx.lineWidth = Math.max(0.8, 1.6 - k * 0.025) * dpr;
+    ctx.lineJoin = 'round';
+    for (const tri of triangles) {
+      ctx.beginPath();
+      ctx.moveTo(tx(tri[0].x), ty(tri[0].y));
+      ctx.lineTo(tx(tri[1].x), ty(tri[1].y));
+      ctx.lineTo(tx(tri[2].x), ty(tri[2].y));
+      ctx.closePath();
+      ctx.stroke();
+    }
+  }
+
+  // ---- Tile state ----
+  // Pick a spread of k values: small/medium/large for visual variety
+  function pickKValues() {
+    // Buckets so the grid always has a mix
+    const small = [5, 6, 7, 8, 9];
+    const medium = [10, 12, 14, 15, 16, 18];
+    const large = [20, 22, 24, 26, 28, 31];
+    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    return [
+      pick(small), pick(medium), pick(large),
+      pick(small), pick(medium), pick(large)
+    ].sort(() => Math.random() - 0.5);
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  let state = {
+    ks: pickKValues(),
+    palettes: shuffle(palettes).slice(0, 6),
+    arrangements: []  // computed lazily
+  };
+
+  function regenerateArrangements() {
+    state.arrangements = state.ks.map(k => {
+      const lines = randomLines(k);
+      const tris = findKobonTriangles(lines);
+      return { k, lines, triangles: tris };
+    });
+  }
+
+  function buildGrid() {
+    gridEl.innerHTML = '';
+    state.ks.forEach((k, i) => {
+      const palette = state.palettes[i];
+      const arr = state.arrangements[i];
+      const tileEl = document.createElement('div');
+      tileEl.className = 'tile';
+      tileEl.style.background = palette.bg;
+
+      const canvas = document.createElement('canvas');
+      tileEl.appendChild(canvas);
+
+      const info = document.createElement('div');
+      info.className = 'tile-info';
+      info.style.color = palette.line;
+      const kLabel = document.createElement('span');
+      kLabel.className = 'tile-k';
+      kLabel.textContent = `k = ${k}`;
+      const palLabel = document.createElement('span');
+      palLabel.textContent = palette.name;
+      palLabel.style.opacity = '0.6';
+      info.appendChild(kLabel);
+      info.appendChild(palLabel);
+      tileEl.appendChild(info);
+
+      const stats = document.createElement('div');
+      stats.className = 'tile-stats';
+      stats.style.color = palette.line;
+      const found = document.createElement('span');
+      found.textContent = `${arr.triangles.length} found`;
+      const best = document.createElement('span');
+      const bestVal = knownBest[k];
+      best.textContent = bestVal ? `optimum ${bestVal}` : '';
+      stats.appendChild(found);
+      stats.appendChild(best);
+      tileEl.appendChild(stats);
+
+      gridEl.appendChild(tileEl);
+
+      // Render after element is in the DOM so getBoundingClientRect works
+      requestAnimationFrame(() => renderTile(canvas, arr.lines, arr.triangles, palette));
+    });
+  }
+
+  function rerollArrangements() {
+    regenerateArrangements();
+    buildGrid();
+  }
+
+  function rerollPalettes() {
+    state.palettes = shuffle(palettes).slice(0, 6);
+    buildGrid();
+  }
+
+  function rerollK() {
+    state.ks = pickKValues();
+    regenerateArrangements();
+    buildGrid();
+  }
+
+  document.getElementById('reroll-arrangements').addEventListener('click', rerollArrangements);
+  document.getElementById('reroll-palettes').addEventListener('click', rerollPalettes);
+  document.getElementById('reroll-k').addEventListener('click', rerollK);
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => buildGrid(), 150);
+  });
+
+  regenerateArrangements();
+  buildGrid();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Euler spirals</title>
+<style>
+  :root {
+    --bg: #f7f5ef;
+    --fg: #1f1e1d;
+    --muted: #6b6a66;
+    --border: rgba(0,0,0,0.12);
+    --surface: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wrap { width: 100%; max-width: 900px; }
+  header { margin: 0 0 20px; }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; font-variant-numeric: tabular-nums; }
+  .subtitle { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: var(--surface);
+    color: var(--fg);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button:hover { background: #efece4; }
+  button:active { transform: scale(0.98); }
+  button.active {
+    background: var(--fg);
+    color: var(--bg);
+    border-color: var(--fg);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .tile {
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+  .tile svg { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Euler spirals — Fresnel integrals C(L), S(L)</h1>
+    <p class="subtitle">20 clothoids at random arc length, frequency, asymmetry, and rotation.</p>
+  </header>
+
+  <div class="controls">
+    <button id="reroll-curves">New curves</button>
+    <button id="reroll-palettes">New palettes</button>
+    <button id="toggle-texture">Texture: off</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+(function() {
+  const gridEl = document.getElementById('grid');
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const ROWS = 4, COLS = 5;
+  const TOTAL = ROWS * COLS;
+
+  // Each palette: { name, bg, line }
+  const palettes = [
+    { name: 'paper',     bg: '#f1efe8', line: '#1a1a1a' },
+    { name: 'noir',      bg: '#1a1a1a', line: '#f0e8d0' },
+    { name: 'midnight',  bg: '#042c53', line: '#85b7eb' },
+    { name: 'ember',     bg: '#1a0a05', line: '#d85a30' },
+    { name: 'iris',      bg: '#26215c', line: '#cecbf6' },
+    { name: 'forest',    bg: '#173404', line: '#c0dd97' },
+    { name: 'rose',      bg: '#fbeaf0', line: '#4b1528' },
+    { name: 'amber',     bg: '#412402', line: '#fac775' },
+    { name: 'teal',      bg: '#04342c', line: '#9fe1cb' },
+    { name: 'oxblood',   bg: '#501313', line: '#f7c1c1' },
+    { name: 'plum',      bg: '#cecbf6', line: '#26215c' },
+    { name: 'mint',      bg: '#9fe1cb', line: '#04342c' },
+    { name: 'coral',     bg: '#faece7', line: '#993c1d' },
+    { name: 'wine',      bg: '#4b1528', line: '#f4c0d1' },
+    { name: 'sand',      bg: '#fac775', line: '#412402' },
+    { name: 'sky',       bg: '#e6f1fb', line: '#0c447c' },
+    { name: 'olive',     bg: '#27500a', line: '#eaf3de' },
+    { name: 'crimson',   bg: '#fafaf5', line: '#a32d2d' },
+    { name: 'graphite',  bg: '#d3d1c7', line: '#2c2c2a' },
+    { name: 'dusk',      bg: '#1a163d', line: '#7f77dd' }
+  ];
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // ===== Math: Fresnel integral approximation =====
+  // C(L) = ∫₀ᴸ cos(s²) ds      S(L) = ∫₀ᴸ sin(s²) ds
+  //
+  // We integrate numerically using the midpoint rule. The integrand oscillates
+  // increasingly fast as |s| grows (frequency proportional to s), so we need
+  // to use small step sizes — adaptive based on |s|.
+  //
+  // We also accept a frequency multiplier k: cos(k·s²), sin(k·s²).
+  // Larger k tightens the spiral, smaller k loosens it.
+  function generateEulerSpiral(L_min, L_max, k, samples) {
+    // Walk s from L_min to L_max, accumulating C and S integrals.
+    // Adaptive step: ds inversely proportional to |s| (so the phase changes
+    // by a similar amount per step regardless of position).
+    const points = [];
+
+    // Start at s=0 with C=0, S=0
+    let C = 0, S = 0;
+    // We need to walk both directions from 0 (positive and negative s)
+    // separately, since the integrand from 0 to L_max is independent of
+    // the integrand from L_min to 0.
+
+    // Walk from 0 to L_max
+    const positive = [{ s: 0, C: 0, S: 0 }];
+    {
+      let s = 0;
+      let Cp = 0, Sp = 0;
+      while (s < L_max) {
+        // Adaptive step: smaller as s grows so we resolve the rapid oscillation
+        const ds = Math.max(0.005, 0.01 / (1 + Math.abs(s) * k));
+        const sNext = Math.min(s + ds, L_max);
+        const sMid = (s + sNext) / 2;
+        const dStep = sNext - s;
+        Cp += Math.cos(k * sMid * sMid) * dStep;
+        Sp += Math.sin(k * sMid * sMid) * dStep;
+        s = sNext;
+        positive.push({ s, C: Cp, S: Sp });
+      }
+    }
+
+    // Walk from 0 to L_min (negative direction)
+    const negative = [];
+    {
+      let s = 0;
+      let Cn = 0, Sn = 0;
+      while (s > L_min) {
+        const ds = Math.max(0.005, 0.01 / (1 + Math.abs(s) * k));
+        const sNext = Math.max(s - ds, L_min);
+        const sMid = (s + sNext) / 2;
+        const dStep = s - sNext; // positive
+        // Integrating in the negative direction: C(-L) = -C(L) for cos integrand?
+        // Actually ∫₀⁻ᴸ cos(s²) ds = -∫₀ᴸ cos(s²) ds (since cos(s²) is even,
+        // but we're flipping the integration direction).
+        // Easier: integrate the same way but accumulate negatively.
+        Cn -= Math.cos(k * sMid * sMid) * dStep;
+        Sn -= Math.sin(k * sMid * sMid) * dStep;
+        s = sNext;
+        negative.push({ s, C: Cn, S: Sn });
+      }
+    }
+
+    // Combine: walk from L_min through 0 to L_max
+    // negative array goes from s=0 stepping toward L_min — reverse it
+    // so we have L_min → ... → near 0
+    negative.reverse();
+    // Then concatenate with positive (which goes from 0 → L_max)
+    const all = negative.concat(positive);
+
+    return all;
+  }
+
+  // ===== Random parameter generator per tile =====
+  function randomCurveConfig() {
+    // Arc length range. Larger L_max → more spiral coils.
+    // We bias toward medium-to-large values for visual interest.
+    const L_max = 2.5 + Math.random() * 5.5; // 2.5 to 8
+
+    // Asymmetry: L_min can be different magnitude than L_max
+    // Most curves are symmetric, some are asymmetric.
+    const asymRatio = 0.6 + Math.random() * 0.8; // 0.6 to 1.4
+    const L_min = -L_max * asymRatio;
+
+    // Frequency multiplier — affects how tight the spirals get
+    const k = 0.7 + Math.random() * 0.8; // 0.7 to 1.5
+
+    // Rotation in radians — random orientation
+    const rotation = Math.random() * Math.PI * 2;
+
+    return { L_min, L_max, k, rotation };
+  }
+
+  // ===== Rendering =====
+  function el(name, attrs, children) {
+    const e = document.createElementNS(SVG_NS, name);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (children) for (const c of children) e.appendChild(c);
+    return e;
+  }
+
+  function buildPaperFilter(seed) {
+    // Single filter: subtle paper-grain mottling on the line.
+    // Combines the same recipe as the Albers piece but applied to a stroke
+    // instead of a fill — adds slight tonal variation along the line.
+    const defs = el('defs');
+    const f = el('filter', {
+      id: `paper-${seed}`,
+      x: '-5%', y: '-5%', width: '110%', height: '110%',
+      filterUnits: 'objectBoundingBox'
+    });
+    // Mottling noise
+    f.appendChild(el('feTurbulence', {
+      type: 'fractalNoise',
+      baseFrequency: '0.15',
+      numOctaves: '2',
+      seed: seed,
+      result: 'mottleNoise'
+    }));
+    f.appendChild(el('feComposite', {
+      in: 'SourceGraphic',
+      in2: 'mottleNoise',
+      operator: 'arithmetic',
+      k1: '0', k2: '1', k3: '0.05', k4: '0',
+      result: 'mottled'
+    }));
+    // Edge displacement noise — very subtle
+    f.appendChild(el('feTurbulence', {
+      type: 'fractalNoise',
+      baseFrequency: '0.04 0.08',
+      numOctaves: '2',
+      seed: seed + 1,
+      result: 'edgeNoise'
+    }));
+    f.appendChild(el('feDisplacementMap', {
+      in: 'mottled',
+      in2: 'edgeNoise',
+      scale: '1.5',
+      xChannelSelector: 'R',
+      yChannelSelector: 'G'
+    }));
+    defs.appendChild(f);
+    return defs;
+  }
+
+  function renderTile(svg, config, palette, useTexture) {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    const W = 200, H = 200;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+    // Background fill
+    svg.appendChild(el('rect', {
+      x: 0, y: 0, width: W, height: H,
+      fill: palette.bg
+    }));
+
+    // Generate spiral points
+    const points = generateEulerSpiral(config.L_min, config.L_max, config.k, 4000);
+
+    // Find bounding box of the curve to scale & center
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (const p of points) {
+      if (p.C < minX) minX = p.C;
+      if (p.C > maxX) maxX = p.C;
+      if (p.S < minY) minY = p.S;
+      if (p.S > maxY) maxY = p.S;
+    }
+    const curveW = maxX - minX;
+    const curveH = maxY - minY;
+    const margin = 18;
+    const scale = Math.min(
+      (W - 2 * margin) / curveW,
+      (H - 2 * margin) / curveH
+    );
+    const cx = (minX + maxX) / 2;
+    const cy = (minY + maxY) / 2;
+
+    // Apply rotation around the curve's centroid
+    const cosR = Math.cos(config.rotation);
+    const sinR = Math.sin(config.rotation);
+
+    // Build the path
+    let pathD = '';
+    for (let i = 0; i < points.length; i++) {
+      const p = points[i];
+      // Center the curve, rotate, then translate to canvas center
+      const x0 = p.C - cx;
+      const y0 = p.S - cy;
+      const xr = x0 * cosR - y0 * sinR;
+      const yr = x0 * sinR + y0 * cosR;
+      const x = W / 2 + xr * scale;
+      const y = H / 2 + yr * scale;
+      pathD += (i === 0 ? 'M ' : ' L ') + x.toFixed(2) + ' ' + y.toFixed(2);
+    }
+
+    // Filter setup if texture is on
+    let filterUrl = null;
+    if (useTexture) {
+      const seed = Math.floor(Math.random() * 1000);
+      svg.appendChild(buildPaperFilter(seed));
+      filterUrl = `url(#paper-${seed})`;
+    }
+
+    // Render the path
+    const path = el('path', {
+      d: pathD,
+      fill: 'none',
+      stroke: palette.line,
+      'stroke-width': '1.0',
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round'
+    });
+    if (filterUrl) path.setAttribute('filter', filterUrl);
+    svg.appendChild(path);
+  }
+
+  // ===== State =====
+  let tiles = [];
+  let tilePalettes = [];
+  let useTexture = false;
+
+  function pickPalettesNoAdjacent() {
+    const result = [];
+    for (let i = 0; i < TOTAL; i++) {
+      const row = Math.floor(i / COLS);
+      const col = i % COLS;
+      const forbidden = new Set();
+      if (col > 0) forbidden.add(result[i - 1].name);
+      if (row > 0) forbidden.add(result[i - COLS].name);
+      const candidates = palettes.filter(p => !forbidden.has(p.name));
+      result.push(candidates[Math.floor(Math.random() * candidates.length)]);
+    }
+    return result;
+  }
+
+  function build() {
+    gridEl.innerHTML = '';
+    for (let i = 0; i < TOTAL; i++) {
+      const config = tiles[i];
+      const palette = tilePalettes[i];
+      const tileEl = document.createElement('div');
+      tileEl.className = 'tile';
+      tileEl.style.background = palette.bg;
+      const svg = document.createElementNS(SVG_NS, 'svg');
+      tileEl.appendChild(svg);
+      gridEl.appendChild(tileEl);
+      requestAnimationFrame(() => renderTile(svg, config, palette, useTexture));
+    }
+  }
+
+  function regenerateAll() {
+    tiles = Array.from({ length: TOTAL }, randomCurveConfig);
+    tilePalettes = pickPalettesNoAdjacent();
+  }
+
+  document.getElementById('reroll-curves').addEventListener('click', () => {
+    tiles = Array.from({ length: TOTAL }, randomCurveConfig);
+    build();
+  });
+  document.getElementById('reroll-palettes').addEventListener('click', () => {
+    tilePalettes = pickPalettesNoAdjacent();
+    build();
+  });
+
+  const textureBtn = document.getElementById('toggle-texture');
+  textureBtn.addEventListener('click', () => {
+    useTexture = !useTexture;
+    textureBtn.textContent = useTexture ? 'Texture: on' : 'Texture: off';
+    textureBtn.classList.toggle('active', useTexture);
+    build();
+  });
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(build, 150);
+  });
+
+  regenerateAll();
+  build();
+})();
+</script>
+</body>
+</html>

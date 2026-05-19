@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rose curves — complete catalog</title>
+<style>
+  :root {
+    --bg: #f7f5ef;
+    --fg: #1f1e1d;
+    --muted: #6b6a66;
+    --border: rgba(0,0,0,0.12);
+    --surface: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wrap { width: 100%; max-width: 1200px; }
+  header { margin: 0 0 20px; }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; font-variant-numeric: tabular-nums; }
+  .subtitle { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: var(--surface);
+    color: var(--fg);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button:hover { background: #efece4; }
+  button:active { transform: scale(0.98); }
+  button.active { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    gap: 4px;
+  }
+  .tile {
+    aspect-ratio: 1 / 1;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .tile canvas { display: block; width: 100%; height: 100%; }
+  .tile-label {
+    position: absolute;
+    top: 4px;
+    left: 6px;
+    font-size: 9px;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>r = cos(kθ),  k = n/d  —  the complete catalog</h1>
+    <p class="subtitle">All 55 unique coprime ratios for n, d ∈ 1..9.</p>
+  </header>
+
+  <div class="controls">
+    <button id="reroll-palettes">New palettes</button>
+    <button id="toggle-order">Sort by n/d</button>
+    <button id="toggle-labels">Show labels</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+(function() {
+  const gridEl = document.getElementById('grid');
+  const ROWS = 5, COLS = 11;
+  const TOTAL = ROWS * COLS; // 55
+
+  const palettes = [
+    { name: 'paper',     bg: '#f1efe8', line: '#1a1a1a' },
+    { name: 'noir',      bg: '#1a1a1a', line: '#f0e8d0' },
+    { name: 'midnight',  bg: '#042c53', line: '#85b7eb' },
+    { name: 'ember',     bg: '#1a0a05', line: '#d85a30' },
+    { name: 'iris',      bg: '#26215c', line: '#cecbf6' },
+    { name: 'forest',    bg: '#173404', line: '#c0dd97' },
+    { name: 'rose',      bg: '#fbeaf0', line: '#4b1528' },
+    { name: 'amber',     bg: '#412402', line: '#fac775' },
+    { name: 'teal',      bg: '#04342c', line: '#9fe1cb' },
+    { name: 'oxblood',   bg: '#501313', line: '#f7c1c1' },
+    { name: 'plum',      bg: '#cecbf6', line: '#26215c' },
+    { name: 'mint',      bg: '#9fe1cb', line: '#04342c' },
+    { name: 'coral',     bg: '#faece7', line: '#993c1d' },
+    { name: 'wine',      bg: '#4b1528', line: '#f4c0d1' },
+    { name: 'sand',      bg: '#fac775', line: '#412402' },
+    { name: 'sky',       bg: '#e6f1fb', line: '#0c447c' },
+    { name: 'olive',     bg: '#27500a', line: '#eaf3de' },
+    { name: 'crimson',   bg: '#fafaf5', line: '#a32d2d' },
+    { name: 'graphite',  bg: '#d3d1c7', line: '#2c2c2a' },
+    { name: 'dusk',      bg: '#1a163d', line: '#7f77dd' }
+  ];
+
+  function gcd(a, b) {
+    a = Math.abs(a); b = Math.abs(b);
+    while (b > 0) { [a, b] = [b, a % b]; }
+    return a;
+  }
+
+  // Build all 55 coprime pairs in 1..9 × 1..9
+  function buildAllUniquePairs() {
+    const pairs = [];
+    const MAX = 9;
+    for (let n = 1; n <= MAX; n++) {
+      for (let d = 1; d <= MAX; d++) {
+        if (gcd(n, d) === 1) pairs.push({ n, d });
+      }
+    }
+    return pairs;
+  }
+  const ALL_PAIRS = buildAllUniquePairs();
+  // ALL_PAIRS.length is exactly 55
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function generatePoints(n, d, samples = 4000) {
+    const k = n / d;
+    const thetaMax = 2 * Math.PI * d;
+    const points = [];
+    for (let i = 0; i <= samples; i++) {
+      const theta = (i / samples) * thetaMax;
+      const r = Math.cos(k * theta);
+      const x = r * Math.cos(theta);
+      const y = r * Math.sin(theta);
+      points.push({ x, y });
+    }
+    return points;
+  }
+
+  function renderTile(canvas, n, d, palette) {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(Math.floor(rect.width * dpr), 80);
+    const H = Math.max(Math.floor(rect.height * dpr), 80);
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = palette.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    const samples = Math.min(20000, 1500 + d * 600);
+    const points = generatePoints(n, d, samples);
+
+    const margin = Math.max(W * 0.08, 4 * dpr);
+    const scale = (Math.min(W, H) - 2 * margin) / 2;
+    const cx = W / 2;
+    const cy = H / 2;
+
+    ctx.strokeStyle = palette.line;
+    ctx.lineWidth = 0.8 * dpr;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    ctx.beginPath();
+    for (let i = 0; i < points.length; i++) {
+      const px = cx + points[i].x * scale;
+      const py = cy + points[i].y * scale;
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  }
+
+  // ===== State =====
+  let tilePairs = ALL_PAIRS.slice(); // current order
+  let tilePalettes = [];
+  let sortMode = 'random'; // 'random' or 'sorted'
+  let showLabels = false;
+
+  function pickPalettesNoAdjacent() {
+    const result = [];
+    for (let i = 0; i < TOTAL; i++) {
+      const row = Math.floor(i / COLS);
+      const col = i % COLS;
+      const forbidden = new Set();
+      if (col > 0) forbidden.add(result[i - 1].name);
+      if (row > 0) forbidden.add(result[i - COLS].name);
+      const candidates = palettes.filter(p => !forbidden.has(p.name));
+      result.push(candidates[Math.floor(Math.random() * candidates.length)]);
+    }
+    return result;
+  }
+
+  function applyOrder() {
+    if (sortMode === 'sorted') {
+      // Sort by k = n/d ascending, with tiebreaks on d then n for stability
+      tilePairs = ALL_PAIRS.slice().sort((a, b) => {
+        const ka = a.n / a.d;
+        const kb = b.n / b.d;
+        if (ka !== kb) return ka - kb;
+        if (a.d !== b.d) return a.d - b.d;
+        return a.n - b.n;
+      });
+    } else {
+      tilePairs = shuffle(ALL_PAIRS);
+    }
+  }
+
+  function build() {
+    gridEl.innerHTML = '';
+    for (let i = 0; i < TOTAL; i++) {
+      const pair = tilePairs[i];
+      const palette = tilePalettes[i];
+      const tileEl = document.createElement('div');
+      tileEl.className = 'tile';
+      tileEl.style.background = palette.bg;
+      const canvas = document.createElement('canvas');
+      tileEl.appendChild(canvas);
+
+      if (showLabels) {
+        const label = document.createElement('div');
+        label.className = 'tile-label';
+        label.style.color = palette.line;
+        label.textContent = `${pair.n}/${pair.d}`;
+        tileEl.appendChild(label);
+      }
+
+      gridEl.appendChild(tileEl);
+      requestAnimationFrame(() => renderTile(canvas, pair.n, pair.d, palette));
+    }
+  }
+
+  document.getElementById('reroll-palettes').addEventListener('click', () => {
+    tilePalettes = pickPalettesNoAdjacent();
+    build();
+  });
+
+  const sortBtn = document.getElementById('toggle-order');
+  sortBtn.addEventListener('click', () => {
+    sortMode = sortMode === 'sorted' ? 'random' : 'sorted';
+    sortBtn.textContent = sortMode === 'sorted' ? 'Shuffle' : 'Sort by n/d';
+    sortBtn.classList.toggle('active', sortMode === 'sorted');
+    applyOrder();
+    build();
+  });
+
+  const labelsBtn = document.getElementById('toggle-labels');
+  labelsBtn.addEventListener('click', () => {
+    showLabels = !showLabels;
+    labelsBtn.textContent = showLabels ? 'Hide labels' : 'Show labels';
+    labelsBtn.classList.toggle('active', showLabels);
+    build();
+  });
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(build, 150);
+  });
+
+  applyOrder();
+  tilePalettes = pickPalettesNoAdjacent();
+  build();
+})();
+</script>
+</body>
+</html>

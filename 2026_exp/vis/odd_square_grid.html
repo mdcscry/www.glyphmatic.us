@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>(2a+1)² = 8Tₐ + 1</title>
+<style>
+  :root {
+    --bg: #f7f5ef;
+    --fg: #1f1e1d;
+    --muted: #6b6a66;
+    --border: rgba(0,0,0,0.12);
+    --surface: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wrap { width: 100%; max-width: 1100px; }
+  header { margin: 0 0 20px; }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; font-variant-numeric: tabular-nums; }
+  .subtitle { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: var(--surface);
+    color: var(--fg);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button:hover { background: #efece4; }
+  button:active { transform: scale(0.98); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 4px;
+  }
+  .tile {
+    aspect-ratio: 1 / 1;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .tile canvas { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>(2a+1)² = 8Tₐ + 1</h1>
+    <p class="subtitle">An odd square decomposes into a unit center plus eight copies of the triangular number Tₐ.</p>
+  </header>
+
+  <div class="controls">
+    <button id="reroll-a">New a values</button>
+    <button id="reroll-palettes">New palettes</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+(function() {
+  const gridEl = document.getElementById('grid');
+  const ROWS = 5, COLS = 8;
+  const TOTAL = ROWS * COLS;
+
+  // Each palette: { bg, center, c1, c2 } — TWO colors that alternate around the pinwheel
+  // so adjacent staircases distinguish themselves. center is the unit-cell accent.
+  // bg is the tile background showing in the gaps between cells.
+  const palettes = [
+    { name: 'classic',  bg: '#f1efe8', center: '#d4537e', c1: '#185fa5', c2: '#1a1a1a' },
+    { name: 'graphite', bg: '#1a1a1a', center: '#fac775', c1: '#5f5e5a', c2: '#d3d1c7' },
+    { name: 'paper',    bg: '#fafaf5', center: '#d4537e', c1: '#1a1a1a', c2: '#888780' },
+    { name: 'midnight', bg: '#042c53', center: '#fac775', c1: '#185fa5', c2: '#b5d4f4' },
+    { name: 'ember',    bg: '#1a0a05', center: '#9fe1cb', c1: '#993c1d', c2: '#f5c4b3' },
+    { name: 'iris',     bg: '#26215c', center: '#fac775', c1: '#534ab7', c2: '#cecbf6' },
+    { name: 'forest',   bg: '#173404', center: '#fac775', c1: '#3b6d11', c2: '#c0dd97' },
+    { name: 'rose',     bg: '#fbeaf0', center: '#4b1528', c1: '#d4537e', c2: '#72243e' },
+    { name: 'amber',    bg: '#412402', center: '#9fe1cb', c1: '#854f0b', c2: '#fac775' },
+    { name: 'teal',     bg: '#04342c', center: '#fac775', c1: '#0f6e56', c2: '#9fe1cb' },
+    { name: 'oxblood',  bg: '#501313', center: '#fac775', c1: '#a32d2d', c2: '#f7c1c1' },
+    { name: 'plum',     bg: '#fafaf5', center: '#d4537e', c1: '#26215c', c2: '#afa9ec' },
+    { name: 'noir',     bg: '#0a0a0a', center: '#d85a30', c1: '#444441', c2: '#b4b2a9' },
+    { name: 'mint',     bg: '#fafaf5', center: '#993556', c1: '#0f6e56', c2: '#9fe1cb' },
+    { name: 'coral',    bg: '#4a1b0c', center: '#9fe1cb', c1: '#993c1d', c2: '#f5c4b3' },
+    { name: 'wine',     bg: '#4b1528', center: '#fac775', c1: '#993556', c2: '#f4c0d1' },
+    { name: 'sand',     bg: '#fac775', center: '#26215c', c1: '#854f0b', c2: '#412402' },
+    { name: 'sky',      bg: '#fafaf5', center: '#d85a30', c1: '#185fa5', c2: '#85b7eb' },
+    { name: 'olive',    bg: '#27500a', center: '#fac775', c1: '#173404', c2: '#97c459' },
+    { name: 'crimson',  bg: '#fafaf5', center: '#185fa5', c1: '#a32d2d', c2: '#f09595' }
+  ];
+
+  // ===== Geometry =====
+  // For odd N = 2a+1, the square decomposes:
+  //   - Center 1x1 cell at (a, a)
+  //   - 8 triangular regions, each of area T_a = a(a+1)/2
+  // The 8 triangles arrange as 4 pairs forming 4 rectangles around the center,
+  // OR as 4 pairs of right triangles in the 4 corners.
+  //
+  // Classic tiling: each corner of the (2a+1)×(2a+1) square contains two right
+  // triangles meeting along the diagonal of an a×(a+1) rectangle. So we have
+  // four corner regions, each composed of an a×(a+1) rectangle split into
+  // two staircase triangles of size T_a.
+  //
+  // Specifically, the four "arms" of the square:
+  //   - Top: rectangle from (0, 0) to (2a+1, a) — but this overlaps with corners.
+  //
+  // Cleaner: split the square minus center into four L-shapes? No — the proof
+  // is: 8 triangular regions each of area T_a. The standard arrangement:
+  //   - At each corner of the square, place an a × a right triangle (area T_a... no, a²/2)
+  // 
+  // Hmm. The standard visual proof of (2a+1)² = 8T_a + 1 is:
+  //   Take an N×N grid where N = 2a+1.
+  //   Mark the center cell.
+  //   The remaining N² - 1 = 4a² + 4a = 4a(a+1) = 8 · a(a+1)/2 = 8T_a cells.
+  //   These cells partition into 8 staircase triangles each containing T_a cells.
+  //
+  // The partition: divide the square into 4 quadrants by the row and column
+  // through the center cell. Each quadrant is an a×a square plus one shared
+  // strip? No: with N=2a+1, removing the center row and column leaves four
+  // a×a sub-squares (corners). Total cells: 4a². But we need to account for
+  // the 2a cells in the center row (not counting center) and 2a cells in
+  // center column. So: 4·a² + 2·(2a) = 4a² + 4a. Good, that's 8T_a.
+  //
+  // Easier partition: rotate and use a "pinwheel" of 8 triangles meeting at
+  // the center cell. Each triangle is a staircase of size T_a sitting in
+  // half a quadrant.
+  //
+  // Concretely: in each quadrant (an a×a sub-square attached to the center
+  // by an arm of length a along row and column), there are 2T_a + a + a/something cells...
+  //
+  // Let me just directly construct: 8 staircase triangles around the center.
+  // Each triangle is built like this: rows of length 1, 2, 3, ..., a.
+  //
+  // The pinwheel layout: place 8 staircase triangles around the center cell,
+  // each occupying one octant of the square. The triangles are right
+  // triangles with legs of length a, hypotenuse along a diagonal from the
+  // center.
+  //
+  // Total cells in 8 staircases of size T_a: 8 · T_a = 4a² + 4a = N² - 1. ✓
+
+  /**
+   * Build the cell-by-cell labeling for an N×N grid where N = 2a+1.
+   * Returns a 2D array where each cell has value:
+   *   -1 = center cell
+   *   0..7 = which of the 8 triangles
+   * The 8 triangles form a pinwheel around the center.
+   */
+  function buildPartition(a) {
+    const N = 2 * a + 1;
+    const grid = [];
+    for (let i = 0; i < N; i++) grid.push(new Int8Array(N));
+
+    const cx = a, cy = a; // center cell coordinates
+
+    for (let y = 0; y < N; y++) {
+      for (let x = 0; x < N; x++) {
+        if (x === cx && y === cy) {
+          grid[y][x] = -1;
+          continue;
+        }
+        // Determine octant relative to center
+        const dx = x - cx;
+        const dy = y - cy;
+        // 8 octants based on signs and |dx| vs |dy|
+        // Octant 0: right, dx > |dy|, dx > 0
+        // Octant 1: down-right, dy > |dx|, dy > 0... but we need a tiling that
+        // covers exactly the staircase shapes.
+        //
+        // Standard pinwheel approach:
+        // For each cell, find which staircase it belongs to.
+        // Use this rule:
+        //   if |dx| > |dy|:
+        //     if dx > 0: octant 0 (right)
+        //     else: octant 4 (left)
+        //   elif |dy| > |dx|:
+        //     if dy > 0: octant 2 (down)
+        //     else: octant 6 (up)
+        //   else (|dx| == |dy|): it's on a diagonal — assign based on sign
+        //
+        // But this gives 4 regions, not 8. Need to split each into two staircases.
+        //
+        // Use a pinwheel rule: each octant is a right-triangle staircase.
+        // Octants (numbered clockwise from "east"):
+        //   0: dx > 0, dy <= 0, |dx| > |dy|     (east-upper)
+        //   1: dx > 0, dy < 0, |dy| >= |dx|     (north-east-upper)... no
+        //
+        // Let me think again. The pinwheel: 8 staircase triangles around center.
+        // Each triangle has its right-angle vertex AT the center (or adjacent),
+        // and legs along the row/column or diagonals.
+        //
+        // Simpler approach: divide the N×N grid (minus center) into 4 strips
+        // (top, bottom, left, right of center row/col), each strip splits into
+        // two staircases.
+        //   - Right arm: cells (x, y) with x > cx. There are a columns × N rows
+        //     cells = a · (2a+1). Hmm that's not 2T_a.
+        //
+        // Even simpler: the 8 staircase triangles sit in the 8 "wedges" formed
+        // by the 4 cardinal directions and 4 diagonals from the center.
+        //
+        // Let's use this rule: assign each non-center cell to one of 8 wedges
+        // by angle.
+        //
+        // angle = atan2(-dy, dx)  // standard math angle, y flipped for screen coords
+        // bucket = floor((angle + π) / (π/4)) mod 8
+        //
+        // This gives 8 wedges of 45° each. Each wedge contains a staircase
+        // triangle? Let's check: in a wedge from 0° to 45° (east-to-NE),
+        // we'd get cells with dx > 0, dy < 0, and dx >= |dy|, i.e.:
+        // dx = 1, dy = 0
+        // dx = 2, dy = 0, -1
+        // dx = 3, dy = 0, -1, -2
+        // ...
+        // dx = a, dy = 0, -1, ..., -(a-1)
+        // Total cells: 1 + 2 + ... + a = T_a. ✓
+        //
+        // Wait, that's not quite right either. Let me check more carefully.
+        // Wedge from 0° (east) to 45° (NE):
+        //   atan2(-dy, dx) ∈ [0, π/4)
+        //   ⟺ dx > 0, -dy >= 0, -dy < dx
+        //   ⟺ dx > 0, dy <= 0, |dy| < dx
+        // So cells: (1,0), (2,0), (2,-1), (3,0), (3,-1), (3,-2), ..., (a,0), ..., (a,-(a-1))
+        // Count: 1 + 2 + 3 + ... + a = T_a ✓
+        //
+        // The boundary cells (on the diagonals where |dx| == |dy|) need careful
+        // handling so they're assigned to exactly one wedge each. Use strict
+        // inequality on one side.
+
+        const angle = Math.atan2(-dy, dx); // -π to π
+        // Normalize to [0, 2π)
+        let normAngle = angle;
+        if (normAngle < 0) normAngle += 2 * Math.PI;
+        // Each wedge is π/4 wide. Wedge 0 = [0, π/4), wedge 1 = [π/4, π/2), etc.
+        // To handle diagonals (which give exactly π/4, π/2, etc.) consistently,
+        // we use floor() which means cells exactly on the boundary go to the
+        // higher-numbered wedge.
+        let wedge = Math.floor(normAngle / (Math.PI / 4));
+        if (wedge >= 8) wedge = 7; // safety
+
+        grid[y][x] = wedge;
+      }
+    }
+    return { grid, N };
+  }
+
+  // ===== Rendering =====
+  function renderTile(canvas, a, palette, rotation) {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(Math.floor(rect.width * dpr), 100);
+    const H = Math.max(Math.floor(rect.height * dpr), 100);
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = palette.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    const { grid, N } = buildPartition(a);
+
+    // Layout: fit N×N grid centered with margin
+    const margin = Math.max(W * 0.06, 4 * dpr);
+    const avail = Math.min(W, H) - 2 * margin;
+    const cellPitch = avail / N;             // distance between cell centers
+    // Each cell is a square smaller than its pitch, leaving a gap that shows bg
+    const gapRatio = 0.18;                    // ~18% gap, similar to source image
+    const cellSize = cellPitch * (1 - gapRatio);
+    const cellPad = (cellPitch - cellSize) / 2;
+    const cornerRadius = cellSize * 0.18;
+
+    const offsetX = (W - cellPitch * N) / 2;
+    const offsetY = (H - cellPitch * N) / 2;
+
+    // Apply rotation by transforming context (90° increments)
+    ctx.save();
+    ctx.translate(W / 2, H / 2);
+    ctx.rotate(rotation * Math.PI / 2);
+    ctx.translate(-W / 2, -H / 2);
+
+    // Map 8 wedges to 2 alternating colors so adjacent staircases differ
+    // Wedges 0, 2, 4, 6 → c1 ; Wedges 1, 3, 5, 7 → c2
+    // This produces the alternating-staircase look from the source image.
+    function colorForWedge(w) {
+      if (w === -1) return palette.center;
+      return (w % 2 === 0) ? palette.c1 : palette.c2;
+    }
+
+    function roundedRect(ctx, x, y, w, h, r) {
+      const rr = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + rr, y);
+      ctx.lineTo(x + w - rr, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + rr);
+      ctx.lineTo(x + w, y + h - rr);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+      ctx.lineTo(x + rr, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - rr);
+      ctx.lineTo(x, y + rr);
+      ctx.quadraticCurveTo(x, y, x + rr, y);
+      ctx.closePath();
+    }
+
+    for (let y = 0; y < N; y++) {
+      for (let x = 0; x < N; x++) {
+        const w = grid[y][x];
+        ctx.fillStyle = colorForWedge(w);
+        const px = offsetX + x * cellPitch + cellPad;
+        const py = offsetY + y * cellPitch + cellPad;
+        if (cellSize > 6) {
+          roundedRect(ctx, px, py, cellSize, cellSize, cornerRadius);
+          ctx.fill();
+        } else {
+          ctx.fillRect(px, py, cellSize, cellSize);
+        }
+      }
+    }
+
+    ctx.restore();
+  }
+
+  // ===== State =====
+  let tiles = []; // { a, rotation }
+  let tilePalettes = [];
+
+  function makeTile() {
+    // a between 3 and 9 — small enough to read each cell, large enough to feel rich
+    return {
+      a: 3 + Math.floor(Math.random() * 7),
+      rotation: Math.floor(Math.random() * 4)
+    };
+  }
+
+  function pickPalettesNoAdjacent() {
+    const result = [];
+    const cols = COLS;
+    for (let i = 0; i < TOTAL; i++) {
+      const row = Math.floor(i / cols);
+      const col = i % cols;
+      const forbidden = new Set();
+      if (col > 0) forbidden.add(result[i - 1].name);
+      if (row > 0) forbidden.add(result[i - cols].name);
+      const candidates = palettes.filter(p => !forbidden.has(p.name));
+      result.push(candidates[Math.floor(Math.random() * candidates.length)]);
+    }
+    return result;
+  }
+
+  function build() {
+    gridEl.innerHTML = '';
+    for (let i = 0; i < TOTAL; i++) {
+      const tile = tiles[i];
+      const palette = tilePalettes[i];
+      const tileEl = document.createElement('div');
+      tileEl.className = 'tile';
+      tileEl.style.background = palette.bg;
+      const canvas = document.createElement('canvas');
+      tileEl.appendChild(canvas);
+      gridEl.appendChild(tileEl);
+      requestAnimationFrame(() => renderTile(canvas, tile.a, palette, tile.rotation));
+    }
+  }
+
+  function regenerateAll() {
+    tiles = Array.from({ length: TOTAL }, makeTile);
+    tilePalettes = pickPalettesNoAdjacent();
+  }
+
+  document.getElementById('reroll-a').addEventListener('click', () => {
+    tiles = Array.from({ length: TOTAL }, makeTile);
+    build();
+  });
+  document.getElementById('reroll-palettes').addEventListener('click', () => {
+    tilePalettes = pickPalettesNoAdjacent();
+    build();
+  });
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(build, 150);
+  });
+
+  regenerateAll();
+  build();
+})();
+</script>
+</body>
+</html>

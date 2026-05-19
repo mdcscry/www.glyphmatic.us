@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ricci flow — 50 evolutions</title>
+<style>
+  :root {
+    --bg: #f7f5ef;
+    --fg: #1f1e1d;
+    --muted: #6b6a66;
+    --border: rgba(0,0,0,0.12);
+    --surface: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wrap { width: 100%; max-width: 1100px; }
+  header { margin: 0 0 20px; }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; }
+  .subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: var(--surface);
+    color: var(--fg);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button:hover { background: #efece4; }
+  button:active { transform: scale(0.98); }
+  button.active {
+    background: var(--fg);
+    color: var(--bg);
+    border-color: var(--fg);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+  }
+  .tile {
+    aspect-ratio: 1 / 1.6;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .tile canvas { display: block; width: 100%; height: 100%; }
+  footer {
+    margin: 20px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  footer p { margin: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Ricci flow — 50 evolutions</h1>
+    <p class="subtitle">Surfaces of revolution evolving under ∂g/∂t = −2·Ric(g). Each row evolves a different starting shape; each column is a snapshot in time.</p>
+  </header>
+
+  <div class="controls">
+    <button id="reroll-shapes">New shapes</button>
+    <button id="reroll-palette">New palette</button>
+    <button id="toggle-animate">Animate</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    <p>The radius profile r(z, t) evolves by smoothing out curvature variations — bumps shrink, necks thin (sometimes pinching), bulbs round. Without surgery, near-pinch shapes collapse to nothing; with surgery, they split into spheres. Each row shows ten time steps of one initial profile.</p>
+  </footer>
+</div>
+
+<script>
+(function() {
+  const gridEl = document.getElementById('grid');
+  const ROWS = 5;
+  const COLS = 10;
+  const N_PROFILE = 80; // points along the surface axis
+
+  const palettes = [
+    {
+      name: 'sage',
+      bg: '#f3f0e6',
+      fillTop: '#e8c8c8',
+      fillBot: '#dde9da',
+      mesh: '#5b7a5e',
+      outline: '#3d5a40'
+    },
+    {
+      name: 'cobalt',
+      bg: '#f1efe8',
+      fillTop: '#cad8ec',
+      fillBot: '#dde2f0',
+      mesh: '#185fa5',
+      outline: '#0c447c'
+    },
+    {
+      name: 'ember',
+      bg: '#1a1a1a',
+      fillTop: '#993c1d',
+      fillBot: '#4a1b0c',
+      mesh: '#d85a30',
+      outline: '#f5c4b3'
+    },
+    {
+      name: 'iris',
+      bg: '#eeedfe',
+      fillTop: '#cecbf6',
+      fillBot: '#afa9ec',
+      mesh: '#534ab7',
+      outline: '#26215c'
+    },
+    {
+      name: 'plum',
+      bg: '#26215c',
+      fillTop: '#7f77dd',
+      fillBot: '#534ab7',
+      mesh: '#cecbf6',
+      outline: '#eeedfe'
+    },
+    {
+      name: 'amber',
+      bg: '#faeeda',
+      fillTop: '#fac775',
+      fillBot: '#ef9f27',
+      mesh: '#854f0b',
+      outline: '#412402'
+    },
+    {
+      name: 'paper',
+      bg: '#fafaf5',
+      fillTop: '#d3d1c7',
+      fillBot: '#b4b2a9',
+      mesh: '#444441',
+      outline: '#1a1a1a'
+    },
+    {
+      name: 'noir',
+      bg: '#1a1a1a',
+      fillTop: '#5f5e5a',
+      fillBot: '#444441',
+      mesh: '#d3d1c7',
+      outline: '#f0e8d0'
+    },
+    {
+      name: 'rose',
+      bg: '#fbeaf0',
+      fillTop: '#f4c0d1',
+      fillBot: '#ed93b1',
+      mesh: '#993556',
+      outline: '#4b1528'
+    },
+    {
+      name: 'forest',
+      bg: '#173404',
+      fillTop: '#639922',
+      fillBot: '#3b6d11',
+      mesh: '#c0dd97',
+      outline: '#eaf3de'
+    }
+  ];
+
+  let palette = palettes[0];
+
+  // ===== Shape generation =====
+  // Generate a random initial radius profile r(z) for z in [0,1]
+  // Profiles are bounded: r=0 at z=0 and z=1 (so the surface closes)
+  // We add 1-3 "bumps" at random positions with random heights/widths
+  function randomInitialProfile() {
+    const r = new Float64Array(N_PROFILE);
+    const numBumps = 1 + Math.floor(Math.random() * 3); // 1-3 bumps
+    const bumps = [];
+    for (let b = 0; b < numBumps; b++) {
+      bumps.push({
+        center: 0.15 + Math.random() * 0.7,
+        width: 0.08 + Math.random() * 0.18,
+        height: 0.18 + Math.random() * 0.32
+      });
+    }
+    // Optional: add a thin "neck" connector style by superposing
+    // a wide, short bell across the whole thing
+    const baseHeight = 0.04 + Math.random() * 0.10;
+    const baseWidth = 0.3 + Math.random() * 0.3;
+
+    for (let i = 0; i < N_PROFILE; i++) {
+      const z = i / (N_PROFILE - 1);
+      // Endpoint smoothing factor (forces r=0 at the ends)
+      const endpointFactor = Math.sin(Math.PI * z); // sin gives 0 at both ends, peaks in middle
+      let val = baseHeight * Math.exp(-((z - 0.5) ** 2) / (baseWidth ** 2));
+      for (const bump of bumps) {
+        val += bump.height * Math.exp(-((z - bump.center) ** 2) / (bump.width ** 2));
+      }
+      // Multiply by endpoint factor (raised to a small power so it stays full near middle)
+      r[i] = val * Math.pow(endpointFactor, 0.5);
+    }
+    return r;
+  }
+
+  // ===== Ricci flow simulation (1D radius evolution) =====
+  // For a surface of revolution r(z), the Ricci flow reduces approximately
+  // to a heat-equation-like PDE on r:
+  //   dr/dt ≈ r''/(1 + r'^2)^(3/2)  −  some lower-order curvature terms
+  // We use a simplified form: r evolves as a smoothing flow that drives the
+  // shape toward constant curvature (a sphere). We simulate it as a non-linear
+  // diffusion where the radius shrinks where curvature is concave and
+  // smooths where it varies rapidly. This is qualitative, not the exact
+  // Hamilton equation, but produces visually faithful evolution.
+  function step(r, dt) {
+    const N = r.length;
+    const dz = 1 / (N - 1);
+    const newR = new Float64Array(N);
+    newR[0] = 0;
+    newR[N - 1] = 0;
+
+    for (let i = 1; i < N - 1; i++) {
+      const rp = r[i + 1];
+      const rm = r[i - 1];
+      const r0 = r[i];
+
+      // First and second spatial derivatives
+      const dr = (rp - rm) / (2 * dz);
+      const d2r = (rp - 2 * r0 + rm) / (dz * dz);
+
+      // Mean curvature term: smoothing along the profile
+      const slopeFactor = 1 / Math.pow(1 + dr * dr, 1.5);
+      const smoothing = d2r * slopeFactor;
+
+      // Pinch term: thin necks shrink faster (Ricci flow's neckpinch behavior)
+      // Penalty for being thin relative to neighbors
+      const pinch = -0.25 * (1 / (r0 + 0.05)) * Math.max(0, (rp + rm) / 2 - r0) ** 2;
+
+      // Global shrinkage to drive collapse to round sphere shape
+      const shrink = -0.04 * r0;
+
+      newR[i] = r0 + dt * (smoothing + pinch + shrink);
+      if (newR[i] < 0) newR[i] = 0;
+    }
+    return newR;
+  }
+
+  // Evolve a profile through `numSteps` time steps and return all snapshots
+  function evolveProfile(initialR, numSteps, dt = 0.002, snapshots = COLS) {
+    const stepsPerSnapshot = Math.floor(numSteps / snapshots);
+    const result = [initialR];
+    let r = initialR;
+    for (let s = 0; s < snapshots - 1; s++) {
+      for (let k = 0; k < stepsPerSnapshot; k++) {
+        r = step(r, dt);
+      }
+      result.push(r);
+    }
+    return result;
+  }
+
+  // ===== Rendering =====
+  // Draw a surface of revolution silhouette with a few longitudinal "mesh" lines
+  function renderShape(canvas, profile, palette) {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(Math.floor(rect.width * dpr), 60);
+    const H = Math.max(Math.floor(rect.height * dpr), 100);
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = palette.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Find max radius for scaling
+    let maxR = 0;
+    for (let i = 0; i < profile.length; i++) {
+      if (profile[i] > maxR) maxR = profile[i];
+    }
+    if (maxR < 0.01) {
+      // Shape has collapsed — draw nothing meaningful
+      return;
+    }
+
+    // Layout: vertical axis goes from top-margin to bottom-margin
+    const marginY = H * 0.06;
+    const marginX = W * 0.1;
+    const usableH = H - 2 * marginY;
+    const usableW = W - 2 * marginX;
+
+    // Find the actual span of non-zero profile
+    let zMin = 0, zMax = profile.length - 1;
+    while (zMin < profile.length && profile[zMin] < 0.005) zMin++;
+    while (zMax > 0 && profile[zMax] < 0.005) zMax--;
+    if (zMax <= zMin) return;
+
+    const profileH = zMax - zMin + 1;
+
+    // Scale the radius to fit horizontally; allow vertical to use most of cell
+    const radiusScale = Math.min(usableW / 2 / Math.max(maxR, 0.05), usableH / profileH * 0.8);
+
+    function xAt(r) { return W / 2 + r * radiusScale; }
+    function yAt(idx) {
+      // Map profile index to canvas y, centered
+      const t = (idx - zMin) / profileH;
+      return marginY + (usableH - profileH * radiusScale) / 2 + t * profileH * radiusScale;
+    }
+
+    // Build silhouette path
+    function silhouettePath() {
+      ctx.beginPath();
+      ctx.moveTo(xAt(0), yAt(zMin));
+      // right side, top to bottom
+      for (let i = zMin; i <= zMax; i++) {
+        ctx.lineTo(xAt(profile[i]), yAt(i));
+      }
+      // bottom point
+      ctx.lineTo(xAt(0), yAt(zMax));
+      // left side, bottom to top
+      for (let i = zMax; i >= zMin; i--) {
+        ctx.lineTo(xAt(-profile[i]), yAt(i));
+      }
+      ctx.closePath();
+    }
+
+    // Fill with vertical gradient (from fillTop to fillBot)
+    silhouettePath();
+    const grad = ctx.createLinearGradient(0, yAt(zMin), 0, yAt(zMax));
+    grad.addColorStop(0, palette.fillTop);
+    grad.addColorStop(1, palette.fillBot);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Draw "mesh" lines — a few longitudes (vertical-ish curves on the surface)
+    // These give the 3D wireframe feel of the original image
+    ctx.strokeStyle = palette.mesh;
+    ctx.lineWidth = 0.4 * dpr;
+    ctx.globalAlpha = 0.5;
+    const numLongitudes = 5;
+    for (let l = 1; l < numLongitudes; l++) {
+      const t = l / numLongitudes; // t in (0, 1), maps to angle around the axis
+      // For a surface of revolution viewed head-on (no perspective), the
+      // visible projection at angle θ is r·cos(θ). Since we view straight on,
+      // we use cos((t - 0.5) * π) to spread longitudes across the projected width.
+      const angleFactor = Math.cos((t - 0.5) * Math.PI);
+      ctx.beginPath();
+      let started = false;
+      for (let i = zMin; i <= zMax; i++) {
+        const x = W / 2 + profile[i] * angleFactor * radiusScale;
+        const y = yAt(i);
+        if (!started) { ctx.moveTo(x, y); started = true; }
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    // A few horizontal "latitude" rings — drawn as simple horizontal lines for now
+    // (true projections of circles would be ellipses, but we keep it simple)
+    const numLatitudes = Math.max(4, Math.floor(profileH / 8));
+    for (let lat = 1; lat < numLatitudes; lat++) {
+      const idx = zMin + Math.floor((lat / numLatitudes) * profileH);
+      if (idx >= zMax) break;
+      const r = profile[idx];
+      if (r < 0.01) continue;
+      // Drawn as a thin ellipse with very flat aspect (mostly horizontal)
+      ctx.beginPath();
+      const cx = W / 2;
+      const cy = yAt(idx);
+      const rx = r * radiusScale;
+      const ry = Math.min(rx * 0.15, 2 * dpr);
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1.0;
+
+    // Outline
+    ctx.strokeStyle = palette.outline;
+    ctx.lineWidth = 0.7 * dpr;
+    silhouettePath();
+    ctx.stroke();
+  }
+
+  // ===== State =====
+  let rowProfiles = []; // initial profiles, one per row
+  let snapshots = [];   // 2D array [row][col] of profiles
+
+  function regenerateShapes() {
+    rowProfiles = [];
+    snapshots = [];
+    for (let r = 0; r < ROWS; r++) {
+      const initial = randomInitialProfile();
+      rowProfiles.push(initial);
+      const evolution = evolveProfile(initial, 1500, 0.001, COLS);
+      snapshots.push(evolution);
+    }
+  }
+
+  function build() {
+    gridEl.innerHTML = '';
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const tileEl = document.createElement('div');
+        tileEl.className = 'tile';
+        tileEl.style.background = palette.bg;
+
+        const canvas = document.createElement('canvas');
+        tileEl.appendChild(canvas);
+        gridEl.appendChild(tileEl);
+
+        const profile = snapshots[r][c];
+        // Defer render so layout is settled
+        requestAnimationFrame(() => renderShape(canvas, profile, palette));
+      }
+    }
+  }
+
+  // ===== Animation =====
+  let animating = false;
+  let animState = null; // { current: [profile per row], frame, lastTime }
+  let rafId = null;
+
+  function startAnimation() {
+    // Initialize: each row starts at its initial profile
+    animState = {
+      current: rowProfiles.map(p => new Float64Array(p)),
+      time: 0,
+      lastFrameTime: performance.now(),
+      // Each row gets a slightly different evolution speed
+      speeds: Array.from({ length: ROWS }, () => 0.6 + Math.random() * 0.8),
+      // Restart timer per row
+      rowAge: new Array(ROWS).fill(0)
+    };
+
+    function frame(now) {
+      if (!animating) return;
+      const dt = Math.min((now - animState.lastFrameTime) / 1000, 0.05);
+      animState.lastFrameTime = now;
+
+      // Each frame: advance the simulation by some steps for each row
+      const stepsPerFrame = 6;
+      const dtSim = 0.001;
+
+      for (let r = 0; r < ROWS; r++) {
+        let prof = animState.current[r];
+        for (let k = 0; k < stepsPerFrame; k++) {
+          prof = step(prof, dtSim * animState.speeds[r]);
+        }
+        animState.current[r] = prof;
+        animState.rowAge[r] += dt;
+
+        // Find max for collapse detection
+        let maxR = 0;
+        for (let i = 0; i < prof.length; i++) {
+          if (prof[i] > maxR) maxR = prof[i];
+        }
+        // If row has collapsed too far, restart with a new initial shape
+        if (maxR < 0.05 || animState.rowAge[r] > 8) {
+          animState.current[r] = randomInitialProfile();
+          animState.rowAge[r] = 0;
+          animState.speeds[r] = 0.6 + Math.random() * 0.8;
+        }
+      }
+
+      // Draw — for animation we show the same evolution across all 10 columns
+      // at slightly different "lookahead" stages, so columns become time-shifted
+      // versions. This produces the same staggered effect as the static grid
+      // but continuously moving.
+      const canvases = gridEl.querySelectorAll('canvas');
+      for (let r = 0; r < ROWS; r++) {
+        // Compute snapshots ahead of current state
+        const ahead = [animState.current[r]];
+        let aheadProf = animState.current[r];
+        const stepsPerCol = 100;
+        for (let c = 1; c < COLS; c++) {
+          let p = aheadProf;
+          for (let k = 0; k < stepsPerCol; k++) {
+            p = step(p, dtSim * animState.speeds[r]);
+          }
+          ahead.push(p);
+          aheadProf = p;
+        }
+        for (let c = 0; c < COLS; c++) {
+          const canvas = canvases[r * COLS + c];
+          renderShape(canvas, ahead[c], palette);
+        }
+      }
+
+      rafId = requestAnimationFrame(frame);
+    }
+
+    animating = true;
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function stopAnimation() {
+    animating = false;
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
+  }
+
+  // ===== Wire up controls =====
+  document.getElementById('reroll-shapes').addEventListener('click', () => {
+    if (animating) {
+      stopAnimation();
+      document.getElementById('toggle-animate').textContent = 'Animate';
+      document.getElementById('toggle-animate').classList.remove('active');
+    }
+    regenerateShapes();
+    build();
+  });
+
+  document.getElementById('reroll-palette').addEventListener('click', () => {
+    let next = palette;
+    while (next.name === palette.name) {
+      next = palettes[Math.floor(Math.random() * palettes.length)];
+    }
+    palette = next;
+    if (!animating) build();
+  });
+
+  document.getElementById('toggle-animate').addEventListener('click', (e) => {
+    if (animating) {
+      stopAnimation();
+      e.target.textContent = 'Animate';
+      e.target.classList.remove('active');
+      // Rebuild with the static snapshots
+      regenerateShapes();
+      build();
+    } else {
+      e.target.textContent = 'Stop';
+      e.target.classList.add('active');
+      startAnimation();
+    }
+  });
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (!animating) build();
+    }, 150);
+  });
+
+  regenerateShapes();
+  build();
+})();
+</script>
+</body>
+</html>

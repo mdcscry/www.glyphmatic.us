@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chladni Figures — Animated</title>
+<style>
+  :root {
+    --bg: #f7f5ef;
+    --fg: #1f1e1d;
+    --muted: #6b6a66;
+    --border: rgba(0,0,0,0.12);
+    --surface: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wrap { width: 100%; max-width: 760px; }
+  header { margin: 0 0 20px; }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: var(--muted); margin: 0; }
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: var(--surface);
+    color: var(--fg);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button:hover { background: #efece4; }
+  button:active { transform: scale(0.98); }
+  button.active {
+    background: var(--fg);
+    color: var(--bg);
+    border-color: var(--fg);
+  }
+  .palette-name {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--muted);
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.05em;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .tile {
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+  .tile canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .tile-label {
+    position: absolute;
+    bottom: 6px;
+    right: 8px;
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  footer {
+    margin: 20px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Chladni figures</h1>
+    <p class="subtitle">Animated — sand particles migrate to nodal lines over time</p>
+  </header>
+
+  <div class="controls">
+    <button id="reroll-patterns">New patterns</button>
+    <button id="reroll-palette">New palette</button>
+    <button id="reset-particles">Reshake</button>
+    <button id="toggle-pause">Pause</button>
+    <span class="palette-name" id="palette-name"></span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    Each plate vibrates as u(x,y)·cos(ωt). Particles get kicked from antinodes and settle on the nodal curves where u = 0 — exactly like Chladni's 1787 experiment.
+  </footer>
+</div>
+
+<script>
+(function() {
+  const gridEl = document.getElementById('grid');
+  const paletteNameEl = document.getElementById('palette-name');
+
+  const palettes = [
+    { name: 'graphite',  bg: '#f1efe8', sand: '#2c2c2a' },
+    { name: 'midnight',  bg: '#042c53', sand: '#b5d4f4' },
+    { name: 'teal pool', bg: '#e1f5ee', sand: '#04342c' },
+    { name: 'coral',     bg: '#faece7', sand: '#4a1b0c' },
+    { name: 'rose',      bg: '#fbeaf0', sand: '#4b1528' },
+    { name: 'amber',     bg: '#faeeda', sand: '#412402' },
+    { name: 'forest',    bg: '#173404', sand: '#c0dd97' },
+    { name: 'iris',      bg: '#eeedfe', sand: '#26215c' },
+    { name: 'rust',      bg: '#4a1b0c', sand: '#f5c4b3' },
+    { name: 'oxblood',   bg: '#501313', sand: '#f7c1c1' },
+    { name: 'mint',      bg: '#9fe1cb', sand: '#04342c' },
+    { name: 'lilac',     bg: '#cecbf6', sand: '#26215c' },
+    { name: 'sand',      bg: '#fac775', sand: '#412402' },
+    { name: 'plum',      bg: '#3c3489', sand: '#cecbf6' },
+    { name: 'noir',      bg: '#1a1a1a', sand: '#f0e8d0' },
+    { name: 'paper',     bg: '#fafaf5', sand: '#1a1a1a' }
+  ];
+
+  const RES = 200;             // canvas pixel resolution
+  const PARTICLES_PER_TILE = 1500;
+  const TILES = 9;
+
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function randomPattern() {
+    let m = randomInt(2, 9);
+    let n = randomInt(2, 9);
+    if (m === n) n = (n % 9) + 2;
+    const aChoices = [-1, -0.7, 0.7, 1, 1, 1];
+    const a = aChoices[Math.floor(Math.random() * aChoices.length)];
+    return { m, n, a };
+  }
+
+  // Wave field at position (x,y) in [0,1]
+  function field(x, y, p) {
+    const PI = Math.PI;
+    return Math.cos(p.m * PI * x) * Math.cos(p.n * PI * y)
+         + p.a * Math.cos(p.n * PI * x) * Math.cos(p.m * PI * y);
+  }
+
+  // Numeric gradient of the SQUARED field — particles climb downhill
+  // toward |u|=0. Using u^2 gives a smooth potential.
+  function gradU2(x, y, p) {
+    const eps = 0.003;
+    const u = field(x, y, p);
+    const ux = field(x + eps, y, p);
+    const uy = field(x, y + eps, p);
+    // d(u^2)/dx ≈ 2u * (ux - u) / eps
+    return [
+      (ux * ux - u * u) / eps,
+      (uy * uy - u * u) / eps
+    ];
+  }
+
+  class Tile {
+    constructor(canvas, pattern) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext('2d');
+      this.pattern = pattern;
+      canvas.width = RES;
+      canvas.height = RES;
+      this.particles = [];
+      this.initParticles();
+    }
+
+    initParticles() {
+      this.particles = [];
+      for (let i = 0; i < PARTICLES_PER_TILE; i++) {
+        this.particles.push({
+          x: Math.random(),
+          y: Math.random()
+        });
+      }
+    }
+
+    setPattern(pattern) {
+      this.pattern = pattern;
+      this.initParticles();
+    }
+
+    step(time) {
+      const p = this.pattern;
+      // Vibration amplitude oscillates sinusoidally — the kick strength
+      // particles feel is proportional to the instantaneous |u|·|cos(ωt)|.
+      // We bake the time factor into a kick magnitude.
+      const phase = Math.abs(Math.cos(time * 0.004));
+      const kickScale = 0.0006 * (0.4 + phase);  // overall "shake intensity"
+      const jitter = 0.0015;
+
+      for (let i = 0; i < this.particles.length; i++) {
+        const part = this.particles[i];
+        const u = field(part.x, part.y, p);
+        const absU = Math.abs(u);
+
+        // At antinodes (|u| large), particles bounce — large random kicks
+        // At nodes (|u| small), motion damps out
+        const energy = absU * absU;
+        const kick = kickScale * (1 + energy * 80);
+
+        // Drift down the |u|^2 potential toward nodal lines
+        const [gx, gy] = gradU2(part.x, part.y, p);
+        const gMag = Math.sqrt(gx * gx + gy * gy) + 1e-6;
+        // Step size proportional to energy (damping near nodes)
+        const driftStep = 0.0009 * energy;
+        part.x -= (gx / gMag) * driftStep;
+        part.y -= (gy / gMag) * driftStep;
+
+        // Random jitter scaled by energy (lots of bouncing at antinodes)
+        part.x += (Math.random() - 0.5) * kick;
+        part.y += (Math.random() - 0.5) * kick;
+
+        // Small constant jitter so they never freeze completely
+        part.x += (Math.random() - 0.5) * jitter * 0.2;
+        part.y += (Math.random() - 0.5) * jitter * 0.2;
+
+        // Clamp to plate
+        if (part.x < 0) part.x = 0;
+        else if (part.x > 1) part.x = 1;
+        if (part.y < 0) part.y = 0;
+        else if (part.y > 1) part.y = 1;
+      }
+    }
+
+    draw(palette) {
+      const ctx = this.ctx;
+      ctx.fillStyle = palette.bg;
+      ctx.fillRect(0, 0, RES, RES);
+      ctx.fillStyle = palette.sand;
+      for (let i = 0; i < this.particles.length; i++) {
+        const part = this.particles[i];
+        const px = Math.floor(part.x * (RES - 1));
+        const py = Math.floor(part.y * (RES - 1));
+        ctx.fillRect(px, py, 1, 1);
+      }
+    }
+  }
+
+  let currentPalette = palettes[Math.floor(Math.random() * palettes.length)];
+  let tiles = [];
+  let paused = false;
+
+  function buildGrid() {
+    gridEl.innerHTML = '';
+    tiles = [];
+    paletteNameEl.textContent = currentPalette.name;
+
+    const patterns = Array.from({ length: TILES }, randomPattern);
+
+    patterns.forEach((pattern) => {
+      const tileEl = document.createElement('div');
+      tileEl.className = 'tile';
+      tileEl.style.background = currentPalette.bg;
+
+      const canvas = document.createElement('canvas');
+      tileEl.appendChild(canvas);
+
+      const label = document.createElement('div');
+      label.className = 'tile-label';
+      label.style.color = currentPalette.sand;
+      label.textContent = `${pattern.m},${pattern.n}`;
+      tileEl.appendChild(label);
+
+      gridEl.appendChild(tileEl);
+      tiles.push(new Tile(canvas, pattern));
+    });
+  }
+
+  function rerollPatterns() {
+    const newPatterns = Array.from({ length: TILES }, randomPattern);
+    tiles.forEach((tile, i) => {
+      tile.setPattern(newPatterns[i]);
+      // Update the label
+      const label = tile.canvas.parentElement.querySelector('.tile-label');
+      label.textContent = `${newPatterns[i].m},${newPatterns[i].n}`;
+    });
+  }
+
+  function rerollPalette() {
+    let next = currentPalette;
+    while (next.name === currentPalette.name) {
+      next = palettes[Math.floor(Math.random() * palettes.length)];
+    }
+    currentPalette = next;
+    paletteNameEl.textContent = currentPalette.name;
+    // Update tile backgrounds and label colors
+    document.querySelectorAll('.tile').forEach(el => {
+      el.style.background = currentPalette.bg;
+      el.querySelector('.tile-label').style.color = currentPalette.sand;
+    });
+  }
+
+  function reshake() {
+    tiles.forEach(tile => tile.initParticles());
+  }
+
+  document.getElementById('reroll-patterns').addEventListener('click', rerollPatterns);
+  document.getElementById('reroll-palette').addEventListener('click', rerollPalette);
+  document.getElementById('reset-particles').addEventListener('click', reshake);
+
+  const pauseBtn = document.getElementById('toggle-pause');
+  pauseBtn.addEventListener('click', () => {
+    paused = !paused;
+    pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+    pauseBtn.classList.toggle('active', paused);
+  });
+
+  let lastTime = 0;
+  function animate(time) {
+    if (!paused) {
+      // Run a few sub-steps per frame for faster convergence
+      for (let s = 0; s < 2; s++) {
+        tiles.forEach(tile => tile.step(time + s * 8));
+      }
+      tiles.forEach(tile => tile.draw(currentPalette));
+    }
+    requestAnimationFrame(animate);
+  }
+
+  buildGrid();
+  requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>

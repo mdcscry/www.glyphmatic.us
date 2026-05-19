@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The 306-cell unconstructible still life</title>
+<style>
+  :root {
+    --bg: #f7f5ef;
+    --fg: #1f1e1d;
+    --muted: #6b6a66;
+    --border: rgba(0,0,0,0.12);
+    --surface: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wrap { width: 100%; max-width: 880px; }
+  header { margin: 0 0 20px; }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: var(--surface);
+    color: var(--fg);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button:hover { background: #efece4; }
+  button:active { transform: scale(0.98); }
+  .legend {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .tile {
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tile canvas {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    display: block;
+  }
+  .tile-label {
+    position: absolute;
+    bottom: 6px;
+    right: 8px;
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.65;
+    pointer-events: none;
+  }
+  .tile-tag {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  footer {
+    margin: 20px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  footer p { margin: 0 0 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>The 306-cell unconstructible still life</h1>
+    <p class="subtitle">Törmä &amp; Salo (2022), reduced by Cunningham — a Conway's Life pattern whose only predecessor is itself</p>
+  </header>
+
+  <div class="controls">
+    <button id="reroll-palettes">New palettes</button>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:#888;"></span> Still life — the actual 306-cell pattern</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#ccc; border: 0.5px solid #888;"></span> Agar — the infinite parent it was carved from</div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    <p>Each tile renders the pattern as a binary grid: live cells in the dark color, dead cells in the light color. The still-life tiles show the full 306-cell construction at varying zooms and crops. The agar tiles show finite windows into the infinite spatially-periodic pattern that Törmä &amp; Salo's SAT solver identified as having a unique chain of preimages — the still life is essentially a clipped, stabilized rectangle of this wallpaper.</p>
+  </footer>
+</div>
+
+<script>
+(function() {
+  // ===== The actual 306-cell pattern from Cunningham's RLE =====
+  // x = 32, y = 26, rule = B3/S23
+  const RLE_306 = `8b2obo2b2obo2b2obo$8bob2o2bob2o2bob2o3b2o$6b2o4b2o4b2o4b2o2bo$b2obo2bob2o2bob2o2bob2o2bobo$bob2obo2b2obo2b2obo2b2obo2b2o$6b2o4b2o4b2o4b2o$2b2obo2b2obo2b2obo2b2obo2b2obo$2bob2o2bob2o2bob2o2bob2o2bob2o$2o4b2o4b2o4b2o4b2o4b2o$bob2o2bob2o2bob2o2bob2o2bob2o2bo$o2b2obo2b2obo2b2obo2b2obo2b2obo$2o4b2o4b2o4b2o4b2o4b2o$2b2obo2b2obo2b2obo2b2obo2b2obo$2bob2o2bob2o2bob2o2bob2o2bob2o$2o4b2o4b2o4b2o4b2o4b2o$bob2o2bob2o2bob2o2bob2o2bob2o2bo$o2b2obo2b2obo2b2obo2b2obo2b2obo$2o4b2o4b2o4b2o4b2o4b2o$2b2obo2b2obo2b2obo2b2obo2b2obo$2bob2o2bob2o2bob2o2bob2o2bob2o$6b2o4b2o4b2o4b2o$3b2o2bob2o2bob2o2bob2o2bob2obo$4bobo2b2obo2b2obo2b2obo2bob2o$3bo2b2o4b2o4b2o4b2o$3b2o3b2obo2b2obo2b2obo$8bob2o2bob2o2bob2o!`;
+
+  function parseRLE(rle, width, height) {
+    // Returns 2D array [y][x] of 0/1
+    const grid = [];
+    for (let i = 0; i < height; i++) {
+      grid.push(new Uint8Array(width));
+    }
+    let x = 0, y = 0, num = '';
+    for (let i = 0; i < rle.length; i++) {
+      const c = rle[i];
+      if (c >= '0' && c <= '9') {
+        num += c;
+      } else if (c === 'b' || c === 'o') {
+        const count = num === '' ? 1 : parseInt(num);
+        const val = c === 'o' ? 1 : 0;
+        for (let k = 0; k < count; k++) {
+          if (x < width && y < height) grid[y][x] = val;
+          x++;
+        }
+        num = '';
+      } else if (c === '$') {
+        const count = num === '' ? 1 : parseInt(num);
+        y += count;
+        x = 0;
+        num = '';
+      } else if (c === '!') {
+        break;
+      }
+    }
+    return grid;
+  }
+
+  const stillLife = parseRLE(RLE_306, 32, 26);
+
+  // ===== Extract a 12x12 tile of the agar from the interior =====
+  // The middle of the still life is essentially the pure agar — pick a 12x12 window
+  // from the interior (rows 8-19, cols 4-15) that captures the periodic structure.
+  const AGAR_W = 12, AGAR_H = 12;
+  const agarTile = [];
+  for (let y = 0; y < AGAR_H; y++) {
+    const row = new Uint8Array(AGAR_W);
+    for (let x = 0; x < AGAR_W; x++) {
+      row[x] = stillLife[8 + y][4 + x];
+    }
+    agarTile.push(row);
+  }
+
+  // Build a tiled agar field (repeat the 12x12 window) for display
+  function buildAgar(width, height) {
+    const g = [];
+    for (let y = 0; y < height; y++) {
+      const row = new Uint8Array(width);
+      for (let x = 0; x < width; x++) {
+        row[x] = agarTile[y % AGAR_H][x % AGAR_W];
+      }
+      g.push(row);
+    }
+    return g;
+  }
+
+  // ===== Palettes: [bg, fg] =====
+  const palettes = [
+    { name: 'graphite',  bg: '#f1efe8', fg: '#2c2c2a' },
+    { name: 'midnight',  bg: '#042c53', fg: '#b5d4f4' },
+    { name: 'teal',      bg: '#e1f5ee', fg: '#04342c' },
+    { name: 'coral',     bg: '#faece7', fg: '#4a1b0c' },
+    { name: 'rose',      bg: '#fbeaf0', fg: '#4b1528' },
+    { name: 'amber',     bg: '#faeeda', fg: '#412402' },
+    { name: 'forest',    bg: '#173404', fg: '#c0dd97' },
+    { name: 'iris',      bg: '#eeedfe', fg: '#26215c' },
+    { name: 'rust',      bg: '#4a1b0c', fg: '#f5c4b3' },
+    { name: 'oxblood',   bg: '#501313', fg: '#f7c1c1' },
+    { name: 'mint',      bg: '#9fe1cb', fg: '#04342c' },
+    { name: 'lilac',     bg: '#cecbf6', fg: '#26215c' },
+    { name: 'sand',      bg: '#fac775', fg: '#412402' },
+    { name: 'plum',      bg: '#3c3489', fg: '#cecbf6' },
+    { name: 'noir',      bg: '#1a1a1a', fg: '#f0e8d0' },
+    { name: 'paper',     bg: '#fafaf5', fg: '#1a1a1a' },
+    { name: 'sage',      bg: '#dde6d2', fg: '#27500a' },
+    { name: 'wine',      bg: '#72243e', fg: '#f4c0d1' },
+    { name: 'aqua',      bg: '#9fe1cb', fg: '#085041' },
+    { name: 'mustard',   bg: '#854f0b', fg: '#faeeda' }
+  ];
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // Render a binary grid to canvas with given palette
+  function renderGrid(canvas, grid, palette, cellPx, padPx) {
+    const h = grid.length;
+    const w = grid[0].length;
+    const W = w * cellPx + padPx * 2;
+    const H = h * cellPx + padPx * 2;
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = palette.bg;
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = palette.fg;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        if (grid[y][x]) {
+          ctx.fillRect(padPx + x * cellPx, padPx + y * cellPx, cellPx, cellPx);
+        }
+      }
+    }
+  }
+
+  // 16 tile configurations: 8 still-life variants + 8 agar variants
+  // Each tile defines: type (still|agar), and rendering params
+  const tileConfigs = [
+    // STILL LIFE tiles — full 306-cell pattern at various zooms/crops
+    { type: 'still', cell: 5, label: '306 cells · full' },
+    { type: 'still', cell: 6, label: '306 cells · zoom' },
+    { type: 'still', cell: 4, label: '306 cells · wide' },
+    { type: 'still', cell: 7, label: '306 cells · close' },
+    { type: 'still', cell: 5, label: '306 cells · full', flipX: true },
+    { type: 'still', cell: 5, label: '306 cells · full', flipY: true },
+    { type: 'still', cell: 6, label: '306 cells · zoom', flipX: true, flipY: true },
+    { type: 'still', cell: 4, label: '306 cells · wide', flipX: true },
+
+    // AGAR tiles — tiled views of the periodic interior at various sizes
+    { type: 'agar', cell: 6, w: 18, h: 18, label: 'agar · 18×18' },
+    { type: 'agar', cell: 5, w: 24, h: 24, label: 'agar · 24×24' },
+    { type: 'agar', cell: 8, w: 14, h: 14, label: 'agar · 14×14' },
+    { type: 'agar', cell: 4, w: 30, h: 30, label: 'agar · 30×30' },
+    { type: 'agar', cell: 7, w: 16, h: 16, label: 'agar · 16×16' },
+    { type: 'agar', cell: 5, w: 24, h: 24, label: 'agar · 24×24' },
+    { type: 'agar', cell: 6, w: 20, h: 20, label: 'agar · 20×20' },
+    { type: 'agar', cell: 9, w: 12, h: 12, label: 'agar · 12×12' }
+  ];
+
+  function flipGrid(grid, flipX, flipY) {
+    const h = grid.length, w = grid[0].length;
+    const out = [];
+    for (let y = 0; y < h; y++) {
+      const row = new Uint8Array(w);
+      for (let x = 0; x < w; x++) {
+        const sy = flipY ? h - 1 - y : y;
+        const sx = flipX ? w - 1 - x : x;
+        row[x] = grid[sy][sx];
+      }
+      out.push(row);
+    }
+    return out;
+  }
+
+  const gridEl = document.getElementById('grid');
+
+  function render() {
+    gridEl.innerHTML = '';
+    // Shuffle the palette order so each tile gets a different one
+    const shuffled = shuffle(palettes).slice(0, 16);
+    // Also shuffle the tile order so still-life and agar tiles intermix
+    const shuffledTiles = shuffle(tileConfigs);
+
+    shuffledTiles.forEach((cfg, i) => {
+      const palette = shuffled[i];
+      const tileEl = document.createElement('div');
+      tileEl.className = 'tile';
+      tileEl.style.background = palette.bg;
+
+      const canvas = document.createElement('canvas');
+      tileEl.appendChild(canvas);
+
+      let g;
+      if (cfg.type === 'still') {
+        g = stillLife;
+        if (cfg.flipX || cfg.flipY) g = flipGrid(g, !!cfg.flipX, !!cfg.flipY);
+      } else {
+        g = buildAgar(cfg.w, cfg.h);
+      }
+
+      // Compute pad so canvas roughly fits the tile (CSS sizes it via aspect-ratio)
+      // We want a small visual margin so the pattern doesn't touch the tile edge
+      const cellPx = cfg.cell;
+      const gridW = g[0].length * cellPx;
+      const gridH = g.length * cellPx;
+      // Pad to make square
+      const dim = Math.max(gridW, gridH) + 16;
+      const padX = Math.floor((dim - gridW) / 2);
+      const padY = Math.floor((dim - gridH) / 2);
+
+      canvas.width = dim;
+      canvas.height = dim;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = palette.bg;
+      ctx.fillRect(0, 0, dim, dim);
+      ctx.fillStyle = palette.fg;
+      for (let y = 0; y < g.length; y++) {
+        for (let x = 0; x < g[0].length; x++) {
+          if (g[y][x]) {
+            ctx.fillRect(padX + x * cellPx, padY + y * cellPx, cellPx, cellPx);
+          }
+        }
+      }
+
+      // CSS-size canvas to fill the tile
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+
+      const tag = document.createElement('div');
+      tag.className = 'tile-tag';
+      tag.style.color = palette.fg;
+      tag.textContent = cfg.type === 'still' ? 'still life' : 'agar';
+      tileEl.appendChild(tag);
+
+      const label = document.createElement('div');
+      label.className = 'tile-label';
+      label.style.color = palette.fg;
+      label.textContent = palette.name;
+      tileEl.appendChild(label);
+
+      gridEl.appendChild(tileEl);
+    });
+  }
+
+  document.getElementById('reroll-palettes').addEventListener('click', render);
+  render();
+})();
+</script>
+</body>
+</html>

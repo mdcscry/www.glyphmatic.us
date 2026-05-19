@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chladni Morph</title>
+<style>
+  :root {
+    --bg: #f7f5ef;
+    --fg: #1f1e1d;
+    --muted: #6b6a66;
+    --border: rgba(0,0,0,0.12);
+    --surface: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wrap { width: 100%; max-width: 760px; }
+  header { margin: 0 0 20px; }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: var(--muted); margin: 0; }
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: var(--surface);
+    color: var(--fg);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button:hover { background: #efece4; }
+  button:active { transform: scale(0.98); }
+  button.active {
+    background: var(--fg);
+    color: var(--bg);
+    border-color: var(--fg);
+  }
+  .palette-name {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--muted);
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.05em;
+  }
+  .speed-label {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  input[type="range"] {
+    width: 90px;
+    accent-color: var(--fg);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .tile {
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+  .tile canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .tile-label {
+    position: absolute;
+    bottom: 6px;
+    right: 8px;
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  footer {
+    margin: 20px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Chladni morph</h1>
+    <p class="subtitle">Mode parameters drift continuously — the nodal lines flow between resonances</p>
+  </header>
+
+  <div class="controls">
+    <button id="reroll-targets">New trajectory</button>
+    <button id="reroll-palette">New palette</button>
+    <button id="toggle-pause">Pause</button>
+    <span class="speed-label">Speed</span>
+    <input type="range" id="speed" min="0.1" max="3" step="0.1" value="1" />
+    <span class="palette-name" id="palette-name"></span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    Each plate's mode parameters (m, n, α) interpolate between random target points. Continuous m and n correspond to driving between resonant modes, giving smoothly morphing nodal curves.
+  </footer>
+</div>
+
+<script>
+(function() {
+  const gridEl = document.getElementById('grid');
+  const paletteNameEl = document.getElementById('palette-name');
+  const speedSlider = document.getElementById('speed');
+
+  const palettes = [
+    { name: 'graphite',  bg: '#f1efe8', sand: '#2c2c2a' },
+    { name: 'midnight',  bg: '#042c53', sand: '#b5d4f4' },
+    { name: 'teal pool', bg: '#e1f5ee', sand: '#04342c' },
+    { name: 'coral',     bg: '#faece7', sand: '#4a1b0c' },
+    { name: 'rose',      bg: '#fbeaf0', sand: '#4b1528' },
+    { name: 'amber',     bg: '#faeeda', sand: '#412402' },
+    { name: 'forest',    bg: '#173404', sand: '#c0dd97' },
+    { name: 'iris',      bg: '#eeedfe', sand: '#26215c' },
+    { name: 'rust',      bg: '#4a1b0c', sand: '#f5c4b3' },
+    { name: 'oxblood',   bg: '#501313', sand: '#f7c1c1' },
+    { name: 'mint',      bg: '#9fe1cb', sand: '#04342c' },
+    { name: 'lilac',     bg: '#cecbf6', sand: '#26215c' },
+    { name: 'sand',      bg: '#fac775', sand: '#412402' },
+    { name: 'plum',      bg: '#3c3489', sand: '#cecbf6' },
+    { name: 'noir',      bg: '#1a1a1a', sand: '#f0e8d0' },
+    { name: 'paper',     bg: '#fafaf5', sand: '#1a1a1a' }
+  ];
+
+  const RES = 200;
+  const TILES = 9;
+  // Resolution we render the wave field at (lower than canvas = faster)
+  const FIELD_RES = 100;
+
+  function rand(min, max) { return Math.random() * (max - min) + min; }
+
+  function randomTarget() {
+    return {
+      m: rand(2, 8),
+      n: rand(2, 8),
+      a: rand(-1.2, 1.2)
+    };
+  }
+
+  // Smoothstep — gives nice ease in/out between targets
+  function smoothstep(t) {
+    return t * t * (3 - 2 * t);
+  }
+
+  function field(x, y, m, n, a) {
+    const PI = Math.PI;
+    return Math.cos(m * PI * x) * Math.cos(n * PI * y)
+         + a * Math.cos(n * PI * x) * Math.cos(m * PI * y);
+  }
+
+  class Tile {
+    constructor(canvas) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext('2d');
+      canvas.width = RES;
+      canvas.height = RES;
+
+      // Two endpoints we interpolate between
+      this.from = randomTarget();
+      this.to = randomTarget();
+      this.t = 0;                   // 0..1 progress
+      // Each tile gets a slightly different cycle duration so they don't pulse in unison
+      this.cycleSeconds = rand(8, 14);
+
+      this.imgData = this.ctx.createImageData(RES, RES);
+    }
+
+    forceNewTargets() {
+      this.from = this.to;
+      this.to = randomTarget();
+      this.t = 0;
+    }
+
+    update(dt, speedMul) {
+      this.t += (dt / this.cycleSeconds) * speedMul;
+      if (this.t >= 1) {
+        // Advance to next target
+        this.from = this.to;
+        this.to = randomTarget();
+        this.t -= 1;
+        this.cycleSeconds = rand(8, 14);
+      }
+    }
+
+    currentParams() {
+      const e = smoothstep(this.t);
+      return {
+        m: this.from.m + (this.to.m - this.from.m) * e,
+        n: this.from.n + (this.to.n - this.from.n) * e,
+        a: this.from.a + (this.to.a - this.from.a) * e
+      };
+    }
+
+    draw(palette, bgRGB, sandRGB) {
+      const { m, n, a } = this.currentParams();
+      const data = this.imgData.data;
+
+      // Render the field at lower resolution then upscale via canvas pixel mapping
+      // Actually: just sample at every pixel — RES=200, 40k samples, fine for 9 tiles
+      for (let py = 0; py < RES; py++) {
+        const y = py / (RES - 1);
+        for (let px = 0; px < RES; px++) {
+          const x = px / (RES - 1);
+          const u = field(x, y, m, n, a);
+          // Sand intensity = sharp peak near |u|=0
+          const intensity = Math.exp(-Math.abs(u) * 14);
+          const idx = (py * RES + px) * 4;
+          data[idx]     = Math.round(bgRGB[0] + (sandRGB[0] - bgRGB[0]) * intensity);
+          data[idx + 1] = Math.round(bgRGB[1] + (sandRGB[1] - bgRGB[1]) * intensity);
+          data[idx + 2] = Math.round(bgRGB[2] + (sandRGB[2] - bgRGB[2]) * intensity);
+          data[idx + 3] = 255;
+        }
+      }
+      this.ctx.putImageData(this.imgData, 0, 0);
+    }
+
+    labelText() {
+      const { m, n } = this.currentParams();
+      return `${m.toFixed(1)}, ${n.toFixed(1)}`;
+    }
+  }
+
+  function hexToRGB(hex) {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0,2), 16), parseInt(h.slice(2,4), 16), parseInt(h.slice(4,6), 16)];
+  }
+
+  let currentPalette = palettes[Math.floor(Math.random() * palettes.length)];
+  let bgRGB = hexToRGB(currentPalette.bg);
+  let sandRGB = hexToRGB(currentPalette.sand);
+  let tiles = [];
+  let paused = false;
+
+  function buildGrid() {
+    gridEl.innerHTML = '';
+    tiles = [];
+    paletteNameEl.textContent = currentPalette.name;
+
+    for (let i = 0; i < TILES; i++) {
+      const tileEl = document.createElement('div');
+      tileEl.className = 'tile';
+      tileEl.style.background = currentPalette.bg;
+
+      const canvas = document.createElement('canvas');
+      tileEl.appendChild(canvas);
+
+      const label = document.createElement('div');
+      label.className = 'tile-label';
+      label.style.color = currentPalette.sand;
+      tileEl.appendChild(label);
+
+      gridEl.appendChild(tileEl);
+      tiles.push(new Tile(canvas));
+    }
+  }
+
+  function rerollPalette() {
+    let next = currentPalette;
+    while (next.name === currentPalette.name) {
+      next = palettes[Math.floor(Math.random() * palettes.length)];
+    }
+    currentPalette = next;
+    bgRGB = hexToRGB(currentPalette.bg);
+    sandRGB = hexToRGB(currentPalette.sand);
+    paletteNameEl.textContent = currentPalette.name;
+    document.querySelectorAll('.tile').forEach(el => {
+      el.style.background = currentPalette.bg;
+      el.querySelector('.tile-label').style.color = currentPalette.sand;
+    });
+  }
+
+  function rerollTargets() {
+    tiles.forEach(t => t.forceNewTargets());
+  }
+
+  document.getElementById('reroll-targets').addEventListener('click', rerollTargets);
+  document.getElementById('reroll-palette').addEventListener('click', rerollPalette);
+
+  const pauseBtn = document.getElementById('toggle-pause');
+  pauseBtn.addEventListener('click', () => {
+    paused = !paused;
+    pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+    pauseBtn.classList.toggle('active', paused);
+  });
+
+  let lastTime = performance.now();
+  let labelUpdateAccum = 0;
+
+  function animate(now) {
+    const dt = Math.min((now - lastTime) / 1000, 0.1);
+    lastTime = now;
+    const speed = parseFloat(speedSlider.value);
+
+    if (!paused) {
+      tiles.forEach(tile => {
+        tile.update(dt, speed);
+        tile.draw(currentPalette, bgRGB, sandRGB);
+      });
+
+      // Update labels a few times per second only (cheap)
+      labelUpdateAccum += dt;
+      if (labelUpdateAccum > 0.25) {
+        labelUpdateAccum = 0;
+        tiles.forEach(tile => {
+          const label = tile.canvas.parentElement.querySelector('.tile-label');
+          label.textContent = tile.labelText();
+        });
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  buildGrid();
+  requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>

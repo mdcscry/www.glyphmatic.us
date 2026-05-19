@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Albers study — paper texture v2</title>
+<style>
+  :root { --bg: #efe9d9; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+  .wrap { width: 100%; max-width: 720px; }
+  .controls {
+    display: flex;
+    gap: 8px;
+    margin: 0 0 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: #fff;
+    color: #1f1e1d;
+    border: 0.5px solid rgba(0,0,0,0.12);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button:hover { background: #f6f3ea; }
+  button:active { transform: scale(0.98); }
+  .stage {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    background: var(--bg);
+  }
+  svg { display: block; width: 100%; height: 100%; }
+  .slider-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 12px;
+    color: #6b6a66;
+  }
+  input[type="range"] { width: 100px; accent-color: #1f1e1d; }
+  .val { font-variant-numeric: tabular-nums; min-width: 24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="controls">
+    <button id="reroll">Re-shuffle</button>
+    <div class="slider-group">
+      <label>edge fiber</label>
+      <input type="range" id="displacement" min="0" max="20" value="8" step="0.5"/>
+      <span class="val" id="displacement-val">8</span>
+    </div>
+    <div class="slider-group">
+      <label>paper grain</label>
+      <input type="range" id="grain" min="0.01" max="0.15" value="0.04" step="0.005"/>
+      <span class="val" id="grain-val">0.04</span>
+    </div>
+  </div>
+  <div class="stage">
+    <svg id="canvas" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+</div>
+
+<script>
+(function() {
+  const svg = document.getElementById('canvas');
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  const COLORS = {
+    paper:      '#efe9d9',
+    magenta:    '#c2317d',
+    red:        '#dc3a26',
+    chartreuse: '#bcc637',
+    babyBlue:   '#7fb6c5'
+  };
+
+  function el(name, attrs, children) {
+    const e = document.createElementNS(SVG_NS, name);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (children) for (const c of children) e.appendChild(c);
+    return e;
+  }
+
+  // Build SVG filters used for the paper effect.
+  // Two filters:
+  //   #paint-edge: applied per-shape — displaces edges using fractal noise
+  //                so the boundary fibers out instead of being polygonal
+  //   #paper-surface: applied to the whole canvas — creates the rough paper
+  //                   surface using diffuse lighting on a noise height field
+  function buildFilters(seed, displacementScale, grainFreq) {
+    const defs = el('defs');
+
+    // ---- Filter 1: per-shape edge displacement ----
+    // This makes the painted shape's edge break up into organic fibers.
+    // We feed the shape into a turbulence-driven displacement map.
+    const edgeFilter = el('filter', {
+      id: 'paint-edge',
+      x: '-10%', y: '-10%', width: '120%', height: '120%',
+      filterUnits: 'objectBoundingBox'
+    });
+    edgeFilter.appendChild(el('feTurbulence', {
+      type: 'fractalNoise',
+      baseFrequency: '0.018 0.05',  // slightly stretched horizontally
+      numOctaves: '3',
+      seed: seed,
+      result: 'noise'
+    }));
+    edgeFilter.appendChild(el('feDisplacementMap', {
+      in: 'SourceGraphic',
+      in2: 'noise',
+      scale: displacementScale,
+      xChannelSelector: 'R',
+      yChannelSelector: 'G'
+    }));
+    defs.appendChild(edgeFilter);
+
+    // ---- Filter 2: paper surface (sun on noise) ----
+    // Mullany / Soueidan recipe: fractalNoise + diffuse lighting.
+    // We apply this filter to a layer that contains a paper-colored rect,
+    // and the result becomes the textured paper background.
+    const paperFilter = el('filter', {
+      id: 'paper-surface',
+      x: '0%', y: '0%', width: '100%', height: '100%'
+    });
+    paperFilter.appendChild(el('feTurbulence', {
+      type: 'fractalNoise',
+      baseFrequency: grainFreq,
+      numOctaves: '5',
+      seed: seed,
+      result: 'paperNoise'
+    }));
+    const lighting = el('feDiffuseLighting', {
+      in: 'paperNoise',
+      'lighting-color': '#fff',
+      surfaceScale: '1.5',
+      result: 'paperLight'
+    });
+    lighting.appendChild(el('feDistantLight', {
+      azimuth: '45',
+      elevation: '55'
+    }));
+    paperFilter.appendChild(lighting);
+    // Composite the lit paper texture with the source paper color
+    // so we get rough texture that's tinted with the paper color, not pure white.
+    paperFilter.appendChild(el('feComposite', {
+      in: 'paperLight',
+      in2: 'SourceGraphic',
+      operator: 'in',
+      result: 'paperMasked'
+    }));
+    paperFilter.appendChild(el('feBlend', {
+      in: 'SourceGraphic',
+      in2: 'paperMasked',
+      mode: 'multiply'
+    }));
+    defs.appendChild(paperFilter);
+
+    // ---- Filter 3: paint surface roughness ----
+    // Apply to each painted shape AFTER the edge displacement —
+    // gives the paint surface itself a slight grain/texture from the paper
+    // showing through. We use a very subtle diffuse lighting on noise,
+    // composited multiplicatively so the paint stays mostly its color but
+    // has texture variation.
+    const paintFilter = el('filter', {
+      id: 'paint-surface',
+      x: '-10%', y: '-10%', width: '120%', height: '120%',
+      filterUnits: 'objectBoundingBox'
+    });
+    // First displace the edges (same as paint-edge)
+    paintFilter.appendChild(el('feTurbulence', {
+      type: 'fractalNoise',
+      baseFrequency: '0.018 0.05',
+      numOctaves: '3',
+      seed: seed,
+      result: 'edgeNoise'
+    }));
+    paintFilter.appendChild(el('feDisplacementMap', {
+      in: 'SourceGraphic',
+      in2: 'edgeNoise',
+      scale: displacementScale,
+      xChannelSelector: 'R',
+      yChannelSelector: 'G',
+      result: 'displaced'
+    }));
+    // Then add surface texture: generate finer noise, light it, multiply over the displaced shape
+    paintFilter.appendChild(el('feTurbulence', {
+      type: 'fractalNoise',
+      baseFrequency: grainFreq,
+      numOctaves: '5',
+      seed: seed + 1,
+      result: 'surfaceNoise'
+    }));
+    const paintLight = el('feDiffuseLighting', {
+      in: 'surfaceNoise',
+      'lighting-color': '#fff',
+      surfaceScale: '1.2',
+      result: 'surfaceLight'
+    });
+    paintLight.appendChild(el('feDistantLight', { azimuth: '45', elevation: '55' }));
+    paintFilter.appendChild(paintLight);
+    // Mask the lit surface to the displaced shape
+    paintFilter.appendChild(el('feComposite', {
+      in: 'surfaceLight',
+      in2: 'displaced',
+      operator: 'in',
+      result: 'surfaceMasked'
+    }));
+    // Blend the surface texture multiplicatively over the displaced paint
+    paintFilter.appendChild(el('feBlend', {
+      in: 'displaced',
+      in2: 'surfaceMasked',
+      mode: 'multiply'
+    }));
+    defs.appendChild(paintFilter);
+
+    return defs;
+  }
+
+  // Wobbly path for a rectangle — keeps a small amount of polygonal jitter
+  // that the displacement filter then turns into organic fiber. With both
+  // techniques together you get more variety than either alone.
+  function paintedRect(x, y, w, h, jitter, segments) {
+    segments = segments || 14;
+    jitter = jitter == null ? 3 : jitter;
+    const points = [];
+    function jit() { return (Math.random() - 0.5) * 2 * jitter; }
+
+    for (let i = 0; i <= segments; i++) {
+      const t = i / segments;
+      points.push([x + t * w, y + jit()]);
+    }
+    for (let i = 1; i <= segments; i++) {
+      const t = i / segments;
+      points.push([x + w + jit(), y + t * h]);
+    }
+    for (let i = 1; i <= segments; i++) {
+      const t = i / segments;
+      points.push([x + w - t * w, y + h + jit()]);
+    }
+    for (let i = 1; i < segments; i++) {
+      const t = i / segments;
+      points.push([x + jit(), y + h - t * h]);
+    }
+
+    let d = 'M ' + points[0][0] + ' ' + points[0][1];
+    for (let i = 1; i < points.length; i++) {
+      d += ' L ' + points[i][0] + ' ' + points[i][1];
+    }
+    d += ' Z';
+    return d;
+  }
+
+  function build() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    const seed = Math.floor(Math.random() * 1000);
+    const displacementScale = parseFloat(document.getElementById('displacement').value);
+    const grainFreq = parseFloat(document.getElementById('grain').value);
+
+    svg.appendChild(buildFilters(seed, displacementScale, grainFreq));
+
+    // ---- Paper background: full-canvas rect with paper-surface filter ----
+    // This creates the textured cream paper that everything sits on.
+    const paperLayer = el('g', { filter: 'url(#paper-surface)' });
+    paperLayer.appendChild(el('rect', {
+      x: 0, y: 0, width: 1000, height: 1000,
+      fill: COLORS.paper
+    }));
+    svg.appendChild(paperLayer);
+
+    // ---- Paint group: all painted shapes get the paint-surface filter ----
+    // Edges fiber out, surface picks up subtle grain.
+    const paintGroup = el('g', { filter: 'url(#paint-surface)' });
+
+    const W = 1000, H = 1000;
+    const paperMargin = 70;
+    const centerGap = 4;
+    const leftX = paperMargin;
+    const leftY = paperMargin;
+    const leftW = (W / 2) - paperMargin - centerGap / 2;
+    const leftH = H - 2 * paperMargin;
+    const rightX = (W / 2) + centerGap / 2;
+    const rightY = paperMargin;
+    const rightW = (W / 2) - paperMargin - centerGap / 2;
+    const rightH = H - 2 * paperMargin;
+
+    // Magenta and red fields with stronger polygonal pre-jitter
+    paintGroup.appendChild(el('path', {
+      d: paintedRect(leftX, leftY, leftW, leftH, 8, 24),
+      fill: COLORS.magenta
+    }));
+    paintGroup.appendChild(el('path', {
+      d: paintedRect(rightX, rightY, rightW, rightH, 8, 24),
+      fill: COLORS.red
+    }));
+
+    // ---- Left: nested downward-opening brackets ----
+    const leftCx = leftX + leftW * 0.50;
+
+    const bar1W = leftW * 0.42;
+    const bar1H = leftH * 0.85;
+    const bar1X = leftCx - bar1W / 2;
+    const bar1Y = leftY + leftH * 0.12;
+
+    const bar2W = bar1W * 0.55;
+    const bar2H = leftH * 0.78;
+    const bar2X = leftCx - bar2W / 2 + bar1W * 0.04;
+    const bar2Y = leftY + leftH * 0.18;
+
+    const bar3W = bar2W * 0.36;
+    const bar3H = leftH * 0.71;
+    const bar3X = leftCx - bar3W / 2 + bar1W * 0.02;
+    const bar3Y = leftY + leftH * 0.25;
+
+    paintGroup.appendChild(el('path', { d: paintedRect(bar1X, bar1Y, bar1W, bar1H, 2, 12), fill: COLORS.chartreuse }));
+    paintGroup.appendChild(el('path', { d: paintedRect(bar2X, bar2Y, bar2W, bar2H, 2, 12), fill: COLORS.babyBlue }));
+    paintGroup.appendChild(el('path', { d: paintedRect(bar3X, bar3Y, bar3W, bar3H, 2, 12), fill: COLORS.chartreuse }));
+
+    // ---- Right: nested upward-opening brackets ----
+    const rightCx = rightX + rightW * 0.50;
+
+    const rbar1W = rightW * 0.42;
+    const rbar1H = rightH * 0.85;
+    const rbar1X = rightCx - rbar1W / 2;
+    const rbar1Bottom = rightY + rightH * 0.88;
+    const rbar1Y = rbar1Bottom - rbar1H;
+
+    const rbar2W = rbar1W * 0.55;
+    const rbar2H = rightH * 0.78;
+    const rbar2X = rightCx - rbar2W / 2 - rbar1W * 0.04;
+    const rbar2Bottom = rightY + rightH * 0.82;
+    const rbar2Y = rbar2Bottom - rbar2H;
+
+    const rbar3W = rbar2W * 0.36;
+    const rbar3H = rightH * 0.71;
+    const rbar3X = rightCx - rbar3W / 2 - rbar1W * 0.02;
+    const rbar3Bottom = rightY + rightH * 0.75;
+    const rbar3Y = rbar3Bottom - rbar3H;
+
+    paintGroup.appendChild(el('path', { d: paintedRect(rbar1X, rbar1Y, rbar1W, rbar1H, 2, 12), fill: COLORS.babyBlue }));
+    paintGroup.appendChild(el('path', { d: paintedRect(rbar2X, rbar2Y, rbar2W, rbar2H, 2, 12), fill: COLORS.chartreuse }));
+    paintGroup.appendChild(el('path', { d: paintedRect(rbar3X, rbar3Y, rbar3W, rbar3H, 2, 12), fill: COLORS.babyBlue }));
+
+    svg.appendChild(paintGroup);
+  }
+
+  // Wire up controls
+  const dispSlider = document.getElementById('displacement');
+  const dispVal = document.getElementById('displacement-val');
+  const grainSlider = document.getElementById('grain');
+  const grainVal = document.getElementById('grain-val');
+
+  dispSlider.addEventListener('input', () => {
+    dispVal.textContent = dispSlider.value;
+    build();
+  });
+  grainSlider.addEventListener('input', () => {
+    grainVal.textContent = parseFloat(grainSlider.value).toFixed(3);
+    build();
+  });
+  document.getElementById('reroll').addEventListener('click', build);
+
+  build();
+})();
+</script>
+</body>
+</html>
