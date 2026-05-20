@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life — Artistic</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:system-ui,sans-serif}
+  #ui{position:fixed;top:0;left:0;right:0;display:flex;gap:8px;padding:10px 14px;align-items:center;flex-wrap:wrap;z-index:10;background:linear-gradient(to bottom,rgba(0,0,0,0.7),transparent)}
+  button{font-size:11px;padding:4px 11px;cursor:pointer;border-radius:5px;border:1px solid #555;background:rgba(30,30,30,0.85);color:#ccc;backdrop-filter:blur(4px)}
+  button:hover{background:rgba(60,60,60,0.9)}
+  select{font-size:11px;padding:4px 8px;border-radius:5px;border:1px solid #555;background:rgba(30,30,30,0.85);color:#ccc}
+  label{font-size:11px;color:#888}
+  canvas{display:block}
+</style>
+</head>
+<body>
+<div id="ui">
+  <select id="palSel">
+    <option value="ember">Ember</option>
+    <option value="aurora">Aurora</option>
+    <option value="deep">Deep sea</option>
+    <option value="void">Void</option>
+    <option value="solar">Solar flare</option>
+    <option value="toxic">Toxic</option>
+  </select>
+  <button id="palBtn">Next palette</button>
+  <button id="regenBtn">Reseed</button>
+  <button id="pauseBtn">Pause</button>
+  <label>Speed</label>
+  <select id="speedSel">
+    <option value="30">Fast</option>
+    <option value="80" selected>Medium</option>
+    <option value="180">Slow</option>
+  </select>
+  <label>Trail</label>
+  <select id="trailSel">
+    <option value="0.018">Ghost</option>
+    <option value="0.04" selected>Linger</option>
+    <option value="0.10">Short</option>
+    <option value="0">Permanent</option>
+  </select>
+  <label>Glow</label>
+  <input type="range" id="glowSel" min="0" max="30" value="14" style="width:70px;accent-color:#aaa">
+</div>
+<canvas id="c"></canvas>
+
+<script>
+// --- Palettes: [birth, young, mature, elder, dying, ghost, bg]
+const PALS={
+  ember:{
+    birth:'#FFFFFF', young:'#FFE566', mature:'#FF8C00', elder:'#CC2200', dying:'#6B0000',
+    ghost:'#2a0800', bg:'#000000', glow:'#FF4400'
+  },
+  aurora:{
+    birth:'#FFFFFF', young:'#00FFD4', mature:'#00AAFF', elder:'#7B2FBE', dying:'#1a0040',
+    ghost:'#001520', bg:'#000308', glow:'#00DDFF'
+  },
+  deep:{
+    birth:'#FFFFFF', young:'#80FFEA', mature:'#0077B6', elder:'#023E8A', dying:'#03045E',
+    ghost:'#001020', bg:'#000510', glow:'#00B4D8'
+  },
+  void:{
+    birth:'#FFFFFF', young:'#E8DDFF', mature:'#9B5DE5', elder:'#5A189A', dying:'#240046',
+    ghost:'#0d0020', bg:'#050005', glow:'#C77DFF'
+  },
+  solar:{
+    birth:'#FFFFFF', young:'#FFF176', mature:'#FF6D00', elder:'#BF360C', dying:'#3E0000',
+    ghost:'#1a0500', bg:'#020000', glow:'#FF9500'
+  },
+  toxic:{
+    birth:'#FFFFFF', young:'#CCFF00', mature:'#39FF14', elder:'#008000', dying:'#1a3300',
+    ghost:'#0a1400', bg:'#000200', glow:'#39FF14'
+  },
+};
+
+function hexToRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+function lerp(a,b,t){t=Math.max(0,Math.min(1,t));return a.map((v,i)=>Math.round(v+(b[i]-v)*t));}
+function rgbStr(c,a){return a!=null?`rgba(${c[0]},${c[1]},${c[2]},${a})`:`rgb(${c[0]},${c[1]},${c[2]})`;}
+function rnd(a,b){return a+Math.random()*(b-a);}
+
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+
+// Off-screen life canvas
+const lifeCanvas=document.createElement('canvas');
+const lifeCtx=lifeCanvas.getContext('2d');
+
+// Glow layer
+const glowCanvas=document.createElement('canvas');
+const glowCtx=glowCanvas.getContext('2d');
+
+const CELL=5;
+let cols,rows,W,H;
+let grid,nextGrid,age,ghostAge;
+let paused=false;
+let interval=80;
+let trailDecay=0.04;
+let glowAmt=14;
+let pal=PALS.ember;
+let lastTime=0,rafId;
+
+function resize(){
+  W=Math.max(window.innerWidth,1);
+  H=Math.max(window.innerHeight,1);
+  canvas.width=W; canvas.height=H;
+  lifeCanvas.width=W; lifeCanvas.height=H;
+  glowCanvas.width=W; glowCanvas.height=H;
+  cols=Math.max(1,Math.floor(W/CELL));
+  rows=Math.max(1,Math.floor(H/CELL));
+  seed();
+}
+
+function seed(){
+  const n=cols*rows;
+  grid=new Uint8Array(n);
+  nextGrid=new Uint8Array(n);
+  age=new Float32Array(n);      // 0=newborn .. 1=elder (while alive)
+  ghostAge=new Float32Array(n); // >0 = recently died, fades to 0
+
+  // Mix of seeding strategies for visual variety
+  for(let y=0;y<rows;y++){
+    for(let x=0;x<cols;x++){
+      const i=y*cols+x;
+      // Noise-modulated density
+      const nx=Math.sin(x*0.09)*Math.cos(y*0.07)+Math.cos(x*0.05+y*0.13);
+      const density=0.12+0.28*((nx+1)/2);
+      grid[i]=Math.random()<density?1:0;
+      age[i]=grid[i]?Math.random()*0.3:0;
+      ghostAge[i]=0;
+    }
+  }
+  // Sprinkle gliders
+  const G=[[1,0],[2,1],[0,2],[1,2],[2,2]];
+  for(let g=0;g<14;g++){
+    const ox=Math.floor(rnd(4,cols-8));
+    const oy=Math.floor(rnd(4,rows-8));
+    G.forEach(([dx,dy])=>{
+      const i=(oy+dy)*cols+(ox+dx);
+      if(i>=0&&i<cols*rows){grid[i]=1;age[i]=0;}
+    });
+  }
+}
+
+function idx(x,y){return((y+rows)%rows)*cols+((x+cols)%cols);}
+
+function step(){
+  for(let y=0;y<rows;y++){
+    for(let x=0;x<cols;x++){
+      let n=0;
+      for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){
+        if(dx===0&&dy===0) continue;
+        n+=grid[idx(x+dx,y+dy)];
+      }
+      const i=idx(x,y);
+      const alive=grid[i];
+      const survives=(alive&&(n===2||n===3))||(!alive&&n===3);
+      nextGrid[i]=survives?1:0;
+
+      if(survives){
+        // Age up slowly, plateau at elder
+        age[i]=Math.min(age[i]+0.012,1);
+        if(!alive) ghostAge[i]=0; // born fresh
+      } else {
+        if(alive){
+          // Just died — start ghost trail at full intensity
+          ghostAge[i]=1.0;
+        }
+        age[i]=0;
+        // Ghost decays each step
+        if(trailDecay===0){
+          ghostAge[i]=Math.max(ghostAge[i]-0.002,0);
+        } else {
+          ghostAge[i]=Math.max(ghostAge[i]-trailDecay,0);
+        }
+      }
+    }
+  }
+  const tmp=grid; grid=nextGrid; nextGrid=tmp;
+}
+
+function lerpLifeColor(a){
+  // 0=birth(white) → 0.25=young → 0.6=mature → 0.85=elder → 1=elder(deep)
+  const birth=hexToRgb(pal.birth);
+  const young=hexToRgb(pal.young);
+  const mature=hexToRgb(pal.mature);
+  const elder=hexToRgb(pal.elder);
+  if(a<0.25) return lerp(birth,young,a/0.25);
+  if(a<0.6)  return lerp(young,mature,(a-0.25)/0.35);
+  return       lerp(mature,elder,(a-0.6)/0.4);
+}
+
+function draw(){
+  const bg=hexToRgb(pal.bg);
+  const dying=hexToRgb(pal.dying);
+  const ghost=hexToRgb(pal.ghost);
+  const glow=hexToRgb(pal.glow);
+
+  // --- Draw life layer ---
+  lifeCtx.fillStyle=pal.bg;
+  lifeCtx.fillRect(0,0,W,H);
+
+  for(let y=0;y<rows;y++){
+    for(let x=0;x<cols;x++){
+      const i=y*cols+x;
+      const px=x*CELL, py=y*CELL;
+
+      if(grid[i]===1){
+        const col=lerpLifeColor(age[i]);
+        lifeCtx.fillStyle=rgbStr(col);
+        // Shape varies with age: newborn=circle, mature=square, elder=diamond
+        const a=age[i];
+        const cx=px+CELL/2, cy=py+CELL/2, r=CELL/2-0.3;
+        lifeCtx.beginPath();
+        if(a<0.3){
+          // Circle — birth
+          lifeCtx.arc(cx,cy,r*(0.5+a*1.6),0,Math.PI*2);
+        } else if(a<0.65){
+          // Rounded rect — maturing
+          const rr=Math.max(0.5,(1-a)*r);
+          lifeCtx.roundRect(px+0.5,py+0.5,CELL-1,CELL-1,rr);
+        } else {
+          // Diamond — elder
+          lifeCtx.moveTo(cx,py+0.5);
+          lifeCtx.lineTo(px+CELL-0.5,cy);
+          lifeCtx.lineTo(cx,py+CELL-0.5);
+          lifeCtx.lineTo(px+0.5,cy);
+          lifeCtx.closePath();
+        }
+        lifeCtx.fill();
+      } else if(ghostAge[i]>0.001){
+        // Ghost trail: fades from dying color to ghost bg
+        const t=ghostAge[i];
+        const col=lerp(ghost,dying,t);
+        lifeCtx.fillStyle=rgbStr(col,Math.min(t*1.2,1));
+        lifeCtx.fillRect(px,py,CELL,CELL);
+      }
+    }
+  }
+
+  // --- Glow layer ---
+  if(glowAmt>0 && lifeCanvas.width>0 && lifeCanvas.height>0){
+    glowCtx.clearRect(0,0,W,H);
+    glowCtx.globalAlpha=1;
+    glowCtx.filter='none';
+    glowCtx.drawImage(lifeCanvas,0,0);
+    glowCtx.filter=`blur(${glowAmt}px)`;
+    glowCtx.globalAlpha=0.55;
+    glowCtx.drawImage(lifeCanvas,0,0);
+    glowCtx.filter=`blur(${Math.round(glowAmt*2)}px)`;
+    glowCtx.globalAlpha=0.25;
+    glowCtx.drawImage(lifeCanvas,0,0);
+    glowCtx.filter='none';
+    glowCtx.globalAlpha=1;
+  }
+
+  // --- Composite to main canvas ---
+  ctx.fillStyle=pal.bg;
+  ctx.fillRect(0,0,W,H);
+  if(lifeCanvas.width>0 && lifeCanvas.height>0) ctx.drawImage(lifeCanvas,0,0);
+  if(glowAmt>0 && glowCanvas.width>0 && glowCanvas.height>0){
+    ctx.globalCompositeOperation='screen';
+    ctx.drawImage(glowCanvas,0,0);
+    ctx.globalCompositeOperation='source-over';
+  }
+}
+
+function loop(ts){
+  rafId=requestAnimationFrame(loop);
+  if(paused) return;
+  if(ts-lastTime<interval) return;
+  lastTime=ts;
+  step();
+  draw();
+}
+
+// --- Controls ---
+document.getElementById('palBtn').addEventListener('click',()=>{
+  const sel=document.getElementById('palSel');
+  const keys=Object.keys(PALS);
+  sel.selectedIndex=(sel.selectedIndex+1)%keys.length;
+  pal=PALS[sel.value];
+});
+document.getElementById('palSel').addEventListener('change',e=>{ pal=PALS[e.target.value]; });
+document.getElementById('regenBtn').addEventListener('click',seed);
+document.getElementById('pauseBtn').addEventListener('click',()=>{
+  paused=!paused;
+  document.getElementById('pauseBtn').textContent=paused?'Resume':'Pause';
+});
+document.getElementById('speedSel').addEventListener('change',e=>{ interval=+e.target.value; });
+document.getElementById('trailSel').addEventListener('change',e=>{ trailDecay=+e.target.value; });
+document.getElementById('glowSel').addEventListener('input',e=>{ glowAmt=+e.target.value; });
+window.addEventListener('resize',()=>{ cancelAnimationFrame(rafId); resize(); rafId=requestAnimationFrame(loop); });
+
+resize();
+rafId=requestAnimationFrame(loop);
+</script>
+</body>
+</html>
